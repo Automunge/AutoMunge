@@ -22,7 +22,6 @@ import datetime as dt
 
 #imports for _evalcategory, _getNArows
 from collections import Counter
-# import datetime as dt
 # from scipy.stats import shapiro
 # from scipy.stats import skew
 
@@ -23902,7 +23901,7 @@ class AutoMunge:
 
     #but first real quick we'll just deal with PCA default functionality for FS
     FSML_cmnd = deepcopy(ML_cmnd)
-    FSML_cmnd['PCA_type'] = 'off'
+    FS_PCAn_components = False
 
     FS_assignparam = deepcopy(assignparam)
 
@@ -23922,6 +23921,7 @@ class AutoMunge:
                   excl_suffix = True, \
                   numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
                   featureselection = False, \
+                  PCAn_components = FS_PCAn_components, \
                   ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
@@ -25698,38 +25698,47 @@ class AutoMunge:
 
   def _evalPCA(self, df_train, PCAn_components, ML_cmnd):
     '''
-    function serves to evaluate properties of dataframe to determine 
-    if an automated application of PCA is appropriate, and if so 
-    what kind of PCA to apply
-    returns PCActgy as
-    'noPCA' -> self explanatory, this is the default when number of features 
-                is less than 15% of number of rows
-                Please note this is a somewhat arbitrary ratio and some more
-                research is needed to validate methods for this rule
-                A future iteration may perform addition kinds of evaluations
-                such as distribuytions and correlations of data for this method.
-    'KernelPCA' -> dataset suitable for automated KernelPCA application
-                    (preffered method when data is all non-negative)
-    'SparsePCA' -> dataset suitable for automated SparsePCA application
-                    (prefered method when data is not all non-negative)
-    'PCA' -> not currently used as a default
-    also returns a n_components value which is based on the user passed 
-    value to PCAn_components or if user passes None (the default) then
-    one is assigned based on properties of the data set
-    also returns a value for n_components based on that same 15% rule
-    where PCA application will default to user passed n_components but if
-    none passed will apply this returned value
-    '''
+    returns a PCA type (PCA_type)
+    and a n_components (n_components)
 
-    number_rows = df_train.shape[0]
-    number_columns = df_train.shape[1]
+    returns PCActgy as ML_cmnd['PCA_type']
     
-    #col_row_ratio was a heuristic used in earlier iterations where we included
-    #a default PCA application when had too many features for the number of samples
-    #col_row_ratio is high when there aren't enough samples (rows) recorded
-    #decided was adding too much complexity so struck from documentation
-    #we ended up backing up from applying the heuristic as the default
-    #if desired PCAn_components can be passed as None instead of the default of False
+    unless ML_cmnd['PCA_type'] == 'default'
+    in which case determines a PCA_type as one of:
+    'noPCA' -> self explanatory
+    'KernelPCA' -> dataset suitable for automated KernelPCA application
+                    (default PCA method when data is all non-negative)
+    'SparsePCA' -> dataset suitable for automated SparsePCA application
+                    (prefered default when data is not all non-negative)
+    'PCA'       -> default PCA when user passes PCAn_components as float between 0-1
+
+    also returns a n_components value which is based on the user passed PCAn_components
+    which will be the same as PCAn_components when is passed as an integer or float
+
+    or if user passes PCAn_components as None then
+    a heuristic is evaluated to either derive a new n_components or return as None
+    the heuristic is based on ratio of number of columns to number of rows
+    thus performing PCA when there aren't enough samples for the number of features
+    which defaults to the column/row ratio of 0.5 and can be adjusted with ML_cmnd['PCA_cmnd']['col_row_ratio']
+    when applied the heuristic returns a new n_components as n_components = int(round(col_row_ratio * number_rows))
+    '''
+    
+    #first we'll initialize a PCActgy to be applied when ML_cmnd['PCA_type'] == 'default'
+    #although this initialized PCActgy will subsequently be overwritten if user specifies ML_cmnd['PCA_type']
+    if any(df_train < 0.0):
+      PCActgy = 'SparsePCA'
+
+    #else if there were no negative values in the dataframe
+    else:
+      PCActgy = 'KernelPCA'
+
+    #note SparsePCA or KernelPCA is reverted to 'PCA' below when PCAn_components is float between 0-1
+
+    #_____
+
+    #now we perform the heuristic inspection
+    #I don't expect in current form this heuristic will be widely used
+    #primiarily was implemented to crystalize some thoughts on the matter
 
     #ok this is to allow user to set the default columns/rows ratio for automated PCA
     if 'col_row_ratio' in ML_cmnd['PCA_cmnd']:
@@ -25737,76 +25746,40 @@ class AutoMunge:
     else:
       col_row_ratio = 0.50
 
-    # #this will ensure number_columns / number_rows < col_row_ratio:
-    # col_row_ratio = np.inf
+    number_rows = df_train.shape[0]
+    number_columns = df_train.shape[1]
 
-    if ML_cmnd['PCA_type'] == 'default':
+    if PCAn_components == None:
 
-      #if number_columns / number_rows < 0.15:
       if number_columns / number_rows < col_row_ratio:
 
-        if PCAn_components == None:
+        PCActgy = 'noPCA'
+        n_components = PCAn_components
 
-          PCActgy = 'noPCA'
+      elif number_columns / number_rows >= col_row_ratio:
 
-          n_components = PCAn_components
+        n_components = int(round(col_row_ratio * number_rows))
 
-        if PCAn_components != None:
+    #_____
 
-          #if df_train[df_train < 0.0].count() == 0:
-          if any(df_train < 0.0):
-
-            PCActgy = 'SparsePCA'
-
-          #else if there were negative values in the dataframe
-          else:
-
-            PCActgy = 'KernelPCA'
-
-          n_components = PCAn_components
-
-      #else if number_columns / number_rows > 0.15
-      #else:
-      if number_columns / number_rows > col_row_ratio:
-
-        #if df_train[df_train < 0.0].count() == 0:
-        #if df_train[df_train < 0.0].sum() == 0:
-        if any(df_train < 0.0):
-
-          PCActgy = 'SparsePCA'
-
-        #else if there were negative values in the dataframe
-        else:
-
-          PCActgy = 'KernelPCA'
-
-        #if user did not pass a PCAn_component then we'll create one
-        if PCAn_components == None:
-
-          #this is a somewhat arbitrary figure, some
-          #additional research needs to be performed
-          #a future expansion may base this on properties
-          #of the data
-          #n_components = int(round(0.15 * number_rows))
-          n_components = int(round(col_row_ratio * number_rows))
-
-        else:
-
-          n_components = PCAn_components
-    
+    #returned n_components is otherwise same as PCAn_components
     if isinstance(PCAn_components, (int, float)):
-    
+
+      n_components = PCAn_components
+
+      #and as noted above user passing PCAn_components as float between 0-1
+      #makes the default PCA type as 'PCA' (linear PCA)
       if PCAn_components > 0.0 and PCAn_components < 1.0:
         
         PCActgy = 'PCA'
-    
-        n_components = PCAn_components
 
+        #(note there is an edge case, user can't pass PCAn_components as float between 0-1
+        #unless in conjunction with ML_cmnd['PCA_type'] = 'default' or ML_cmnd['PCA_type'] = 'PCA')
+
+    #if user designated a PCA_type that takes precedence
     if ML_cmnd['PCA_type'] != 'default':
 
       PCActgy = ML_cmnd['PCA_type']
-
-      n_components = PCAn_components
     
     return PCActgy, n_components
 
@@ -26153,6 +26126,8 @@ class AutoMunge:
     ML_cmnd = ML_cmnd
     
     #Find PCA type
+    #will default to kernel PCA for all non-negative sets or otherwise Sparse PCA
+    #or when PCAn_components is float between 0-1 PCA instead of Sparse PCA
     PCActgy, n_components = \
     self._evalPCA(PCAset_train, PCAn_components, ML_cmnd)
     
@@ -26502,7 +26477,7 @@ class AutoMunge:
     miscparameters_results.update({'Binary_valresult' : Binary_valresult})
     
     #check PCAn_components
-    #accepts integers >1 or floats between 0-1 or None
+    #accepts integers >1 or floats between 0-1, False, or None
     PCAn_components_valresult = False
     if isinstance(PCAn_components, (int, float)) \
     or PCAn_components is False \
@@ -27271,9 +27246,13 @@ class AutoMunge:
     #we'll assume this takes place after user passed entries have been merged into transform_dict
     #such that transformdict is just user passed entries
     #and transform_dict is both user-passed and internal library
+
+    #familytree_for_offspring_result triggered when category entered to primitive with offpsring
+    #doesn't have a root category definition in trasnform_dict
     """
     
     haltingproblem_result = False
+    familytree_for_offspring_result = False
     
     for root_category in transformdict:
       
@@ -27285,6 +27264,14 @@ class AutoMunge:
       transform_dict[root_category]['parents'] + transform_dict[root_category]['siblings']
       
       for parent in parents_list:
+
+        if parent not in transform_dict:
+          familytree_for_offspring_result = True
+          if printstatus != 'silent':
+            print("Error, no root category family tree defined for category ", parent)
+            print("which is needed since it is entered as an entry to a primitive with offpsinrg")
+            print("in family tree for root category ", root_category)
+            print()
         
         upstream_list = []
         upstream_list = [parent]
@@ -27312,7 +27299,7 @@ class AutoMunge:
 
             if check_count < max_check_count:
 
-              offspring_result, check_count = \
+              offspring_result, offspring_familytree_for_offspring_result, check_count = \
               self._check_offspring(transform_dict, offspring, root_category, \
                                    upstream_list, check_count, max_check_count, printstatus)
 #               offspring_result, check_count = \
@@ -27320,9 +27307,11 @@ class AutoMunge:
 #                               upstream_list, check_count, max_check_count)
 
               if offspring_result is True:
-
                 haltingproblem_result = True
+                break
 
+              if offspring_familytree_for_offspring_result is True:
+                familytree_for_offspring_result = True
                 break
 
             else:
@@ -27336,7 +27325,7 @@ class AutoMunge:
               
               break
     
-    return haltingproblem_result
+    return haltingproblem_result, familytree_for_offspring_result
 
   def _check_offspring(self, transform_dict, root_category, orig_root_category, \
                       upstream_list, check_count, max_check_count, printstatus):
@@ -27345,6 +27334,15 @@ class AutoMunge:
     """
     
     offspring_result = False
+    offspring_familytree_for_offspring_result = False
+
+    if root_category not in transform_dict:
+      offspring_familytree_for_offspring_result = True
+      if printstatus != 'silent':
+        print("Error, no root category family tree defined for category ", root_category)
+        print("which is needed since it is entered as an entry to a primitive with offpsinrg")
+        print("in family tree for root category ", orig_root_category)
+        print()
 
     offspring_list = \
     transform_dict[root_category]['children'] + transform_dict[root_category]['niecesnephews']
@@ -27371,7 +27369,7 @@ class AutoMunge:
 
           if check_count < max_check_count:
 
-            offspring_result2, check_count = \
+            offspring_result2, offspring_familytree_for_offspring_result2, check_count = \
             self._check_offspring(transform_dict, offspring, orig_root_category, \
                                  upstream_list, check_count, max_check_count, printstatus)
 #             offspring_result2, check_count = \
@@ -27379,9 +27377,11 @@ class AutoMunge:
 #                             upstream_list2, check_count, max_check_count)
 
             if offspring_result2 is True:
-
               offspring_result = True
+              break
 
+            if offspring_familytree_for_offspring_result2 is True:
+              offspring_familytree_for_offspring_result = True
               break
 
           else:
@@ -27395,7 +27395,7 @@ class AutoMunge:
             
             break
     
-    return offspring_result, check_count
+    return offspring_result, offspring_familytree_for_offspring_result, check_count
 
   def _check_assignnan(self, assignnan, transform_dict, df_train_list, printstatus):
     """
@@ -29351,56 +29351,56 @@ class AutoMunge:
 
     return excluded_from_postmunge_getNArows
   
-  def automunge(self, df_train, df_test = False, \
-                labels_column = False, trainID_column = False, testID_column = False, \
-                valpercent=0.0, floatprecision = 32, shuffletrain = True, \
-                dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False, \
-                MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5, \
-                numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True, \
-                featureselection = False, featurethreshold = 0., inplace = False, \
-                Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False, \
-                ML_cmnd = {'autoML_type':'randomforest', \
-                           'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}, \
-                           'PCA_type':'default', \
-                           'PCA_cmnd':{}}, \
-                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[], \
-                             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[], \
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[], \
-                             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[], \
-                             'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[], \
-                             'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[], \
-                             'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[], \
-                             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[], \
-                             'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[], \
-                             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[], \
-                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[], \
-                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[], \
-                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[], \
-                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[], \
-                             'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[], \
-                             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[], \
-                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[], \
-                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[], \
-                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[], \
-                             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[], \
-                             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[], \
-                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[], \
-                             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[], \
-                             'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[], \
-                             'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[], \
-                             'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[], \
-                             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[], \
-                             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[], \
-                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[], \
-                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[], \
-                             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}, \
-                assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}}, \
-                                        '(category)' : {'(column)'   : {'(parameter)' : 42}}}, \
-                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
-                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], \
-                                'modeinfill':[], 'lcinfill':[], 'naninfill':[]}, \
-                assignnan = {'categories':{}, 'columns':{}, 'global':[]}, \
-                transformdict = {}, processdict = {}, evalcat = False, \
+  def automunge(self, df_train, df_test = False,
+                labels_column = False, trainID_column = False, testID_column = False,
+                valpercent=0.0, floatprecision = 32, shuffletrain = True,
+                dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
+                MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
+                numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
+                featureselection = False, featurethreshold = 0., inplace = False,
+                Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
+                ML_cmnd = {'autoML_type':'randomforest',
+                           'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
+                           'PCA_type':'default',
+                           'PCA_cmnd':{}},
+                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
+                             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
+                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
+                             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
+                             'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
+                             'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
+                             'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
+                             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
+                             'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
+                             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
+                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
+                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
+                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
+                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
+                             'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
+                             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
+                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
+                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
+                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
+                             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
+                             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
+                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
+                             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
+                             'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
+                             'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
+                             'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
+                             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
+                             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
+                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
+                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
+                             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]},
+                assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
+                                        '(category)' : {'(column)'   : {'(parameter)' : 42}}},
+                assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
+                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
+                                'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
+                assignnan = {'categories':{}, 'columns':{}, 'global':[]},
+                transformdict = {}, processdict = {}, evalcat = False,
                 privacy_encode = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
@@ -29426,11 +29426,6 @@ class AutoMunge:
     #convert assignnan if not recieved as lists in bottom tiers
     assignnan = self._assignnan_list_convert(assignnan)
 
-    #quick check to ensure each column only assigned once in assigncat and assigninfill
-    check_assigncat_result = self._check_assigncat(assigncat, printstatus)
-    check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
-    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult = self._check_ML_cmnd(ML_cmnd, printstatus)
-
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     miscparameters_results = \
@@ -29441,16 +29436,21 @@ class AutoMunge:
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat)
 
+    #quick check to ensure each column only assigned once in assigncat and assigninfill
+    check_assigncat_result = self._check_assigncat(assigncat, printstatus)
+    check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
+    #initialize ML_cmnd if incompletely specified
+    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult = self._check_ML_cmnd(ML_cmnd, printstatus)
+
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
                                    'check_ML_cmnd_result' : check_ML_cmnd_result, \
                                    'ML_cmnd_hyperparam_tuner_valresult' : ML_cmnd_hyperparam_tuner_valresult})
     
-    #initialize processing dicitonaries
+    #initialize transform_dict which is the internal library of family trees
     transform_dict = self._assembletransformdict(binstransform, NArw_marker)
 
-    #transformdict is user passed data structure
-    #vs transform_dict which is the internal library
+    #transformdict is user passed data structure to add entries to transform_dict
     if bool(transformdict) is not False:
 
       #validates format of transformdict
@@ -29491,17 +29491,19 @@ class AutoMunge:
       
     if isinstance(transformdict, dict) and transformdict != {}:
       #check for infinite loops in consolidated transform_dict
-      check_haltingproblem_result = \
+      check_haltingproblem_result, familytree_for_offspring_result = \
       self._check_haltingproblem(transformdict, transform_dict, printstatus, max_check_count = 1111)
     else:
       check_haltingproblem_result = False
+      familytree_for_offspring_result = False
     
-    miscparameters_results.update({'check_haltingproblem_result' : check_haltingproblem_result})
+    miscparameters_results.update({'check_haltingproblem_result' : check_haltingproblem_result,
+                                   'familytree_for_offspring_result' : familytree_for_offspring_result})
 
-    #initialize process_dict
+    #initialize process_dict which is the internal library of transformation category properties
     process_dict = self._assembleprocessdict()
 
-    #processdict is user passed data strucure, vs process_dcit which is the internal library
+    #processdict is user passed data strucure to add entries to process_dict
     if bool(processdict) is not False:
       
       #this function checks if any category entries in user passed processdict 
@@ -29522,11 +29524,11 @@ class AutoMunge:
       
     else:
       miscparameters_results.update({'check_functionpointer_result' : False})
-      miscparameters_results.update({'check_processdict_result' : False})
+      miscparameters_results.update({'check_processdict_result' : False,
+                                     'check_processdict_result2': False})
 
-    #we have convention that if processdict entry did't include a labelctgy or wasn't populated based on functionpointer
+    #we have convention that if processdict entry did't include a labelctgy or one wasn't populated based on functionpointer
     #we'll grab an arbitrary labelcty entry from family tree
-    #(labelctgy has only a few small uses in library so making an optional processdict entry)
     process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
     self._check_processdict3(processdict, process_dict, transform_dict, printstatus)
 
@@ -29542,7 +29544,7 @@ class AutoMunge:
     check_assigncat_result2 = self._check_assigncat2(assigncat, transform_dict, printstatus)
     
     #now double check that any category entries in the assigncat have populated family trees
-    #with categories that all have entries in the transform_dict
+    #whose primitive entries are categories that all have properties defined with entries in the process_dict
     check_assigncat_result3 = self._check_assigncat3(assigncat, process_dict, transform_dict, printstatus)
     
     miscparameters_results.update({'check_assigncat_result2' : check_assigncat_result2, \
@@ -29551,7 +29553,7 @@ class AutoMunge:
     check_assignparam_result = self._check_assignparam(assignparam, process_dict, printstatus)
     miscparameters_results.update({'check_assignparam_result' : check_assignparam_result})
 
-    #initialize autoMLer which is data structure to support ML infill
+    #initialize autoMLer which is data structure to support ML infill training and inference
     #a future extension may allow user to pass custom entries
     autoMLer = self._assemble_autoMLer()
 
@@ -29651,12 +29653,13 @@ class AutoMunge:
     miscparameters_results.update({'check_np_shape_train_result' : check_np_shape_train_result, \
                                    'check_np_shape_test_result' : check_np_shape_test_result})
 
+    #received numpy tabular data is converted to pandas, which will result in index integer column headers
     if isinstance(checknp, type(df_train)):
       df_train = pd.DataFrame(df_train)
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
 
-    #if series convert to dataframe
+    #received pandas Series (a pandas type for single column sets) are converted to dataframe
     checkseries_train_result = False
     checkseries_test_result = False
     checkseries = pd.Series({'a':[1]})
@@ -29675,11 +29678,6 @@ class AutoMunge:
     for column in df_train.columns:
       trainlabels.append(str(column))
     df_train.columns = trainlabels
-        
-    #if user passes as True labels_column passed based on final column (including single column scenario)
-    #this is here so it can get carried through to featureselect function
-    if labels_column is True:
-      labels_column = trainlabels[-1]
     
     #confirm all unique column headers
     check_columnheaders_result = \
@@ -29708,16 +29706,18 @@ class AutoMunge:
     assign_param = assignparam
 
     #we'll introduce convention that if df_test provided as False then we'll create
-    #a dummy set derived from df_train's first rows
+    #a dummy set derived from df_train's first row
     #test_plug_marker used to identify that this step was taken
     test_plug_marker = False
     if not isinstance(df_test, pd.DataFrame):
-#       df_test = df_train[0:10].copy()
       df_test = df_train[0:1].copy()
       testID_column = trainID_column
       test_plug_marker = True
       if labels_column is not False:
-        del df_test[labels_column]
+        if labels_column is True:
+          del df_test[trainlabels[-1]]
+        else:
+          del df_test[labels_column]
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
@@ -29855,7 +29855,9 @@ class AutoMunge:
     #ok now carve out the validation rows. We'll process these later
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
-
+    #note that a shuffle operation to df_train is performed as part of _df_split based on shuffletrain and randomseed
+    #otherwise if shuffletrain not activated validation split based on bottom sequential rows
+    #an additional shuffle operation may be conducted later in the workflow for df_train and/or df_test based on shuffletrain
     totalvalidationratio = valpercent
 
     if totalvalidationratio > 0.0:
@@ -29896,7 +29898,10 @@ class AutoMunge:
     labelspresenttest = False
     single_train_column_labels_case = False
 
-    #wasn't sure where to put this seems as a good place as any
+    #if user passes labels_column as True, labels_column based on final column (including in single column scenario)
+    if labels_column is True:
+      labels_column = trainlabels[-1]
+
     if labels_column is False:
       labelsencoding_dict = {}
 
@@ -29908,7 +29913,6 @@ class AutoMunge:
       
       #if we only had one (label) column to begin with we'll create a dummy train set
       if df_train.shape[1] == 0:
-#         df_train = df_labels[0:10].copy()
         df_train = df_labels[0:1].copy()
         single_train_column_labels_case = True
 
@@ -29917,10 +29921,6 @@ class AutoMunge:
         df_testlabels = pd.DataFrame(df_test[labels_column])
         del df_test[labels_column]
         labelspresenttest = True
-        
-#         #if we only had one (label) column to begin with we'll create a dummy test set
-#         if df_test.shape[1] == 0:
-#           df_test = df_testlabels[0:10].copy()
 
     if labelspresenttrain is False:
       df_labels = pd.DataFrame()
@@ -29928,12 +29928,10 @@ class AutoMunge:
 
       #we'll introduce convention that if no df_testlabels we'll create
       #a dummy set derived from df_label's first rows
-#       df_testlabels = df_labels[0:10].copy()
       df_testlabels = df_labels[0:1].copy()
         
     #if we only had one (label) column to begin with we'll create a dummy test set
     if df_test.shape[1] == 0:
-#       df_test = df_testlabels[0:10].copy()
       df_test = df_testlabels[0:1].copy()
 
     #confirm consistency of train an test sets
@@ -29994,19 +29992,19 @@ class AutoMunge:
     masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
     
-    #create an empty dictionary to serve as a store of processing variables from \
-    #processing that were specific to the train dataset. These can be used for \
-    #future processing of a later test set without the need to reprocess the \
-    #original train. The dictionary will be populated with an entry for each \
-    #column post processing, and will contain a column specific and category \
-    #specific (i.e. nmbr, bnry, text, date) set of variable.
-    postprocess_dict = {'column_dict' : {}, \
-                        'columnkey_dict' : {}, \
-                        'origcolumn' : {}, \
-                        'orig_noinplace' : [], \
-                        'process_dict' : process_dict, \
-                        'printstatus' : printstatus, \
-                        'randomseed' : randomseed, \
+    #initialize postprocess_dict
+    #the dictionary / list values are populated through processing
+    #and the passed variables may be accessed in various support functions
+    #the remainder of returned postprocess_dict entries 
+    #are populated at completion of processing and infill
+    #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
+    postprocess_dict = {'column_dict' : {},
+                        'columnkey_dict' : {},
+                        'origcolumn' : {},
+                        'orig_noinplace' : [],
+                        'process_dict' : process_dict,
+                        'printstatus' : printstatus,
+                        'randomseed' : randomseed,
                         'autoMLer' : autoMLer }
     
     #mirror assigncat which will populate the returned categories from eval function
@@ -30017,14 +30015,10 @@ class AutoMunge:
     #create empty dictionary to serve as store for drift metrics
     drift_dict = {}
     
-    #For each column, determine appropriate processing function
-    #processing function will be based on evaluation of train set
+    #For each column, perform processing 
+    #based on either category assignments in assigncat 
+    #or under automation based on train set feature evaluation in _evalcategory
     for column in columns_train:
-
-      #re-initialize the column specific dictionary for later insertion into
-      #our postprocess_dict
-      column_dict = {}
-
       #
       categorycomplete = False
 
@@ -30040,29 +30034,25 @@ class AutoMunge:
           if printstatus is True:
             print("evaluating column: ", column)
 
-          #special case, if user assigned column to 'eval' then we'll run evalcategory
-          #passing a False for powertransform parameter
-          if category in {'eval'}:
+          #assigncat has special case, can assign distinct columns to automated evaluation
+          #if user assigned column to 'eval' or 'ptfm'
+          #such as to perform eval when default is powertransform or visa versa
+          #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
+          if category in {'eval', 'ptfm'}:
+
+            if category == 'eval':
+              temp_powertransform_for_evalcategory_call = False
+            if category == 'ptfm':
+              temp_powertransform_for_evalcategory_call = True
+
             if evalcat is False:
               category = self._evalcategory(df_train, column, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, False, False)
+                                           numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_train, column, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, False, False)
+                                 numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
 
             category_test = category
-
-          #or for 'ptfm' passing a True for powertransform parameter
-          if category in {'ptfm'}:
-            if evalcat is False:
-              category = self._evalcategory(df_train, column, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, True, False)
-            elif type(evalcat) == types.FunctionType:
-              category = evalcat(df_train, column, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, True, False)
-
-            category_test = category
-
       #
       if categorycomplete is False:
 
@@ -30096,11 +30086,11 @@ class AutoMunge:
       templist1 = list(df_train)
 
       #Before calling getNArows, we'll allow user to designate either by category or column 
-      #designated source column values that will be treated as infill
+      #designated source column values that will be converted to nan for treatment as infill
       #where in case of specification redundancy column designation takes precedence
-      #and where category is reffering to the root category associated with a column
+      #and where category is referring to the root category associated with a column
       #and global just means this value treated universally as nan
-      #where values are passed in automunge(.) parameter assignnan
+      #where values are passed in automunge(.) parameter assignnan e.g.
       #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
 
       df_train = self._assignnan_convert(df_train, column, category, assignnan, postprocess_dict)
@@ -30116,6 +30106,8 @@ class AutoMunge:
       testNArows = self._getNArows(df_test, column, category, postprocess_dict)
 
       #now append that NArows onto a master NA rows df
+      #these df's are used to support application of infill 
+      #such as for partitioning data sets for ML infill and identifying infill targets
       masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
       masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
 
@@ -30141,27 +30133,19 @@ class AutoMunge:
 
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
-      #columnkeylist = list(set(templist2) - set(templist1))[0]
-      #columnkeylist = list(set(templist2) - set(templist1))
+      #similar to but retains order: columnkeylist = list(set(templist2) - set(templist1))
       columnkeylist = []
       for templist2_entry in templist2:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
 
-      ##
-      #so last line I believe returns string if only one entry, so let's run a test
-      if isinstance(columnkeylist, str):
-        columnkey = columnkeylist
+      #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
+      if len(columnkeylist) == 0:
+        columnkey = column
       else:
-        #if list is empty
-        if len(columnkeylist) == 0:
-          columnkey = column
-        else:
-          columnkey = columnkeylist[0]
+        columnkey = columnkeylist[0]
 
       ##
-      #we're going to create an entry to postprocess_dict to
-      #store a columnkey for each of the original columns
       postprocess_dict['origcolumn'].update({column : {'category' : category, \
                                                        'columnkeylist' : columnkeylist, \
                                                        'columnkey' : columnkey}})
@@ -30173,20 +30157,12 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
-    #ok here's where we address labels
-
+    #similar processing loop applied for the label set
     if labels_column is not False:        
 
-      #for now we'll just assume consistent processing approach for labels as for data
-      #a future extension may segregate this approach
+      #note that under automation _evalcategory distinguishes between label and training features
+      #or user can assign category to labels via assigncat consistent to assignments for train features
 
-      #initialize processing dicitonaries (we'll use same as for train set)
-      #a future extension may allow custom address for labels
-      labelstransform_dict = transform_dict
-
-      labelsprocess_dict = process_dict
-
-      #we'll allow user to assign category to labels as well via assigncat call
       categorycomplete = False
 
       if bool(assigncat) is True:
@@ -30202,28 +30178,25 @@ class AutoMunge:
             print("")
             print("evaluating label column: ", labels_column)
 
-          #special case, if user assigned column to 'eval' then we'll run evalcategory
-          #passing a False for powertransform parameter
-          if labelscategory in {'eval'}:
+          #assigncat has special case, can assign distinct columns to automated evaluation
+          #if user assigned column to 'eval' or 'ptfm'
+          #such as to perform eval when default is powertransform or visa versa
+          #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
+          if category in {'eval', 'ptfm'}:
+
+            if category == 'eval':
+              temp_powertransform_for_evalcategory_call = False
+            if category == 'ptfm':
+              temp_powertransform_for_evalcategory_call = True
+
             if evalcat is False:
               category = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, False, True)
+                                           numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, False, True)
+                                 numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
 
-            labelscategory = category
-
-          #or for 'ptfm' passing a True for powertransform parameter
-          if labelscategory in {'ptfm'}:
-            if evalcat is False:
-              category = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, True, True)
-            elif type(evalcat) == types.FunctionType:
-              category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, True, True)
-
-            labelscategory = category
+            category_test = category
 
       if categorycomplete is False:
 
@@ -30266,10 +30239,6 @@ class AutoMunge:
         print("    root label category: ", labelscategory)
         print("")
 
-      #initialize a dictionary to serve as the store between labels and their \
-      #associated encoding
-      labelsencoding_dict = {labelscategory:{}}
-
       #to support the postprocess_dict entry below, let's first create a temp
       #list of columns
       templist1 = list(df_labels)
@@ -30277,52 +30246,44 @@ class AutoMunge:
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
       self._processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                        labelsprocess_dict, labelstransform_dict, postprocess_dict, assign_param)
+                        process_dict, transform_dict, postprocess_dict, assign_param)
       
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
       self._circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
-                        labelsprocess_dict, labelstransform_dict, postprocess_dict, templist1)
+                        process_dict, transform_dict, postprocess_dict, templist1)
 
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_labels)
 
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
-      #columnkeylist = list(set(templist2) - set(templist1))[0]
-      #columnkeylist = list(set(templist2) - set(templist1))
+      #similar to but retains order: columnkeylist = list(set(templist2) - set(templist1))
       columnkeylist = []
       for templist2_entry in templist2:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
 
-      if isinstance(columnkeylist, str):
-        columnkey = columnkeylist
+      #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
+      if len(columnkeylist) == 0:
+        columnkey = labels_column
       else:
-        #if list is empty
-        if len(columnkeylist) == 0:
-          columnkey = labels_column
-        else:
-          columnkey = columnkeylist[0]
+        columnkey = columnkeylist[0]
 
       finalcolumns_labels = list(df_labels)
 
-      #we're going to create an entry to postprocess_dict to
-      #store a columnkey for each of the original columns
       postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
                                                               'columnkeylist' : finalcolumns_labels, \
                                                               'columnkey' : columnkey}})
       
-      #labelsencoding_dict is returned from automunge(.) and supports the reverse encoding of labels after predictions
-      #note that postmunge inversion parameter is a cleaner method for label inversion now available
-      labelsencoding_dict[labelscategory] = {}
+      #labelsencoding_dict is returned in postprocess_dict
+      #this is redundant with information stored in postprocess_dict['column_dict']
+      #(this was included as a resource for label inversion before we had inversion in postmunge, 
+      #to be clear postmunge inversion is much cleaner)
+      labelsencoding_dict = {labelscategory:{}}
       for finalcolumn_labels in finalcolumns_labels:
         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_labels]['normalization_dict']
         labelsencoding_dict[labelscategory].update(labelsnormalization_dict)
-
-      #markers for label smoothing printouts
-      trainsmoothing = False
-      testsmoothing = False
         
       #printout display progress
       if printstatus is True:
@@ -30330,16 +30291,15 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
 
-    #now that we've pre-processed all of the columns, let's run through them again\
-    #using infill to derive plug values for the previously missing cells
+    #now that we've pre-processed all of the columns, let's apply infill
     
     #printout display progress
     if printstatus is True:
       print("______")
       print("")
 
-    #Here is the application of assemblepostprocess_assigninfill
-    #This assembles the posttransform column headers for each infill type
+    #This assembles the assignments of posttransform column headers for each infill type
+    #(user is able to assign column headers in assigninfill without or without suffix appenders)
     postprocess_assigninfill_dict = \
     self._assemblepostprocess_assigninfill(assigninfill, list(df_train), \
                                           columns_train, postprocess_dict, MLinfill)
@@ -30356,8 +30316,7 @@ class AutoMunge:
     pre_dimred_finalcolumns_train = list(df_train)
     
     #Here's where we'll trim the columns that were stricken as part of featureselection method
-
-    #trim branches here associated with featureselect
+    #if feature importance dimensionality reduction is applied based on featureselection and featurethreshold parameters
     
     if featureselection is not False:
 
@@ -30381,13 +30340,8 @@ class AutoMunge:
           print("_______________")
           print("Begin feature importance dimensionality reduction")
           print("")
-          print("   method: ", featureselection)         
-          if featureselection == 'pct':
-            print("threshold: ", featurethreshold)
-          if featureselection == 'metric':
-            print("threshold: ", featurethreshold)
-          if featureselection == 'report':
-            print("only returning results")
+          print("   method: ", featureselection)
+          print("threshold: ", featurethreshold)
           print("")
           print("trimmed columns: ")
           print(trimcolumns)
@@ -30405,41 +30359,52 @@ class AutoMunge:
           print(list(df_train))
           print("")
 
+    #begin PCA dimensionality reduction if elected
     prePCAcolumns = list(df_train)
     
     #marker if PCA applied
     PCA_applied = False
 
-    #if user passed anything to automunbge argument PCAn_components 
-    #(either the number of columns integer or a float between 0-1)
+    #if user passed anything to automunge argument PCAn_components 
+    #PCAn_components can be passed as float between 0-1, integer, False, or None
+    #when PCAn_components is False _PCA not applied
+    #when PCAn_components is None PCA only applied based on heuristic (as a funciton of # rows and # columns)
 
-    #ok this isn't the cleanest implementation, fixing that we may want to 
-    #assign a new n_components
+    if PCAn_components is not False:
 
-    n_components = PCAn_components
+      #run validation to ensure the df_train contains all valid numeric entries
+      #since a value comparison is performed as part of _evalPCA
+      PCA_train_first_numeric_data_result, PCA_train_first_all_valid_entries_result = \
+      self.validate_allvalidnumeric(df_train, printstatus)
 
-    if n_components is not False:
-      if ML_cmnd['PCA_type'] == 'default':
-
-        _1, n_components = \
-        self._evalPCA(df_train, PCAn_components, ML_cmnd)
+      miscparameters_results.update({'PCA_train_first_numeric_data_result': PCA_train_first_numeric_data_result})
+      miscparameters_results.update({'PCA_train_first_all_valid_entries_result': PCA_train_first_all_valid_entries_result})
+        
+      #also note for cases of heuristic inspection based on PCAn_components as None
+      #if conditions of heuristic are met _evalPCA will derive a new n_components as integer
+      #or otherwise return n_components as None indicating no PCA to be performed
+      #(If heuristic not applied this will return n_components consistent with PCAn_components)
+      _1, n_components = \
+      self._evalPCA(df_train, PCAn_components, ML_cmnd)
 
     else:
       n_components = None
-      PCAn_components = None
 
     #if PCAn_components != None:
     if n_components != None:
 
-      #this is for cases where automated PCA methods performed and we want to carry through 
-      #results to postmunge through postprocess_dict
+      #reset PCAn_components if a new n_components was derived based on heuristic
       PCAn_components = n_components
 
-      #If user passed bool_PCA_excl as True in ML_cmnd['PCA_cmnd']
-      #Then add boolean columns to the PCAexcl list of columns
+      #default is that ordinal and boolean integer columns are excluded from PCA
+      #based on the ML_cmnd['PCA_cmnd']['bool_ordl_PCAexcl'] inititialized in _check_ML_cmnd
+      #or user can just exlcude boolean but not ordinal by activating ML_cmnd['PCA_cmnd']['bool_PCA_excl']
+      #or can include all columns in PCA by deactivating ML_cmnd['PCA_cmnd']['bool_ordl_PCAexcl']
+
+      #Here add excluded columns to the PCAexcl list of columns based on bool_ordl_PCAexcl or bool_PCA_excl
+      #which will be in addition to any excluded columns passed by user in PCAexcl
       #and bool_PCAexcl just tracks what columns were added
 
-      #PCAexcl, bool_PCAexcl = self._boolexcl(ML_cmnd, df_train, PCAexcl)
       if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd'] \
       or 'bool_ordl_PCAexcl' in ML_cmnd['PCA_cmnd']:
         PCAexcl, bool_PCAexcl = self._boolexcl(ML_cmnd, df_train, PCAexcl, postprocess_dict)
@@ -30448,7 +30413,6 @@ class AutoMunge:
 
       #only perform PCA if the specified/defrived number of columns < the number of
       #columns after removing the PCAexcl columns
-      #if (n_components < len(list(df_train)) - len(PCAexcl) and n_components >= 1.0):
       if n_components < (len(list(df_train)) - len(PCAexcl)) \
       and (n_components != 0) \
       and (n_components != None) \
@@ -30503,7 +30467,7 @@ class AutoMunge:
 
         miscparameters_results.update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
 
-        #reattach the excluded columns to PCA set
+        #reattach the excluded columns to PCA set (retaining the original index from df_train)
         df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
         df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
 
@@ -30525,6 +30489,7 @@ class AutoMunge:
         #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
         postprocess_dict.update({'PCAmodel' : None})
         returned_PCA_columns = []
+        PCAn_components = False
 
         miscparameters_results.update({'PCA_train_numeric_data_result': False})
         miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
@@ -30537,6 +30502,7 @@ class AutoMunge:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
       returned_PCA_columns = []
+      PCAn_components = False
 
       miscparameters_results.update({'PCA_train_numeric_data_result': False})
       miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
@@ -30665,10 +30631,7 @@ class AutoMunge:
       df_test, df_testID, df_testlabels = self._dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #here is the process to levelize the frequency of label rows in train data
-    #currently only label categories of 'bnry' or 'text' are considered
-    #a future extension will include numerical labels by adding supplemental 
-    #label columns to designate inclusion in some fractional bucket of the distribution
-    #e.g. such as quintiles for instance
+    #based on TrainLabelFreqLevel parameter
     if TrainLabelFreqLevel in {True, 'traintest'} \
     and labels_column is not False:
 
@@ -30749,7 +30712,9 @@ class AutoMunge:
         print(df_testlabels.shape[0])
         print("")
 
-    #then if shuffle was elected perform here    
+    #then if shuffle was elected perform here
+    #note that this will be redundant with any shuffling operation 
+    #that may have been performed as part of validation split
     if shuffletrain is True or shuffletrain == 'traintest':
       
       #shuffle training set and labels
@@ -30773,12 +30738,11 @@ class AutoMunge:
 
     #great the data is processed now let's do a few moore global training preps
 
-    #now we'll apply the floatprecision transformation
-    floatcolumns_train = list(df_train)
-    floatcolumns_labels = list(df_labels)
-    
+    #now we'll apply the floatprecision transformation    
     #floatprecision adjustment only applied to columns returned from transforms
     #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    floatcolumns_train = list(df_train)
+    floatcolumns_labels = list(df_labels)
     floatcolumns_train_copy = floatcolumns_train.copy()
     for floatcolumn in floatcolumns_train_copy:
       if floatcolumn not in returned_PCA_columns and \
@@ -30807,8 +30771,13 @@ class AutoMunge:
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
 
-    #***Note that after this step any methods that use column headers to inspect postprocess_dict['column_dict']
-    #will have edge case for excl as the column_dict entries include the suffix***
+    #Note that after this step any methods that use column headers to inspect postprocess_dict['column_dict']
+    #will have edge case for excl as the column_dict entries include the suffix
+    #to accomodate we assemble excl_columns_with_suffix and excl_columns_without_suffix
+    #which are assembled independant of the excl_suffix parameter for reference
+    #we also create a redundant column_dict entry or version without suffix to serve as reference
+    #still if intending to build anything on top of returned data structures recomend just setting excl_suffix = True
+    #which greatly simplifies things
     
     #first let's create a list of excl columns with and without suffix, just in case might come in handy
     postprocess_dict.update({'excl_columns_with_suffix':[], 'excl_columns_without_suffix':[]})
@@ -30852,26 +30821,21 @@ class AutoMunge:
                               postprocess_dict['column_dict'][column]['category'] == 'excl' \
                               else column for column in df_testlabels.columns]
 
-    #this is admiuttedly kind of a weird spot to put this, we had introduced earlier
-    #convention of a dummy testlabels set, here we'll delete if no labels in test set
-    #(seems as good a place as any)
-    elif labelspresenttest is False:
-      df_testlabels = pd.DataFrame()
-
-    #here's a list of final column names saving here since the translation to \
-    #numpy arrays scrubs the column names
+    #here's a list of final column names saving here since if a translation to 
+    #numpy arrays is performed below based on pandasoutput it scrubs the column headers
     finalcolumns_train = list(df_train)
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.36'
+    automungeversion = '6.37'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
                        + str(application_timestamp)
 
-    #here we'll populate the postprocess_dictt that is returned from automunge
+    #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
+    #note that some of the data structures will have been populated earlier such as column_dict etc
     postprocess_dict.update({'origtraincolumns' : columns_train, \
                              'origcolumns_all' : origcolumns_all, \
                              'finalcolumns_train' : finalcolumns_train, \
@@ -30955,7 +30919,7 @@ class AutoMunge:
     #the inverse tree supports inversion in postmunge
     inverse_categorytree = self._populate_inverse_categorytree(postprocess_dict)
     
-    #we'll create another structure, this one flatted, similar to origcolumn or column_dict
+    #we'll create another structure, this one flattened, similar to origcolumn or column_dict
     #this one as inputcolumn_dict
     inputcolumn_dict = self._populate_inputcolumn_dict(postprocess_dict)
     
@@ -30973,6 +30937,7 @@ class AutoMunge:
     self._populate_columntype_report(postprocess_dict, postprocess_dict['finalcolumns_labels'])
     postprocess_dict.update({'label_columntype_report' : label_columntype_report})
 
+    #populate a map from received column headers to associated returned column headers
     column_map = \
     self._populate_column_map_report(postprocess_dict)
     postprocess_dict.update({'column_map' : column_map})
@@ -31047,7 +31012,7 @@ class AutoMunge:
       df_trainID = df_trainID.rename(columns = privacy_headers_trainID_dict)
       df_testID = df_testID.rename(columns = privacy_headers_testID_dict)
       
-    #now add entries to postprocess_dict
+    #now record privacy encoding conventions in postprocess_dict
     postprocess_dict.update({'privacy_encode' : privacy_encode})
     postprocess_dict.update({'privacy_headers_train' : privacy_headers_train})
     postprocess_dict.update({'privacy_headers_train_dict' : privacy_headers_train_dict})
@@ -31094,6 +31059,10 @@ class AutoMunge:
       df_test = pd.DataFrame()
       df_testID = pd.DataFrame()
 
+    #if we created an temporary sets for test data we'll reset as empty here 
+    elif labelspresenttest is False:
+      df_testlabels = pd.DataFrame()
+
     #printout display progress
     if printstatus is True:
 
@@ -31135,8 +31104,6 @@ class AutoMunge:
         df_labels = np.ravel(df_labels)
       if df_validationlabels1.ndim == 2 and df_validationlabels1.shape[1] == 1:
         df_validationlabels1 = np.ravel(df_validationlabels1)
-      if df_validationlabels2.ndim == 2 and df_validationlabels2.shape[1] == 1:
-        df_validationlabels2 = np.ravel(df_validationlabels2)
 
     #else flatten any single column dataframes to series
     else:
@@ -31162,11 +31129,6 @@ class AutoMunge:
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
     postprocess_dict = self._suffix_overlap_final_aggregation_and_printouts(postprocess_dict)
-        
-    #a reasonable extension would be to perform some validation functions on the\
-    #sets here (or also prior to transform to numpy arrays) and confirm things \
-    #like consistency between format of columns and data between our train and \
-    #test sets and if any issues return a coresponding error message to alert user
 
     #printout display progress
     if printstatus is True:
@@ -37986,6 +37948,7 @@ class AutoMunge:
       FSpostprocess_dict['featureselection'] = False
       FSpostprocess_dict['privacy_encode'] = False
       FSpostprocess_dict['PCAn_components'] = None
+      FSpostprocess_dict['PCA_applied'] = False
       FSpostprocess_dict['Binary'] = False
       FSpostprocess_dict['excl_suffix'] = True
       FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
@@ -38564,29 +38527,29 @@ class AutoMunge:
       
     return drift_ppd, drift_report
 
-  def postmunge(self, postprocess_dict, df_test, \
-                testID_column = False, labelscolumn = False, \
-                pandasoutput = True, printstatus = True, inplace = False, \
-                dupl_rows = False, TrainLabelFreqLevel = False, featureeval = False, \
-                LabelSmoothing = False, LSfit = False, traindata = False, \
-                driftreport = False, inversion = False, \
+  def postmunge(self, postprocess_dict, df_test,
+                testID_column = False, labelscolumn = False,
+                pandasoutput = True, printstatus = True, inplace = False,
+                dupl_rows = False, TrainLabelFreqLevel = False, 
+                featureeval = False, traindata = False,
+                driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
 
-    #LabelSmoothing parameters LabelSmoothing and LSfit are deprecated
-
     # #copy postprocess_dict into internal state so don't edit external object
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
     # postprocess_dict = deepcopy(postprocess_dict)
-    #I believe the only edits made to postproces_dict in postmunge are to track infill status
-    #which are reset after use
+    #I believe the only edits made to postproces_dict in postmunge are:
+    # - to track infill status 
+    # - setting traindata setting based on traindata parameter
+    #which are both reset after use
 
     #traindata only matters when transforms apply different methods for train vs test
-    #such as for noise injection to train data for differential privacy
+    #such as for noise injection to train data for differential privacy or for label smoothing transforms
     if traindata is True:
       postprocess_dict['traindata'] = True
     else:
@@ -38683,7 +38646,8 @@ class AutoMunge:
     if isinstance(checknp, type(df_test)):
       df_test = pd.DataFrame(df_test)
 
-      #this converts to original headers
+      #this converts to original headers for cases where automunge originally received pandas
+      #and user is passing numpoy to postmunge
       if len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
         df_test.columns = postprocess_dict['origcolumns_all']
 
@@ -38693,7 +38657,6 @@ class AutoMunge:
           origcolumns_all_excluding_label.remove(postprocess_dict['labels_column'])
           df_test.columns = origcolumns_all_excluding_label
 
-    #convert series to dataframe
     #if series convert to dataframe
     checkseries = pd.Series({'a':[1]})
     if isinstance(checkseries, type(df_test)):
@@ -38710,35 +38673,21 @@ class AutoMunge:
       if postprocess_dict['labels_column'] in list(df_test):
         labelscolumn = postprocess_dict['labels_column']
 
-    #initialize processing dicitonaries
-
+    #access a few entries from postprocess_dict
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
     NArw_marker = postprocess_dict['NArw_marker']
     floatprecision = postprocess_dict['floatprecision']
 
-#     transform_dict = self._assembletransformdict(binstransform, NArw_marker)
-
-#     if bool(postprocess_dict['transformdict']) is not False:
-#       transform_dict.update(postprocess_dict['transformdict'])
-
-#     process_dict = self._assembleprocessdict()
-
     transform_dict = postprocess_dict['transform_dict']
     process_dict = postprocess_dict['process_dict']
-
-#     assign_param = self._assembleassignparam()
-
-#     if bool(postprocess_dict['assignparam']) is not False:
-#       assign_param.update(postprocess_dict['assignparam'])
       
     assign_param = postprocess_dict['assign_param']
 
     #copy input dataframes to internal state so as not to edit exterior objects
+    #this step can be omitted to reduce memory overhead with inplace parameter
     if inplace is not True:
       df_test = df_test.copy()
-#     elif inplace is True:
-#       pass
 
     #_______
     #here is where inversion is performed if selected
@@ -38781,10 +38730,6 @@ class AutoMunge:
       testID_column = []
     elif isinstance(testID_column, str):
       testID_column = [testID_column]
-    #validated in _check_pm_miscparameters
-    # elif not isinstance(testID_column, list):
-    #   if testID_column is not True:
-    #     print("error, testID_column allowable values are boolean, string, or list")
 
     #testID_column as True just means apply trainID_column from automunge
     if testID_column is True:
@@ -38822,10 +38767,8 @@ class AutoMunge:
 
     del df_test_tempID
 
-    # if labelscolumn is False or labelscolumn is True:
-    #   if postprocess_dict['labels_column'] in list(df_test):
-    #     labelscolumn = postprocess_dict['labels_column']
-
+    #as used here labels_column is the label from automunge
+    #labelscolumn without underscore is the postmunge parameter
     validate_labelscolumn_string = False
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
@@ -39091,22 +39034,14 @@ class AutoMunge:
       df_testlabels = \
       self._postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
                             transform_dict, postprocess_dict)
-
-      #marker for printouts
-      pmsmoothing = False
     
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
-        
-        if pmsmoothing:
-          print("Label Smoothing applied to labels")
-          print("")
 
-    #now that we've pre-processed all of the columns, let's run through them again\
-    #using infill to derive plug values for the previously missing cells
+    #now that we've pre-processed all of the columns, let's apply infill
     
     #printout display progress
     if printstatus is True:
@@ -39160,7 +39095,7 @@ class AutoMunge:
           print("")
 
     #first this check allows for backward compatibility with published demonstrations
-    if 'PCAn_components' in postprocess_dict:
+    if postprocess_dict['PCA_applied'] is True:
       #grab parameters from postprocess_dict
       PCAn_components = postprocess_dict['PCAn_components']
       #prePCAcolumns = postprocess_dict['prePCAcolumns']
@@ -39253,10 +39188,7 @@ class AutoMunge:
       df_test, df_testID, df_testlabels = self._dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #here is the process to levelize the frequency of label rows in train data
-    #currently only label categories of 'bnry' or 'text' are considered
-    #a future extension will include numerical labels by adding supplemental 
-    #label columns to designate inclusion in some fractional bucket of the distribution
-    #e.g. such as quintiles for instance
+    #based on postmunge TrainLabelFreqLevel parameter
     if TrainLabelFreqLevel is True \
     and labelscolumn is not False:
 
@@ -39269,12 +39201,9 @@ class AutoMunge:
         print(df_testlabels.shape[0])
         print("")
 
-  #       train_df = pd.DataFrame(np_train, columns = finalcolumns_train)
-  #       labels_df = pd.DataFrame(np_labels, columns = finalcolumns_labels)
       if testID_column is not False:
-  #         trainID_df = pd.DataFrame(np_trainID, columns = [trainID_column])
+
         #add trainID set to train set for consistent processing
-  #         train_df = pd.concat([train_df, trainID_df], axis=1)                        
         df_test = pd.concat([df_test, df_testID], axis=1)                        
 
       #apply LabelFrequencyLevelizer defined function
@@ -39341,7 +39270,6 @@ class AutoMunge:
 
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
-    #(we won't perform this step to test data if PCA was applied)
     if postprocess_dict['excl_suffix'] is False:
       df_test.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
                          postprocess_dict['column_dict'][column]['category'] == 'excl' \
