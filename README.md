@@ -802,7 +802,8 @@ designated label column in the train set. Note that sorted
 feature importance results are returned in postprocess_dict['FS_sorted'], 
 including columns sorted by metric and metric2. Note that feature importance 
 model training inspects same ML_cmnd parameters as ML infill. (Note that any user-specified size of validationratios 
-if passed are used in this method, otherwise defaults to 0.2.)
+if passed are used in this method, otherwise defaults to 0.2.) Note that as currently implemented 
+feature selection does not take into account dimensionality reductions (like PCA or Binary).
 
 * featurethreshold: defaults to 0., accepts float in range of 0-1. Inspected when
 featureselection passed as 'pct' or 'metric'. Used to designate the threshold for feature
@@ -993,6 +994,10 @@ ML_cmnd = {'PCA_type':'KernelPCA',
            'PCA_cmnd':{'kernel':'sigmoid'}}
            
 ```
+Note that for the default of ML_cmnd['PCA_type'] = 'default', PCA will default to KernelPCA 
+for all non-negative sets or otherwise Sparse PCA (unless PCAn_components was passed as float 
+between 0-1 in whcih case will apply as 'PCA'.
+
 By default, ML_cmnd['PCA_cmnd'] is initalized internal to library with {'bool_ordl_PCAexcl':True},
 which designates that returned ordinal and boolean encoded columns are to be excluded from PCA.
 This convention by be turned off by passing as False, or to only exclude boolean integer but 
@@ -1333,7 +1338,11 @@ and more detailed below. All transformation categories used in transformdict, in
 those used as root categories as well as transformation category entries to family tree primitives associated
 with a root category, require a corresponding entry in the processdict to define transformation category 
 properties. Only in cases where a transformdict entry is being passed to overwrite an existing category internal 
-to the library is a corresponding processdict entry not required. We'll describe the processdict entries here:
+to the library is a corresponding processdict entry not required. However note that a processdict entry can be passed 
+without a corresponding root category definition in trasnformdict, which may be used when passing a custom transformation 
+category to a family tree primitive without offspring.
+
+We'll describe the processdict entries here:
 ```
 #for example, to populate a custom transformation category 'newt' that uses
 #internally defined transformation functions _process_mnmx and _postprocess_mnmx:
@@ -1453,7 +1462,7 @@ Since specification of transformation functions can be kind of cumbersome in ord
 to dig out from the codebase naming conventions for internally defined functions, a
 simplification is available when populating a processdict for a user passed entry by
 way of the 'functionpointer' entry. When a functionpointer category entry is included, 
-the transformation functions and other entries are automatically populated based on entries found in 
+the transformation functions and other entries that are not already specified are automatically populated based on entries found in 
 processdict entries of the pointer, such as with entries for dualprocess, singleprocess, 
 postprocess, inverseprocess, and info_retention, and also the other processdict entries. 
 For cases where a functionpointer points to a processdict entry that itself has a functionpointer 
