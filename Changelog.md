@@ -3413,3 +3413,21 @@ am.postmunge(postprocess_dict, df_test)
 - struck numpy import for format_float_scientific which wasn't used
 - struck some redundant scipy imports for statistics measurement
 - a few other cleanups and clarifications to imports
+
+6.37
+- extensive walkthrough of automunge(.) and postmunge(.) functions
+- several code comment cleanups and clarifications for both
+- a few reconfigurations to order of operations for clarity
+- struck some unused variables
+- several improvements along these lines
+- new validation test reported as familytree_for_offspring_result
+- performed in _check_haltingproblem, _check_offspring
+- familytree_for_offspring_result triggered when a transformation category is entered as an entry to family tree primitive with offspring but doesn't have it's own family tree defined for accessing downstream offspring
+- gave some added aqttention to PCA implmentaiton which was kind of inelegant 
+- a few cleanups and clarificaitons to PCA workflow in automunge
+- fixed PCA heuristic (when PCAn_components passed as None) so that it can be applied with other PCA types other than default
+- where PCA type is based on ML_cmnd['PCA_type']
+- rewrote support function _evalPCA 
+- now with improved function description and much clearer implementation
+- found and fixed bug for returning numpy sets when pandasoutput set as False associated with an uninitialized variable
+- removed placeholders for deprecated postmunge parameters LabelSmoothing and LSfit
