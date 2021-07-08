@@ -3439,3 +3439,23 @@ am.postmunge(postprocess_dict, df_test)
 - also removed an unused variable for train data processing
 - added code comment about process_dict inspection for label processing potential for future extension
 - (somewhat similar to comment that was struck in 6.37)
+
+6.39
+- reconsidered treatment of one of primary edge cases in the library
+- which is for the excl passthrough category (direct passthrough with no transforms or infill)
+- we have convention that for excl transform a suffix is appended to populate data structures
+- and then the suffix is scrubbed from the returned columns
+- unless user elects to maintain suffix with the excl_suffix parameter
+- (as suffix retention makes navigating data structures much easier for excl columns)
+- so we had a few places in library, particularily in inversion, where we were manipulating column header strings to accomodate this convention
+- which was somewhat inelegant
+- so populated two new data structures returned in postprocess_dict as excl_suffix_conversion_dict and excl_suffix_inversion_dict
+- where excl_suffix_conversion_dict maps from columns without suffix to columns with suffix
+- and excl_suffix_inversion_dict maps from columns with suffix to columns without
+- these are now the primary means of conversions to accomodate excl suffix stuff
+- coupled with a short support function _list_replace which replaces items in list based on a conversion dictionary
+- used the opportunity to cleanup the initial scubbing of suffix appenders and improved code comments
+- extensive cleanups to inversion stuff to simplify excl edge case accomodation
+- which in the process fixed a newly identified edge case for inversion of excl columns
+- rewrote _inverseprocess_excl making use of excl_suffix_inversion_dict
+- and finally a cleanup (streamlined with equivalent functionality) to _df_inversion_meta
