@@ -30027,7 +30027,6 @@ class AutoMunge:
         if column in inverse_assigncat:
         
           category = inverse_assigncat[column]
-          category_test = category
           categorycomplete = True
 
           #printout display progress
@@ -30051,8 +30050,6 @@ class AutoMunge:
             elif type(evalcat) == types.FunctionType:
               category = evalcat(df_train, column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
-
-            category_test = category
       #
       if categorycomplete is False:
 
@@ -30162,6 +30159,8 @@ class AutoMunge:
 
       #note that under automation _evalcategory distinguishes between label and training features
       #or user can assign category to labels via assigncat consistent to assignments for train features
+      #we currently have convention of identical process_dict entry inspection between train data and labels processing
+      #a potential extension could be to introduce some label specific entries to process_dict
 
       categorycomplete = False
 
@@ -30182,21 +30181,19 @@ class AutoMunge:
           #if user assigned column to 'eval' or 'ptfm'
           #such as to perform eval when default is powertransform or visa versa
           #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
-          if category in {'eval', 'ptfm'}:
+          if labelscategory in {'eval', 'ptfm'}:
 
-            if category == 'eval':
+            if labelscategory == 'eval':
               temp_powertransform_for_evalcategory_call = False
-            if category == 'ptfm':
+            if labelscategory == 'ptfm':
               temp_powertransform_for_evalcategory_call = True
 
             if evalcat is False:
-              category = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+              labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
             elif type(evalcat) == types.FunctionType:
-              category = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+              labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
-
-            category_test = category
 
       if categorycomplete is False:
 
@@ -30827,7 +30824,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.37'
+    automungeversion = '6.38'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -42010,7 +42007,7 @@ class AutoMunge:
   
   def _inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
                        pandasoutput):
-    
+
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
       if printstatus != 'silent':
         print("error: full test set inversion not currently supported with PCA.")
