@@ -29224,8 +29224,9 @@ class AutoMunge:
         if postprocess_dict['excl_suffix'] is False:
 
           if finalcolumn in postprocess_dict['excl_columns_without_suffix']:
-
-            finalcolumn2 += '_excl'
+            
+            #adds the '_excl' suffix to access columnkeylist
+            finalcolumn2 = postprocess_dict['excl_suffix_conversion_dict'][finalcolumn2]
 
         columnkeylist = \
         postprocess_dict['origcolumn'][postprocess_dict['column_dict'][finalcolumn2]['origcolumn']]['columnkeylist']
@@ -30765,27 +30766,44 @@ class AutoMunge:
       if labelspresenttest is True:
         df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
 
-    #a special case, those columns that we completely excluded from processing via excl
-    #we'll scrub the suffix appender
+    #a special case, those columns that we completely excluded from processing and infill via 'excl' category
+    #we'll scrub the suffix appender (unless user passed parameter excl_suffix=True)
 
-    #Note that after this step any methods that use column headers to inspect postprocess_dict['column_dict']
-    #will have edge case for excl as the column_dict entries include the suffix
-    #to accomodate we assemble excl_columns_with_suffix and excl_columns_without_suffix
+    #Note that after this step any methods that use column headers to navigate data structures
+    #will need to account fordiscrepency between returned headers without suffix
+    #and data structure entries with suffix
+
+    #to accomodate we assemble postprocess_dict entries of excl_columns_with_suffix and excl_columns_without_suffix
     #which are assembled independant of the excl_suffix parameter for reference
-    #we also create a redundant column_dict entry or version without suffix to serve as reference
+    #note that label columns are included in these lists
+
+    #similarly we assemble conversion dictionaries in postprocess_dict
+    #as excl_suffix_conversion_dict and excl_suffix_inversion_dict
+    #these entries masy be applied in conjunction with self._list_replace 
+    #to convert a list of column headers to add the excl suffix (excl_suffix_conversion_dict) 
+    #or to remove the excl suffix (excl_suffix_inversion_dict)
+    #note that label columns are included in these dictionaries
+
+    #we also create a redundant column_dict entry for header version without suffix to serve as reference
     #still if intending to build anything on top of returned data structures recomend just setting excl_suffix = True
     #which greatly simplifies things
     
     #first let's create a list of excl columns with and without suffix, just in case might come in handy
+    #by convention excl is unique in that it has a hard coded suffix appender designation in the transformation function
     postprocess_dict.update({'excl_columns_with_suffix':[], 'excl_columns_without_suffix':[]})
     for cd_column in postprocess_dict['column_dict']:
       if postprocess_dict['column_dict'][cd_column]['category'] == 'excl':
         postprocess_dict['excl_columns_with_suffix'].append(cd_column)
         postprocess_dict['excl_columns_without_suffix'].append(cd_column[:-5])
+
+    #these entries may be applied in conjunction with self._list_replace 
+    #to convert a list of column headers to add the excl suffix (excl_suffix_conversion_dict) or to remove the excl suffix (excl_suffix_inversion_dict)
+    postprocess_dict.update({'excl_suffix_conversion_dict' : dict(zip(postprocess_dict['excl_columns_without_suffix'], postprocess_dict['excl_columns_with_suffix']))})
+    postprocess_dict.update({'excl_suffix_inversion_dict' : dict(zip(postprocess_dict['excl_columns_with_suffix'], postprocess_dict['excl_columns_without_suffix']))})
         
     if excl_suffix is False:
       #we'll duplicate excl columns in postprocess_dict['column_dict'] to list both with and without suffix as keys
-      #I don't think this redundant entry is used anywhere, just thought might prove helpful downstream
+      #I don't think this redundant entry is used anywhere, just thought might be helpful downstream
       for excl_column_with_suffix in postprocess_dict['excl_columns_with_suffix']:
         excl_index = postprocess_dict['excl_columns_with_suffix'].index(excl_column_with_suffix)
         excl_column_without_suffix = postprocess_dict['excl_columns_without_suffix'][excl_index]
@@ -30793,30 +30811,31 @@ class AutoMunge:
                                                 deepcopy(postprocess_dict['column_dict'][excl_column_with_suffix])})
 
     if excl_suffix is False:
-      #run a quick suffix overlap validation before changing excl headers
+      #run a quick suffix overlap validation before removing excl suffix
       excl_suffixoverlap_results = \
       self._df_check_suffixoverlap(df_train, postprocess_dict['excl_columns_without_suffix'], suffixoverlap_results = {}, printstatus = postprocess_dict['printstatus'])
       miscparameters_results.update({'excl_suffixoverlap_results' : excl_suffixoverlap_results})
     else:
       miscparameters_results.update({'excl_suffixoverlap_results' : {}})
 
+    #if excl_suffix is False we'll convert returned column headers to remove the '_excl' suffix
     if excl_suffix is False:
-      df_train.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                          postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                          else column for column in df_train.columns]
-      df_test.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                         postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                         else column for column in df_test.columns]
-      
-    if labels_column is not False and excl_suffix is False:
-      df_labels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                          postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                          else column for column in df_labels.columns]
 
-    if labelspresenttest is True and excl_suffix is False:
-      df_testlabels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                              postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                              else column for column in df_testlabels.columns]
+      df_train_columns = list(df_train)
+      self._list_replace(df_train_columns, postprocess_dict['excl_suffix_inversion_dict'])
+
+      df_train.columns = df_train_columns
+      df_test.columns = df_train_columns
+      
+      if labels_column is not False:
+
+        df_labels_columns = list(df_labels)
+        self._list_replace(df_labels_columns, postprocess_dict['excl_suffix_inversion_dict'])
+
+        df_labels.columns = df_labels_columns
+
+        if labelspresenttest is True:
+          df_testlabels.columns = df_labels_columns
 
     #here's a list of final column names saving here since if a translation to 
     #numpy arrays is performed below based on pandasoutput it scrubs the column headers
@@ -30824,7 +30843,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.38'
+    automungeversion = '6.39'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40353,20 +40372,18 @@ class AutoMunge:
     #is simply a pass-through function, original character cases not retained
     #does not perform infill, assumes clean data
     """
-    
+
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    #this is a hack for special treatment associated wiuth excl suffix edge case
-    if normkey not in df.columns:
-      
-      if normkey[-5:] == '_excl':
-        
-        if normkey[:-5] in df.columns:
-          
-          df.rename(columns={normkey[:-5]:normkey}, inplace=True)
-    
+
+    #to accomodate excl_suffix=False scenario
+    #(the scenario where the test data returned from processing had excl suffix removed)
+    #this will replace column header in df to convert from header without suffix to header with suffix 
+    if postprocess_dict['excl_suffix'] is False:
+      normkey_without_suffix = postprocess_dict['excl_suffix_inversion_dict'][normkey]
+      df.rename(columns={normkey_without_suffix : normkey}, inplace=True)
+
     df[inputcolumn] = df[normkey]
     
     return df, inputcolumn
@@ -41765,6 +41782,21 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn] * ( (-1) ** df[sign_columns[0]])
       
     return df, inputcolumn
+
+  def _list_replace(self, targetlist, conversion_dict):
+    """
+    targetlist is a list (for our use will be string entries, but this should work for other types too)
+    conversion_dict is a dictionary mapping entries in targetlist to a desired substitution
+    e.g. conversion_dict = {target_for_substitution : substitution}
+    conversion_dict may have keys not found in targetlist
+    performs substitution inplace with received list, so no return value
+    assumes no redundant entries in targetlist which will be valid for our use
+    """
+
+    for target_for_substitution in conversion_dict:
+      if target_for_substitution in targetlist:
+        targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
+    return
   
   def _df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
     """
@@ -41836,23 +41868,22 @@ class AutoMunge:
       if printstatus is True:
         print("Evaluating inversion paths for columns derived from: ", source_column)
       
-      returned_columns = postprocess_dict['origcolumn'][source_column]['columnkeylist']
-      
-      #we'll just take one of the columns here if it is part of a multicolumn set
-      returned_columns_clean = returned_columns.copy()
+      returned_columns = postprocess_dict['origcolumn'][source_column]['columnkeylist'].copy()
 
-      for returned_column in returned_columns:
-        
-        if returned_column in returned_columns_clean:
-        
-          categorylist = postprocess_dict['column_dict'][returned_column]['categorylist']
+      #account for excl suffix if applicable
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(returned_columns, postprocess_dict['excl_suffix_conversion_dict'])
 
-          for categorylist_entry in categorylist:
+      returned_columns_clean = []
 
-            if categorylist_entry != returned_column:
-              
-              #we'll just take one of the columns here if it is part of a multicolumn set
-              returned_columns_clean.remove(categorylist_entry)
+      #we'll just take one of the columns from each categorylist here if it is part of a multicolumn set
+      if len(returned_columns) > 0:
+        for returned_column in returned_columns:
+          returned_column_categorylist = postprocess_dict['column_dict'][returned_column]['categorylist']
+          if returned_column_categorylist[0] not in returned_columns_clean:
+            returned_columns_clean.append(returned_column_categorylist[0])
+      else:
+        returned_columns_clean = []
       
       #initialize for ranking paths of transformation inversions
       path_depth_eval         = {}
@@ -41861,6 +41892,7 @@ class AutoMunge:
       
       for returned_column in returned_columns_clean:
         
+        #category as used here is the root category applied to the source column
         category = postprocess_dict['column_dict'][returned_column]['category']
         
         path_depth_eval.update({returned_column : inverse_categorytree[category][returned_column][4]})
@@ -41930,7 +41962,10 @@ class AutoMunge:
           
       if best_path is not False:
         #check that best path has all categorylist entries present
-        if not set(postprocess_dict['column_dict'][best_path]['categorylist']).issubset(set(df_test)):
+        #accounting for excl suffix if applicable
+        df_test_list = list(df_test)
+        self._list_replace(df_test_list, postprocess_dict['excl_suffix_conversion_dict'])
+        if not set(postprocess_dict['column_dict'][best_path]['categorylist']).issubset(set(df_test_list)):
           if printstatus is True:
             print("Inversion path selected based on returned column ", best_path)
             print("Inversion not available due to incomplete set of categorylist entries.")
@@ -42015,9 +42050,18 @@ class AutoMunge:
         print()
       inversion = False
 
+    #accomodate excl suffix convention by adding suffix back on
+    if postprocess_dict['excl_suffix'] is False:
+      df_test_columns = list(df_test)
+      self._list_replace(df_test_columns, postprocess_dict['excl_suffix_conversion_dict'])
+      df_test.columns = df_test_columns
+
     if isinstance(inversion, list):
       #convert list entries to string
       inversion = [str(entry) for entry in inversion]
+      #accomodate excl suffix convention by adding suffix back on
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(inversion, postprocess_dict['excl_suffix_conversion_dict'])
 
     #initialize objects that may be adjusted in case of Binary
     Binary_finalcolumns_train = postprocess_dict['finalcolumns_train'].copy()
@@ -42087,7 +42131,9 @@ class AutoMunge:
       finalcolumns_labels = Binary_finalcolumns_train
       source_columns = postprocess_dict['origtraincolumns']
 
-      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+      #accomodate excl suffix convention by adding suffix back on
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of train an test sets
 
@@ -42115,7 +42161,6 @@ class AutoMunge:
       if finalcolumns_labels != columns_test:
         df_test.columns = finalcolumns_labels
 
-
       if printstatus is True:
         print("Performing inversion recovery of original columns for test set.")
         print()
@@ -42141,7 +42186,8 @@ class AutoMunge:
       finalcolumns_labels = postprocess_dict['finalcolumns_labels']
       source_columns = postprocess_dict['labels_column']
 
-      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of label sets
 
@@ -42198,7 +42244,8 @@ class AutoMunge:
       finalcolumns_labels = postprocess_dict['finalcolumns_labels']
       source_columns = postprocess_dict['labels_column']
 
-      finalcolumns_labels = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_labels]
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of label sets
 
@@ -42293,9 +42340,9 @@ class AutoMunge:
       
       source_columns = postprocess_dict['origtraincolumns']
 
-      inversion = [str(c)+'_excl' if c in source_columns and c in finalcolumns_train else c for c in inversion]
-
-      finalcolumns_train = [str(c)+'_excl' if c in source_columns else c for c in finalcolumns_train]
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(inversion, postprocess_dict['excl_suffix_conversion_dict'])
+        self._list_replace(finalcolumns_train, postprocess_dict['excl_suffix_conversion_dict'])
 
 #         #for inversion need source columns
 #         inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train else entry for entry in inversion]
@@ -42316,6 +42363,7 @@ class AutoMunge:
         if entry not in source_columns:
           
           if printstatus != 'silent':
+            #(note this will trigger a printout if inversion passed as list targeting entry to label set, can be ignored)
             print("error: entry passed to inversion parameter list not matching a source or derived column")
             print("for entry: ", entry)
 
