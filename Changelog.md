@@ -3431,3 +3431,11 @@ am.postmunge(postprocess_dict, df_test)
 - now with improved function description and much clearer implementation
 - found and fixed bug for returning numpy sets when pandasoutput set as False associated with an uninitialized variable
 - removed placeholders for deprecated postmunge parameters LabelSmoothing and LSfit
+
+6.38
+- ok an additional audit found that 6.37 introduced a small bug in automunge label processing
+- associated with inconsistent variable name in conjunction with category assignment to one of ['eval', 'ptfm']
+- aligned label processing to use a single variable name
+- also removed an unused variable for train data processing
+- added code comment about process_dict inspection for label processing potential for future extension
+- (somewhat similar to comment that was struck in 6.37)
