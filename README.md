@@ -884,6 +884,8 @@ specific columns from PCA.
 transform are returned with suffix appender '\_excl' included. Defaults to False for
 no suffix. For advanced users setting this to True makes navigating data structures a 
 little easier at small cost of aesthetics of any 'excl' pass-through column headers.
+('excl' transform is for direct pass-through with no transforms, no infill, and no data type conversion.
+Note that 'excl' can be cast as the default category under automation to columns not otherwise assigned by setting powertransform='excl'.)
 
 * ML_cmnd: 
 
