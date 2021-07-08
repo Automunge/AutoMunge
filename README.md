@@ -627,6 +627,10 @@ train set does not include a label column. An integer column index may
 also be passed such as if the source dataset was a numpy array. A user can 
 also pass True in which case the label set will be taken from the final
 column of the train set (including cases of single column in train set).
+A label column for df_train data is partitioned and returned in the labels set.
+Note that a designated labels column will automatically be checked for in
+corresponding df_test data and partitioned to the returned test_labels set when 
+included.
 
 * trainID_column: a string of the column title for the column from the
 df_train set intended for use as a row identifier value (such as could
