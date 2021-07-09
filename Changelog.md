@@ -3498,6 +3498,11 @@ am.postmunge(postprocess_dict, df_test)
 - also consolidated to single location accounting for parameters passed as lists to be copied into internal state
 - in process found a few more parameters where was needed
 - (now in addition to trainID_column and testID_column also perform for Binary and PCAexcl and inversion in postmunge)
+- new validation check twofeatures_for_featureselect_valresult performed for featureselection to confirm a minimum of two features included in train set (a remote edge case)
+- new automunge(.) validation check trainID_column_subset_of_df_train_valresult performed to identify cases where user specified trainID_column entries not present in df_train
+- similar new automunge(.) validation check testID_column_subset_of_df_test_valresult performed to identify cases where user specified testID_column entries not present in df_test
+- similar new postmunge(.) validation check pm_testID_column_subset_of_df_test_valresult to identify cases where user specified testID_column entries not present in df_test
+- new postprocess_dict entry PCAn_components_orig which is the PCAn_components as passed to automunge(.) (which may be different than the recorded PCAn_components entry if was reset based on heuristic)
 - finally, a few more cleanups to PCA
 - eliminated a redundant call of support function _evalPCA
 - in the process a few tweaks for clarity to support funcitons _PCAfunction and _postPCAfunction
