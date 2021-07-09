@@ -21810,7 +21810,7 @@ class AutoMunge:
         
         model = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict)
-        
+
         #only run following if we have any train rows needing infill
         if df_train_fillfeatures.shape[0] > 0:
           df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, categorylist)
@@ -26113,7 +26113,7 @@ class AutoMunge:
 
     return PCAset_train, PCAset_test, PCAexcl_posttransform
 
-  def _PCAfunction(self, PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
+  def _PCAfunction(self, PCAset_train, PCAset_test, n_components, PCActgy, postprocess_dict, \
                   randomseed, ML_cmnd):
     '''
     Function that takes as input the train and test sets intended for PCA
@@ -26124,12 +26124,6 @@ class AutoMunge:
     #initialize ML_cmnd
     #ML_cmnd = postprocess_dict['ML_cmnd']
     ML_cmnd = ML_cmnd
-    
-    #Find PCA type
-    #will default to kernel PCA for all non-negative sets or otherwise Sparse PCA
-    #or when PCAn_components is float between 0-1 PCA instead of Sparse PCA
-    PCActgy, n_components = \
-    self._evalPCA(PCAset_train, PCAn_components, ML_cmnd)
     
     #Save the PCActgy to the postprocess_dict
     postprocess_dict.update({'PCActgy' : PCActgy})
@@ -26143,20 +26137,16 @@ class AutoMunge:
     # PCAset_test = PCAset_test.to_numpy()
     
     #initialize a PCA model
-    #PCAmodel = PCA(n_components = PCAn_components, random_state = randomseed)
     if PCActgy == 'default' or PCActgy == 'SparsePCA':
   
-      #PCAmodel = self._initSparsePCA(ML_cmnd, PCAdefaults, PCAn_components)
       PCAmodel = self._initSparsePCA(ML_cmnd, PCAdefaults, n_components)
 
     if PCActgy == 'KernelPCA':
   
-      #PCAmodel = self._initKernelPCA(ML_cmnd, PCAdefaults, PCAn_components)
       PCAmodel = self._initKernelPCA(ML_cmnd, PCAdefaults, n_components)
     
     if PCActgy == 'PCA':
   
-      #PCAmodel = self._initPCA(ML_cmnd, PCAdefaults, PCAn_components)
       PCAmodel = self._initPCA(ML_cmnd, PCAdefaults, n_components)
     
     #derive the PCA model (note htis is unsupervised training, no labels)
@@ -26179,7 +26169,7 @@ class AutoMunge:
     PCAset_train = pd.DataFrame(PCAset_train, columns = columnnames)
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
-    return PCAset_train, PCAset_test, postprocess_dict, PCActgy
+    return PCAset_train, PCAset_test, postprocess_dict
   
   def _check_am_miscparameters(self, valpercent, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
@@ -26566,13 +26556,12 @@ class AutoMunge:
     #check testID_column
     testID_column_valresult = False
     if testID_column is not False \
-    and testID_column is not True \
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for testID_column parameter.")
-        print("testID_column allowable values are boolean, string, or list.")
+        print("testID_column allowable values are boolean False, string, or list.")
 
     miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
 
@@ -26746,13 +26735,12 @@ class AutoMunge:
     #check testID_column
     testID_column_valresult = False
     if testID_column is not False \
-    and testID_column is not True \
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for testID_column parameter.")
-        print("testID_column allowable values are boolean, string, or list.")
+        print("testID_column allowable values are boolean False, string, or list.")
 
     pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
     
@@ -29351,6 +29339,27 @@ class AutoMunge:
     excluded_from_postmunge_getNArows - included_in_postmunge_getNArows
 
     return excluded_from_postmunge_getNArows
+
+  def _list_replace(self, targetlist, conversion_dict):
+    """
+    targetlist is a list (for our use will be string entries, but this should work for other types too)
+    conversion_dict is a dictionary mapping entries in targetlist to a desired substitution
+    e.g. conversion_dict = {target_for_substitution : substitution}
+    conversion_dict may have keys not found in targetlist
+    performs substitution inplace with received list, so no return value
+    assumes no redundant entries in targetlist which will be valid for our use
+
+    may be used to translate lists of column headers between excl suffix conventions
+    e.g. to remove excl suffix can apply
+    self._list_replace(targetlist, postprocess_dict['excl_suffix_inversion_dict'])
+    or to add excl suffix can apply
+    self._list_replace(targetlist, postprocess_dict['excl_suffix_conversion_dict'])
+    """
+
+    for target_for_substitution in conversion_dict:
+      if target_for_substitution in targetlist:
+        targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
+    return
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
@@ -29574,10 +29583,28 @@ class AutoMunge:
       if labels_column is False:
         if printstatus != 'silent':
           print("featureselection not available without labels_column in training set")
+          print()
 
         labels_column_for_featureselect_valresult = True
         miscparameters_results.update({'labels_column_for_featureselect_valresult' : labels_column_for_featureselect_valresult})
         
+        madethecut = []
+        FSmodel = False
+        FScolumn_dict = {}
+        FS_sorted = {}
+        featureimportance = {}
+        FS_validations = {}
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
+
+      elif len(list(df_train)) < 2:
+        if printstatus != 'silent':
+          print("featureselection not available without at least two features in training set")
+          print()
+
+        twofeatures_for_featureselect_valresult = True
+        miscparameters_results.update({'twofeatures_for_featureselect_valresult' : twofeatures_for_featureselect_valresult})
+
         madethecut = []
         FSmodel = False
         FScolumn_dict = {}
@@ -29731,6 +29758,17 @@ class AutoMunge:
     if inplace is not True:
       df_train = df_train.copy()
       df_test = df_test.copy()
+    
+    #similarly copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(trainID_column, list):
+      trainID_column = trainID_column.copy()
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+    if isinstance(Binary, list):
+      Binary = Binary.copy()
+    if isinstance(PCAexcl, list):
+      PCAexcl = PCAexcl.copy()
 
     #worth a disclaimer:
     #the trainID_column and testID_column column parameters are somewhat overloaded
@@ -29744,16 +29782,6 @@ class AutoMunge:
     #there is a similar section in postmunge
     #this is probably the ugliest portion of codebase
 
-    #first a quick conversion to accomodate edge case
-    if trainID_column is False and testID_column is True:
-      testID_column = False
-    
-    #copy to internal state so as not to edit exterior objects
-    if isinstance(trainID_column, list):
-      trainID_column = trainID_column.copy()
-    if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
-
     #this either sets indexcolumn for returned ID sets as 'Automunge_index' 
     #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
     indexcolumn = self._set_indexcolumn(trainID_column, testID_column, application_number)
@@ -29761,7 +29789,7 @@ class AutoMunge:
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set as well
     trainID_columns_in_df_test = False
-    if testID_column is False or testID_column is True:
+    if testID_column is False:
       if trainID_column is not False:
         trainID_columns_in_df_test = True
         if isinstance(trainID_column, list):
@@ -29783,7 +29811,19 @@ class AutoMunge:
     elif not isinstance(trainID_column, list):
       #validated in _check_am_miscparameters
       pass
-      # print("error, trainID_column allowable values are False, string, or list")
+
+    #now run a quick validation that each entry in trainID_column list present in df_train
+    trainID_column_subset_of_df_train_valresult = False
+    if not set(trainID_column).issubset(set(df_train)):
+      trainID_column_subset_of_df_train_valresult = True
+      if printstatus != 'silent':
+        print("error: entries to trainID_column were not found in df_train")
+        print("note that trainID_column can either be passed as string for single entry")
+        print("or trainID_column can be passed as a list for multiple entries")
+        print("")
+    
+    miscparameters_results.update({'trainID_column_subset_of_df_train_valresult' : trainID_column_subset_of_df_train_valresult,
+                                   'trainID_columns_in_df_test' : trainID_columns_in_df_test})
 
     #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
     if type(df_train.index) != pd.RangeIndex:
@@ -29801,7 +29841,20 @@ class AutoMunge:
     elif not isinstance(testID_column, list):
       #validated in _check_am_miscparameters
       pass
-      # print("error, testID_column allowable values are False, string, or list")
+
+    #now run a quick validation that each entry in testID_column list present in df_test
+    testID_column_subset_of_df_test_valresult = False
+    if not set(testID_column).issubset(set(df_test)):
+      testID_column_subset_of_df_test_valresult = True
+      if printstatus != 'silent':
+        print("error: entries to testID_column were not found in df_test")
+        print("note that testID_column can either be passed as string for single entry")
+        print("or testID_column can be passed as a list for multiple entries")
+        print("Note that testID_column is primarily intended for use when ID columns in df_test")
+        print("are different than those ID columns from trainID_column.")
+        print("")
+    
+    miscparameters_results.update({'testID_column_subset_of_df_test_valresult' : testID_column_subset_of_df_test_valresult})
 
     #for unnamed non-range index we'll rename as 'Orig_index_###' and include that in ID sets
     if type(df_test.index) != pd.RangeIndex:
@@ -30368,6 +30421,8 @@ class AutoMunge:
     #when PCAn_components is False _PCA not applied
     #when PCAn_components is None PCA only applied based on heuristic (as a funciton of # rows and # columns)
 
+    PCAn_components_orig = PCAn_components
+
     if PCAn_components is not False:
 
       #run validation to ensure the df_train contains all valid numeric entries
@@ -30382,7 +30437,7 @@ class AutoMunge:
       #if conditions of heuristic are met _evalPCA will derive a new n_components as integer
       #or otherwise return n_components as None indicating no PCA to be performed
       #(If heuristic not applied this will return n_components consistent with PCAn_components)
-      _1, n_components = \
+      PCActgy, n_components = \
       self._evalPCA(df_train, PCAn_components, ML_cmnd)
 
     else:
@@ -30392,6 +30447,7 @@ class AutoMunge:
     if n_components != None:
 
       #reset PCAn_components if a new n_components was derived based on heuristic
+      #this will be the PCAn_components saved in postprocess_dict and inspected in postmunge
       PCAn_components = n_components
 
       #default is that ordinal and boolean integer columns are excluded from PCA
@@ -30450,8 +30506,8 @@ class AutoMunge:
         miscparameters_results.update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
 
         #this is to train the PCA model and perform transforms on train and test set
-        PCAset_train, PCAset_test, postprocess_dict, PCActgy = \
-        self._PCAfunction(PCAset_train, PCAset_test, PCAn_components, postprocess_dict, \
+        PCAset_train, PCAset_test, postprocess_dict = \
+        self._PCAfunction(PCAset_train, PCAset_test, n_components, PCActgy, postprocess_dict, \
                          randomseed, ML_cmnd)
 
         #printout display progress
@@ -30800,15 +30856,6 @@ class AutoMunge:
     #to convert a list of column headers to add the excl suffix (excl_suffix_conversion_dict) or to remove the excl suffix (excl_suffix_inversion_dict)
     postprocess_dict.update({'excl_suffix_conversion_dict' : dict(zip(postprocess_dict['excl_columns_without_suffix'], postprocess_dict['excl_columns_with_suffix']))})
     postprocess_dict.update({'excl_suffix_inversion_dict' : dict(zip(postprocess_dict['excl_columns_with_suffix'], postprocess_dict['excl_columns_without_suffix']))})
-        
-    if excl_suffix is False:
-      #we'll duplicate excl columns in postprocess_dict['column_dict'] to list both with and without suffix as keys
-      #I don't think this redundant entry is used anywhere, just thought might be helpful downstream
-      for excl_column_with_suffix in postprocess_dict['excl_columns_with_suffix']:
-        excl_index = postprocess_dict['excl_columns_with_suffix'].index(excl_column_with_suffix)
-        excl_column_without_suffix = postprocess_dict['excl_columns_without_suffix'][excl_index]
-        postprocess_dict['column_dict'].update({excl_column_without_suffix : \
-                                                deepcopy(postprocess_dict['column_dict'][excl_column_with_suffix])})
 
     if excl_suffix is False:
       #run a quick suffix overlap validation before removing excl suffix
@@ -30843,7 +30890,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.39'
+    automungeversion = '6.40'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -30893,6 +30940,7 @@ class AutoMunge:
                              'returned_Binary_columns' : returned_Binary_columns, \
                              'PCA_applied' : PCA_applied, \
                              'PCAn_components' : PCAn_components, \
+                             'PCAn_components_orig' : PCAn_components_orig, \
                              'PCAexcl' : PCAexcl, \
                              'prePCAcolumns' : prePCAcolumns, \
                              'returned_PCA_columns' : returned_PCA_columns, \
@@ -31056,7 +31104,7 @@ class AutoMunge:
       #process validation set consistent to train set with postmunge here
       df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
-                    labelscolumn = labels_column, pandasoutput = True, printstatus = printstatus, \
+                    pandasoutput = True, printstatus = printstatus, \
                     shuffletrain = False)
 
     if totalvalidationratio <= 0.0:
@@ -37875,13 +37923,8 @@ class AutoMunge:
     and trasnformed sets.
     '''
 
-    PCAmodel = postprocess_dict['PCAmodel']
-
-    # #convert PCAsets to numpy arrays
-    # PCAset_test = PCAset_test.to_numpy()
-
     #apply the transform
-    PCAset_test = PCAmodel.transform(PCAset_test)
+    PCAset_test = postprocess_dict['PCAmodel'].transform(PCAset_test)
 
     #get new number of columns
     newcolumncount = np.size(PCAset_test,1)
@@ -37894,7 +37937,7 @@ class AutoMunge:
 
     return PCAset_test, postprocess_dict
 
-  def _postfeatureselect(self, df_test, labelscolumn, testID_column, \
+  def _postfeatureselect(self, df_test, testID_column, \
                         postprocess_dict, printstatus):
     '''
     featureselect is a function called within automunge() that applies methods
@@ -37925,9 +37968,9 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
-    if labelscolumn is False or labelscolumn is True:
-      if postprocess_dict['labels_column'] in list(df_test):
-        labelscolumn = postprocess_dict['labels_column']
+    labelscolumn = False
+    if postprocess_dict['labels_column'] in list(df_test):
+      labelscolumn = postprocess_dict['labels_column']
       
     if labelscolumn is False:
 
@@ -37953,7 +37996,6 @@ class AutoMunge:
       #copy postprocess_dict to customize for feature importance evaluation
       FSpostprocess_dict = deepcopy(postprocess_dict)
       testID_column = testID_column
-      labelscolumn = labelscolumn
       pandasoutput = True
       printstatus = printstatus
       TrainLabelFreqLevel = False
@@ -37982,7 +38024,7 @@ class AutoMunge:
       #prepare sets for FS with postmunge
       am_train, _1, am_labels, FSpostreports_dict = \
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
-                     labelscolumn = labelscolumn, pandasoutput = pandasoutput, printstatus = printstatus, \
+                     pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
                      shuffletrain = True)
 
@@ -38544,8 +38586,8 @@ class AutoMunge:
     return drift_ppd, drift_report
 
   def postmunge(self, postprocess_dict, df_test,
-                testID_column = False, labelscolumn = False,
-                pandasoutput = True, printstatus = True, inplace = False,
+                testID_column = False, pandasoutput = True, 
+                printstatus = True, inplace = False,
                 dupl_rows = False, TrainLabelFreqLevel = False, 
                 featureeval = False, traindata = False,
                 driftreport = False, inversion = False,
@@ -38559,10 +38601,10 @@ class AutoMunge:
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
     # postprocess_dict = deepcopy(postprocess_dict)
-    #I believe the only edits made to postproces_dict in postmunge are:
-    # - to track infill status 
-    # - setting traindata setting based on traindata parameter
-    #which are both reset after use
+    # #The only edits made to postproces_dict in postmunge are:
+    # #- to track infill status 
+    # #- setting traindata setting based on traindata parameter
+    # #which are both reset after use
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
@@ -38575,7 +38617,6 @@ class AutoMunge:
     testID_column_orig = testID_column
 
     #quick conversion of any passed column idenitfiers to str
-    labelscolumn = self._parameter_str_convert(labelscolumn)
     testID_column = self._parameter_str_convert(testID_column)
     
     #check the range of parameters 
@@ -38629,7 +38670,7 @@ class AutoMunge:
       else:
 
         FSmodel, FScolumn_dict, FS_sorted, FS_validations = \
-        self._postfeatureselect(df_test, labelscolumn, testID_column, \
+        self._postfeatureselect(df_test, testID_column, \
                                postprocess_dict, printstatus)
 
         madethecut = postprocess_dict['madethecut']
@@ -38663,11 +38704,12 @@ class AutoMunge:
       df_test = pd.DataFrame(df_test)
 
       #this converts to original headers for cases where automunge originally received pandas
-      #and user is passing numpoy to postmunge
+      #and user is passing numpy to postmunge
       if len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
         df_test.columns = postprocess_dict['origcolumns_all']
 
-      if labelscolumn is False and postprocess_dict['labels_column'] is not False:
+      #this is one spot where having a labelscolumn parameter would be nice, but not worth added complexity
+      if postprocess_dict['labels_column'] is not False:
         if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - 1:
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
           origcolumns_all_excluding_label.remove(postprocess_dict['labels_column'])
@@ -38685,9 +38727,9 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
-    if labelscolumn is False or labelscolumn is True:
-      if postprocess_dict['labels_column'] in list(df_test):
-        labelscolumn = postprocess_dict['labels_column']
+    labelscolumn = False
+    if postprocess_dict['labels_column'] in list(df_test):
+      labelscolumn = postprocess_dict['labels_column']
 
     #access a few entries from postprocess_dict
     powertransform = postprocess_dict['powertransform']
@@ -38704,6 +38746,14 @@ class AutoMunge:
     #this step can be omitted to reduce memory overhead with inplace parameter
     if inplace is not True:
       df_test = df_test.copy()
+      # postprocess_dict = deepcopy(postprocess_dict)
+
+    #similarly copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+    if isinstance(inversion, list):
+      inversion = inversion.copy()
 
     #_______
     #here is where inversion is performed if selected
@@ -38720,14 +38770,10 @@ class AutoMunge:
       return df_test, recovered_list, inversion_info_dict
     #_______
 
-    #if is a list copy to internal state to not edit exterior object
-    if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
-
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set
     trainID_columns_in_df_test = False
-    if testID_column is False or testID_column is True:
+    if testID_column is False:
       if postprocess_dict['trainID_column_orig'] is not False:
         trainID_columns_in_df_test = True
         if isinstance(postprocess_dict['trainID_column_orig'], list):
@@ -38747,14 +38793,19 @@ class AutoMunge:
     elif isinstance(testID_column, str):
       testID_column = [testID_column]
 
-    #testID_column as True just means apply trainID_column from automunge
-    if testID_column is True:
-      if isinstance(postprocess_dict['trainID_column_orig'], str):
-        testID_column = [postprocess_dict['trainID_column_orig']]
-      elif isinstance(postprocess_dict['trainID_column_orig'], list):
-        testID_column = postprocess_dict['trainID_column_orig']
-      elif postprocess_dict['trainID_column_orig'] is False:
-        testID_column = []
+    #now run a quick validation that each entry in testID_column list present in df_test
+    pm_testID_column_subset_of_df_test_valresult = False
+    if not set(testID_column).issubset(set(df_test)):
+      pm_testID_column_subset_of_df_test_valresult = True
+      if printstatus != 'silent':
+        print("error: entries to testID_column were not found in df_test")
+        print("note that testID_column can either be passed as string for single entry")
+        print("or testID_column can be passed as a list for multiple entries")
+        print("Note that testID_column is primarily intended for use when ID columns in df_test")
+        print("are different than those ID columns from trainID_column.")
+        print("")
+    
+    postreports_dict['pm_miscparameters_results'].update({'pm_testID_column_subset_of_df_test_valresult' : pm_testID_column_subset_of_df_test_valresult})
 
     #if df_test has a non-range index we'll include that in ID sets as 'Orig_index_###'
     if type(df_test.index) != pd.RangeIndex:
@@ -38784,31 +38835,25 @@ class AutoMunge:
     del df_test_tempID
 
     #as used here labels_column is the label from automunge
-    #labelscolumn without underscore is the postmunge parameter
-    validate_labelscolumn_string = False
+    #labelscolumn without underscore is the postmunge version
+    #where labelscolumn will be False when labels_column not present in postmunge df_test
+    #otherwise labelscolumn = labels_column
     if labelscolumn is not False:
       labels_column = postprocess_dict['labels_column']
     
+    #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
+    #current convention is that these labels now have default infill associated with applied transformation function
 #         df_test = df_test.dropna(subset=[labels_column])
-
-      if labelscolumn is not True:
-        if labelscolumn != labels_column:
-          validate_labelscolumn_string = True
-          if printstatus != 'silent':
-            print("error, labelscolumn in test set passed to postmunge must have same column")
-            print("labeling convention, labels column from automunge was: ", labels_column)
 
       df_testlabels = pd.DataFrame(df_test[labels_column])
       del df_test[labels_column]
       
       #if we only had one (label) column to begin with we'll create a dummy test set
       if df_test.shape[1] == 0:
-#         df_test = df_testlabels[0:10].copy()
         df_test = df_testlabels[0:1].copy()
   
     else:
       df_testlabels = pd.DataFrame()
-    postreports_dict['pm_miscparameters_results'].update({'validate_labelscolumn_string' : validate_labelscolumn_string})
 
     #confirm consistency of train an test sets
 
@@ -39019,11 +39064,6 @@ class AutoMunge:
     #ok now let's check if that labels column is present in the test set
     
     if labelscolumn is not False:
-
-      #initialize processing dicitonaries (we'll use same as for train set)
-      #a future extension may allow custom address for labels
-      labelstransform_dict = transform_dict
-      labelsprocess_dict = process_dict
      
       labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
 
@@ -39287,15 +39327,18 @@ class AutoMunge:
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     if postprocess_dict['excl_suffix'] is False:
-      df_test.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                         postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                         else column for column in df_test.columns]
       
-    if labelscolumn is not False and postprocess_dict['excl_suffix'] is False:
-      df_testlabels.columns = [column[:-5] if column in postprocess_dict['column_dict'] and \
-                              postprocess_dict['column_dict'][column]['category'] == 'excl' \
-                              else column for column in df_testlabels.columns]
+      df_test_columns = list(df_test)
+      self._list_replace(df_test_columns, postprocess_dict['excl_suffix_inversion_dict'])
+      df_test.columns = df_test_columns
+      
+      if labelscolumn is not False:
+        
+        df_testlabels_columns = list(df_testlabels)
+        self._list_replace(df_testlabels_columns, postprocess_dict['excl_suffix_inversion_dict'])
+        df_testlabels.columns = df_testlabels_columns
 
+    #now rename columns for privacy encoding when activated
     if postprocess_dict['privacy_encode'] is True:
 
       df_test = df_test.rename(columns = postprocess_dict['privacy_headers_train_dict'])
@@ -39334,8 +39377,6 @@ class AutoMunge:
         print("")
 
     if testID_column is not False:
-      #testID = df_testID
-      #pass
       if returnedsets in {'test_ID', 'test_ID_labels'}:
         df_test = pd.concat([df_test, df_testID], axis=1)
       
@@ -39343,8 +39384,6 @@ class AutoMunge:
       df_testID = pd.DataFrame()
 
     if labelscolumn is not False:
-      #testlabels = df_testlabels
-      #pass
       if returnedsets in {'test_labels', 'test_ID_labels'}:
         df_test = pd.concat([df_test, df_testlabels], axis=1)
       
@@ -41782,21 +41821,6 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn] * ( (-1) ** df[sign_columns[0]])
       
     return df, inputcolumn
-
-  def _list_replace(self, targetlist, conversion_dict):
-    """
-    targetlist is a list (for our use will be string entries, but this should work for other types too)
-    conversion_dict is a dictionary mapping entries in targetlist to a desired substitution
-    e.g. conversion_dict = {target_for_substitution : substitution}
-    conversion_dict may have keys not found in targetlist
-    performs substitution inplace with received list, so no return value
-    assumes no redundant entries in targetlist which will be valid for our use
-    """
-
-    for target_for_substitution in conversion_dict:
-      if target_for_substitution in targetlist:
-        targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
-    return
   
   def _df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
     """
