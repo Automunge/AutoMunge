@@ -3459,3 +3459,45 @@ am.postmunge(postprocess_dict, df_test)
 - which in the process fixed a newly identified edge case for inversion of excl columns
 - rewrote _inverseprocess_excl making use of excl_suffix_inversion_dict
 - and finally a cleanup (streamlined with equivalent functionality) to _df_inversion_meta
+
+6.40
+- important update, deprecated postmunge parameter labelscolumn
+- which originally was used to specify when a labels column was included in df_test
+- eventually evolved the convention that presence of labels were automatically detected independant of labelscolumn
+- so this parameter is no longer needed
+- also deprecated boolean True option for parameter testID_column for both automunge(.) and postmunge(.)
+- originally testID_column=True was used to indicate that test set has same ID columns as train set
+- later introduced the convention that presence of trainID_column entries in test set is automatic when testID_column=False
+- so testID_column=True scenario no longer needed
+- note user can still pass testID_column as list if ID columns for test set are different than for train set
+- as is needed if test ID columns are a subset of train ID columns or are otherwise different
+- moved the support function _list_replace in code base to location with other automunge support functions
+- (in general, the code base is organized as:
+  - initialize transform_dict and process_dict
+  - processfamily functions
+  - dualprocess / singleprocess functions
+  - column evaluations via evalcategory
+  - ML infill support functions
+  - misc automunge support functions
+  - automunge(.)
+  - postprocessfamily functions
+  - postprocess functions
+  - postmunge ML infill support functions
+  - misc postmunge support functions
+  - postmunge(.)
+  - inverseprocess functions
+  - inversion support functions
+- there is a method to the madness :)
+- also, we had a convention of duplicating column_dict entries for excl columns so they could be accessed easily both with and without suffix appenders
+- now that we've simplified the suffix conversion scheme with _list_replace decided to strike 
+- as the redundant entries kind of muddies the waters
+- as the zen of python says, there should be one and preferably only one way to do it
+- so went ahead and scrubbed these redundant column_dict entries for excl without suffix
+- also found one more excl suffix relic in postmunge missed in last rollout, converted to the new _list_replace convention
+- struck two unused variables in postmunge labelsprocess_dict and labelstransform_dict
+- also consolidated to single location accounting for parameters passed as lists to be copied into internal state
+- in process found a few more parameters where was needed
+- (now in addition to trainID_column and testID_column also perform for Binary and PCAexcl and inversion in postmunge)
+- finally, a few more cleanups to PCA
+- eliminated a redundant call of support function _evalPCA
+- in the process a few tweaks for clarity to support funcitons _PCAfunction and _postPCAfunction
