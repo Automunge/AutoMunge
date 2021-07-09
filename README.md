@@ -206,7 +206,7 @@ for consistent processing of additional data.
 test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
-             testID_column = False, labelscolumn = False,
+             testID_column = False,
              pandasoutput = True, printstatus = True,
              dupl_rows = False, TrainLabelFreqLevel = False,
 	     featureeval = False, traindata = False,
@@ -435,7 +435,7 @@ am = AutoMunge()
 test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
-             testID_column = False, labelscolumn = False,
+             testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
 	     featureeval = False, traindata = False,
@@ -488,7 +488,8 @@ as row identifiers or for pairing tabular data rows with a corresponding
 image file for instance. Also included in this set is a derived column
 titled 'Automunge_index', this column serves as an index identifier for order
 of rows as they were received in passed data, such as may be beneficial
-when data is shuffled.
+when data is shuffled. For more information please refer to writeup for the 
+trainID_column parameter.
 
 * labels: a set of numerically encoded labels corresponding to the
 train set if a label column was passed. Note that the function
@@ -512,7 +513,8 @@ available during initial address this processing will take place in the
 postmunge(.) function. 
 
 * test_ID: the set of ID values corresponding to the test set. Comparable 
-to columns returned in train_ID.
+to columns returned in train_ID unless otherwise specified. For more 
+information please refer to writeup for the testID_column parameter.
 
 * test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed.
@@ -632,27 +634,30 @@ Note that a designated labels column will automatically be checked for in
 corresponding df_test data and partitioned to the returned test_labels set when 
 included.
 
-* trainID_column: a string of the column title for the column from the
-df_train set intended for use as a row identifier value (such as could
-be sequential numbers for instance). The function defaults to False for
-cases where the training set does not include an ID column. A user can 
-also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently shuffled and 
-partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array. Note
-this can be used in general to carve out any columns to be returned in ID 
-sets consistently shuffled and partitioned.
+* trainID_column:  defaults to False, user can pass a string of the column header or list of string column headers
+for columns that are to be segregated from the df_train set for return in the train_ID
+set (consistently shuffled and partitioned when applicable). For example this may 
+be desired for an index column or any other column that the user wishes to exclude from
+the ML infill basis. Defaults to False for cases where no ID columns are desired. Note 
+that when designating ID columns for df_train if that set of ID columns is present in df_test
+they will automatically be given comparable treatment unless otherwise specified. An integer 
+column index or list of integer column indexes may also be passed such as if the source dataset 
+was a numpy array. Note that the returned ID sets (such as train_ID, val_ID, and test_ID) are automatically
+populated with an additional column with header 'Automunge_index' which may serve as an
+index column in cases of shuffling, validation partitioning, or oversampling.
 
-* testID_column: a string of the column title for the column from the
-df_test set intended for use as a row identifier value (such as could be
-sequential numbers for instance). The function defaults to False for
-cases where the training set does not include an ID column. A user can 
-also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently shuffled and 
-partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array. Note
-that if ID columns are same between a train and test set, can leave this
-as False (or True) and trainID_column will be applied to test set automatically.
+* testID_column: defaults to False, user can pass a string of the column header or list of string column headers
+for columns that are to be segregated from the df_test set for return in the test_ID
+set (consistently shuffled and partitioned when applicable). For example this may 
+be desired for an index column or any other column that the user wishes to exclude from
+the ML infill basis. Defaults to False, which can be used for cases where the df_test
+set does not contain any ID columns, or may also be passed as the default of False when 
+the df_test ID columns match those passed in the trainID_column parameter, 
+in which case they are automatically given comparable treatment. Thus, the primary intended use 
+of the testID_column parameter is for cases where a df_test has ID columns 
+different from those passed with df_train. Note that an integer column index 
+or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
+(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.)
 
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
@@ -1583,7 +1588,7 @@ am = AutoMunge()
 test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
-             testID_column = False, labelscolumn = False,
+             testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
 	     featureeval = False, traindata = False,
@@ -1622,6 +1627,7 @@ trained with the train set from automunge.
 in this set is a derived column titled 'Automunge_index', 
 this column serves as an index identifier for order of rows as they were 
 received in passed data, such as may be beneficial when data is shuffled.
+For more information please refer to writeup for the testID_column parameter.
 
 * test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
@@ -1711,7 +1717,7 @@ am = AutoMunge()
 test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
-             testID_column = False, labelscolumn = False,
+             testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
 	     featureeval = False, traindata = False,
@@ -1737,29 +1743,21 @@ tool supports the inclusion of non-index-range column as index or multicolumn
 index (requires named index columns). Such index types are added to the 
 returned "ID" sets which are consistently shuffled and partitioned as the 
 train and test sets. If numpy array passed any ID columns from train set should
-be included.
+be included. Note that if a label column is included consistent with label column from
+automunge(.) call it will be automatically applied as label and similarly for ID columns.
 
-* testID_column: a string of the column title for the column from the
-df_test set intended for use as a row identifier value (such as could be
-sequential numbers for instance). The function defaults to False for
-cases where the training set does not include an ID column. A user can 
-also pass a list of string columns titles such as to carve out multiple
-columns to be excluded from processing but consistently shuffled and 
-partitioned. An integer column index or list of integer column indexes 
-may also be passed such as if the source dataset was a numpy array. This
-can also be passed as True (or False) when ID columns are same as automunge 
-train set and will be automatically recognized.
-
-* labelscolumn: default to _False_ indicates that a labels column is not 
-included in the test set passed to postmunge. A user can either pass
-_True_ or the string ID of the labels column, noting that it is a requirement
-that the labels column header string must be consistent with that from
-the original train set. An integer column index may also be passed such
-as if the source dataset was a numpy array. A user should take care to set 
-this parameter if they are passing data with labels. Note that True signals
-presence of consistent labels column header as was passed to automunge(.).
-Note that if a label column is included consistent with label column from
-automunge(.) call it will be automatically applied as labelscolumn.
+* testID_column: defaults to False, user can pass a string of the column header or list of string column headers
+for columns that are to be segregated from the df_test set for return in the test_ID
+set (consistently shuffled and partitioned when applicable). For example this may 
+be desired for an index column or any other column that the user wishes to exclude from
+the ML infill basis. Defaults to False, which can be used for cases where the df_test
+set does not contain any ID columns, or may also be passed as the default of False when 
+the df_test ID columns match those passed to automunge(.) in the trainID_column parameter, 
+in which case they are automatically given comparable treatment. Thus, the primary intended use 
+of the postmunge(.) testID_column parameter is for cases where a df_test has ID columns 
+different from those passed with df_train in automunge(.). Note that an integer column index 
+or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
+(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.)
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframes. If set to _True_ returns pandas dataframes
