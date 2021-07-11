@@ -852,7 +852,7 @@ original columns are retained in the returned set. 'ordinal' and 'ordinalretain'
 are comparable to True and 'retain' with the exception that the consolidated 
 set is returned in an ordinal encoding instead of a binarization. A user can also
 pass a list of target column headers if consolidation is only desired on a subset of the categoric
-features. The column headers may be as recieved column headers or returhed column headers
+features. The column headers may be as received column headers or returhed column headers
 with suffix appenders included. To allow distinguishing between the other conventions
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
 a user may optionally include a few special entries as the first item in the list to
@@ -7511,9 +7511,9 @@ def custom_train_template(df, column, params = {}):
   if stdev != stdev or stdev == 0:
     stdev = 1
     
-  #In general if that same basis will be neeeded to process test data we'll store in normalization_dict
+  #In general if that same basis will be needed to process test data we'll store in normalization_dict
   normalization_dict.update({'mean' : mean,
-                            'stdev': stdev})
+                             'stdev': stdev})
 
   #Optionally we can measure additional drift stats for a postmunge driftreport
   #we will also save those in the normalization_dict
@@ -7528,7 +7528,7 @@ def custom_train_template(df, column, params = {}):
   df[column] = (df[column] - mean) * multiplier / stdev
 
   #great, the data is transformed, final step is to assemble a list of any returned columns
-  #this list should include the recieved column when still included in the returned dataframe
+  #this list should include the received column when still included in the returned dataframe
   #(which will already have suffix appender included)
   newcolumns_list = [column]
 
@@ -7559,7 +7559,7 @@ def custom_test_template(df, column, normalization_dict):
   and a string column header (column) 
   which will correspond to the column with suffix that was passed to custom_train_template
 
-  Also recieves a normalization_dict dictionary
+  Also receives a normalization_dict dictionary
   Which will be the same dictionary as populated in and returned from custom_train_template
 
   Note that default infill via adjacent cell imputation will have already been performed
@@ -7572,7 +7572,7 @@ def custom_test_template(df, column, normalization_dict):
   #Basically the workflow is we access any values needed from the normalization_dict
   #apply the transform
   #and return the transformed dataframe
-  #where convention is that the composition of returned newcolumns (including the recieved column)
+  #where convention is that the composition of returned newcolumns (including the received column)
   #will need to match those returned from the corresponding custom_train_template
 
   #access the train set properties from normalization_dict
@@ -7596,7 +7596,7 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
   User also has the option to define a custom inversion function
   Corresponding to custom_train and custom_test
 
-  Where the function recieves a dataframe df 
+  Where the function receives a dataframe df 
   Containing a post-transform configuration of one or more columns whose headers are 
   recorded in returnedcolumn_list
   And this function is for purposes of creating a new column with header inputcolumn
