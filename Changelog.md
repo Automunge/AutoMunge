@@ -3506,3 +3506,32 @@ am.postmunge(postprocess_dict, df_test)
 - finally, a few more cleanups to PCA
 - eliminated a redundant call of support function _evalPCA
 - in the process a few tweaks for clarity to support funcitons _PCAfunction and _postPCAfunction
+
+6.41
+- really important update
+- full rework of conventions for defining custom transformation functions
+- now requirements for custom transfomation functions are greatly simplified
+- populating data structures, default infill, suffix appending, inplace operation, suffix overlap detection, and etc are all conducted externally
+- in short, now all user has to do is define a pandas operation wrapped in a function
+- where the function recieves as arguments a dataframe, a column, and a set of parameters (as may have been passed in assignparam)
+- and returns the resulting transformed dataframes, a list of returned columns associated with the transform, and a dictionary ('normalization_dict') storing any properties derived from the train set needed for test set processing
+- where if train set properties aren't needed to process test data the same function can be applied to test data, or otherwise user can define a corresponding test processing function
+- where the test processing function recieves as argument a dataframe, column, and the normalization_dict populated from the train set
+- and returns the resulting transformed dataframe
+- similarly, the conventions for defining custom inversion transforms have been simplified
+- where an inversion transform now recieves as arguments a dataframe, a list of the columns returned from the original transformation, the inputcolumn header to be recovered, and the associated normalization_dict
+- and returns the transformed dataframe
+- full demonstrations provided in the read me under section Custom Transformation Functions
+- a few more details, to pass functions with these conventions to a category in processdict they should be passed as entries to 'custom_train', 'custom_test', and 'custom_inversion'
+- where if 'custom_test' isn't populated then the custom_train entry will be applied to both train and test data (similar to the singleprocess convention in library)
+- note that functionpointer works for these entries too
+- to incorporate included updates to support functions _processcousin, _processparent, _postprocesscousin, _postprocessparent, _df_inversion, _grab_processdict_functions_support, _populate_inverse_categorytree _populate_inverse_family, and possibly a few more 
+- created templates for the custom transformations shared in the read me as custom_train_template, custom_test_template, and custom_inversion_template
+- created wrappers for the received custom functions as _custom_process_wrapper, _custom_postprocess_wrapper, and _custom_inverseprocess_wrapper
+- in the process a few cleanups to the processfamily functions
+- such as consolidating some redundancies in inplace stuff or for postprocessfamily also consolidating some redundancies in columnkey_list stuff
+- a cleanup to support column _df_inversion to remove a redundant parameter derivation
+- found and fixed bug in _grab_processdict_functions_support for functionpointer for accessing postprocess functions
+- improved process flow for function pointer so that it only access dual/single/post process functions if they are not already populated
+- lowered printout tier for unspecified labelctgy assignment from False to True
+- reverted convention for _getNArows from evaluating a column to evaluating a copy of the column (helps to preserve data types)
