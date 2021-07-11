@@ -7385,7 +7385,7 @@ and incorporate a handful of simple data structures, which we'll demonstrate bel
 
 To give a simple example, we'll demonstrate defining a custom transformation for
 z-score normalization, with an added parameter of a user configurable multiplier to 
-demonstrtae how we can access parameters passed through assignparam. We'll associate
+demonstrate how we can access parameters passed through assignparam. We'll associate
 the transform with a new category we'll call 'newt' which we'll define with entries
 passed in the transformdict and processdict data structures.
 
@@ -7433,7 +7433,7 @@ processdict = {'newt' : {'custom_train'     : custom_train_template,
 #the processdict to automunge.
 
 #Here we'll define a "custom_train" function intended to process a train set and
-#derive any properties need to process test data, which will be returned in a ditionary
+#derive any properties need to process test data, which will be returned in a dictionary
 #we'll refer to as the normalization_dict. The test data can then be prepared with 
 #the custom_test we'll demonstrate next (unless custom_test is omitted in the processdict
 #in which case test data will be prepared with the same custom_train function).
@@ -7479,7 +7479,7 @@ def custom_train_template(df, column, params = {}):
   #a default infill of adjacent cell imputation will already have been applied
   #(which is a precursor to any application of ML infill)
   #and suffix overlap detection will be conducted after the function is applied 
-  #based on teh entries returned in newcolumns_list
+  #based on the entries returned in newcolumns_list
   """
 
   #As an example, here is the application of z-score normalization 
@@ -7520,7 +7520,7 @@ def custom_train_template(df, column, params = {}):
   minimum = df[column].min()
   maximum = df[column].max()
   normalization_dict.update({'minimum' : minimum,
-                            'maximum': maximum})
+                             'maximum': maximum})
 
   #Now we can apply the transformation
   #The generic formula for z-score normalization is (x - mean) / stdev
@@ -7587,14 +7587,14 @@ def custom_test_template(df, column, normalization_dict):
 
 #____________
 
-#And finally here is an example of the convention for inverseprocess functions, 
+#And finally here is an example of the convention for custom_inversion functions, 
 #such as may be passed to a processdict entry to support an inversion operation 
 #on a custom transformation function (associated with postmunge(.) inversion parameter):
 
 def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalization_dict):
   """
   User also has the option to define a custom inversion function
-  Corresponding to custom_train_template and custom_test_template
+  Corresponding to custom_train and custom_test
 
   Where the function recieves a dataframe df 
   Containing a post-transform configuration of one or more columns whose headers are 
@@ -7628,7 +7628,7 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
   #Now initialize the inputcolumn
   df[inputcolumn] = 0
 
-  #So for the example of z-score normalizaiton, we know returnedcolumn_list will only have one entry
+  #So for the example of z-score normalization, we know returnedcolumn_list will only have one entry
   #In some other cases transforms may have returned multiple columns
   returnedcolumn = returnedcolumn_list[0]
 
