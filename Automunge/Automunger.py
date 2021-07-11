@@ -6776,6 +6776,10 @@ class AutoMunge:
     #used on the niecesnephews primitive downstream of parents or siblings since 
     #they don't have children (they're way to young for that)
     #note the processing funcitons are accessed through the process_dict
+    
+    #note that the presence of a custom_train processing function for a tree category
+    #takes precedence over a dualprocess function
+    #which takes precedence over a singleprocess function
 
     #reminder the format of assign_param is e.g.
     #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
@@ -6793,28 +6797,42 @@ class AutoMunge:
       inplacecandidate = True
 
     params = self._grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
-
-    #if this is a dual process function
-    if 'dualprocess' in process_dict[cousin] \
+    
+    if inplacecandidate is True:
+      if 'inplace_option' in process_dict[cousin]:
+        if process_dict[cousin]['inplace_option'] is True:
+          if 'inplace' not in params:
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          elif ('inplace' in params and params['inplace'] != False):
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          else:
+            inplaceperformed = False
+    else:
+      #user cannot manually specify inplace by design
+      if ('inplace' in params and params['inplace'] is True):
+        inplaceperformed = False
+        params.update({'inplace' : False})
+    
+    #if this is a custom process function
+    #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
+    if 'custom_train' in process_dict[cousin] \
+    and (isinstance(process_dict[cousin]['custom_train'], type(self._processcousin)) \
+    or isinstance(process_dict[cousin]['custom_train'], type(_check_function))):
+      
+      #note that _custom_process_wrapper accesses the copy of process_dict saved within postprocess_dict
+      df_train, df_test, column_dict_list = \
+      self._custom_process_wrapper(df_train, df_test, column, origcategory, \
+                                   cousin, postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, cousin)
+    
+    #elif this is a dual process function
+    elif 'dualprocess' in process_dict[cousin] \
     and (isinstance(process_dict[cousin]['dualprocess'], type(self._processcousin)) \
     or isinstance(process_dict[cousin]['dualprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[cousin]:
-          if process_dict[cousin]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
 
       df_train, df_test, column_dict_list = \
       process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
@@ -6827,23 +6845,6 @@ class AutoMunge:
     elif 'singleprocess' in process_dict[cousin] \
     and (isinstance(process_dict[cousin]['singleprocess'], type(self._processcousin)) \
     or isinstance(process_dict[cousin]['singleprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[cousin]:
-          if process_dict[cousin]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
 
       df_train, column_dict_list =  \
       process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
@@ -6873,6 +6874,10 @@ class AutoMunge:
     #the children to have children of their own, you know, grandchildren and stuff.
     #note the processing functions are accessed through the process_dict
     
+    #note that the presence of a custom_train processing function for a tree category
+    #takes precedence over a dualprocess function
+    #which takes precedence over a singleprocess function
+    
     #reminder the format of assign_param is e.g.
     #assignparam = {'splt' : {'column1' : {'minsplit' : 4}}, \
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
@@ -6894,27 +6899,41 @@ class AutoMunge:
     
     params = self._grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
     
-    #if this is a dual process function
-    if 'dualprocess' in process_dict[parent] \
+    if inplacecandidate is True:
+      if 'inplace_option' in process_dict[parent]:
+        if process_dict[parent]['inplace_option'] is True:
+          if 'inplace' not in params:
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          elif ('inplace' in params and params['inplace'] != False):
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          else:
+            inplaceperformed = False
+    else:
+      #user cannot manually specify inplace by design
+      if ('inplace' in params and params['inplace'] is True):
+        inplaceperformed = False
+        params.update({'inplace' : False})
+    
+    #if this is a custom process function 
+    #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
+    if 'custom_train' in process_dict[parent] \
+    and (isinstance(process_dict[parent]['custom_train'], type(self._processparent)) \
+    or isinstance(process_dict[parent]['custom_train'], type(_check_function))):
+      
+      #note that _custom_process_wrapper accesses the copy of process_dict saved within postprocess_dict
+      df_train, df_test, column_dict_list = \
+      self._custom_process_wrapper(df_train, df_test, column, origcategory, \
+                                   parent, postprocess_dict, params)
+      
+      #columnkey_dict used in postprocess functions in a few cases to derive a normkey
+      postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, parent)
+    
+    #elif this is a dual process function
+    elif 'dualprocess' in process_dict[parent] \
     and (isinstance(process_dict[parent]['dualprocess'], type(self._processparent)) \
     or isinstance(process_dict[parent]['dualprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[parent]:
-          if process_dict[parent]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
 
       df_train, df_test, column_dict_list = \
       process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
@@ -6927,23 +6946,6 @@ class AutoMunge:
     elif 'singleprocess' in process_dict[parent] \
     and (isinstance(process_dict[parent]['singleprocess'], type(self._processparent)) \
     or isinstance(process_dict[parent]['singleprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[parent]:
-          if process_dict[parent]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
 
       df_train, column_dict_list =  \
       process_dict[parent]['singleprocess'](df_train, column, origcategory, \
@@ -7047,6 +7049,236 @@ class AutoMunge:
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
+  def _custom_process_wrapper(self, mdf_train, mdf_test, column, category, \
+                              treecategory, postprocess_dict, params = {}):
+    """
+    A wrapper for custom transformation functions applied in automunge
+    Where custom transformations follow templates of custom_train_template 
+    and custom_test_template
+    
+    The purpose of this wrapper is to extend the minimized versions of the 
+    custom transform templates
+    To include other conventions of the library
+    Such as default infill, populating data structures, inplace option, 
+    suffix overlap detection, and etc
+    
+    The form of the _custom_process_wrapper inputs/outputs 
+    will be similar to what is applied for dualprocess functions
+    
+    When a processdict has entries for both custom_train_template 
+    and custom_test_template
+    custom_train_template will be applied to mdf_train 
+    and custom_test_template will be applied to mdf_test
+    
+    Otherwise if the processdict only has an entry for custom_train_template
+    custom_train_template will be applied to both mdf_train and mdf_test
+    And the normalization_dict populated based on mdf_train will be the saved version
+    
+    Receives dataframes of a train and test set as mdf_train and mdf_test
+    column is the recieved column that will serve as target for the transformation
+    category is the root category for original upstream primitive entries
+    treecategory is the category entry to a family tree primitive that 
+    was used to access this transformation
+    postprocess_dict is the dictionary data structure passed between transforms
+    (Note that at this point postprocess_dict will include an entry for the 
+    process_dict including consolidated processdict entries)
+    params are the parameters passed through assignparam associated with 
+    this specific categoy and column
+    
+    Returns the resulting transformed dataframes mdf_train and mdf_test
+    and a populated column_dict_list data structure
+    Where column_dict_list has a column_dict entry for each column returned from transform
+    And where general convention in library is that the same normalization_dict 
+    is saved in each column_dict populated in a transform
+    
+    Note that this wrapper includes application of a default infill as adjacent cell
+    As well as other infill conventions determined based on the NArowtype process_dict 
+    entry associated with the treecategory
+    
+    We'll also create seperately a similar wrapper for postprocess functions applied 
+    in postmunge (_custom_postprocess_wrapper)
+    And likewise a wrapper for custom inversions that may be performed 
+    in postmunge (_custom_inverseprocess_wrapper)
+    """
+    
+    suffixoverlap_results = {}
+    
+    #we'll have convention that postprocess_dict entry for printstatus is accessible by params
+    params.update({'printstatus' : postprocess_dict['printstatus']})
+    
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+      
+    #note this suffixcolumn convention won't work with the suffix edge case of text transform
+    #which is fine since this is only for custom trasnforms and that is a special case
+    suffixcolumn = column + '_' + suffix
+    
+    #grab a list of current columns for a suffix overlap check performed after applying transforms
+    initial_columns = list(mdf_train)
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+      
+    #now that we've create a new column, we'll apply a default infill
+    #contingent on the 'NArowtype' of the tree category serving as basis for this transform
+    NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
+    
+    #first to apply default infill we'll convert any nonvalid entries to nan
+    if NArowtype in {'numeric'}:
+      
+      #convert all values to either numeric or NaN
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+    elif NArowtype in {'integer'}:
+      
+      #convert all values to either numeric or NaN
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+      #non integers are subject to infill
+      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), mdf_train[suffixcolumn], np.nan)
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+    
+    elif NArowtype in {'positivenumeric'}:
+      
+      #convert all values to either numeric or NaN
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+      #values <= 0 subject to infill
+      mdf_train.loc[mdf_train[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+      
+    elif NArowtype in {'nonnegativenumeric'}:
+      
+      #convert all values to either numeric or NaN
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+      #values < 0 subject to infill
+      mdf_train.loc[mdf_train[suffixcolumn] < 0, (suffixcolumn)] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] < 0, (suffixcolumn)] = np.nan
+      
+    elif NArowtype in {'nonzeronumeric'}:
+      
+      #convert all values to either numeric or NaN
+      mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
+      mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+      
+      #values == 0 subject to infill
+      mdf_train.loc[mdf_train[suffixcolumn] == 0, (suffixcolumn)] = np.nan
+      mdf_test.loc[mdf_test[suffixcolumn] == 0, (suffixcolumn)] = np.nan
+      
+    elif NArowtype in {'datetime'}:
+      
+      #convert values to datetime
+      mdf_train[suffixcolumn] = pd.to_datetime(mdf_train[suffixcolumn], errors = 'coerce', utc=True)
+      mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
+      
+    elif NArowtype in {'justNaN', 'exclude', 'parsenumeric'}:
+      
+      #nonvalid entries are already nan
+      pass
+
+    #Now that all nonvalid entries are cast as nan, we'll perform our default adjacent cell infill
+    #A potential extension could be to allow user to assign alternate default infill convention
+    #such as by either a process_dict entry or a paramater passed in assignparam.
+
+    #apply ffill to replace NArows with value from adjacent cell in preceding row
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
+
+    #we'll follow with a bfill just in case first row had a nan
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+
+    #finally if all data was nan we'll just plug with 0
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      
+    #great now we can apply the custom_train_template to training data
+    #custom_train_template will be saved as entry for 'custom_train'
+    mdf_train, newcolumns_list, normalization_dict = \
+    postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_train, suffixcolumn, params)
+    
+    #We'll have convention that if a corresponding custom_test_template wasn't populated
+    #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
+    if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
+    and postprocess_dict['process_dict'][treecategory]['custom_test'] != None:
+      mdf_test = \
+      postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
+    else:
+      mdf_test, _1, _2 = \
+      postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
+    
+    #Now run an additional suffix overlap test
+    #Noting convention that if the returned newcolumns_list has a final entry as an embedded list
+    #that means there were support columns not returned
+    if isinstance(newcolumns_list[-1], list):
+      
+      suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
+                                                           newcolumns_list[-1], \
+                                                           suffixoverlap_results = suffixoverlap_results, \
+                                                           printstatus = postprocess_dict['printstatus'])
+      
+      #now remove the temporary columns from newcolumns_list
+      newcolumns_list.remove(newcolumns_list[-1])
+    
+    #now check suffix overlap for other columns
+    suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
+                                                         newcolumns_list, \
+                                                         suffixoverlap_results = suffixoverlap_results, \
+                                                         printstatus = postprocess_dict['printstatus'])
+    
+    #add entries to normalization_dict associated with suffix and inplace
+    #(even though we won't use these to postprocess they might be useful as informational resources)
+    normalization_dict.update({'suffix'  : suffix,
+                               'inplace' : inplace})
+    
+    #Now populate the returned column_dict_list
+    column_dict_list = []
+    
+    for newcolumn in newcolumns_list:
+      
+      newcolumn_normalization_dict = {newcolumn : normalization_dict}
+      
+      column_dict = {newcolumn : {'category' : treecategory, \
+                                 'origcategory' : category, \
+                                 'normalization_dict' : newcolumn_normalization_dict, \
+                                 'origcolumn' : column, \
+                                 'inputcolumn' : column, \
+                                 'columnslist' : newcolumns_list, \
+                                 'categorylist' : newcolumns_list, \
+                                 'infillmodel' : False, \
+                                 'infillcomplete' : False, \
+                                 'suffixoverlap_results' : suffixoverlap_results, \
+                                 'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict.copy())
+
+    return mdf_train, mdf_test, column_dict_list
+
   def _df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}, printstatus = False):
     """
     #performs a copy operation to add column to a df_train
@@ -7087,14 +7319,20 @@ class AutoMunge:
     """
     #checks that newcolumns list are not already present in df_train
     #logs in suffixoverlap_results
+
+    #we'll have convention that df_train can either be passed as the dataframe
+    #or alternatively as a list of column headers
     """
-    
+
+    #this will result in a set of column headers for both cases (if df_train passed as list or dataframe)
+    origcolumns = set(df_train)
+
     if not isinstance(newcolumns, list):
       newcolumns = [newcolumns]
     
     for newcolumn in newcolumns:
       
-      if newcolumn in df_train.columns:
+      if newcolumn in origcolumns:
         
         if printstatus != 'silent':
           print("*****************")
@@ -20885,7 +21123,7 @@ class AutoMunge:
     
     return category
 
-  def _getNArows(self, df2, column, category, postprocess_dict, \
+  def _getNArows(self, df, column, category, postprocess_dict, \
                 drift_dict = {}, driftassess = False):
     '''
     #NArows(df, column), function that when fed a dataframe, \
@@ -20905,11 +21143,11 @@ class AutoMunge:
     
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
     
-    #originally these evaluations were performed on a copy of the received column
-    #struck that approach to reduce memory overhead from copy operation
-    #small tradeoff in that edits here (such as cast to numeric) 
-    #are preserved outside of this function
-    # df2 = pd.DataFrame(df[column].copy())
+    #There is a small cost of memory overhead associated with this copy operation
+    #performing on a copy to preserve properties e.g. data type retention
+    #as there are scenarios where could impact consistency of returned data
+    #(such as when this operation performed in automunge but not in postmunge)
+    df2 = pd.DataFrame(df[column].copy())
     
     #if category == 'text':
     if NArowtype in {'justNaN'}:
@@ -27640,11 +27878,12 @@ class AutoMunge:
       #we'll have convention that at least one entry for processing funtions required
       #even thought there is scenario where no corresponding function populated
       #such as when processdict is for a root category not used as a transformation category
-      if ('singleprocess' not in processdict[entry]) and ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry]):
+      if ('singleprocess' not in processdict[entry]) and ('dualprocess' not in processdict[entry] or 'postprocess' not in processdict[entry]) \
+      and 'custom_train' not in processdict[entry]:
         check_processdict_result = True
         if printstatus != 'silent':
           print("error: processdict entry missing processing function entrys for categery: ", entry)
-          print("requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess')")
+          print("requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess') or 'custom_train'")
           print("(alternately a valid 'functionpointer' entry can be included)")
           print()
       else:
@@ -27678,9 +27917,9 @@ class AutoMunge:
 
         check_processdict3_valresult = True
 
-        if printstatus != 'silent':
+        if printstatus is True:
 
-          print("labelctgy processdict entry wasn't provided for entry ", entry)
+          print("labelctgy processdict entry wasn't provided for ", entry)
           print("selecting arbitrary entry based on family tree")
 
         familytree = transform_dict[entry]
@@ -27688,14 +27927,14 @@ class AutoMunge:
         if len(familytree['auntsuncles']) > 0:
           new_labelctgy = familytree['auntsuncles'][0]
           process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus != 'silent':
+          if printstatus is True:
             print("labelctgy selected as ", new_labelctgy)
             print()
 
         elif len(familytree['cousins']) > 0:
           new_labelctgy = familytree['cousins'][0]
           process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus != 'silent':
+          if printstatus is True:
             print("labelctgy selected as ", new_labelctgy)
             print()
 
@@ -27706,7 +27945,7 @@ class AutoMunge:
           self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
           process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus != 'silent':
+          if printstatus is True:
             print("labelctgy selected as ", new_labelctgy)
             print()
 
@@ -27717,7 +27956,7 @@ class AutoMunge:
           self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
           process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus != 'silent':
+          if printstatus is True:
             print("labelctgy selected as ", new_labelctgy)
             print()
 
@@ -27795,7 +28034,7 @@ class AutoMunge:
     #and process_dcit is internal library prior to consolidation
     #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
     #ie only externally defined processdict can have functionpointers
-    #tracks a counter i to ensure don't get caught in infinite loop, defaults to 111 cycles
+    #tracks a counter i to ensure don't get caught in infinite loop, defaults to 1111 cycles
 
     #where targetcategory is the processdict category entry that has a functionpointer entry
     #pointercategory is the corresponding functionpointer entry
@@ -27866,22 +28105,38 @@ class AutoMunge:
           
           #function pointers have to point to a category with either a funcitonpointer or processing function entries
           if ('singleprocess' not in processdict[pointercategory]) and \
-              ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]):
+              ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]) \
+          and 'custom_train' not in processdict[pointercategory]:
 
             check_functionpointer_result = True
             if printstatus != 'silent':
-              print("error: processdict entry found without functionpointer or (dualprocess / postprocess) or singleprocess")
+              print("error: processdict entry found without functionpointer, custom_train / custom_test, dualprocess / postprocess, or singleprocess")
               print("for processdict entry ", pointercategory)
               print()
 
           #so if processing function entries were present, we can grab them and pass to targetcategory
           else:
             
-            if 'dualprocess' in processdict[pointercategory]:
+            if 'custom_train' in processdict[pointercategory] \
+            and 'custom_train' not in processdict[targetcategory]:
+              processdict[targetcategory]['custom_train'] = processdict[pointercategory]['custom_train']
+              if 'custom_test' in processdict[pointercategory] \
+              and 'custom_test' not in processdict[targetcategory]:
+                processdict[targetcategory]['custom_test'] = processdict[pointercategory]['custom_test']
+              if 'custom_inversion' in processdict[pointercategory] \
+              and 'custom_inversion' not in processdict[targetcategory]:
+                processdict[targetcategory]['custom_inversion'] = processdict[pointercategory]['custom_inversion']
+                
+            if 'dualprocess' in processdict[pointercategory] \
+            and 'dualprocess' not in processdict[targetcategory]:
               processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
-            if 'singleprocess' in processdict[pointercategory]:
+              
+            if 'singleprocess' in processdict[pointercategory] \
+            and 'singleprocess' not in processdict[targetcategory]:
               processdict[targetcategory]['singleprocess'] = processdict[pointercategory]['singleprocess']
-            if 'postprocess' in processdict[pointercategory]['postprocess']:
+              
+            if 'postprocess' in processdict[pointercategory] \
+            and 'postprocess' not in processdict[targetcategory]:
               processdict[targetcategory]['postprocess'] = processdict[pointercategory]['postprocess']
             
             if 'inverseprocess' in processdict[pointercategory] \
@@ -27921,11 +28176,25 @@ class AutoMunge:
 
         #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
         #so we don't need as many steps as above, can just assume processing functions are present
-        if 'dualprocess' in process_dict[pointercategory]:
+        
+        if 'custom_train' in process_dict[pointercategory] \
+        and 'custom_train' not in processdict[targetcategory]:
+          processdict[targetcategory]['custom_train'] = process_dict[pointercategory]['custom_train']
+          if 'custom_test' in process_dict[pointercategory] \
+          and 'custom_test' not in processdict[targetcategory]:
+            processdict[targetcategory]['custom_test'] = process_dict[pointercategory]['custom_test']
+          if 'custom_inversion' in process_dict[pointercategory] \
+          and 'custom_inversion' not in processdict[targetcategory]:
+            processdict[targetcategory]['custom_inversion'] = process_dict[pointercategory]['custom_inversion']
+        
+        if 'dualprocess' in process_dict[pointercategory] \
+        and 'dualprocess' not in processdict[targetcategory]:
           processdict[targetcategory]['dualprocess'] = process_dict[pointercategory]['dualprocess']
-        if 'singleprocess' in process_dict[pointercategory]:
+        if 'singleprocess' in process_dict[pointercategory] \
+        and 'singleprocess' not in processdict[targetcategory]:
           processdict[targetcategory]['singleprocess'] = process_dict[pointercategory]['singleprocess']
-        if 'postprocess' in process_dict[pointercategory]:
+        if 'postprocess' in process_dict[pointercategory] \
+        and 'postprocess' not in processdict[targetcategory]:
           processdict[targetcategory]['postprocess'] = process_dict[pointercategory]['postprocess']
         
         if 'inverseprocess' in process_dict[pointercategory] \
@@ -30890,7 +31159,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.40'
+    automungeversion = '6.41'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31319,6 +31588,10 @@ class AutoMunge:
     #postprocesscousin is comparable to processcousin but applied in postmunge instead of automunge
     #a little simpler in that doesn't have to populate data structures, just applies transform functions
     #for dualprocess case applies postprocess instead of dualprocess
+    
+    #note that the presence of a custom_train processing function for a tree category
+    #takes precedence over a postprocess function
+    #which takes precedence over a singleprocess function
     """
 
     #for checking type of processdict entries of custom externally defined transformation functions
@@ -31332,32 +31605,43 @@ class AutoMunge:
     
     params = self._grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
     
-    #if this is a dual process function
-    if 'postprocess' in process_dict[cousin] \
+    if inplacecandidate is True:
+      if 'inplace_option' in process_dict[cousin]:
+        if process_dict[cousin]['inplace_option'] is True:
+          if 'inplace' not in params:
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          elif ('inplace' in params and params['inplace'] != False):
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          else:
+            inplaceperformed = False
+    else:
+      #user cannot manually specify inplace by design
+      if ('inplace' in params and params['inplace'] is True):
+        inplaceperformed = False
+        params.update({'inplace' : False})
+        
+    #columnkey_list is a list of columns returned from the transform in automunge(.)
+    #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
+    columnkey_list = []
+    if column in postprocess_dict['columnkey_dict']:
+      if cousin in postprocess_dict['columnkey_dict'][column]:
+        columnkey_list = postprocess_dict['columnkey_dict'][column][cousin]
+        
+    #if this is a custom process function
+    #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
+    if 'custom_train' in process_dict[cousin] \
+    and (isinstance(process_dict[cousin]['custom_train'], type(self._postprocesscousin)) \
+    or isinstance(process_dict[cousin]['custom_train'], type(_check_function))):
+      
+      df_test = \
+      self._custom_postprocess_wrapper(df_test, column, postprocess_dict, columnkey_list, params)
+    
+    #elif this is a dual process function
+    elif 'postprocess' in process_dict[cousin] \
     and (isinstance(process_dict[cousin]['postprocess'], type(self._postprocesscousin)) \
     or isinstance(process_dict[cousin]['postprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[cousin]:
-          if process_dict[cousin]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
-      
-      columnkey_list = []
-      if column in postprocess_dict['columnkey_dict']:
-        if cousin in postprocess_dict['columnkey_dict'][column]:
-          columnkey_list = postprocess_dict['columnkey_dict'][column][cousin]
       
       df_test = \
       process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
@@ -31367,23 +31651,6 @@ class AutoMunge:
     elif 'singleprocess' in process_dict[cousin] \
     and (isinstance(process_dict[cousin]['singleprocess'], type(self._postprocesscousin)) \
     or isinstance(process_dict[cousin]['singleprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[cousin]:
-          if process_dict[cousin]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
             
       df_test, _1 = \
       process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
@@ -31400,6 +31667,10 @@ class AutoMunge:
 
     #we want to apply in order of
     #upstream process, niecesnephews, friends, children, coworkers
+    
+    #note that the presence of a custom_train processing function for a tree category
+    #takes precedence over a postprocess function
+    #which takes precedence over a singleprocess function
     """
 
     #for checking type of processdict entries of custom externally defined transformation functions
@@ -31415,33 +31686,44 @@ class AutoMunge:
       inplacecandidate = True
 
     params = self._grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
+    
+    if inplacecandidate is True:
+      if 'inplace_option' in process_dict[parent]:
+        if process_dict[parent]['inplace_option'] is True:
+          if 'inplace' not in params:
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          elif ('inplace' in params and params['inplace'] != False):
+            inplaceperformed = True
+            params.update({'inplace' : True})
+          else:
+            inplaceperformed = False
+    else:
+      #user cannot manually specify inplace by design
+      if ('inplace' in params and params['inplace'] is True):
+        inplaceperformed = False
+        params.update({'inplace' : False})
 
-    #if this is a dual process function
-    if 'postprocess' in process_dict[parent] \
+    #columnkey_list is a list of columns returned from the transform in automunge(.)
+    #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
+    columnkey_list = []
+    if column in postprocess_dict['columnkey_dict']:
+      if parent in postprocess_dict['columnkey_dict'][column]:
+        columnkey_list = postprocess_dict['columnkey_dict'][column][parent]
+        
+    #if this is a custom process function
+    #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
+    if 'custom_train' in process_dict[parent] \
+    and (isinstance(process_dict[parent]['custom_train'], type(self._postprocessparent)) \
+    or isinstance(process_dict[parent]['custom_train'], type(_check_function))):
+      
+      df_test = \
+      self._custom_postprocess_wrapper(df_test, column, postprocess_dict, columnkey_list, params)
+    
+    #elif this is a dual process function
+    elif 'postprocess' in process_dict[parent] \
     and (isinstance(process_dict[parent]['postprocess'], type(self._postprocessparent)) \
     or isinstance(process_dict[parent]['postprocess'], type(_check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[parent]:
-          if process_dict[parent]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
-
-      columnkey_list = []
-      if column in postprocess_dict['columnkey_dict']:
-        if parent in postprocess_dict['columnkey_dict'][column]:
-          columnkey_list = postprocess_dict['columnkey_dict'][column][parent]
             
       df_test = \
       process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
@@ -31451,23 +31733,6 @@ class AutoMunge:
     elif 'singleprocess' in process_dict[parent] \
     and (isinstance(process_dict[parent]['singleprocess'], type(self._postprocessparent)) \
     or isinstance(process_dict[parent]['singleprocess'], type(check_function))):
-      
-      if inplacecandidate is True:
-        if 'inplace_option' in process_dict[parent]:
-          if process_dict[parent]['inplace_option'] is True:
-            if 'inplace' not in params:
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            elif ('inplace' in params and params['inplace'] != False):
-              inplaceperformed = True
-              params.update({'inplace' : True})
-            else:
-              inplaceperformed = False
-      else:
-        #user cannot manually specify inplace by design
-        if ('inplace' in params and params['inplace'] is True):
-          inplaceperformed = False
-          params.update({'inplace' : False})
       
       df_test, _1 = \
       process_dict[parent]['singleprocess'](df_test, column, origcategory, \
@@ -31540,6 +31805,163 @@ class AutoMunge:
                                 process_dict, transform_dict, postprocess_dict, assign_param)
 
     return df_test
+
+  def _custom_postprocess_wrapper(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    """
+    A wrapper for custom transformation functions applied in postmunge
+    Where custom transformations follow templates of custom_test_template
+    Or if custom_test_template not populated in process_dict then follows custom_train_template
+    
+    The purpose of this wrapper is to extend the minimized versions of custom transforms
+    To include other conventions of the library
+    Such as default infill, populating data structures, inplace option, suffix overlap detection, and etc
+    
+    The form of the _custom_process_wrapper inputs/outputs 
+    will be similar to what is applied for postprocess functions
+    
+    If the processdict only has an entry for custom_train
+    custom_train will be applied to mdf_test instead of custom_test
+    Which will be similar to the singleprocess convention in the library
+    
+    Receives dataframe of a test set as mdf_test
+    column is the recieved column that will serve as target for the transformation
+    postprocess_dict is the dictionary data structure passed between transforms
+    columnkey is a list of columns returned from the correspondihng tranforms applied in _custom_process_wrapper
+    params are the parameters passed through assignparam associated with this specific categoy and column
+    
+    Returns the resulting transformed dataframe mdf_test
+    
+    Note that this wrapper includes application of a default infill as adjacent cell
+    As well as other infill conventions determined based on the NArowtype process_dict entry associated with the tree category serving as basis
+    
+    We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
+    And likewise a wrapper for custom inversions that may be performed in postmunge (_custom_inverseprocess_wrapper)
+    """
+    
+    #normkey used to retrieve the normalization_dict
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+      
+    #we'll have convention that postprocess_dict entry for printstatus is accessible by params
+    #as well as for postmunge the traindata entry (which is populated based on the postmunge parameter)
+    params.update({'printstatus' : postprocess_dict['printstatus'],
+                   'traindata'   : postprocess_dict['traindata']})
+    
+    #First we'll grab some parameters common to transformation functions
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      #suffix should always have an entry, this is just here to be consistent with convention
+      #that parameter inspections have a default when not passed
+      if normkey is not False:
+        suffix = normkey.replace(column + '_', '')
+      
+    #normkey is False when process function returned empty set
+    if normkey is not False:
+    
+      suffixcolumn = column + '_' + suffix
+      
+      if inplace is not True:
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+        
+      #treecategory is the category entry to a family tree primitive that served as basis for this transform
+      treecategory = postprocess_dict['column_dict'][normkey]['category']
+      
+      #now apply default infill based on NArowtype
+      NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
+
+      #first to apply default infill we'll convert any nonvalid entries to nan
+      if NArowtype in {'numeric'}:
+
+        #convert all values to either numeric or NaN
+        mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+
+      elif NArowtype in {'integer'}:
+
+        #convert all values to either numeric or NaN
+        mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+
+        #non integers are subject to infill
+        mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+
+      elif NArowtype in {'positivenumeric'}:
+
+        #convert all values to either numeric or NaN
+        mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+
+        #values <= 0 subject to infill
+        mdf_test.loc[mdf_test[suffixcolumn] <= 0, (suffixcolumn)] = np.nan
+
+      elif NArowtype in {'nonnegativenumeric'}:
+
+        #convert all values to either numeric or NaN
+        mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+
+        #values < 0 subject to infill
+        mdf_test.loc[mdf_test[suffixcolumn] < 0, (suffixcolumn)] = np.nan
+
+      elif NArowtype in {'nonzeronumeric'}:
+
+        #convert all values to either numeric or NaN
+        mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
+
+        #values == 0 subject to infill
+        mdf_test.loc[mdf_test[suffixcolumn] == 0, (suffixcolumn)] = np.nan
+
+      elif NArowtype in {'datetime'}:
+
+        #convert values to datetime
+        mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
+
+      elif NArowtype in {'justNaN', 'exclude', 'parsenumeric'}:
+
+        #nonvalid entries are already nan
+        pass
+      
+      #Now that all nonvalid entries are cast as nan, we'll perform our default adjacent cell infill
+      #A potential extension could be to allow user to assign alternate default infill convention
+      #such as by either a process_dict entry or a paramater passed in assignparam.
+
+      #apply ffill to replace NArows with value from adjacent cell in preceding row
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+
+      #finally if all data was nan we'll just plug with 0
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      
+      #normalization_dict is consistent with what was populated in the automunge call to custom_train
+      normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
+      
+      #great now we can apply the custom_test_template to the test data
+
+      #We'll have convention that if a corresponding custom_test_template wasn't populated
+      #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
+      if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
+      and postprocess_dict['process_dict'][treecategory]['custom_test'] != None:
+        mdf_test = \
+        postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
+      else:
+        mdf_test, _1, _2 = \
+        postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
+
+    else:
+      
+      #if we didn't have a normkey but this transform was designated as inplace we'll delete column
+      if inplace is True:
+        del mdf_test[column]
+
+    return mdf_test
   
   def _postprocess_numerical(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -39700,6 +40122,9 @@ class AutoMunge:
           info_retention = True
       
       transforms_avail = False
+      if 'custom_inversion' in postprocess_dict['process_dict'][category]:
+        if callable(postprocess_dict['process_dict'][category]['custom_inversion']):
+          transforms_avail = True
       if 'inverseprocess' in postprocess_dict['process_dict'][category]:
         if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
           transforms_avail = True
@@ -39786,6 +40211,9 @@ class AutoMunge:
         info_retention = True
 
     transforms_avail = False
+    if 'custom_inversion' in postprocess_dict['process_dict'][category]:
+      if callable(postprocess_dict['process_dict'][category]['custom_inversion']):
+        transforms_avail = True
     if 'inverseprocess' in postprocess_dict['process_dict'][category]:
       if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
         transforms_avail = True
@@ -41821,40 +42249,80 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn] * ( (-1) ** df[sign_columns[0]])
       
     return df, inputcolumn
+
+  def _custom_inverseprocess_wrapper(self, df, categorylist, postprocess_dict):
+    """
+    A wrapper for custom inversion functions applied in postmunge
+    Where custom inversions follow templates of custom_inversion_template
+    
+    The purpose of this wrapper is to extend the minimized versions of custom inversions
+    To include other conventions of the library
+    Such as access inputs from data structures and etc.
+    
+    The form of the _custom_inverseprocess_wrapper inputs/outputs 
+    will be similar to what is applied for inverseprocess functions
+    
+    Receives dataframe of a test or labels set as df
+    categorylist is a list of the returned columns from forward pass that are the basis of inversion
+    postprocess_dict is the dictionary data structure passed between transforms
+    
+    Returns the resulting transformed dataframe df
+    As well as inputcolumn which is the header of the recovered column (as may result from removing the suffix appender)
+    
+    Note that this wrapper does not perform infill
+    The convention in the library is that missing entries in recovered sets have the string entry 'zzzinfill'
+    category serving as basis
+    
+    We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
+    And likewise a similar wrapper for postprocess functions applied in postmunge (_custom_postprocess_wrapper)
+    """
+    
+    #ok so to call our inversion function we need df, returnedcolumn_list, inputcolumn, normalization_dict)
+    #we have df
+    #returnedcolumn_list is same as categorylist
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
+    treecategory = postprocess_dict['column_dict'][normkey]['category']
+    
+    if 'custom_inversion' in postprocess_dict['process_dict'][treecategory] \
+    and postprocess_dict['process_dict'][treecategory]['custom_inversion'] != None:
+      
+      df = \
+      postprocess_dict['process_dict'][treecategory]['custom_inversion'](df, categorylist, inputcolumn, normalization_dict)
+    
+    return df, inputcolumn
   
   def _df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
     """
     #support function for df_inversion_meta
     #this is where the inverseprocess functions are applied
+    
+    #where custom_inversion take precendence over inverseprocess
     """
     
     origcolumn = postprocess_dict['column_dict'][categorylist_entry]['origcolumn']
     category = postprocess_dict['column_dict'][categorylist_entry]['category']
     categorylist = postprocess_dict['column_dict'][categorylist_entry]['categorylist']
     
-    columns_before_inversion = set(df_test)
+    if 'custom_inversion' in postprocess_dict['process_dict'][category]:
+      
+      if callable(postprocess_dict['process_dict'][category]['custom_inversion']):
+        
+        df_test, inputcolumn = \
+        self._custom_inverseprocess_wrapper(df_test, categorylist, postprocess_dict)
     
-    if 'inverseprocess' in postprocess_dict['process_dict'][category]:
+    elif 'inverseprocess' in postprocess_dict['process_dict'][category]:
       
       if callable(postprocess_dict['process_dict'][category]['inverseprocess']):
         
         df_test, inputcolumn = \
         postprocess_dict['process_dict'][category]['inverseprocess'](df_test, categorylist, postprocess_dict)
         #df, categorylist, postprocess_dict
-    
-    columns_after_inversion = set(df_test)
-    
-    #convention is that inversion always returns a single column
-    #(multi-column transformations only performed on final leaf of a forward pass branch)
-    if len(list(columns_after_inversion - columns_before_inversion)) > 0:
-    
-      inputcolumn = list(columns_after_inversion - columns_before_inversion)[0]
       
-    #this only happens for excl suffix edge case
-    else:
-      inputcolumn = origcolumn
-      
-    
+    #we'll know to halt our inversion path when have successfully recovered the original target input column
     if inputcolumn != origcolumn:
       
       df_test, inputcolumn = \
