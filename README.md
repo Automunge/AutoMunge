@@ -1496,6 +1496,16 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm',
 			  
 #or an even simpler approach if no overwrites are desired could just be to copy everything
 processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
+
+#Processing functions following the conentions of those defined internal to the library
+#can be passed to dualprocess / singleprocess / postprocess / inverseprocess
+
+#Or for the greatly simplified conventions available 
+#for custom externally defined transformation functions
+#can be passed to custom_train / custom_test / custom_inversion
+#Demonstrations for custom transformation functions are documented further below
+#In the section Custom Transformation Functions
+#(in cases of redundancy populated custom transformation functions take precedence)
 ```
 Note that when passing a processdict entry to overwrite an internally defined processdict entry, you
 can pass the functionpointer to point to itself, and then only have to populate the entries you are overwriting.
@@ -7373,353 +7383,259 @@ simplest possible way for consistent processing of additional data with just a s
 function call. The transformation functions will need to be channeled through pandas 
 and incorporate a handful of simple data structures, which we'll demonstrate below.
 
-Let's say we want to recreate the mnm3 category which caps outliers at 0.01 and 0.99
-quantiles, but instead make it the 0.001 and 0.999 quantiles. (Of course that is already
-possible in easier fashion by just passing parameters to the transformation function, 
-this is just to demonstrate.) Well we'll call this new category mnm8. So in order to 
-pass a custom transformation function, first we'll need to define a new root category 
-transformdict and a corresponding processdict.
+To give a simple example, we'll demonstrate defining a custom transformation for
+z-score normalization, with an added parameter of a user configurable multiplier to 
+demonstrtae how we can access parameters passed through assignparam. We'll associate
+the transform with a new category we'll call 'newt' which we'll define with entries
+passed in the transformdict and processdict data structures.
 
 ```
-#Let's create a really simple family tree for the new root category mnmn8 which
+#Let's create a really simple family tree for the new root category 'newt' which
 #simply creates a column identifying any rows subject to infill (NArw), performs 
-#a z-score normalization, and separately performs a version of the new transform
-#mnm8 which we'll define below.
+#the z-score normalization we'll define below, and separately aggregates a collection
+#of standard deviation bins with the 'bins' transform.
 
-transformdict = {'mnm8' : {'parents'       : [],
-                           'siblings'.     : [],
-                           'auntsuncles'   : ['mnm8', 'nmbr'],
+transformdict = {'newt' : {'parents'       : [],
+                           'siblings'      : [],
+                           'auntsuncles'   : ['newt', 'bins'],
                            'cousins'       : ['NArw'],
                            'children'      : [],
                            'niecesnephews' : [],
                            'coworkers'     : [],
                            'friends'       : []}}
 
-#Note that since this mnm8 requires passing normalization parameters derived
+#Note that since this newt requires passing normalization parameters derived
 #from the train set to process the test set, we'll need to create two separate 
-#transformation functions, the first a "dualprocess" function that processes
-#both the train and if available a test set simultaneously, and the second
-#a "postprocess" that only processes the test set on its own.
+#transformation functions, the first a "custom_train" function that processes
+#the train set and records normalization paramters, and the second
+#a "custom_test" that only processes the test set on its own using the parameters
+#derived during custom_train. (Note that if we don't need properties from the 
+#train set to process the test set we would only need to define a custom_train.)
 
-#So what's being demonstrated here is that we're passing the functions under
-#dualprocess and postprocess that we'll define below.
+#So what's being demonstrated here is that we're populating a processdict entry
+#which will pass the custom transformation functions that we'll define below
+#to associate them with the category for use when that category is entered in one
+#of the family tree primitives associated with a root categoy. Note that the entries
+#for custom_test and custom_inversion are both optional.
 
-processdict = {'mnm8' : {'dualprocess'   : process_mnm8,
-                         'singleprocess' : None,
-                         'postprocess'   : postprocess_mnm8,
-                         'NArowtype'     : 'numeric',
-                         'MLinfilltype'  : 'numeric',
-                         'labelctgy'     : 'mnm8'}}
+processdict = {'newt' : {'custom_train'     : custom_train_template,
+                         'custom_test'      : custom_test_template,
+                         'custom_inversion' : custom_inversion_template,
+                         'info_retention'   : True,
+                         'NArowtype'        : 'numeric',
+                         'MLinfilltype'     : 'numeric'}}
 
-#Note that for the processdict entry key, shown here as 'mnm8', the convention in library
-#is that this key serves as the default suffix appender unless otherwise specified in assignparam.
-
+#Note that for the processdict entry key, shown here as 'newt', the convention in library
+#is that this key serves as the default suffix appender for columns returned from
+#the transform unless otherwise specified in assignparam.
 
 #Now we have to define the custom processing functions which we are passing through
 #the processdict to automunge.
 
-#Here we'll define a "dualprocess" function intended to process both a train and
-#test set simultaneously. We'll also need to create a separate "postprocess"
-#function intended to just process a subsequent test set.
+#Here we'll define a "custom_train" function intended to process a train set and
+#derive any properties need to process test data, which will be returned in a ditionary
+#we'll refer to as the normalization_dict. The test data can then be prepared with 
+#the custom_test we'll demonstrate next (unless custom_test is omitted in the processdict
+#in which case test data will be prepared with the same custom_train function).
 
-#define the function
-def process_mnm8(mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
-  #where
-  #mdf_train is the train data set (pandas dataframe)
-  #mdf_test is the consistently formatted test dataset (if no test data 
-  #set is passed to automunge a small dummy set will be passed in it's place)
-  #column is the string identifying the column header
-  #category is the (traditionally 4 character) string category identifier of the family tree root category, 
-  #which is the key for accessing the family tree in transformdict, here it will be 'mnm8', 
-  #and treecategory is the family tree primitive entry associated with the transformation 
-  #which is used to access the processdict transformation functions,
-  #here it will also be 'mnm8'
-  #postprocess_dict is an object we pass to share data between 
-  #functions and later returned from automunge
-  #and params are any column specific parameters to be passed by user in assignparam
-  
-  #first, if this function accepts any parameters 
-  #we'll access those parameters from params, otherwise assign default values
-  #we find it's good practice to make the suffix appender a passed parameter
-  if 'suffix' in params:
-    suffix = params['suffix']
+#Now we'll define the function 
+#(note that if defining for the internal library 
+#an addiitonal self parameter required as first argument)
+
+def custom_train_template(df, column, params = {}):
+  """
+  #Template for custom processing function to be applied to a train feature set.
+  #Where if a custom_test_template is not defined will be applied to the 
+  #corresponding test feature set as well.
+
+  #Receives a df as a pandas dataframe
+  #Where df will generally be from df_train
+  #Unless a custom_test template isn't specified in processdict 
+  #then custom_train_template will be applied to both train and test data
+  #as may be ok when processing df_test doesn't require accessing any
+  #train data properties in the normalization_dict
+
+  #column is the target column of transform
+  #which will already have the suffix appender incorporated when this is applied
+
+  #params is a dictionary for any parameters passed in assignparam
+
+  #returns the resulting transformed dataframe as df
+
+  #returns a list of newly derived columns as newcolumns_list
+  #where newcolumns_list should include suffixcolumn as an entry when included in returned data
+  #in general newcolumns_list is a list of string column headers
+  #although the final entry in the newcolumns_list may be passed as an embedded list 
+  #of additional string column headers
+  #for cases where temperarory columns are created and removed as part of a transform
+  #(which will be used for suffix overlap detection of these temporary columns)
+
+  #returns normalization_dict, which is a dictionary for storing properties derived train data
+  #that may then be accessed to consistently transform test data
+  #note that any desired drift statistics can also be stored in normalization_dict
+  #e.g. normalization_dict = {'property' : property}
+
+  #note that external to this function call 
+  #a default infill of adjacent cell imputation will already have been applied
+  #(which is a precursor to any application of ML infill)
+  #and suffix overlap detection will be conducted after the function is applied 
+  #based on teh entries returned in newcolumns_list
+  """
+
+  #As an example, here is the application of z-score normalization 
+  #derived based on the training set mean and standard deviation
+
+  #First we'll initialize the returned normalization_dict
+  normalization_dict = {}
+
+  #where we'll include the option for a parameter 'muiltiplier'
+  #which is an arbitrary example to demonstrate accessing parameters
+  #basically we check if that parameter had been passed in assignparam 
+  #or otherwise assign a default value
+  if 'multiplier' in params:
+    multiplier = params['multiplier']
   else:
-    #generally we suggest matching the column suffix to the treecategory as a default
-    suffix = treecategory
+    multiplier = 1
 
-  #then we can initialize the variable used to store name of new column
-  suffixcolumn = column + '_' + suffix
-  
-  #we'll initialize an item to store results from a type of validation on copy operation
-  #to detect suffix overlap error
-  suffixoverlap_results = {}
+  #In general we'll probably want to save any parameters in the normalization_dict
+  normalization_dict.update({'multiplier' : multiplier})
 
-  #create the new column, using the category key as a suffix identifier
-  #the new column can be created with a copy operation, or to ensure no overlap with 
-  #existing columns can make use of following internal functions
-  #the first copies parallel to the validation, the second is just the validation
+  #Now we measure any properties of the train data used for the transformation
+  mean = df[column].mean()
+  stdev = df[column].std()
   
-  #mdf_train, suffixoverlap_results = \
-  #am._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results)
-  
-  #or to run validation independent of copy operation could also run
-  #suffixoverlap_results = \
-  #am._df_check_suffixoverlap(mdf_train, [suffixcolumn], suffixoverlap_results)
-  #(using am. for externally defined functions or self. for internally defined)
-  
-  #or for quick and dirty just copy source column into new column
-  mdf_train[suffixcolumn] = mdf_train[column].copy()
-  mdf_test[suffixcolumn] = mdf_test[column].copy()
-  
-  #perform an initial (default) infill method, here we use mean as a plug, automunge
-  #may separately perform a infill method per user specifications elsewhere
-  #convert all values to either numeric or NaN
-  mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
-  mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
-
-  #if we want to collect any statistics for the driftreport we could do so prior
-  #to transformations and save them in the normalization dictionary below with the
-  #other normalization parameters, e.g.
-  min = mdf_train[suffixcolumn].min()
-  max = mdf_train[suffixcolumn].max()
-  
-  #Now we do the specifics of the processing function, here we're demonstrating
-  #the min-max scaling method capping values at 0.001 and 0.999 quantiles
-  #in some cases we would address infill first, here to preserve the quantile evaluation
-  #we'll do that first
-  
-  #get high quantile of training column for min-max scaling
-  quantilemax = mdf_train[suffixcolumn].quantile(.999)
-  
-  #outlier scenario for when data wasn't numeric (nan != nan)
-  if quantilemax != quantilemax:
-    quantilemax = 0
-
-  #get low quantile of training column for min-max scaling
-  quantilemin = mdf_train[suffixcolumn].quantile(.001)
-  
-  if quantilemax != quantilemax:
-    quantilemax = 0
-
-  #replace values > quantilemax with quantilemax for both train and test data
-  mdf_train.loc[mdf_train[suffixcolumn] > quantilemax, (suffixcolumn)] \
-  = quantilemax
-  mdf_test.loc[mdf_train[suffixcolumn] > quantilemax, (suffixcolumn)] \
-  = quantilemax
-  
-  #replace values < quantilemin with quantilemin for both train and test data
-  mdf_train.loc[mdf_train[suffixcolumn] < quantilemin, (suffixcolumn)] \
-  = quantilemin
-  mdf_test.loc[mdf_train[suffixcolumn] < quantilemin, (suffixcolumn)] \
-  = quantilemin
-
-  #note the infill method is now completed after the quantile evaluation / replacement
-  #get mean of training data for infill
-  mean = mdf_train[suffixcolumn].mean()
-  
+  #It's good practice to ensure numbers used in derivation haven't been derived as nan
+  #or would result in dividing by zero
   if mean != mean:
     mean = 0
-     
-  #replace missing data with training set mean
-  mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-  mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+  if stdev != stdev or stdev == 0:
+    stdev = 1
     
-  #this is to avoid outlier div by zero when max = min
-  maxminusmin = quantilemax - quantilemin
-  if maxminusmin == 0:
-    maxminusmin = 1
+  #In general if that same basis will be neeeded to process test data we'll store in normalization_dict
+  normalization_dict.update({'mean' : mean,
+                            'stdev': stdev})
 
-  #perform min-max scaling to train and test sets using values derived from train
-  mdf_train[suffixcolumn] = (mdf_train[suffixcolumn] - quantilemin) / (maxminusmin)
-  mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / (maxminusmin)
+  #Optionally we can measure additional drift stats for a postmunge driftreport
+  #we will also save those in the normalization_dict
+  minimum = df[column].min()
+  maximum = df[column].max()
+  normalization_dict.update({'minimum' : minimum,
+                            'maximum': maximum})
 
-  #ok here's where we populate the data structures
+  #Now we can apply the transformation
+  #The generic formula for z-score normalization is (x - mean) / stdev
+  #here we incorporate an additional variable as the multiplier parameter (defaults to 1)
+  df[column] = (df[column] - mean) * multiplier / stdev
 
-  #create list of columns (here it will only be one column returned)
-  nmbrcolumns = [suffixcolumn]
-  
-  #The normalization dictionary is how we pass values between the "dualprocess"
-  #function and the "postprocess" function. This is also where we save any metrics
-  #we want to track such as to track drift in the postmunge driftreport.
-  
-  #Here we populate the normalization dictionary with any values derived from
-  #the train set that we'll need to process the test set.
-  #note that if we're returning a multicolumn set we'll need one of these
-  #for each column_dict entry populated below, using that column as the key
-  #note any stats collected for driftreport are also saved here.
-  nmbrnormalization_dict = {suffixcolumn : {'quantilemin' : quantilemin,
-                                            'quantilemax' : quantilemax,
-                                            'mean' : mean,
-                                            'minimum' : min,
-                                            'maximum' : max,
-                                            'maxminusmin' : maxminusmin,
-                                            'suffix' : suffix}}
-						
-  #as an asterisk, please note there are a small number of reserved normalization dictionary key strings
-  #documented in code base under _check_normalization_dict function
-  #if you accidentally use one of those strings will return a printout in front of infill application
+  #great, the data is transformed, final step is to assemble a list of any returned columns
+  #this list should include the recieved column when still included in the returned dataframe
+  #(which will already have suffix appender included)
+  newcolumns_list = [column]
 
-  #the column_dict_list is returned from the function call and supports the 
-  #automunge methods. We populate it as follows:
-  
-  #initialize
-  column_dict_list = []
-  
-  #where we're storing following
-  #{'category' : treecategory, \ -> identifier of the category of transform applied
-  # 'origcategory' : category, \ -> category of original column in train set, passed in function call
-  # 'normalization_dict' : nmbrnormalization_dict, \ -> normalization parameters of train set
-  # 'origcolumn' : column, \ -> ID of original column in train set (just pass as column)
-  # 'inputcolumn' : column, \ -> column serving as input to this transform
-  # 'columnslist' : nmbrcolumns, \ -> a list of columns created in this transform, 
-  #                                  later fleshed out to include all columns derived from same source column
-  # 'categorylist' : [nc], \ -> a list of columns created in this transform
-  # 'infillmodel' : False, \ -> populated elsewhere, for now enter False
-  # 'infillcomplete' : False, \ -> populated elsewhere, for now enter False
-  # 'suffixoverlap_results' : suffixoverlap_results, \ -> validation results for suffix overlap error
-  # 'deletecolumn' : False}} -> populated elsewhere, for now enter False
-  
-  #for column in nmbrcolumns
-  for nc in nmbrcolumns:
+  #Note that newcolumns_list can also be an empty list when no columns (including the passed column) are returned.
 
-    column_dict = { nc : {'category' : treecategory,
-                          'origcategory' : category,
-                          'normalization_dict' : nmbrnormalization_dict,
-                          'origcolumn' : column,
-                          'inputcolumn' : column,
-                          'columnslist' : nmbrcolumns,
-                          'categorylist' : nmbrcolumns,
-                          'infillmodel' : False,
-                          'infillcomplete' : False,
-                          'suffixoverlap_results' : suffixoverlap_results,
-                          'deletecolumn' : False}}
+  #Note that if we had to create any temporary support columns as part of transform that weren't returned
+  #we should embed an additional list as final entry to newcolumns_list, e.g.
+  # newcolumns_list = [column, [tempcolumn]]
 
-    column_dict_list.append(column_dict.copy())
+  return df, newcolumns_list, normalization_dict
 
-  #note that if your transform has inplace support and you want to have potential to return an empty set with no new columns
-  #this would be an appropriate spot to inspect the inplace parameter and if True to delete the inputcolumn
-  #and you would just return column_dict_list as empty list
-
-  return mdf_train, mdf_test, column_dict_list
-  
-  #where mdf_train and mdf_test now have the new column incorporated
-  #and column_dict_list carries the data structures supporting the operation 
-  #of automunge. (If the original column was intended for replacement it 
-  #will be stricken elsewhere)
-  
+#____________
   
 #and then since this is a method that passes values between the train
-#and test sets, we'll need to define a corresponding "postprocess" function
-#intended for use on just the test set
+#and test sets, we'll need to define a corresponding "custom_test" function
+#intended for use on test data
 
-def postprocess_mnm8(mdf_test, column, postprocess_dict, columnkey, params={}):
-  #where mdf_test is a dataframe of the test set
-  #column is the string of the column header
-  #postprocess_dict is how we carry packets of data between the 
-  #functions in automunge and postmunge
-  #columnkey is a list of columns returned from all instances of this transformation function applied to same inputcolumn
-  #and params are any column specific parameters to be passed by user in assignparam
-  
-  #normkey used to retrieve the normalization dictionary entries
-  normkey = False
-  if len(columnkey) > 0:      
-    normkey = columnkey[0]
-          
-  #normkey is False when process function returns empty set
-  if normkey is not False:
-
-    #retrieve normalization parameters from postprocess_dict
-
-    mean = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mean']
-
-    quantilemin = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemin']
-
-    quantilemax = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['quantilemax']
-
-    suffix = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-  
-    #then recreate the new column title
-    suffixcolumn = column + '_' + suffix
-
-    #copy original column for implementation
-    mdf_test[suffixcolumn] = mdf_test[column].copy()
-
-    #convert all values to either numeric or NaN
-    mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
-
-    #get mean of training data
-    mean = mean  
-
-    #replace missing data with training set mean
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-  
-    #this is to avoid outlier div by zero when max = min
-    maxminusmin = quantilemax - quantilemin
-    if maxminusmin == 0:
-      maxminusmin = 1
-
-    #perform min-max scaling to test set using values from train
-    mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - quantilemin) / (maxminusmin)
-
-  #if returns an empty set we'll need to account for scenario where this transform selected as inplace operation
-  else:
-
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-
-    if inplace is True:
-      del mdf_test[column]
-
-  return mdf_test
-
-#Another demonstration, note that if we didn't need to pass any properties
-#between the train and test set, we could have just processed one at a time,
-#and in that case we wouldn't need to define separate functions for 
-#dualprocess and postprocess, we could just define what we call a singleprocess 
-#function incorporating similar data structures as the process function but passing only a single dataframe.
-#since we won't be passing parameters between train and test sets won't need to populate a normalization_dict
-#and won't need to inspect a columnkey to derive a normkey
-
-#Such as:
-def process_mnm8(df, column, category, treecategory, postprocess_dict, params = {}):
-  
-  #etc
-  
-  return df, column_dict_list
-
-#And finally here is an example of the convention for inverseprocess functions, such as may be passed 
-#to a processdict entry to support an inversion operation on a custom transformation function:
-
-def inverseprocess_mnm8(self, df, categorylist, postprocess_dict):
+def custom_test_template(df, column, normalization_dict):
   """
-  #inverse transform corresponding to process_mnm8
+  This transform will be applied to test data on a basis of a corresponding custom_train_template
+  Such as test data passed to either automunge(.) or postmunge(.)
+  Using properties from the train set basis stored in the normalization_dict
+
+  Note that when a custom_test_template is not defined the same custom_train_template 
+  will instead be applied to both train and test data
+
+  Receives df as a pandas dataframe of test data
+  and a string column header (column) 
+  which will correspond to the column with suffix that was passed to custom_train_template
+
+  Also recieves a normalization_dict dictionary
+  Which will be the same dictionary as populated in and returned from custom_train_template
+
+  Note that default infill via adjacent cell imputation will have already been performed
   """
-    
-  #normkey used to access normalization_dict entries
-  normkey = categorylist[0]
-    
-  #access normalization_dict entries used in inversion
-  minimum = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['minimum']
-  maximum = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
-  maxminusmin = \
-  postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxminusmin']
-    
-  #the normkey can also be used to access the title of input column
-  inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-  
-  #then can perform the inversion operation
-  #note that for this case there will be some information loss due to the quantile cap and floor
-  df[inputcolumn] = df[normkey] * maxminusmin + minimum
-    
-  return df, inputcolumn
+
+  #As an example, here is the example of z-score normalization 
+  #derived based on the training set mean and standard deviation
+  #which corresponds to the example given above
+
+  #Basically the workflow is we access any values needed from the normalization_dict
+  #apply the transform
+  #and return the transformed dataframe
+  #where convention is that the composition of returned newcolumns (including the recieved column)
+  #will need to match those returned from the corresponding custom_train_template
+
+  #access the train set properties from normalization_dict
+  mean = normalization_dict['mean']
+  stdev = normalization_dict['stdev']
+  multiplier = normalization_dict['multiplier']
+
+  #then apply the transformation and return the dataframe
+  df[column] = (df[column] - mean) * multiplier / stdev
+
+  return df
+
+#____________
+
+#And finally here is an example of the convention for inverseprocess functions, 
+#such as may be passed to a processdict entry to support an inversion operation 
+#on a custom transformation function (associated with postmunge(.) inversion parameter):
+
+def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalization_dict):
+  """
+  User also has the option to define a custom inversion function
+  Corresponding to custom_train_template and custom_test_template
+
+  Where the function recieves a dataframe df 
+  Containing a post-transform configuration of one or more columns whose headers are 
+  recorded in returnedcolumn_list
+  And this function is for purposes of creating a new column with header inputcolumn
+  Which inverts that transformation originally applied to produce those 
+  columns in returnedcolumn_list
+
+  Note that the returned dataframe should retain the columns in returnedcolumn_list
+  Whose retention will be managed elsewhere
+
+  Here normalization_dict is the same as populated and returned from custom_train_template 
+  as applied to the train set
+
+  Returns the transformed dataframe df with the addition of a new column as df[inputcolumn]
+  """
+
+  #As an example, here is the example of inverting z-score normalization 
+  #derived based on the training set mean and standard deviation
+  #which corresponds to the examples given above
+
+  #Basically the workflow is we access any values needed from the normalization_dict
+  #Initialize the new column inputcolumn
+  #And use values in the set from returnedcolumn_list to recover values for inputcolumn
+
+  #First let's access the values we'll need from the normalization_dict
+  mean = normalization_dict['mean']
+  stdev = normalization_dict['stdev']
+  multiplier = normalization_dict['multiplier']
+
+  #Now initialize the inputcolumn
+  df[inputcolumn] = 0
+
+  #So for the example of z-score normalizaiton, we know returnedcolumn_list will only have one entry
+  #In some other cases transforms may have returned multiple columns
+  returnedcolumn = returnedcolumn_list[0]
+
+  #now we perform the inversion
+  df[inputcolumn] = (df[returnedcolumn] * stdev / multiplier) + mean
+
+  return df
 ```
 
 ## Conclusion
