@@ -7424,6 +7424,15 @@ processdict = {'newt' : {'custom_train'     : custom_train_template,
                          'info_retention'   : True,
                          'NArowtype'        : 'numeric',
                          'MLinfilltype'     : 'numeric'}}
+			 
+#Or, as a simplified means for populating a processdict entry, 
+#when we know that our transform is similar to one in the library,
+#we can just pass a functionpointer and any entries we don't define
+#will be matched to the pointer target. 
+processdict = {'newt' : {'custom_train'     : custom_train_template,
+                         'custom_test'      : custom_test_template,
+                         'custom_inversion' : custom_inversion_template,
+                         'functionpointer'  : 'nmbr'}}
 
 #Note that for the processdict entry key, shown here as 'newt', the convention in library
 #is that this key serves as the default suffix appender for columns returned from
