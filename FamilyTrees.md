@@ -13,8 +13,8 @@ Note that any of the family tree definitions can be overwritten in an automunge(
 For simplicity just going to copy the code directly from code base where these data structures are assembled. If you need to find a specific entry recomend applying a control-F search, e.g. to find entries for a root category can search for "{'string'".
 
 ## Table of Contents
-* [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge#root-category-family-tree-definitions)
-* [Category processdict Entries](https://github.com/Automunge/AutoMunge#category-processdict-entries)
+* [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#root-category-family-tree-definitions)
+* [Category processdict Entries](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#category-processdict-entries)
 
  ___ 
 ## Root Category Family Tree Definitions
