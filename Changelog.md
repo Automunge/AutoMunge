@@ -3559,3 +3559,20 @@ am.postmunge(postprocess_dict, df_test)
 - so settled on convention that a processdict entry may include both populated processing functions and a functionpointer target
 - in other words, processing functions are now on equal footing with other processdict entries in functionpointer chains
 - in the process conducted a little sanity check walkthough on functionpointer, everything looks good
+
+6.43
+- further streamlined the custom_train_template published in readme
+- basically we previously had two dictionaries, a received dictionary with any passed parameters (params) and a returned dictionary we populated in the transform with normalization parameters (normalization_dict)
+- realized we could just combine the two, and treat the received params dictionary as a starting point for normalization_dict that had been prepopulated with any passed parameters
+- this saves steps of initializing normalization_dict and also steps for transfering any passed parameters from params to normalization_dict
+- yeah a really clean solution
+- updated default for inplace_option processdict entry. Now when omitted defaults to True. (In other words only need to specify when inplace_option is False.)
+- (this default is better aligned with custom_train conventions)
+- Added inplace_option = False specifications in process_dict library for prior omissions to match new convention.
+- revisions to the readme documentation for processdict for format, clarity, and to be more comprehensive
+- oh and big cleanup to the readme, moved the family tree definitions reference material into a seperate file
+- available in github repo as "FamilyTrees.md"
+- incorporated documentation for defaultinfill processdict option (which had forgot to include with last rollout)
+- found opportunity to simplify the code associated with functionpointer by consolidating some redundancies
+- removed labelctgy from functionpointer since it is intended to be specific to a root category's family tree
+- renamed the functionpointer support functions for clarity (_grab_functionpointer_entries, _grab_functionpointer_entries_support)
