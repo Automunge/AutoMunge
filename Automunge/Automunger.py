@@ -7091,9 +7091,9 @@ class AutoMunge:
     And where general convention in library is that the same normalization_dict 
     is saved in each column_dict populated in a transform
     
-    Note that this wrapper includes application of a default infill as adjacent cell
-    As well as other infill conventions determined based on the NArowtype process_dict 
-    entry associated with the treecategory
+    Note that this wrapper includes application of a default infill per any processdict entry for 'defaultinfill'
+    Or otherwise performs adjinfill as default
+    As well as other infill conventions determined based on the NArowtype associated with the treecategory
     
     We'll also create seperately a similar wrapper for postprocess functions applied 
     in postmunge (_custom_postprocess_wrapper)
@@ -7116,8 +7116,8 @@ class AutoMunge:
     else:
       suffix = treecategory
       
-    #note this suffixcolumn convention won't work with the suffix edge case of text transform
-    #which is fine since this is only for custom trasnforms and that is a special case
+    #note this suffixcolumn convention won't work with the two suffix edge cases of text and excl transform
+    #which is fine since this is only for transforms passed through custom_train / custom_test
     suffixcolumn = column + '_' + suffix
     
     #grab a list of current columns for a suffix overlap check performed after applying transforms
@@ -7139,11 +7139,14 @@ class AutoMunge:
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
-    #now that we've create a new column, we'll apply a default infill
+    #___
+      
+    #now that we've created a new column, we'll apply a default infill
     #contingent on the 'NArowtype' of the tree category serving as basis for this transform
     NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
     
     #first to apply default infill we'll convert any nonvalid entries to nan
+    
     if NArowtype in {'numeric'}:
       
       #convert all values to either numeric or NaN
@@ -7200,26 +7203,123 @@ class AutoMunge:
       
       #nonvalid entries are already nan
       pass
+    
+    #___
 
-    #Now that all nonvalid entries are cast as nan, we'll perform our default adjacent cell infill
-    #A potential extension could be to allow user to assign alternate default infill convention
-    #such as by either a process_dict entry or a paramater passed in assignparam.
+    #Now that all nonvalid entries are cast as nan, we'll perform our infill
+    #which will default to adjacent cell infill unless otherwise specified in processdict
 
-    #apply ffill to replace NArows with value from adjacent cell in preceding row
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
+    defaultinfill = 'adjinfill'
+    if 'defaultinfill' in postprocess_dict['process_dict'][treecategory]:
+      if isinstance(postprocess_dict['process_dict'][treecategory]['defaultinfill'], str) \
+      and postprocess_dict['process_dict'][treecategory]['defaultinfill'] \
+      in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}:
+        defaultinfill = postprocess_dict['process_dict'][treecategory]['defaultinfill']
+    
+    #a few special cases to accomodate NArowtype / defaultinfill compatibilities
+    
+    #'meaninfill' and 'medianinfill' intended for numeric data, if not a numeric NArowtype adjinfill applied
+    if defaultinfill in {'meaninfill', 'medianinfill'}:
+      if NArowtype not in {'numeric', 'integer', 'positivenumeric', 'nonnegativenumeric', 'nonzeronumeric'}:
+        defaultinfill = 'adjinfill'
+        
+    #'datetime' NArowtype only accepts adjinfill or naninfill
+    if NArowtype in {'datetime'}:
+      if defaultinfill not in {'adjinfill', 'naninfill'}:
+        defaultinfill = 'adjinfill'
+        
+    #no infill performed for 'exclude' NArowtype
+    if NArowtype in {'exclude'}:
+      defaultinfill = 'naninfill'
+      
+    #initialize a dictionary to pass default infill parameters between automunge and postmunge in column_dict
+    defaultinfill_dict = {'defaultinfill' : defaultinfill}
+    
+    if defaultinfill in {'adjinfill'}:
 
-    #we'll follow with a bfill just in case first row had a nan
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+      #apply ffill to replace NArows with value from adjacent cell in preceding row
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
 
-    #finally if all data was nan we'll just plug with 0
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+      
+    elif defaultinfill in {'meaninfill'}:
+      
+      infill_mean = mdf_train[suffixcolumn].mean()
+      defaultinfill_dict.update({'infill_mean' : infill_mean})
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mean)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
+      
+    elif defaultinfill in {'medianinfill'}:
+      
+      infill_median = mdf_train[suffixcolumn].median()
+      defaultinfill_dict.update({'infill_median' : infill_median})
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_median)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
+      
+    elif defaultinfill in {'modeinfill'}:
+      
+      infill_mode = mdf_train[suffixcolumn].mode()
+      
+      if len(infill_mode) > 0:
+        infill_mode = infill_mode[0]
+      else:
+        infill_mode = 0
+      
+      defaultinfill_dict.update({'infill_mode' : infill_mode})
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mode)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
+      
+    elif defaultinfill in {'lcinfill'}:
+      
+      #(zzzinfill as used here is just an arbitrary string)
+      mode_valuecounts_list = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
+      mode_valuecounts_list = list(mode_valuecounts_list.index)
+
+      if len(mode_valuecounts_list) > 0:
+        infill_lc = mode_valuecounts_list[-1]
+      else:
+        infill_lc = 0
+      
+      defaultinfill_dict.update({'infill_lc' : infill_lc})
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_lc)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
+      
+    elif defaultinfill in {'zeroinfill'}:
+      
+      #note that transform may not return a 0 value, for final returned 0 use assigninfill
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      
+    elif defaultinfill in {'oneinfill'}:
+      
+      #note that transform may not return a 1 value, for final returned 1 use assigninfill
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(1)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
+      
+    elif defaultinfill in {'naninfill'}:
+      #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
+      #note an adjinfill is applied later in this function, for final returned nan use assigninfill
+      pass
+      
+    #finally if prior infill still resulted in nan we'll just plug with 0
+    if defaultinfill not in {'naninfill'}:
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+    
+    #___
       
     #great now we can apply the custom_train_template to training data
     #custom_train_template will be saved as entry for 'custom_train'
-    mdf_train, newcolumns_list, normalization_dict = \
+    mdf_train, normalization_dict = \
     postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_train, suffixcolumn, params)
     
     #We'll have convention that if a corresponding custom_test_template wasn't populated
@@ -7229,34 +7329,66 @@ class AutoMunge:
       mdf_test = \
       postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
     else:
-      mdf_test, _1, _2 = \
+      mdf_test, _1 = \
       postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
     
-    #Now run an additional suffix overlap test
-    #Noting convention that if the returned newcolumns_list has a final entry as an embedded list
-    #that means there were support columns not returned
-    if isinstance(newcolumns_list[-1], list):
+    returned_columns = list(mdf_train)
+    
+    #newcolumns_list is list of returned columns including suffixcolumn
+    #may be empty when suffixcolumn not returned
+    #this might be a different order of columns vs the dataframe, that is ok for our usage
+    #the ^ operation is to accomodate both inplace scenarios
+    newcolumns_list = list((set(initial_columns) ^ set(returned_columns)) - set(initial_columns) )
       
+    #___
+    
+    #Now run some suffix overlap tests
+    
+    #If any temporary columns were created but not returned
+    #the convention is user should log in a normalization_dict entry under 'tempcolumns' for suffix overlap detection
+    if 'tempcolumns' in normalization_dict:
+      tempcolumns = normalization_dict['tempcolumns']
+      if isinstance(tempcolumns, str):
+        tempcolumns = [tempcolumns]
+        
       suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
-                                                           newcolumns_list[-1], \
+                                                           tempcolumns, \
                                                            suffixoverlap_results = suffixoverlap_results, \
                                                            printstatus = postprocess_dict['printstatus'])
-      
-      #now remove the temporary columns from newcolumns_list
-      newcolumns_list.remove(newcolumns_list[-1])
     
-    #now check suffix overlap for other columns
+    #now check suffix overlap for returned columns (noting that suffixcolumn already checked above)
     suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
                                                          newcolumns_list, \
                                                          suffixoverlap_results = suffixoverlap_results, \
                                                          printstatus = postprocess_dict['printstatus'])
     
     #add entries to normalization_dict associated with suffix and inplace
-    #(even though we won't use these to postprocess they might be useful as informational resources)
     normalization_dict.update({'suffix'  : suffix,
                                'inplace' : inplace})
     
+    #___
+    
+    #we'll perform one more infill via adjinfill in case user defined transform had unforseen edge case
+    
+    if NArowtype not in {'exclude'}:
+
+      #apply ffill to replace NArows with value from adjacent cell in preceding row
+      mdf_train[newcolumns_list] = mdf_train[newcolumns_list].fillna(method='ffill')
+      mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[newcolumns_list] = mdf_train[newcolumns_list].fillna(method='bfill')
+      mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(method='bfill')
+      
+      #finally if prior infill still resulted in nan we'll just plug with 0
+      mdf_train[newcolumns_list] = mdf_train[newcolumns_list].fillna(0)
+      mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(0)
+    
+    #___
+    
     #Now populate the returned column_dict_list
+    #(note that the column_dict entry 'defaultinfill_dict' is unique to the custom_train convention)
+    
     column_dict_list = []
     
     for newcolumn in newcolumns_list:
@@ -7273,7 +7405,8 @@ class AutoMunge:
                                  'infillmodel' : False, \
                                  'infillcomplete' : False, \
                                  'suffixoverlap_results' : suffixoverlap_results, \
-                                 'deletecolumn' : False}}
+                                 'deletecolumn' : False, \
+                                 'defaultinfill_dict' : defaultinfill_dict}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -27911,54 +28044,58 @@ class AutoMunge:
     #intentionally limiting search to user passed processdict entries instead of full process_dict
     #note this function is applied after processdict and process_dict have already been consolidated
     #and functionpointers have been applied to populate missing entries
+    #similarly transform_dict at this point has already been consolidated
     for entry in processdict:
 
       if 'labelctgy' not in process_dict[entry]:
 
         check_processdict3_valresult = True
 
-        if printstatus is True:
+        #'labelctgy' only used when entry serves as a root category in transform_dict
+        if entry in transform_dict:
 
-          print("labelctgy processdict entry wasn't provided for ", entry)
-          print("selecting arbitrary entry based on family tree")
-
-        familytree = transform_dict[entry]
-
-        if len(familytree['auntsuncles']) > 0:
-          new_labelctgy = familytree['auntsuncles'][0]
-          process_dict[entry]['labelctgy'] = new_labelctgy
           if printstatus is True:
-            print("labelctgy selected as ", new_labelctgy)
-            print()
 
-        elif len(familytree['cousins']) > 0:
-          new_labelctgy = familytree['cousins'][0]
-          process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus is True:
-            print("labelctgy selected as ", new_labelctgy)
-            print()
+            print("labelctgy processdict entry wasn't provided for ", entry)
+            print("selecting arbitrary entry based on family tree")
 
-        elif len(familytree['parents']) > 0:
-          offspringparent = familytree['parents'][0]
+          familytree = transform_dict[entry]
 
-          new_labelctgy = \
-          self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+          if len(familytree['auntsuncles']) > 0:
+            new_labelctgy = familytree['auntsuncles'][0]
+            process_dict[entry]['labelctgy'] = new_labelctgy
+            if printstatus is True:
+              print("labelctgy selected as ", new_labelctgy)
+              print()
 
-          process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus is True:
-            print("labelctgy selected as ", new_labelctgy)
-            print()
+          elif len(familytree['cousins']) > 0:
+            new_labelctgy = familytree['cousins'][0]
+            process_dict[entry]['labelctgy'] = new_labelctgy
+            if printstatus is True:
+              print("labelctgy selected as ", new_labelctgy)
+              print()
 
-        elif len(familytree['siblings']) > 0:
-          offspringparent = familytree['siblings'][0]
+          elif len(familytree['parents']) > 0:
+            offspringparent = familytree['parents'][0]
 
-          new_labelctgy = \
-          self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+            new_labelctgy = \
+            self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
-          process_dict[entry]['labelctgy'] = new_labelctgy
-          if printstatus is True:
-            print("labelctgy selected as ", new_labelctgy)
-            print()
+            process_dict[entry]['labelctgy'] = new_labelctgy
+            if printstatus is True:
+              print("labelctgy selected as ", new_labelctgy)
+              print()
+
+          elif len(familytree['siblings']) > 0:
+            offspringparent = familytree['siblings'][0]
+
+            new_labelctgy = \
+            self._check_processdict3_support(transform_dict, offspringparent, printstatus)
+
+            process_dict[entry]['labelctgy'] = new_labelctgy
+            if printstatus is True:
+              print("labelctgy selected as ", new_labelctgy)
+              print()
 
       elif 'labelctgy' in process_dict[entry]:
 
@@ -28039,6 +28176,8 @@ class AutoMunge:
     #where targetcategory is the processdict category entry that has a functionpointer entry
     #pointercategory is the corresponding functionpointer entry
     #and for chains of functionpointer entries the targetcategory remains same and pointercategory is updated
+
+    #functionpointer halts when it reaches a processdict or process_dict entry without a functionpointer
     """
     
     #counter i is here to ensure if we're recursively following chains of pointers we don't get caught in loop
@@ -28058,7 +28197,31 @@ class AutoMunge:
       if pointercategory in processdict and pointercategory != targetcategory:
         
         #if function poitner points to a category that itself has a functionpointer
+        #then after accessing entries not previously specified 
+        #we'll call _grab_processdict_functions_support recursively
         if 'functionpointer' in processdict[pointercategory]:
+
+          if 'custom_train' in processdict[pointercategory] \
+          and 'custom_train' not in processdict[targetcategory]:
+            processdict[targetcategory]['custom_train'] = processdict[pointercategory]['custom_train']
+            if 'custom_test' in processdict[pointercategory] \
+            and 'custom_test' not in processdict[targetcategory]:
+              processdict[targetcategory]['custom_test'] = processdict[pointercategory]['custom_test']
+            if 'custom_inversion' in processdict[pointercategory] \
+            and 'custom_inversion' not in processdict[targetcategory]:
+              processdict[targetcategory]['custom_inversion'] = processdict[pointercategory]['custom_inversion']
+              
+          if 'dualprocess' in processdict[pointercategory] \
+          and 'dualprocess' not in processdict[targetcategory]:
+            processdict[targetcategory]['dualprocess'] = processdict[pointercategory]['dualprocess']
+            
+          if 'singleprocess' in processdict[pointercategory] \
+          and 'singleprocess' not in processdict[targetcategory]:
+            processdict[targetcategory]['singleprocess'] = processdict[pointercategory]['singleprocess']
+            
+          if 'postprocess' in processdict[pointercategory] \
+          and 'postprocess' not in processdict[targetcategory]:
+            processdict[targetcategory]['postprocess'] = processdict[pointercategory]['postprocess']
           
           if 'inverseprocess' in processdict[pointercategory] \
           and 'inverseprocess' not in processdict[targetcategory]:
@@ -28067,6 +28230,10 @@ class AutoMunge:
           if 'info_retention' in processdict[pointercategory] \
           and 'info_retention' not in processdict[targetcategory]:
             processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
+
+          if 'defaultinfill' in processdict[pointercategory] \
+          and 'defaultinfill' not in processdict[targetcategory]:
+            processdict[targetcategory]['defaultinfill'] = processdict[pointercategory]['defaultinfill']
           
           #for chains of functionpointers, we'll still update defaultparams for each link
           if 'defaultparams' in processdict[pointercategory]:
@@ -28103,7 +28270,7 @@ class AutoMunge:
             
         else:
           
-          #function pointers have to point to a category with either a funcitonpointer or processing function entries
+          #function pointers have to point to a category with either a functionpointer or processing function entries
           if ('singleprocess' not in processdict[pointercategory]) and \
               ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]) \
           and 'custom_train' not in processdict[pointercategory]:
@@ -28114,7 +28281,7 @@ class AutoMunge:
               print("for processdict entry ", pointercategory)
               print()
 
-          #so if processing function entries were present, we can grab them and pass to targetcategory
+          #so if processing function entries were present, we can grab them and pass to targetcategory and halt the chain
           else:
             
             if 'custom_train' in processdict[pointercategory] \
@@ -28146,6 +28313,10 @@ class AutoMunge:
             if 'info_retention' in processdict[pointercategory] \
             and 'info_retention' not in processdict[targetcategory]:
               processdict[targetcategory]['info_retention'] = processdict[pointercategory]['info_retention']
+
+            if 'defaultinfill' in processdict[pointercategory] \
+            and 'defaultinfill' not in processdict[targetcategory]:
+              processdict[targetcategory]['defaultinfill'] = processdict[pointercategory]['defaultinfill']
               
             if 'defaultparams' in processdict[pointercategory]:
               if 'defaultparams' in processdict[targetcategory]:
@@ -28204,6 +28375,10 @@ class AutoMunge:
         if 'info_retention' in process_dict[pointercategory] \
         and 'info_retention' not in processdict[targetcategory]:
           processdict[targetcategory]['info_retention'] = process_dict[pointercategory]['info_retention']
+
+        if 'defaultinfill' in process_dict[pointercategory] \
+        and 'defaultinfill' not in processdict[targetcategory]:
+          processdict[targetcategory]['defaultinfill'] = process_dict[pointercategory]['defaultinfill']
           
         if 'defaultparams' in process_dict[pointercategory]:
           if 'defaultparams' in processdict[targetcategory]:
@@ -31159,7 +31334,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.41'
+    automungeversion = '6.42'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31831,8 +32006,9 @@ class AutoMunge:
     
     Returns the resulting transformed dataframe mdf_test
     
-    Note that this wrapper includes application of a default infill as adjacent cell
-    As well as other infill conventions determined based on the NArowtype process_dict entry associated with the tree category serving as basis
+    Note that this wrapper includes application of a default infill per any processdict entry for 'defaultinfill'
+    Or otherwise performs adjinfill as default
+    As well as other infill conventions determined based on the NArowtype associated with the treecategory
     
     We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
     And likewise a wrapper for custom inversions that may be performed in postmunge (_custom_inverseprocess_wrapper)
@@ -31848,22 +32024,18 @@ class AutoMunge:
     params.update({'printstatus' : postprocess_dict['printstatus'],
                    'traindata'   : postprocess_dict['traindata']})
     
-    #First we'll grab some parameters common to transformation functions
+    #First we'll grab inplace parameter common to transformation functions
     if 'inplace' in params:
       inplace = params['inplace']
     else:
       inplace = False
+        
+    #___
       
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      #suffix should always have an entry, this is just here to be consistent with convention
-      #that parameter inspections have a default when not passed
-      if normkey is not False:
-        suffix = normkey.replace(column + '_', '')
-      
-    #normkey is False when process function returned empty set
+    #normkey is False when process function applied in automunge returned an empty set
     if normkey is not False:
+
+      suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
       suffixcolumn = column + '_' + suffix
       
@@ -31876,10 +32048,13 @@ class AutoMunge:
       #treecategory is the category entry to a family tree primitive that served as basis for this transform
       treecategory = postprocess_dict['column_dict'][normkey]['category']
       
+      #___
+      
       #now apply default infill based on NArowtype
       NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
 
       #first to apply default infill we'll convert any nonvalid entries to nan
+      
       if NArowtype in {'numeric'}:
 
         #convert all values to either numeric or NaN
@@ -31927,34 +32102,102 @@ class AutoMunge:
         #nonvalid entries are already nan
         pass
       
-      #Now that all nonvalid entries are cast as nan, we'll perform our default adjacent cell infill
-      #A potential extension could be to allow user to assign alternate default infill convention
-      #such as by either a process_dict entry or a paramater passed in assignparam.
+      #___
+      
+      #Now that all nonvalid entries are cast as nan, we'll perform our default infill
 
-      #apply ffill to replace NArows with value from adjacent cell in preceding row
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
+      defaultinfill_dict = postprocess_dict['column_dict'][normkey]['defaultinfill_dict']
+      defaultinfill = defaultinfill_dict['defaultinfill']
+      
+      if defaultinfill in {'adjinfill'}:
 
-      #we'll follow with a bfill just in case first row had a nan
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+        #apply ffill to replace NArows with value from adjacent cell in preceding row
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
 
-      #finally if all data was nan we'll just plug with 0
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+        #we'll follow with a bfill just in case first row had a nan
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
+        
+      elif defaultinfill in {'meaninfill'}:
+
+        infill_mean = defaultinfill_dict['infill_mean']
+
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
+
+      elif defaultinfill in {'medianinfill'}:
+
+        infill_median = defaultinfill_dict['infill_median']
+
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
+
+      elif defaultinfill in {'modeinfill'}:
+
+        infill_mode = defaultinfill_dict['infill_mode']
+
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
+
+      elif defaultinfill in {'lcinfill'}:
+
+        infill_lc = defaultinfill_dict['infill_lc']
+
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
+        
+      elif defaultinfill in {'zeroinfill'}:
+
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+
+      elif defaultinfill in {'oneinfill'}:
+        
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
+
+      elif defaultinfill in {'naninfill'}:
+        #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
+        pass
+
+      #finally if prior infill still resulted in nan we'll just plug with 0
+      if defaultinfill not in {'naninfill'}:
+        
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      
+      #___
+      
+      #great now we can apply the custom_test_template to the test data
       
       #normalization_dict is consistent with what was populated in the automunge call to custom_train
       normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-      
-      #great now we can apply the custom_test_template to the test data
 
       #We'll have convention that if a corresponding custom_test_template wasn't populated
       #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
       if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
       and postprocess_dict['process_dict'][treecategory]['custom_test'] != None:
+
         mdf_test = \
         postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
-      else:
-        mdf_test, _1, _2 = \
-        postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
 
+      else:
+
+        mdf_test, _1 = \
+        postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
+      
+      #___
+      
+      #we'll perform one more adjinfill application in case user defined transform had any unforseen edge cases
+      
+      if NArowtype not in {'exclude'}:
+
+        newcolumns_list = postprocess_dict['column_dict'][normkey]['categorylist']
+        
+        #apply ffill to replace NArows with value from adjacent cell in preceding row
+        mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(method='ffill')
+
+        #we'll follow with a bfill just in case first row had a nan
+        mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(method='bfill')
+
+        #finally if prior infill still resulted in nan we'll just plug with 0
+        mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(0)
+      
+      #___
+      
+    #this else corresponds to cases where train processing returned an empty set
     else:
       
       #if we didn't have a normkey but this transform was designated as inplace we'll delete column
