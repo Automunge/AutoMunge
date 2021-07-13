@@ -10,7 +10,7 @@ Ok moving this portion of documentaiton from the README into a seperate file to 
 
 Note that any of the family tree definitions can be overwritten in an automunge(.) call with the transformdict parameter and any of the category properties can be overwritten in an automunge(.) call with the processdict parameter.
 
-For simplicity just going to copy the code directly from code base where these data structures are assembled. If you need to find a specific entry recomend applying a control-F search, e.g. to find entries for a root category can search for "{'string'".
+For simplicity just going to copy the code directly from code base where these data structures are assembled. If you need to find a specific entry recomend applying a control-F search, e.g. to find entries for a root category 'string' can search for "{'string'".
 
 ## Table of Contents
 * [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#root-category-family-tree-definitions)
