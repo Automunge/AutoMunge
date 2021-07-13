@@ -1351,7 +1351,7 @@ those used as root categories as well as transformation category entries to fami
 with a root category, require a corresponding entry in the processdict to define transformation category 
 properties. Only in cases where a transformdict entry is being passed to overwrite an existing category internal 
 to the library is a corresponding processdict entry not required. However note that a processdict entry can be passed 
-without a corresponding root category definition in trasnformdict, which may be used when passing a custom transformation category to a family tree primitive without offspring.
+without a corresponding root category definition in transformdict, which may be used when passing a custom transformation category to a family tree primitive without offspring.
 
 We'll describe the options for processdict entries here. For clarity processdict refers to the user passed data structure which is subsequently consolidated into the internal "process_dict" (with underscore) data structure.
 
