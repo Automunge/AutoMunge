@@ -852,7 +852,7 @@ original columns are retained in the returned set. 'ordinal' and 'ordinalretain'
 are comparable to True and 'retain' with the exception that the consolidated 
 set is returned in an ordinal encoding instead of a binarization. A user can also
 pass a list of target column headers if consolidation is only desired on a subset of the categoric
-features. The column headers may be as received column headers or returhed column headers
+features. The column headers may be as recieved column headers or returhed column headers
 with suffix appenders included. To allow distinguishing between the other conventions
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
 a user may optionally include a few special entries as the first item in the list to
@@ -1473,42 +1473,45 @@ Since specification of transformation functions can be kind of cumbersome in ord
 to dig out from the codebase naming conventions for internally defined functions, a
 simplification is available when populating a processdict for a user passed entry by
 way of the 'functionpointer' entry. When a functionpointer category entry is included, 
-the transformation functions and other entries that are not already specified are automatically populated based on entries found in 
-processdict entries of the pointer, such as with entries for dualprocess, singleprocess, 
-postprocess, inverseprocess, and info_retention, and also the other processdict entries. 
+the transformation functions and other entries that are not already specified are 
+automatically populated based on entries found in processdict entries of the pointer. 
 For cases where a functionpointer points to a processdict entry that itself has a functionpointer 
-entry, chains of pointers are followed until an entry with defined processing functions is reached. 
-defaultparam entries of each pointer link are also accessed for update, and if the new category 
-specification contains any redundant defaultparam entries with those found in a pointer 
-category the new category entries take precedence. Similarly for chains of pointers the nearer
-links of other entries take precedence.
+entry, chains of pointers are followed until an entry without functionpointer is reached. 
+defaultparam entries of each pointer link are also accessed for update, and if the prior category 
+specification contains any redundant defaultparam entries with those found in a pointer target 
+category the prior category entries take precedence. Similarly for chains of pointers the entries 
+specified in nearer links take precedence over entries further down the chain.
 
 In other words, if you are populating a new processdict transformation 
 category and you want the transformation functions and other entries to match an existing category, you 
 can simply pass the existing category as a functionpointer entry to the new category. 
 Here is an example if we want to match the DLmm category demonstrated above for a new 
-category 'newt', such as would be useful if we wanted to define an alternate DLmm family 
-tree in a corresponding newt transformdict entry.
+category 'newt' but with an alternate 'NArowtype' as an arbitrary example, such as would be useful if we 
+wanted to define an alternate DLmm family tree in a corresponding newt transformdict entry.
 ```
 processdict =  {'newt' : {'functionpointer' : 'DLmm',
-                          'NArowtype' : 'numeric',
-                          'MLinfilltype' : 'numeric'}}
+                          'NArowtype' : 'postitivenumeric'}}
 			  
 #or an even simpler approach if no overwrites are desired could just be to copy everything
 processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
-
-#Processing functions following the conentions of those defined internal to the library
-#can be passed to dualprocess / singleprocess / postprocess / inverseprocess
-
-#Or for the greatly simplified conventions available 
-#for custom externally defined transformation functions
-#can be passed to custom_train / custom_test / custom_inversion
-#Demonstrations for custom transformation functions are documented further below
-#In the section Custom Transformation Functions
-#(in cases of redundancy populated custom transformation functions take precedence)
 ```
-Note that when passing a processdict entry to overwrite an internally defined processdict entry, you
-can pass the functionpointer to point to itself, and then only have to populate the entries you are overwriting.
+We can also use functionpointer when overwriting a category defined internal to library. For
+example, if we wanted to change the default parameters applied with the mnmx category, we
+could overwerite the mnmx process_dict entry such as to match the current entry but with 
+updated defaultparams.
+```
+processdict =  {'mnmx' : {'functionpointer' : 'mnmx',
+                          'defaultparams'   : {'floor' : True}}}
+```
+
+Processing functions following the conentions of those defined internal to the library
+can be passed to dualprocess / singleprocess / postprocess / inverseprocess
+
+Or for the greatly simplified conventions available 
+for custom externally defined transformation functions
+can be passed to custom_train / custom_test / custom_inversion.
+Demonstrations for custom transformation functions are documented further below in the 
+section Custom Transformation Functions (in cases of redundancy populated custom transformation functions take precedence over the dualprocess / singleprocess / postprocess / inverseprocess conventions).
 
 Note that many of the transformation functions in the library have support for distinguishing between 
 inplace operations vs returning a column copied from the input. Inplace operations are expected to 
@@ -7389,12 +7392,13 @@ demonstrate how we can access parameters passed through assignparam. We'll assoc
 the transform with a new category we'll call 'newt' which we'll define with entries
 passed in the transformdict and processdict data structures.
 
-```
-#Let's create a really simple family tree for the new root category 'newt' which
-#simply creates a column identifying any rows subject to infill (NArw), performs 
-#the z-score normalization we'll define below, and separately aggregates a collection
-#of standard deviation bins with the 'bins' transform.
 
+Let's create a really simple family tree for the new root category 'newt' which
+simply creates a column identifying any rows subject to infill (NArw), performs 
+the z-score normalization we'll define below, and separately aggregates a collection
+of standard deviation bins with the 'bins' transform.
+
+```
 transformdict = {'newt' : {'parents'       : [],
                            'siblings'      : [],
                            'auntsuncles'   : ['newt', 'bins'],
@@ -7403,54 +7407,49 @@ transformdict = {'newt' : {'parents'       : [],
                            'niecesnephews' : [],
                            'coworkers'     : [],
                            'friends'       : []}}
+```
 
-#Note that since this newt requires passing normalization parameters derived
-#from the train set to process the test set, we'll need to create two separate 
-#transformation functions, the first a "custom_train" function that processes
-#the train set and records normalization paramters, and the second
-#a "custom_test" that only processes the test set on its own using the parameters
-#derived during custom_train. (Note that if we don't need properties from the 
-#train set to process the test set we would only need to define a custom_train.)
+Note that since this newt requires passing normalization parameters derived
+from the train set to process the test set, we'll need to create two separate 
+transformation functions, the first a "custom_train" function that processes
+the train set and records normalization paramters, and the second
+a "custom_test" that only processes the test set on its own using the parameters
+derived during custom_train. (Note that if we don't need properties from the 
+train set to process the test set we would only need to define a custom_train.)
 
-#So what's being demonstrated here is that we're populating a processdict entry
-#which will pass the custom transformation functions that we'll define below
-#to associate them with the category for use when that category is entered in one
-#of the family tree primitives associated with a root categoy. Note that the entries
-#for custom_test and custom_inversion are both optional.
+So what's being demonstrated here is that we're populating a processdict entry
+which will pass the custom transformation functions that we'll define below
+to associate them with the category for use when that category is entered in one
+of the family tree primitives associated with a root categoy. Note that the entries
+for custom_test and custom_inversion are both optional, and info_retention is associated
+with the inversion.
 
+```
 processdict = {'newt' : {'custom_train'     : custom_train_template,
                          'custom_test'      : custom_test_template,
                          'custom_inversion' : custom_inversion_template,
                          'info_retention'   : True,
                          'NArowtype'        : 'numeric',
                          'MLinfilltype'     : 'numeric'}}
-			 
-#Or, as a simplified means for populating a processdict entry, 
-#when we know that our transform is similar to one in the library,
-#we can just pass a functionpointer and any entries we don't define
-#will be matched to the pointer target. 
-processdict = {'newt' : {'custom_train'     : custom_train_template,
-                         'custom_test'      : custom_test_template,
-                         'custom_inversion' : custom_inversion_template,
-                         'functionpointer'  : 'nmbr'}}
+```
+Note that for the processdict entry key, shown here as 'newt', the convention in library
+is that this key serves as the default suffix appender for columns returned from
+the transform unless otherwise specified in assignparam.
 
-#Note that for the processdict entry key, shown here as 'newt', the convention in library
-#is that this key serves as the default suffix appender for columns returned from
-#the transform unless otherwise specified in assignparam.
+Now we have to define the custom processing functions which we are passing through
+the processdict to automunge.
 
-#Now we have to define the custom processing functions which we are passing through
-#the processdict to automunge.
+Here we'll define a "custom_train" function intended to process a train set and
+derive any properties need to process test data, which will be returned in a dictionary
+we'll refer to as the normalization_dict. Note that the normalization_dict can also
+be used to store any drift statistics we want to collect for a postmunge driftreport.
+The test data can then be prepared with the custom_test we'll demonstrate next 
+(unless custom_test is omitted in the processdict in which case test data 
+will be prepared with the same custom_train function).
 
-#Here we'll define a "custom_train" function intended to process a train set and
-#derive any properties need to process test data, which will be returned in a dictionary
-#we'll refer to as the normalization_dict. The test data can then be prepared with 
-#the custom_test we'll demonstrate next (unless custom_test is omitted in the processdict
-#in which case test data will be prepared with the same custom_train function).
-
-#Now we'll define the function 
-#(note that if defining for the internal library 
-#an addiitonal self parameter required as first argument)
-
+Now we'll define the function. (Note that if defining for the internal library 
+an addiitonal self parameter required as first argument.)
+```
 def custom_train_template(df, column, params = {}):
   """
   #Template for custom processing function to be applied to a train feature set.
@@ -7468,25 +7467,24 @@ def custom_train_template(df, column, params = {}):
   #which will already have the suffix appender incorporated when this is applied
 
   #params is a dictionary for any parameters passed in assignparam
+  #(or for parameters designated in the processdict entry for defaultparams)
 
   #returns the resulting transformed dataframe as df
-
-  #returns a list of newly derived columns as newcolumns_list
-  #where newcolumns_list should include suffixcolumn as an entry when included in returned data
-  #in general newcolumns_list is a list of string column headers
-  #although the final entry in the newcolumns_list may be passed as an embedded list 
-  #of additional string column headers
-  #for cases where temperarory columns are created and removed as part of a transform
-  #(which will be used for suffix overlap detection of these temporary columns)
 
   #returns normalization_dict, which is a dictionary for storing properties derived train data
   #that may then be accessed to consistently transform test data
   #note that any desired drift statistics can also be stored in normalization_dict
   #e.g. normalization_dict = {'property' : property}
+  
+  #Please note that normalization_dict has reserved strings in the keys 
+  #of 'inplace', 'suffix', and 'tempcolumns'
 
-  #note that external to this function call 
-  #a default infill of adjacent cell imputation will already have been applied
-  #(which is a precursor to any application of ML infill)
+  #note that prior to this function call 
+  #a datatype casting based on the NArowtype processdict entry may have been performed
+  #as well as a default infill of adjinfill 
+  #unless infill type otherwise specified in a defaultinfill processdict entry
+  #note that this default infill is a precursor to ML infill
+
   #and suffix overlap detection will be conducted after the function is applied 
   #based on the entries returned in newcolumns_list
   """
@@ -7532,57 +7530,63 @@ def custom_train_template(df, column, params = {}):
                              'maximum': maximum})
 
   #Now we can apply the transformation
+  
   #The generic formula for z-score normalization is (x - mean) / stdev
   #here we incorporate an additional variable as the multiplier parameter (defaults to 1)
   df[column] = (df[column] - mean) * multiplier / stdev
 
-  #great, the data is transformed, final step is to assemble a list of any returned columns
-  #this list should include the received column when still included in the returned dataframe
-  #(which will already have suffix appender included)
-  newcolumns_list = [column]
-
-  #Note that newcolumns_list can also be an empty list when no columns (including the passed column) are returned.
-
-  #Note that if we had to create any temporary support columns as part of transform that weren't returned
-  #we should embed an additional list as final entry to newcolumns_list, e.g.
-  # newcolumns_list = [column, [tempcolumn]]
-
-  return df, newcolumns_list, normalization_dict
-
-#____________
+  #Note that it is ok to return multiple columns, 
+  #we recommend naming them as a function of the received column header 
+  #e.g. newcolumn = column + 'string'
+  #or e.g. newcolumn = column + '_' + str(int)
   
-#and then since this is a method that passes values between the train
-#and test sets, we'll need to define a corresponding "custom_test" function
-#intended for use on test data
+  #Note that it is ok to delete the received column from dataframe as part of transform if desired
 
+  #If we created any other temporary columns as part of transform that weren't returned
+  #we should log their applied column headers as a normalization_dict entry under 'tempcolumns'
+  # normalization_dict.update('tempcolumns' : [tempcolumn]}
+
+  return df, normalization_dict
+```
+  
+And then since this is a method that passes values between the train
+and test sets, we'll need to define a corresponding "custom_test" function
+intended for use on test data.
+
+```
 def custom_test_template(df, column, normalization_dict):
   """
-  This transform will be applied to test data on a basis of a corresponding custom_train_template
-  Such as test data passed to either automunge(.) or postmunge(.)
-  Using properties from the train set basis stored in the normalization_dict
+  #This transform will be applied to test data 
+  #on a basis of a corresponding custom_train entry
+  #Such as test data passed to either automunge(.) or postmunge(.)
+  #Using properties from the train set basis stored in the normalization_dict
 
-  Note that when a custom_test_template is not defined the same custom_train_template 
-  will instead be applied to both train and test data
+  #Note that when a custom_test entry is not defined, 
+  #The custom_train entry will instead be applied to both train and test data
 
-  Receives df as a pandas dataframe of test data
-  and a string column header (column) 
-  which will correspond to the column with suffix that was passed to custom_train_template
+  #Receives df as a pandas dataframe of test data
+  #and a string column header (column) 
+  #which will correspond to the column (with suffix appender already included) 
+  #that was passed to custom_train
 
-  Also receives a normalization_dict dictionary
-  Which will be the same dictionary as populated in and returned from custom_train_template
+  #Also receives a normalization_dict dictionary
+  #Which will be the dictionary populated in and returned from custom_train
 
-  Note that default infill via adjacent cell imputation will have already been performed
+  #note that prior to this function call 
+  #a datatype casting based on the NArowtype processdict entry may have been performed
+  #as well as a default infill of adjinfill 
+  #unless infill type otherwise specified in a defaultinfill processdict entry
   """
 
-  #As an example, here is the example of z-score normalization 
+  #As an example, here is the corresponding z-score normalization 
   #derived based on the training set mean and standard deviation
-  #which corresponds to the example given above
+  #which was populated in a normalization_dict in the custom_train example given above
 
   #Basically the workflow is we access any values needed from the normalization_dict
   #apply the transform
   #and return the transformed dataframe
-  #where convention is that the composition of returned newcolumns (including the received column)
-  #will need to match those returned from the corresponding custom_train_template
+  #where convention is that the composition and headers of returned columns
+  #will need to match those returned from the corresponding custom_train
 
   #access the train set properties from normalization_dict
   mean = normalization_dict['mean']
@@ -7593,35 +7597,38 @@ def custom_test_template(df, column, normalization_dict):
   df[column] = (df[column] - mean) * multiplier / stdev
 
   return df
+```
 
-#____________
+And finally here is an example of the convention for inverseprocess functions, 
+such as may be passed to a processdict entry to support an inversion operation 
+on a custom transformation function (associated with postmunge(.) inversion parameter).
 
-#And finally here is an example of the convention for custom_inversion functions, 
-#such as may be passed to a processdict entry to support an inversion operation 
-#on a custom transformation function (associated with postmunge(.) inversion parameter):
-
+```
 def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalization_dict):
   """
-  User also has the option to define a custom inversion function
-  Corresponding to custom_train and custom_test
+  #User also has the option to define a custom inversion function
+  #Corresponding to custom_train and custom_test
 
-  Where the function receives a dataframe df 
-  Containing a post-transform configuration of one or more columns whose headers are 
-  recorded in returnedcolumn_list
-  And this function is for purposes of creating a new column with header inputcolumn
-  Which inverts that transformation originally applied to produce those 
-  columns in returnedcolumn_list
+  #Where the function receives a dataframe df 
+  #Containing a post-transform configuration of one or more columns whose headers are 
+  #recorded in returnedcolumn_list
+  #And this function is for purposes of creating a new column with header inputcolumn
+  #Which inverts that transformation originally applied to produce those 
+  #columns in returnedcolumn_list
 
-  Note that the returned dataframe should retain the columns in returnedcolumn_list
-  Whose retention will be managed elsewhere
+  #Here normalization_dict is the same as populated and returned from a corresponding custom_train
+  #as applied to the train set
 
-  Here normalization_dict is the same as populated and returned from custom_train_template 
-  as applied to the train set
-
-  Returns the transformed dataframe df with the addition of a new column as df[inputcolumn]
+  #Returns the transformed dataframe df with the addition of a new column as df[inputcolumn]
+  
+  #Note that the returned dataframe should retain the columns in returnedcolumn_list
+  #Whose retention will be managed elsewhere
+  
+  #Please note that the general convention in library is that entries not successfully recovered
+  #may be recorded by the reserved string 'zzzinfill'
   """
 
-  #As an example, here is the example of inverting z-score normalization 
+  #As an example, here we'll be inverting the z-score normalization 
   #derived based on the training set mean and standard deviation
   #which corresponds to the examples given above
 
