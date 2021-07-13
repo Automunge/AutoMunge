@@ -852,7 +852,7 @@ original columns are retained in the returned set. 'ordinal' and 'ordinalretain'
 are comparable to True and 'retain' with the exception that the consolidated 
 set is returned in an ordinal encoding instead of a binarization. A user can also
 pass a list of target column headers if consolidation is only desired on a subset of the categoric
-features. The column headers may be as recieved column headers or returhed column headers
+features. The column headers may be as received column headers or returned column headers
 with suffix appenders included. To allow distinguishing between the other conventions
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
 a user may optionally include a few special entries as the first item in the list to
@@ -1504,14 +1504,15 @@ processdict =  {'mnmx' : {'functionpointer' : 'mnmx',
                           'defaultparams'   : {'floor' : True}}}
 ```
 
-Processing functions following the conentions of those defined internal to the library
+Processing functions following the conventions of those defined internal to the library
 can be passed to dualprocess / singleprocess / postprocess / inverseprocess
 
 Or for the greatly simplified conventions available 
 for custom externally defined transformation functions
 can be passed to custom_train / custom_test / custom_inversion.
 Demonstrations for custom transformation functions are documented further below in the 
-section Custom Transformation Functions (in cases of redundancy populated custom transformation functions take precedence over the dualprocess / singleprocess / postprocess / inverseprocess conventions).
+section Custom Transformation Functions. (Note that in cases of redundancy, populated 
+custom transformation functions take precedence over the dualprocess / singleprocess conventions).
 
 Note that many of the transformation functions in the library have support for distinguishing between 
 inplace operations vs returning a column copied from the input. Inplace operations are expected to 
@@ -7448,7 +7449,7 @@ The test data can then be prepared with the custom_test we'll demonstrate next
 will be prepared with the same custom_train function).
 
 Now we'll define the function. (Note that if defining for the internal library 
-an addiitonal self parameter required as first argument.)
+an additional self parameter required as first argument.)
 ```
 def custom_train_template(df, column, params = {}):
   """
@@ -7585,7 +7586,7 @@ def custom_test_template(df, column, normalization_dict):
   #Basically the workflow is we access any values needed from the normalization_dict
   #apply the transform
   #and return the transformed dataframe
-  #where convention is that the composition and headers of returned columns
+  #where convention is that the order, quantity, and headers of returned columns
   #will need to match those returned from the corresponding custom_train
 
   #access the train set properties from normalization_dict
