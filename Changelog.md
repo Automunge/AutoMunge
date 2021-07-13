@@ -3535,3 +3535,27 @@ am.postmunge(postprocess_dict, df_test)
 - improved process flow for function pointer so that it only access dual/single/post process functions if they are not already populated
 - lowered printout tier for unspecified labelctgy assignment from False to True
 - reverted convention for _getNArows from evaluating a column to evaluating a copy of the column (helps to preserve data types)
+
+6.42
+- further simplified conventions for user defined transformation functions
+- eliminated the need for a returned list of column headers from custom_train which is now automatically derived
+- only exception is for support columns created but not returned, their headers should be designated by a normalization_dict entry as 'tempcolumns' for purposes of suffix overlap detection
+- now user defined custom transformation functions support designation of alternate default infill conventions in processdict entry
+- where with 6.41 the transforms applied adjinfill, which will remain the default when not specified
+- otherwise to designate alternate default infills to a transformation category can set processdict entry for 'defaultinfill'
+- where defaultinfill may be passed as one of strings {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}
+- note this is only designating the infill performed as a precursor to any applicaiton of ML infill
+- or as a precursor to other infill conventions when assigned to a column in assigninfill
+- defaultinfill includes functionpointer support
+- added one additional infill application for custom transformation functions as adjinfill, but this one following their application instead of preceding
+- which is meant to accomodate unforeseen edge cases in user defined transforms
+- in the process a few various cleanups to the custom_train support functions _custom_process_wrapper and _custom_postprocess_wrapper
+- found and fixed a bug for suffix attachment in _custom_postprocess_wrapper
+- finally a slight rework of the processdict functionpointer option
+- originally functionpointer was just intended for processing functions and thus functionpointers weren't supposed to be entered when processing functions were already present
+- then we added convention that other entries of the pointer target were also copied when not previously specified
+- with pointer potentially following chains of pointer targets until reaching a stopping point based on finding processing functions
+- realized it made more sense to halt functionpointer when it reaches an entry without pointer as opposed to reaching an entry with processing functions
+- so settled on convention that a processdict entry may include both populated processing functions and a functionpointer target
+- in other words, processing functions are now on equal footing with other processdict entries in functionpointer chains
+- in the process conducted a little sanity check walkthough on functionpointer, everything looks good
