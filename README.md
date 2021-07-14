@@ -4240,10 +4240,19 @@ is that this key serves as the default suffix appender for columns returned from
 the transform unless otherwise specified in assignparam.
 
 Note that for transforms in the custom_train convention, an initial infill is automatically
-applied as adjacent cell infill to serve as precursor to ML infill. A user may also specify
-by a 'defaultinfill' processdict entry other conventions for this initial infill associated
+applied as adjacent cell infill to serve as precursor to ML infill. A user may optionally specify
+by a 'defaultinfill' processdict entry alternate conventions for this initial infill associated
 with the transformation category, as one of {'adjinfill', 'meaninfill', 'medianinfill', 
 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}.
+```
+processdict = {'newt' : {'custom_train'     : custom_train_template,
+                         'custom_test'      : custom_test_template,
+                         'custom_inversion' : custom_inversion_template,
+                         'info_retention'   : True,
+                         'defaultinfill'    : 'meaninfill',
+                         'NArowtype'        : 'numeric',
+                         'MLinfilltype'     : 'numeric'}}
+```
 
 Now we have to define the custom processing functions which we are passing through
 the processdict to automunge.
