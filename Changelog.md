@@ -3576,3 +3576,25 @@ am.postmunge(postprocess_dict, df_test)
 - found opportunity to simplify the code associated with functionpointer by consolidating some redundancies
 - removed labelctgy from functionpointer since it is intended to be specific to a root category's family tree
 - renamed the functionpointer support functions for clarity (_grab_functionpointer_entries, _grab_functionpointer_entries_support)
+
+6.44
+- added post-transform data type conversion to custom_train and custom_test wrappers
+- dtype conversion is based on MLinfilltype
+- where numeric sets are converted elsewhere based on floatprecision parameter
+- boolean integer sets 
+- ordinal sets are given a conditional dtype based on size of the encoding space (determined by max entry in train set)
+- now transformations passed through custom_train convention are followed by a dtype conversion conditional on the assigned MLinfilltype
+- where {'numeric', 'concurrent_nmbr'} have datatype conversion performed elsewhere based on floatprecision parameter
+- {'binary', 'multirt', '1010', 'concurrent_act', 'boolexclude'} are cast as np.int8 since entries are boolean integers
+- ordinal sets {'singlct', 'ordlexclude'} are given a conditional (uint 8/16/32) dtype based on size of encoding space as determined by max activation in train data
+- {'integer', 'exclude', 'totalexclude'} have no conversion, assumes any conversion takes place in transformation function if desired
+- also new processdict option as dtype_convert which can be passed as boolean, defaults to True when not specified
+- when dtype_convert == False, data returned from custom_train for the category are excluded from dtype conversion
+- dtype_convert is also inspected to exclude from floatprecision conversions in both the custom_train convention and dual/singleprocess conventions
+- where floatprecision refers to the automunge(.) parameter to set default returned float type
+- (in general, we use lower bandwidth data types as defaults for floats than pandas because we assume data is returned normalized, I think pandas generally defaults to float64 when not otherwise designated, floatprecision devaults to 32 and can also be set to 16/64. we also try to use smallest possible integer type for integer encodings, either int8 for boolean integers or uint8/16/32 for ordinal encodings based on size of encoding space. passthrough columns via excl leave received data types intact. continous integer sets are based on whatever is applied in the transformation function.)
+- small tweak to custom_train convention, now temporary columns logged as tempcolumns can have headers of other data types (like integers)
+- settled on convention that integer mlinfilltype defaults to int32 data type unless otherwise applied in transformation function
+- renamed the column_dict entry populated in custom_process_wrapper from defaultinfill_dict to custom_process_wrapper_dict for clarity (since now using to store properties for both infill and dtype conversion)
+- rewrote function description for _assembletransformdict
+- much clearer now
