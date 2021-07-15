@@ -67,33 +67,99 @@ class AutoMunge:
     pass
 
   def _assembletransformdict(self, binstransform, NArw_marker):
-    '''
-    #assembles the range of transformations to be applied based on the evaluated
-    #category of data
-    #the primitives are intented as follows:
-    #_greatgrandparents_: supplemental column derived from source column, only applied
-    #to first generation, with downstream transforms included
-    #_grandparents_: supplemental column derived from source column, only applied
-    #to first generation
-    #_parents_: replace source column, with downstream trasnforms performed
-    #_siblings_: supplemental column derived from source column,
-    #with downstream transforms performed
-    #_auntsuncles_: replace source column, without downstream transforms performed
-    #_cousins_: supplemental column derived from source column,
-    #without downstream transforms performed
-    #downstream transform primitives are:
-    #_children_: becomes downstream parent
-    #_niecenephews_: treated like a downstream sibling
-    #_coworkers_: becomes a downstream auntsuncles
-    #_friends_: become downstream cousins    
+    """
+    #populates the transform_dict data structure
+    #which is the internal library that is subsequently consolidated 
+    #with any user passed transformdict
     
-    #for example, if we set 'bxcx' entry to have both 'bxcx' as parents and
-    #'nmbr' as cousin, then the output would be column_nmbr, column_bxcx_nmbr
-    #(because 'bxcx' has a downstream primitive entry of 'nmbr' as well 
+    #transform_dict is for purposes of populating
+    #for each transformation category's use as a root category
+    #a "family tree" set of associated transformation categories
+    #which are for purposes of specifying the type and order of transformation functions
+    #to be applied when a transformation category is assigned as a root category
     
-    #note a future extension will allow automunge class to run experiments
-    #on different configurations of trasnform_dict to improve the feature selection
-    '''
+    #we'll refer to the category key to a family as the "root category"
+    #we'll refer to a transformation category entered into 
+    #a family tree primitive as a "tree category"
+
+    #a transformation category may serve as both a root category
+    #and a tree category
+
+    #each transformation category will have a set of properties assigned
+    #in the corresponding process_dict data structure
+    #including associated transformation functions, data properties, and etc.
+
+    #a root category may be assigned to a column with the user passed assigncat
+    #or when not specified may be determined under automation via _evalcategory
+
+    #when it applying transformations
+    #the transformation functions associated with a root category
+    #will not be applied unless that same category is populated as a tree category
+
+    #the family tree primitives are for purposes of specifying order of transformations
+    #as may include generations and branches of derivations
+    #as well as for managing column retentions in the returned data
+    #(as in some cases intermediate stages of transformations may or may not have desired retention)
+
+    #the family tree primitives can be distinguished by types of 
+    #upstream/downstream, supplement/replace, offsping/no offspring
+
+    #___________
+    #'parents' :
+    #upstream / first generation / replaces column / with offspring
+
+    #'siblings':
+    #upstream / first generation / supplements column / with offspring
+
+    #'auntsuncles' :
+    #upstream / first generation / replaces column / no offspring
+
+    #'cousins' :
+    #upstream / first generation / supplements column / no offspring
+
+    #'children' :
+    #downstream parents / offspring generations / replaces column / with offspring
+
+    #'niecesnephews' :
+    #downstream siblings / offspring generations / supplements column / with offspring
+
+    #'coworkers' :
+    #downstream auntsuncles / offspring generations / replaces column / no offspring
+
+    #'friends' :
+    #downstream cousins / offspring generations / supplements column / no offspring
+    #___________
+
+    #each of the family tree primitives associated with a root category
+    #may have entries of zero, one, or more transformation categories
+    
+    #when a root category is assigned to a column
+    #the upstream primitives are inspected
+    
+    #when a tree category is found 
+    #as an entry to an upstream primitive associated with the root category
+    #the transformation functions associated with the tree category are performed
+
+    #if any tree categories are populated in the upstream replacement primitives
+    #their inclusion supercedes supplement primitive entries
+    #and so the input column to the transformation is not retained in the returned set
+    #with the column replacement either achieved by an inplace transformation
+    #or subsequent deletion operation
+
+    #when a tree category is found
+    #as an entry to an upstream primitive with offspring
+    #after the associated transformation function is performed
+    #the downstream primitives of the family tree of the tree category is inspected
+    #and those downstream primitives are treated as a susequent generation's upstream primitives
+    #where the input column to that subsequent generation is the column returned 
+    #from the transformation function associated with the upstream tree category
+
+    #this is an easy point of confusion so as further clarification on this point
+    #the downstream primitives associated with a root category
+    #will not be inspected when root category is applied
+    #unless that root category is also entered as a tree category entry
+    #in one of the root category's upstream primitives with offspring
+    """
 
     transform_dict = {}
 
@@ -3505,7 +3571,8 @@ class AutoMunge:
 
     #___________________________________________________________________________
     #Other optional entries for processdict include:
-    #info_retention, inplace_option, defaultparams, defaultinfill, labelctgy, and functionpointer.
+    #info_retention, inplace_option, defaultparams, labelctgy, 
+    #defaultinfill, dtype_convert, and functionpointer.
 
     #___________________________________________________________________________
     #info_retention: boolean marker associated with an inversion operation that helps inverison prioritize
@@ -3536,6 +3603,13 @@ class AutoMunge:
     #               as part of a custom_train entry
 
     #___________________________________________________________________________
+    #dtype_convert: this option is intended for the custom_train convention, aceepts boolean entries,
+    #               defaults to True when not specified, False turns off a data type conversion
+    #               that is applied after custom_train transformation functions based on MLinfilltype.
+    #               May also be used to deactivate a floatprecision conversion for any category. 
+    #               This option primarily included to support special cases and not intended for wide use.
+
+    #___________________________________________________________________________
     #labelctgy: an optional entry, should be a string entry of a single transformation category 
     #           as entered in the family tree when the category of the processdict entry is used as a root category. 
     #           Used to determine a basis of feature selection for cases where root 
@@ -3543,7 +3617,7 @@ class AutoMunge:
     #           Also used in label frequency levelizer. 
     #           Note that since this is only used for small edge case populating a labelctgy entry is optional. 
     #           If one is not assigned or accessed based on functionpointer, an arbitrary entry will be accessed 
-    #           from the family tree.
+    #           from the family tree. This option primarily included to support special cases.
 
     #___________________________________________________________________________
     #functionpointer: Only supported in user passed processdict, a functionpointer entry 
@@ -3560,13 +3634,8 @@ class AutoMunge:
     #___________________________________________________________________________
     #Other clarifications:
     #Note that NArowtype is associated with a category's use as a root category, 
-    #such as may be assigned to a column in assigncat
-    #MLinfilltype is associated with a category's use as a transformation category entry 
-    #to some root category's family tree primitives
-    #labelctgy is associated with a category's use as a root category for a label column 
-    #when conducting feature importance
-
-    #note to self that any future updates such as additional supported entries should be carried through to functionpointer functions
+    #and also for a category's use as a tree category in the custom_train convention
+    #MLinfilltype is associated with a category's use as a tree category
     '''
     
     process_dict = {}
@@ -7506,7 +7575,9 @@ class AutoMunge:
       defaultinfill = 'naninfill'
       
     #initialize a dictionary to pass default infill parameters between automunge and postmunge in column_dict
-    defaultinfill_dict = {'defaultinfill' : defaultinfill}
+    custom_process_wrapper_dict = {'defaultinfill' : defaultinfill}
+    
+    #(note custom_process_wrapper_dict also may be used for storing properties associated with dtype conversion below)
     
     if defaultinfill in {'adjinfill'}:
 
@@ -7521,7 +7592,7 @@ class AutoMunge:
     elif defaultinfill in {'meaninfill'}:
       
       infill_mean = mdf_train[suffixcolumn].mean()
-      defaultinfill_dict.update({'infill_mean' : infill_mean})
+      custom_process_wrapper_dict.update({'infill_mean' : infill_mean})
       
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mean)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
@@ -7529,7 +7600,7 @@ class AutoMunge:
     elif defaultinfill in {'medianinfill'}:
       
       infill_median = mdf_train[suffixcolumn].median()
-      defaultinfill_dict.update({'infill_median' : infill_median})
+      custom_process_wrapper_dict.update({'infill_median' : infill_median})
       
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_median)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
@@ -7543,7 +7614,7 @@ class AutoMunge:
       else:
         infill_mode = 0
       
-      defaultinfill_dict.update({'infill_mode' : infill_mode})
+      custom_process_wrapper_dict.update({'infill_mode' : infill_mode})
       
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mode)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
@@ -7560,7 +7631,7 @@ class AutoMunge:
       else:
         infill_lc = 0
       
-      defaultinfill_dict.update({'infill_lc' : infill_lc})
+      custom_process_wrapper_dict.update({'infill_lc' : infill_lc})
       
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_lc)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
@@ -7621,7 +7692,7 @@ class AutoMunge:
     #the convention is user should log in a normalization_dict entry under 'tempcolumns' for suffix overlap detection
     if 'tempcolumns' in normalization_dict:
       tempcolumns = normalization_dict['tempcolumns']
-      if isinstance(tempcolumns, str):
+      if not isinstance(tempcolumns, list):
         tempcolumns = [tempcolumns]
         
       suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
@@ -7659,8 +7730,57 @@ class AutoMunge:
     
     #___
     
+    #now perform a datatype conversion based on MLinfilltype
+    
+    dtype_convert = True
+    #user can deactivate dtype convert in processdict if desired
+    if 'dtype_convert' in postprocess_dict['process_dict'][treecategory]:
+      if postprocess_dict['process_dict'][treecategory]['dtype_convert'] is False:
+        dtype_convert = False
+        
+    #we'll store any parameters for conditional dtype in custom_process_wrapper_dict
+    custom_process_wrapper_dict.update({'dtype_convert' : dtype_convert})
+    
+    if dtype_convert is True:
+
+      MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
+
+      if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+        #datatype conversion performed elsewhere based on floatprecision parameter
+        pass
+
+      if MLinfilltype in {'binary', 'multirt', '1010', 'concurrent_act', 'boolexclude'}:
+        #datatype cast as np.int8 since entries are boolean integers
+        mdf_train[newcolumns_list] = mdf_train[newcolumns_list].astype(np.int8)
+        mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.int8)
+
+      if MLinfilltype in {'singlct', 'ordlexclude'}:
+        #ordinal sets are given a conditional dtype based on max activation
+        #this can be deactivated in processdict with dtype_convert if desired
+        
+        #this should be a single column, applying newcolumns_list[0] instead of suffixcolumn for edge case
+        max_encoding_for_dtype_convert = mdf_train[newcolumns_list[0]].max()
+        
+        custom_process_wrapper_dict.update({'max_encoding_for_dtype_convert' : max_encoding_for_dtype_convert})
+
+        if max_encoding_for_dtype_convert <= 255:
+          mdf_train[newcolumns_list] = mdf_train[newcolumns_list].astype(np.uint8)
+          mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint8)
+        elif max_encoding_for_dtype_convert <= 65535:
+          mdf_train[newcolumns_list] = mdf_train[newcolumns_list].astype(np.uint16)
+          mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint16)
+        else:
+          mdf_train[newcolumns_list] = mdf_train[newcolumns_list].astype(np.uint32)
+          mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint32)
+
+      if MLinfilltype in {'integer', 'exclude', 'totalexclude'}:
+        #no conversion, assumes any conversion takes place in transformation function
+        pass
+
+    #___
+    
     #Now populate the returned column_dict_list
-    #(note that the column_dict entry 'defaultinfill_dict' is unique to the custom_train convention)
+    #(note that the column_dict entry 'custom_process_wrapper_dict' is unique to the custom_train convention)
     
     column_dict_list = []
     
@@ -7679,7 +7799,7 @@ class AutoMunge:
                                  'infillcomplete' : False, \
                                  'suffixoverlap_results' : suffixoverlap_results, \
                                  'deletecolumn' : False, \
-                                 'defaultinfill_dict' : defaultinfill_dict}}
+                                 'custom_process_wrapper_dict' : custom_process_wrapper_dict}}
 
       column_dict_list.append(column_dict.copy())
 
@@ -10279,6 +10399,9 @@ class AutoMunge:
 
     #create list of columns
     columns = [suffixcolumn]
+
+    #library defaults to int32 data type for integer mlinfilltype
+    df[suffixcolumn] = df[suffixcolumn].astype(np.int32)
 
     #create normalization dictionary
     normalization_dict = {suffixcolumn : {'maximum' : maximum, \
@@ -28460,7 +28583,7 @@ class AutoMunge:
     
     update_targets = ['custom_train', 'custom_test', 'custom_inversion', 'dualprocess', \
                       'singleprocess', 'postprocess', 'inverseprocess', 'info_retention', \
-                      'defaultinfill', 'inplace_option', 'NArowtype', 'MLinfilltype']
+                      'inplace_option', 'NArowtype', 'MLinfilltype', 'defaultinfill', 'dtype_convert']
     
     #counter i is here to ensure if we're recursively following chains of pointers we don't get caught in loop
     if i > 1111:
@@ -31401,14 +31524,17 @@ class AutoMunge:
     #now we'll apply the floatprecision transformation    
     #floatprecision adjustment only applied to columns returned from transforms
     #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    #when dtype_convert not deactivated for the associated category in processdict
     floatcolumns_train = list(df_train)
     floatcolumns_labels = list(df_labels)
     floatcolumns_train_copy = floatcolumns_train.copy()
     for floatcolumn in floatcolumns_train_copy:
       if floatcolumn not in returned_PCA_columns and \
       floatcolumn in postprocess_dict['column_dict'] and \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'}:
+      (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'} \
+      or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
+      and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_train.remove(floatcolumn)
         
     floatcolumns_labels_copy = floatcolumns_labels.copy()
@@ -31496,7 +31622,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.43'
+    automungeversion = '6.44'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32270,8 +32396,8 @@ class AutoMunge:
       
       #Now that all nonvalid entries are cast as nan, we'll perform our default infill
 
-      defaultinfill_dict = postprocess_dict['column_dict'][normkey]['defaultinfill_dict']
-      defaultinfill = defaultinfill_dict['defaultinfill']
+      custom_process_wrapper_dict = postprocess_dict['column_dict'][normkey]['custom_process_wrapper_dict']
+      defaultinfill = custom_process_wrapper_dict['defaultinfill']
       
       if defaultinfill in {'adjinfill'}:
 
@@ -32283,25 +32409,25 @@ class AutoMunge:
         
       elif defaultinfill in {'meaninfill'}:
 
-        infill_mean = defaultinfill_dict['infill_mean']
+        infill_mean = custom_process_wrapper_dict['infill_mean']
 
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
 
       elif defaultinfill in {'medianinfill'}:
 
-        infill_median = defaultinfill_dict['infill_median']
+        infill_median = custom_process_wrapper_dict['infill_median']
 
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
 
       elif defaultinfill in {'modeinfill'}:
 
-        infill_mode = defaultinfill_dict['infill_mode']
+        infill_mode = custom_process_wrapper_dict['infill_mode']
 
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
 
       elif defaultinfill in {'lcinfill'}:
 
-        infill_lc = defaultinfill_dict['infill_lc']
+        infill_lc = custom_process_wrapper_dict['infill_lc']
 
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
         
@@ -32359,6 +32485,41 @@ class AutoMunge:
         #finally if prior infill still resulted in nan we'll just plug with 0
         mdf_test[newcolumns_list] = mdf_test[newcolumns_list].fillna(0)
       
+      #___
+
+      #now perform a datatype conversion based on MLinfilltype
+      if custom_process_wrapper_dict['dtype_convert'] is True:
+        
+        newcolumns_list = postprocess_dict['column_dict'][normkey]['categorylist']
+
+        MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
+
+        if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+          #datatype conversion performed elsewhere based on floatprecision parameter
+          pass
+
+        if MLinfilltype in {'binary', 'multirt', '1010', 'concurrent_act', 'boolexclude'}:
+          #datatype cast as np.int8 since entries are boolean integers
+          mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.int8)
+
+        if MLinfilltype in {'singlct', 'ordlexclude'}:
+          #ordinal sets are given a conditional dtype based on max activation
+          #this can be deactivated in processdict with dtype_convert if desired
+          
+          #max encoding is based on the train set
+          max_encoding_for_dtype_convert = custom_process_wrapper_dict['max_encoding_for_dtype_convert']
+
+          if max_encoding_for_dtype_convert <= 255:
+            mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint8)
+          elif max_encoding_for_dtype_convert <= 65535:
+            mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint16)
+          else:
+            mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint32)
+
+        if MLinfilltype in {'integer', 'exclude', 'totalexclude'}:
+          #no conversion, assumes any conversion takes place in transformation function
+          pass
+
       #___
       
     #this else corresponds to cases where train processing returned an empty set
@@ -40131,12 +40292,15 @@ class AutoMunge:
 
     #floatprecision adjustment only applied to columns returned from transforms
     #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    #when dtype_convert not deactivated for the associated category in processdict
     floatcolumns_test_copy = floatcolumns_test.copy()
     for floatcolumn in floatcolumns_test_copy:
       if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
       floatcolumn in postprocess_dict['column_dict'] and \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'}:
+      (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr'} \
+      or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
+      and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_test.remove(floatcolumn)
 
     floatcolumns_testlabels_copy = floatcolumns_testlabels.copy()
