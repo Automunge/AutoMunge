@@ -20,33 +20,99 @@ For simplicity just going to copy the code directly from code base where these d
 ## Root Category Family Tree Definitions
 ```
   def _assembletransformdict(self, binstransform, NArw_marker):
-    '''
-    #assembles the range of transformations to be applied based on the evaluated
-    #category of data
-    #the primitives are intented as follows:
-    #_greatgrandparents_: supplemental column derived from source column, only applied
-    #to first generation, with downstream transforms included
-    #_grandparents_: supplemental column derived from source column, only applied
-    #to first generation
-    #_parents_: replace source column, with downstream trasnforms performed
-    #_siblings_: supplemental column derived from source column,
-    #with downstream transforms performed
-    #_auntsuncles_: replace source column, without downstream transforms performed
-    #_cousins_: supplemental column derived from source column,
-    #without downstream transforms performed
-    #downstream transform primitives are:
-    #_children_: becomes downstream parent
-    #_niecenephews_: treated like a downstream sibling
-    #_coworkers_: becomes a downstream auntsuncles
-    #_friends_: become downstream cousins    
+    """
+    #populates the transform_dict data structure
+    #which is the internal library that is subsequently consolidated 
+    #with any user passed transformdict
     
-    #for example, if we set 'bxcx' entry to have both 'bxcx' as parents and
-    #'nmbr' as cousin, then the output would be column_nmbr, column_bxcx_nmbr
-    #(because 'bxcx' has a downstream primitive entry of 'nmbr' as well 
+    #transform_dict is for purposes of populating
+    #for each transformation category's use as a root category
+    #a "family tree" set of associated transformation categories
+    #which are for purposes of specifying the type and order of transformation functions
+    #to be applied when a transformation category is assigned as a root category
     
-    #note a future extension will allow automunge class to run experiments
-    #on different configurations of trasnform_dict to improve the feature selection
-    '''
+    #we'll refer to the category key to a family as the "root category"
+    #we'll refer to a transformation category entered into 
+    #a family tree primitive as a "tree category"
+
+    #a transformation category may serve as both a root category
+    #and a tree category
+
+    #each transformation category will have a set of properties assigned
+    #in the corresponding process_dict data structure
+    #including associated transformation functions, data properties, and etc.
+
+    #a root category may be assigned to a column with the user passed assigncat
+    #or when not specified may be determined under automation via _evalcategory
+
+    #when it applying transformations
+    #the transformation functions associated with a root category
+    #will not be applied unless that same category is populated as a tree category
+
+    #the family tree primitives are for purposes of specifying order of transformations
+    #as may include generations and branches of derivations
+    #as well as for managing columns retentions in the returned data
+    #(as in some cases intermediate stages of transformations may or may not have desired retention)
+
+    #the family tree primitives can be distinguished by types of 
+    #upstream/downstream, supplement/replace, offsping/no offspring
+
+    #___________
+    #'parents' :
+    #upstream / first generation / replaces column / with offspring
+
+    #'siblings':
+    #upstream / first generation / supplements column / with offspring
+
+    #'auntsuncles' :
+    #upstream / first generation / replaces column / no offspring
+
+    #'cousins' :
+    #upstream / first generation / supplements column / no offspring
+
+    #'children' :
+    #downstream parents / offspring generations / replaces column / with offspring
+
+    #'niecesnephews' :
+    #downstream siblings / offspring generations / supplements column / with offspring
+
+    #'coworkers' :
+    #downstream auntsuncles / offspring generations / replaces column / no offspring
+
+    #'friends' :
+    #downstream cousins / offspring generations / supplements column / no offspring
+    #___________
+
+    #each of the family tree primitives associated with a root category
+    #may have entries of zero, one, or more transformation categories
+    
+    #when a root category is assigned to a column
+    #the upstream primitives are inspected
+    
+    #when a tree category is found 
+    #as an entry to an upstream primitive associated with the root category
+    #the transformation functions associated with the tree category are performed
+
+    #if any tree categories are populated in the upstream replacement primitives
+    #their inclusion supercedes supplement primitive entries
+    #and so the input column to the transformation is not retained in the returned set
+    #with the column replacement either achieved by an inplace transformation
+    #or subsequent deletion operation
+
+    #when a tree category is found
+    #as an entry to an upstream primitive with offspring
+    #after the associated transformation function is performed
+    #the downstream primitives of the family tree of the tree category is inspected
+    #and those downstream primitives are treated as a susequent generation's upstream primitives
+    #where the input column to that subsequent generation is the column returned 
+    #from the transformation function associated with the upstream tree category
+
+    #this is an easy point of confusion so as further clarification on this point
+    #the downstream primitives associated with a root category
+    #will not be inspected when root category is applied
+    #unless that root category is also entered as a tree category entry
+    #in one of the root category's upstream primitives with offspring
+    """
 
     transform_dict = {}
 
@@ -3462,7 +3528,8 @@ For simplicity just going to copy the code directly from code base where these d
 
     #___________________________________________________________________________
     #Other optional entries for processdict include:
-    #info_retention, inplace_option, defaultparams, defaultinfill, labelctgy, and functionpointer.
+    #info_retention, inplace_option, defaultparams, labelctgy, 
+    #defaultinfill, dtype_convert, and functionpointer.
 
     #___________________________________________________________________________
     #info_retention: boolean marker associated with an inversion operation that helps inverison prioritize
@@ -3493,6 +3560,13 @@ For simplicity just going to copy the code directly from code base where these d
     #               as part of a custom_train entry
 
     #___________________________________________________________________________
+    #dtype_convert: this option is intended for the custom_train convention, aceepts boolean entries,
+    #               defaults to True when not specified, False turns off a data type conversion
+    #               that is applied after custom_train transformation functions based on MLinfilltype.
+    #               May also be used to deactivate a floatprecision conversion for any category. 
+    #               This option primarily included to support special cases and not intended for wide use.
+
+    #___________________________________________________________________________
     #labelctgy: an optional entry, should be a string entry of a single transformation category 
     #           as entered in the family tree when the category of the processdict entry is used as a root category. 
     #           Used to determine a basis of feature selection for cases where root 
@@ -3500,7 +3574,7 @@ For simplicity just going to copy the code directly from code base where these d
     #           Also used in label frequency levelizer. 
     #           Note that since this is only used for small edge case populating a labelctgy entry is optional. 
     #           If one is not assigned or accessed based on functionpointer, an arbitrary entry will be accessed 
-    #           from the family tree.
+    #           from the family tree. This option primarily included to support special cases.
 
     #___________________________________________________________________________
     #functionpointer: Only supported in user passed processdict, a functionpointer entry 
@@ -3517,13 +3591,8 @@ For simplicity just going to copy the code directly from code base where these d
     #___________________________________________________________________________
     #Other clarifications:
     #Note that NArowtype is associated with a category's use as a root category, 
-    #such as may be assigned to a column in assigncat
-    #MLinfilltype is associated with a category's use as a transformation category entry 
-    #to some root category's family tree primitives
-    #labelctgy is associated with a category's use as a root category for a label column 
-    #when conducting feature importance
-
-    #note to self that any future updates such as additional supported entries should be carried through to functionpointer functions
+    #and also for a category's use as a tree category in the custom_train convention
+    #MLinfilltype is associated with a category's use as a tree category
     '''
     
     process_dict = {}
