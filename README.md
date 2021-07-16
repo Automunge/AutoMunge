@@ -128,7 +128,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -354,7 +354,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -546,7 +546,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -683,13 +683,6 @@ Otherwise validation rows will be randomly selected. The third option 'traintest
 is comparable to True for the training set and shuffles the returned test sets
 as well. Note that all corresponding returned sets are consistently shuffled 
 (such as between train/labels/trainID sets).
-
-* traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
-is called that treats train data different than test data (currently only relevant to 
-DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
-as True treats df_test as a train set for purposes of these specific transforms, otherwise
-default of False treats df_test as a test set (which turns off noise injection for DP transforms).
-Note that traindata is available in normalization_dict for custom_test transforms.
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -1710,7 +1703,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-	     featureeval = False, traindata = False,
+	           featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False)
 ```
@@ -1987,7 +1980,6 @@ is called that treats train data different than test data (currently only releva
 DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP transforms).
-Note that traindata is available in normalization_dict for custom_test transforms.
 
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
 Designates the composition of the sets returned
@@ -2051,7 +2043,8 @@ some cases comparable to those listed above for training data, but differ in tha
 sets will not include a returned 'NArw' (infill marker) even when parameter NArw_marker 
 passed as True.
 - lbnb: for numerical data, a label set is treated with an 'nmbr' z-score normalization.
-- lbor: for categoric data, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+- lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+- lbbn: for categoric data of <3 unique values, a label set is treated with an 'bnry' binary encoding (single column binary).
 
 Other label categories are available for assignment in assigncat, described below in the 
 library of transforms section for label set encodings.
@@ -4298,19 +4291,12 @@ def custom_train_template(df, column, normalization_dict):
   #that may then be accessed to consistently transform test data
   #note that any desired drift statistics can also be stored in normalization_dict
   #e.g. normalization_dict.update({'property' : property})
-  
-  #Please note that normalization_dict has reserved strings in the keys 
-  #of 'inplace', 'suffix', 'printstatus', 'traindata', and 'tempcolumns'
 
   #note that prior to this function call 
   #a datatype casting based on the NArowtype processdict entry may have been performed
   #as well as a default infill of adjinfill 
   #unless infill type otherwise specified in a defaultinfill processdict entry
   #note that this default infill is a precursor to ML infill
-  
-  #note suffix overlap detection will be conducted after the function is applied 
-  #on any columns created and returned as part of the transform
-  #and on any temperatory support columns headers logged in normalization_dict['tempcolumns']
   
   #note that if this same custom_train is to be applied to both train and test data 
   #(when custom_test not defined) then the quantity, headers, and order of returned columns 
@@ -4379,14 +4365,14 @@ def custom_train_template(df, column, normalization_dict):
   #Note that it is ok to return multiple columns
   #we recommend naming additional columns as a function of the received column header 
   #e.g. newcolumn = column + '_' + str(int)
-  #returned column headers need to be strings
+  #returned column headers should be strings
   
   #when columns are conditionally created as a function of data properties 
   #will need to save headers for reference in custom_test
   # e.g. normalization_dict.update('newcolumns_list' : [newcolumn]}
   
   #Note that it is ok to delete the received column from dataframe as part of transform if desired
-  #If any other temporary columns were created as part of transform that weren't returned
+  #If any other temporary columns were created as part of transform that aren't returned
   #their column headers should be logged as a normalization_dict entry under 'tempcolumns'
   # e.g. normalization_dict.update('tempcolumns' : [tempcolumn]}
 
@@ -4415,7 +4401,6 @@ def custom_test_template(df, column, normalization_dict):
 
   #Also receives a normalization_dict dictionary
   #Which will be the dictionary populated in and returned from custom_train
-  #with an added entry of 'traindata' corresponding to the postmunge(.) parameter
 
   #note that prior to this function call 
   #a datatype casting based on the NArowtype processdict entry may have been performed
