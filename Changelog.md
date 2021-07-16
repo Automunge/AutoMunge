@@ -3598,3 +3598,19 @@ am.postmunge(postprocess_dict, df_test)
 - renamed the column_dict entry populated in custom_process_wrapper from defaultinfill_dict to custom_process_wrapper_dict for clarity (since now using to store properties for both infill and dtype conversion)
 - rewrote function description for _assembletransformdict
 - much clearer now
+
+6.45
+- a few cleanups to code comments for custom_train_template and custom_test_template
+- a small correction to read me on default transform for categoric labels under automation
+- (ordinal applied to all categoric sets, even if 2 unique entries)
+- added traindata entry to normalization_dict passed to custom_test in postmunge
+- in the process did a little rethinking on whole strtategy for traindata option
+- decided to introduce a traindata automunge parameter
+- similar to traindata parameter in postmunge
+- for purposes of distinguishing where df_test will be treated as train or test data
+- which is relevent to a handful of transforms in library like noise injection and smoothing
+- added traindata support to existing transforms where relevant
+- and thus of course added traindata entry to normalization_dict passed to custom_test in automunge
+- note traindata differs from testnoise assignparam option available for noise transforms
+- as testnoise turns on for all data in automunge and postmunge
+- while traindata allows user to distinguish treatment between test data in automunge and postmunge
