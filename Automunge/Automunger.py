@@ -7445,9 +7445,6 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
-    #we'll have convention that postprocess_dict entry for printstatus is accessible by params
-    params.update({'printstatus' : postprocess_dict['printstatus']})
-    
     if 'inplace' in params:
       inplace = params['inplace']
     else:
@@ -7666,12 +7663,6 @@ class AutoMunge:
     mdf_train, normalization_dict = \
     postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_train, suffixcolumn, params)
     
-    #we'll pass any traindata designation through normalization_dict 
-    #as used here traindata refers to the automunge(.) parameter
-    #intended for use if custom_test processing differs treatment for train or test data (like for noise injection)
-    #(we're doing by parameter instead of assignparam because may be different between automunge and postmunge)
-    normalization_dict.update({'traindata' : postprocess_dict['traindata']})
-    
     #We'll have convention that if a corresponding custom_test_template wasn't populated
     #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
     if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
@@ -7712,9 +7703,9 @@ class AutoMunge:
                                                          suffixoverlap_results = suffixoverlap_results, \
                                                          printstatus = postprocess_dict['printstatus'])
     
-    #add entries to normalization_dict associated with suffix and inplace
-    normalization_dict.update({'suffix'  : suffix,
-                               'inplace' : inplace})
+    #add entries to custom_process_wrapper_dict associated with suffix and inplace for reference
+    custom_process_wrapper_dict.update({'suffix'  : suffix,
+                                        'inplace' : inplace})
     
     #___
     
@@ -10144,8 +10135,6 @@ class AutoMunge:
     else:
       LSfit = False
       
-    #note testsmooth turns on smoothing for all data
-    #to distinguish between smoothing between test data in automunge and postmunge use traindata
     if 'testsmooth' in params:
       testsmooth = params['testsmooth']
     else:
@@ -10304,11 +10293,9 @@ class AutoMunge:
                                   LSfit, 
                                   LSfitparams_dict)
 
-    traindata = postprocess_dict['traindata']
-
     #smoothing not applied to test data consistent with postmunge convention
     #(postmunge can apply based on traindata parameter or by activating testsmooth)
-    if testsmooth is True or traindata is True:
+    if testsmooth is True:
       
       categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
       
@@ -19811,8 +19798,6 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
-    #note testnoise turns on noise injection for all data
-    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -19842,11 +19827,10 @@ class AutoMunge:
     mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
 
     #for test data is just pass-through unless testnoise or traindata parameter activated
-    traindata = postprocess_dict['traindata']
-    if testnoise is False and traindata is False:
+    if testnoise is False:
       mdf_test[DPnm_column] = mdf_test[column].copy()
     
-    elif testnoise is True or traindata is True:
+    elif testnoise is True:
       #first we'll derive our sampled noise for injection
       if noisedistribution == 'normal':
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
@@ -19935,8 +19919,6 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
-    #note testnoise turns on noise injection for all data
-    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -19999,10 +19981,9 @@ class AutoMunge:
     mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
     
     #for test data is just pass-through unless testnoise or traindata is activated
-    traindata = postprocess_dict['traindata']
-    if testnoise is False and traindata is False:
+    if testnoise is False:
       mdf_test[DPmm_column] = mdf_test[column].copy()
-    elif testnoise is True or traindata is True:
+    elif testnoise is True:
       mdf_test = _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
     
     #create list of columns
@@ -20122,8 +20103,6 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
-    #note testnoise turns on noise injection for all data
-    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20334,8 +20313,7 @@ class AutoMunge:
     mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #for test data is just pass-through unless testnoise or traindata is activated
-    traindata = postprocess_dict['traindata']
-    if testnoise is True or traindata is True:
+    if testnoise is True:
       mdf_test = _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #create list of columns
@@ -20405,8 +20383,6 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
-    #note testnoise turns on noise injection for all data
-    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20429,10 +20405,9 @@ class AutoMunge:
     mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
     
     #for test data is just pass-through unless testnoise or traindata is activated
-    traindata = postprocess_dict['traindata']
-    if testnoise is False and traindata is False:
+    if testnoise is False:
       mdf_test[DPbn_column] = mdf_test[column].copy()
-    elif testnoise is True or traindata is True:
+    elif testnoise is True:
       #first we'll derive our sampled noise for injection
       mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
 
@@ -20497,8 +20472,6 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
-    #note testnoise turns on noise injection for all data
-    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20534,10 +20507,9 @@ class AutoMunge:
     del mdf_train[DPod_tempcolumn2]
     
     #for test data is just pass-through unless testnoise or traindata is activated
-    traindata = postprocess_dict['traindata']
-    if testnoise is False and traindata is False:
+    if testnoise is False:
       mdf_test[DPod_column] = mdf_test[column].copy()
-    elif testnoise is True or traindata is True:
+    elif testnoise is True:
       #first we'll derive our sampled noise for injection
       mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
       mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
@@ -21668,7 +21640,7 @@ class AutoMunge:
           category = 'lbor'
           
         if category == 'bnry':
-          category = 'lbor'
+          category = 'lbbn'
           
         #(defaultdatetime = 'dat6')
         if category == defaultdatetime:
@@ -26968,7 +26940,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat, traindata):
+                             trainID_column, testID_column, evalcat):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -27367,17 +27339,6 @@ class AutoMunge:
         print("evalcat allowable values are False or as a defined function per READ ME.")
       
     miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
-
-    #check traindata
-    traindata_valresult = False
-    if traindata not in {True, False} or not isinstance(pandasoutput, bool):
-      traindata_valresult = True
-      if printstatus != 'silent':
-        print("Error: invalid entry passed for traindata parameter.")
-        print("Acceptable values are one of {True, False}")
-        print()
-      
-    miscparameters_results.update({'traindata_valresult' : traindata_valresult})
     
     return miscparameters_results
     
@@ -30126,7 +30087,7 @@ class AutoMunge:
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
-                valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
+                valpercent=0.0, floatprecision = 32, shuffletrain = True,
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -30207,7 +30168,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat, traindata)
+                                 trainID_column, testID_column, evalcat)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
@@ -30822,7 +30783,6 @@ class AutoMunge:
                         'orig_noinplace' : [],
                         'process_dict' : process_dict,
                         'printstatus' : printstatus,
-                        'traindata' : traindata,
                         'randomseed' : randomseed,
                         'autoMLer' : autoMLer }
     
@@ -31658,7 +31618,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.45'
+    automungeversion = '6.46'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31667,72 +31627,73 @@ class AutoMunge:
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
     #note that some of the data structures will have been populated earlier such as column_dict etc
-    postprocess_dict.update({'origtraincolumns' : columns_train, \
-                             'origcolumns_all' : origcolumns_all, \
-                             'finalcolumns_train' : finalcolumns_train, \
-                             'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list, \
-                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, \
-                             'labels_column' : labels_column, \
-                             'finalcolumns_labels' : list(df_labels), \
-                             'single_train_column_labels_case' : single_train_column_labels_case, \
-                             'trainID_column_orig' : trainID_column_orig, \
-                             'trainID_column' : trainID_column, \
-                             'finalcolumns_trainID' : list(df_trainID), \
-                             'testID_column_orig' : testID_column_orig, \
-                             'testID_column' : testID_column, \
-                             'indexcolumn' : indexcolumn, \
-                             'valpercent' : valpercent, \
-                             'floatprecision' : floatprecision, \
-                             'shuffletrain' : shuffletrain, \
-                             'TrainLabelFreqLevel' : TrainLabelFreqLevel, \
-                             'MLinfill' : MLinfill, \
-                             'infilliterate' : infilliterate, \
-                             'eval_ratio' : eval_ratio, \
-                             'powertransform' : powertransform, \
-                             'binstransform' : binstransform, \
-                             'numbercategoryheuristic' : numbercategoryheuristic, \
-                             'pandasoutput' : pandasoutput, \
-                             'NArw_marker' : NArw_marker, \
-                             'labelsencoding_dict' : labelsencoding_dict, \
-                             'featureselection' : featureselection, \
-                             'featurethreshold' : featurethreshold, \
-                             'FSmodel' : FSmodel, \
-                             'FScolumn_dict' : FScolumn_dict, \
-                             'FS_sorted' : FS_sorted, \
-                             'inplace' : inplace, \
-                             'drift_dict' : drift_dict, \
-                             'train_rowcount' : train_rowcount, \
-                             'Binary' : Binary, \
-                             'Binary_orig' : Binary_orig, \
-                             'Binary_dict' : Binary_dict, \
-                             'returned_Binary_columns' : returned_Binary_columns, \
-                             'PCA_applied' : PCA_applied, \
-                             'PCAn_components' : PCAn_components, \
-                             'PCAn_components_orig' : PCAn_components_orig, \
-                             'PCAexcl' : PCAexcl, \
-                             'prePCAcolumns' : prePCAcolumns, \
-                             'returned_PCA_columns' : returned_PCA_columns, \
-                             'madethecut' : madethecut, \
-                             'excl_suffix' : excl_suffix, \
-                             'assigncat' : assigncat, \
-                             'inverse_assigncat' : inverse_assigncat, \
-                             'final_assigncat' : final_assigncat, \
-                             'assigninfill' : assigninfill, \
-                             'transformdict' : transformdict, \
-                             'transform_dict' : transform_dict, \
-                             'processdict' : processdict, \
-                             'process_dict' : process_dict, \
-                             'postprocess_assigninfill_dict' : postprocess_assigninfill_dict, \
-                             'assignparam' : assignparam, \
-                             'assign_param' : assign_param, \
-                             'assignnan' : assignnan, \
-                             'ML_cmnd' : ML_cmnd, \
-                             'miscparameters_results' : miscparameters_results, \
-                             'randomrandomseed' : randomrandomseed, \
-                             'printstatus' : printstatus, \
-                             'automungeversion' : automungeversion, \
-                             'application_number' : application_number, \
-                             'application_timestamp' : application_timestamp, \
+    postprocess_dict.update({'origtraincolumns' : columns_train,
+                             'origcolumns_all' : origcolumns_all,
+                             'finalcolumns_train' : finalcolumns_train,
+                             'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list,
+                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train,
+                             'labels_column' : labels_column,
+                             'finalcolumns_labels' : list(df_labels),
+                             'single_train_column_labels_case' : single_train_column_labels_case,
+                             'trainID_column_orig' : trainID_column_orig,
+                             'trainID_column' : trainID_column,
+                             'finalcolumns_trainID' : list(df_trainID),
+                             'testID_column_orig' : testID_column_orig,
+                             'testID_column' : testID_column,
+                             'indexcolumn' : indexcolumn,
+                             'valpercent' : valpercent,
+                             'floatprecision' : floatprecision,
+                             'shuffletrain' : shuffletrain,
+                             'TrainLabelFreqLevel' : TrainLabelFreqLevel,
+                             'MLinfill' : MLinfill,
+                             'infilliterate' : infilliterate,
+                             'eval_ratio' : eval_ratio,
+                             'powertransform' : powertransform,
+                             'binstransform' : binstransform,
+                             'numbercategoryheuristic' : numbercategoryheuristic,
+                             'pandasoutput' : pandasoutput,
+                             'NArw_marker' : NArw_marker,
+                             'labelsencoding_dict' : labelsencoding_dict,
+                             'featureselection' : featureselection,
+                             'featurethreshold' : featurethreshold,
+                             'FSmodel' : FSmodel,
+                             'FScolumn_dict' : FScolumn_dict,
+                             'FS_sorted' : FS_sorted,
+                             'inplace' : inplace,
+                             'drift_dict' : drift_dict,
+                             'train_rowcount' : train_rowcount,
+                             'Binary' : Binary,
+                             'Binary_orig' : Binary_orig,
+                             'Binary_dict' : Binary_dict,
+                             'returned_Binary_columns' : returned_Binary_columns,
+                             'PCA_applied' : PCA_applied,
+                             'PCAn_components' : PCAn_components,
+                             'PCAn_components_orig' : PCAn_components_orig,
+                             'PCAexcl' : PCAexcl,
+                             'prePCAcolumns' : prePCAcolumns,
+                             'returned_PCA_columns' : returned_PCA_columns,
+                             'madethecut' : madethecut,
+                             'excl_suffix' : excl_suffix,
+                             'traindata' : False,
+                             'assigncat' : assigncat,
+                             'inverse_assigncat' : inverse_assigncat,
+                             'final_assigncat' : final_assigncat,
+                             'assigninfill' : assigninfill,
+                             'transformdict' : transformdict,
+                             'transform_dict' : transform_dict,
+                             'processdict' : processdict,
+                             'process_dict' : process_dict,
+                             'postprocess_assigninfill_dict' : postprocess_assigninfill_dict,
+                             'assignparam' : assignparam,
+                             'assign_param' : assign_param,
+                             'assignnan' : assignnan,
+                             'ML_cmnd' : ML_cmnd,
+                             'miscparameters_results' : miscparameters_results,
+                             'randomrandomseed' : randomrandomseed,
+                             'printstatus' : printstatus,
+                             'automungeversion' : automungeversion,
+                             'application_number' : application_number,
+                             'application_timestamp' : application_timestamp,
                              'version_combined' : version_combined})
     
     #support function to speed up postmunge when calling getNArows not needed
@@ -31873,7 +31834,7 @@ class AutoMunge:
       df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     pandasoutput = True, printstatus = printstatus, \
-                    traindata = traindata, shuffletrain = False)
+                    shuffletrain = False)
 
     if totalvalidationratio <= 0.0:
       df_validation1 = pd.DataFrame()
@@ -32344,11 +32305,6 @@ class AutoMunge:
     normkey = False
     if len(columnkey) > 0:      
       normkey = columnkey[0]
-      
-    #we'll have convention that postprocess_dict entry for printstatus is accessible by params
-    #as well as for postmunge the traindata entry (which is populated based on the postmunge parameter)
-    params.update({'printstatus' : postprocess_dict['printstatus'],
-                   'traindata'   : postprocess_dict['traindata']})
     
     #First we'll grab inplace parameter common to transformation functions
     if 'inplace' in params:
@@ -32361,7 +32317,7 @@ class AutoMunge:
     #normkey is False when process function applied in automunge returned an empty set
     if normkey is not False:
 
-      suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      suffix = postprocess_dict['column_dict'][normkey]['custom_process_wrapper_dict']['suffix']
     
       suffixcolumn = column + '_' + suffix
       
@@ -32490,13 +32446,6 @@ class AutoMunge:
       
       #normalization_dict is consistent with what was populated in the automunge call to custom_train
       normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-      
-      #we'll pass any traindata designation through normalization_dict 
-      #as used here traindata refers to the postmunge(.) parameter
-      #intended for use if custom_test differs treatment for train or test data (like for noise injection)
-      #note this will intentionally overwrite any traindata entry that was populated in automunge
-      #(we're doing by parameter instead of assignparam because may be different between automunge and postmunge)
-      normalization_dict.update({'traindata' : postprocess_dict['traindata']})
 
       #We'll have convention that if a corresponding custom_test_template wasn't populated
       #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
@@ -39641,7 +39590,6 @@ class AutoMunge:
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
-    traindata_orig = postprocess_dict['traindata']
     if traindata is True:
       postprocess_dict['traindata'] = True
     else:
@@ -40460,7 +40408,7 @@ class AutoMunge:
         df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
     #reset traindata entry in postprocess_dict to avoid overwrite of external
-    postprocess_dict['traindata'] = traindata_orig
+    postprocess_dict['traindata'] = False
 
     #printout display progress
     if printstatus is True:
