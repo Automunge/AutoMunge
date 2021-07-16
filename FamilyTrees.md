@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Ok moving this portion of documentaiton from the README into a seperate file to try and improve the flow of rest of docuemtnation. This is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as category properties associated with each category in the section "Category processdict Entries". 
+Ok moving this portion of documentaiton from the README into a seperate file to try and improve the flow of rest of documentation. This is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as category properties associated with each category in the section "Category processdict Entries". 
 
 Note that any of the family tree definitions can be overwritten in an automunge(.) call with the transformdict parameter and any of the category properties can be overwritten in an automunge(.) call with the processdict parameter.
 
