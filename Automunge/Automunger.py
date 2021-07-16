@@ -71,13 +71,13 @@ class AutoMunge:
     #populates the transform_dict data structure
     #which is the internal library that is subsequently consolidated 
     #with any user passed transformdict
-    
+      
     #transform_dict is for purposes of populating
     #for each transformation category's use as a root category
     #a "family tree" set of associated transformation categories
     #which are for purposes of specifying the type and order of transformation functions
     #to be applied when a transformation category is assigned as a root category
-    
+      
     #we'll refer to the category key to a family as the "root category"
     #we'll refer to a transformation category entered into 
     #a family tree primitive as a "tree category"
@@ -92,7 +92,7 @@ class AutoMunge:
     #a root category may be assigned to a column with the user passed assigncat
     #or when not specified may be determined under automation via _evalcategory
 
-    #when it applying transformations
+    #when applying transformations
     #the transformation functions associated with a root category
     #will not be applied unless that same category is populated as a tree category
 
@@ -132,10 +132,10 @@ class AutoMunge:
 
     #each of the family tree primitives associated with a root category
     #may have entries of zero, one, or more transformation categories
-    
+      
     #when a root category is assigned to a column
     #the upstream primitives are inspected
-    
+      
     #when a tree category is found 
     #as an entry to an upstream primitive associated with the root category
     #the transformation functions associated with the tree category are performed
@@ -150,7 +150,7 @@ class AutoMunge:
     #as an entry to an upstream primitive with offspring
     #after the associated transformation function is performed
     #the downstream primitives of the family tree of the tree category is inspected
-    #and those downstream primitives are treated as a susequent generation's upstream primitives
+    #and those downstream primitives are treated as a subsequent generation's upstream primitives
     #where the input column to that subsequent generation is the column returned 
     #from the transformation function associated with the upstream tree category
 
@@ -3467,29 +3467,29 @@ class AutoMunge:
     '''
     #creates a dictionary storing all of the processing functions for each
     #category. Note that the convention is that every dualprocess entry 
-    #(to process both train and text set in automunge) is meant
-    #to have a coresponding postprocess entry (to process the test set in 
+    #(to process both train and test data in automunge) is meant
+    #to have a corresponding postprocess entry (to process the test set in 
     #postmunge). If the dualprocess/postprocess pair aren't included a 
-    #singleprocess funciton will be instead which processes a single column
+    #singleprocess function should be instead which processes a single column
     #at a time and is neutral to whether that set is from train or test data.
-    
-    #note that the functionpointer entry is currenlty only available for user passed processdict
+      
+    #note that the functionpointer entry is currently only available for user passed processdict
     #this internal library process_dict does not accept functionpointer entries
-    
+      
     #A user should pass either a pair of processing functions to both 
     #dualprocess and postprocess, or alternatively just a single processing
     #function to singleprocess, and omit or pass None to those not used.
     #A user can also pass an inversion function to inverseprocess if available.
     #Most of the transforms defined internal to the library follow this convention.
-
+    
     #dualprocess: for passing a processing function in which normalization 
     #             parameters are derived from properties of the training set
     #             and jointly process the train set and if available corresponding test set
-
+    
     #singleprocess: for passing a processing function in which no normalization
     #               parameters are needed from the train set to process the
     #               test set, such that train and test sets processed separately
-
+    
     #postprocess: for passing a processing function in which normalization 
     #             parameters originally derived from the train set are applied
     #             to separately process a corresponding test set
@@ -3499,7 +3499,7 @@ class AutoMunge:
     #                a corresponding forward pass transform
     #                An entry should correspond to the dualprocess or singleprocess entry.
 
-    #___________________________________________________________________________
+    #__________________________________________________________________________
     #Alternative streamlined processing function conventions are also available 
     #which may be populated as entries to custom_train / custom_test / custom_inversion.
     #These conventions are documented in the readme section "Custom Transformation Functions".
@@ -7666,6 +7666,12 @@ class AutoMunge:
     mdf_train, normalization_dict = \
     postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_train, suffixcolumn, params)
     
+    #we'll pass any traindata designation through normalization_dict 
+    #as used here traindata refers to the automunge(.) parameter
+    #intended for use if custom_test processing differs treatment for train or test data (like for noise injection)
+    #(we're doing by parameter instead of assignparam because may be different between automunge and postmunge)
+    normalization_dict.update({'traindata' : postprocess_dict['traindata']})
+    
     #We'll have convention that if a corresponding custom_test_template wasn't populated
     #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
     if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
@@ -10117,7 +10123,7 @@ class AutoMunge:
     #followed by application of label smoothing
     #accepts parameters for activation value (float 0.5-1), 
     #LSfit parameter to activate fitted smoothing
-    #testsmooth parameter to activate consistently smooting test data
+    #testsmooth parameter to activate consistently smoothing test data
     '''
     
     suffixoverlap_results = {}
@@ -10138,6 +10144,8 @@ class AutoMunge:
     else:
       LSfit = False
       
+    #note testsmooth turns on smoothing for all data
+    #to distinguish between smoothing between test data in automunge and postmunge use traindata
     if 'testsmooth' in params:
       testsmooth = params['testsmooth']
     else:
@@ -10296,9 +10304,11 @@ class AutoMunge:
                                   LSfit, 
                                   LSfitparams_dict)
 
+    traindata = postprocess_dict['traindata']
+
     #smoothing not applied to test data consistent with postmunge convention
     #(postmunge can apply based on traindata parameter or by activating testsmooth)
-    if testsmooth is True:
+    if testsmooth is True or traindata is True:
       
       categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
       
@@ -19801,6 +19811,8 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
+    #note testnoise turns on noise injection for all data
+    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -19828,12 +19840,13 @@ class AutoMunge:
     
     #now inject noise
     mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
-    
-    #for test data is just pass-through unless testnoise parameter activated
-    if testnoise is False:
+
+    #for test data is just pass-through unless testnoise or traindata parameter activated
+    traindata = postprocess_dict['traindata']
+    if testnoise is False and traindata is False:
       mdf_test[DPnm_column] = mdf_test[column].copy()
     
-    elif testnoise is True:
+    elif testnoise is True or traindata is True:
       #first we'll derive our sampled noise for injection
       if noisedistribution == 'normal':
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
@@ -19922,6 +19935,8 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
+    #note testnoise turns on noise injection for all data
+    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -19983,10 +19998,11 @@ class AutoMunge:
     
     mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
     
-    #for test data is just pass-through unless testnoise is activated
-    if testnoise is False:
+    #for test data is just pass-through unless testnoise or traindata is activated
+    traindata = postprocess_dict['traindata']
+    if testnoise is False and traindata is False:
       mdf_test[DPmm_column] = mdf_test[column].copy()
-    elif testnoise is True:
+    elif testnoise is True or traindata is True:
       mdf_test = _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
     
     #create list of columns
@@ -20106,6 +20122,8 @@ class AutoMunge:
       #can pass as 'normal' or 'laplace'
       noisedistribution = 'normal'
       
+    #note testnoise turns on noise injection for all data
+    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20315,9 +20333,9 @@ class AutoMunge:
     
     mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
-    #for test data is just pass-through
-    #mdf_test[DPrt_column] = mdf_test[DPrt_column]
-    if testnoise is True:
+    #for test data is just pass-through unless testnoise or traindata is activated
+    traindata = postprocess_dict['traindata']
+    if testnoise is True or traindata is True:
       mdf_test = _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #create list of columns
@@ -20387,6 +20405,8 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    #note testnoise turns on noise injection for all data
+    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20408,10 +20428,11 @@ class AutoMunge:
     #now inject noise
     mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
     
-    #for test data is just pass-through unless testnoise is activated
-    if testnoise is False:
+    #for test data is just pass-through unless testnoise or traindata is activated
+    traindata = postprocess_dict['traindata']
+    if testnoise is False and traindata is False:
       mdf_test[DPbn_column] = mdf_test[column].copy()
-    elif testnoise is True:
+    elif testnoise is True or traindata is True:
       #first we'll derive our sampled noise for injection
       mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
 
@@ -20476,6 +20497,8 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    #note testnoise turns on noise injection for all data
+    #to distinguish between noise injections between test data in automunge and postmunge use traindata
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -20510,10 +20533,11 @@ class AutoMunge:
     del mdf_train[DPod_tempcolumn1]
     del mdf_train[DPod_tempcolumn2]
     
-    #for test data is just pass-through unless testnoise is activated
-    if testnoise is False:
+    #for test data is just pass-through unless testnoise or traindata is activated
+    traindata = postprocess_dict['traindata']
+    if testnoise is False and traindata is False:
       mdf_test[DPod_column] = mdf_test[column].copy()
-    elif testnoise is True:
+    elif testnoise is True or traindata is True:
       #first we'll derive our sampled noise for injection
       mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
       mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
@@ -26944,7 +26968,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat):
+                             trainID_column, testID_column, evalcat, traindata):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -27343,6 +27367,17 @@ class AutoMunge:
         print("evalcat allowable values are False or as a defined function per READ ME.")
       
     miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
+
+    #check traindata
+    traindata_valresult = False
+    if traindata not in {True, False} or not isinstance(pandasoutput, bool):
+      traindata_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for traindata parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
+      
+    miscparameters_results.update({'traindata_valresult' : traindata_valresult})
     
     return miscparameters_results
     
@@ -30091,7 +30126,7 @@ class AutoMunge:
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
-                valpercent=0.0, floatprecision = 32, shuffletrain = True,
+                valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -30172,7 +30207,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat)
+                                 trainID_column, testID_column, evalcat, traindata)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
@@ -30787,6 +30822,7 @@ class AutoMunge:
                         'orig_noinplace' : [],
                         'process_dict' : process_dict,
                         'printstatus' : printstatus,
+                        'traindata' : traindata,
                         'randomseed' : randomseed,
                         'autoMLer' : autoMLer }
     
@@ -31622,7 +31658,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.44'
+    automungeversion = '6.45'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31678,7 +31714,6 @@ class AutoMunge:
                              'returned_PCA_columns' : returned_PCA_columns, \
                              'madethecut' : madethecut, \
                              'excl_suffix' : excl_suffix, \
-                             'traindata' : False, \
                              'assigncat' : assigncat, \
                              'inverse_assigncat' : inverse_assigncat, \
                              'final_assigncat' : final_assigncat, \
@@ -31834,10 +31869,11 @@ class AutoMunge:
       #(postmunge shuffletrain not needed since data was already shuffled)
 
       #process validation set consistent to train set with postmunge here
+      #note that traindata parameter consistent with what passed to automunge(.)
       df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     pandasoutput = True, printstatus = printstatus, \
-                    shuffletrain = False)
+                    traindata = traindata, shuffletrain = False)
 
     if totalvalidationratio <= 0.0:
       df_validation1 = pd.DataFrame()
@@ -32454,6 +32490,13 @@ class AutoMunge:
       
       #normalization_dict is consistent with what was populated in the automunge call to custom_train
       normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
+      
+      #we'll pass any traindata designation through normalization_dict 
+      #as used here traindata refers to the postmunge(.) parameter
+      #intended for use if custom_test differs treatment for train or test data (like for noise injection)
+      #note this will intentionally overwrite any traindata entry that was populated in automunge
+      #(we're doing by parameter instead of assignparam because may be different between automunge and postmunge)
+      normalization_dict.update({'traindata' : postprocess_dict['traindata']})
 
       #We'll have convention that if a corresponding custom_test_template wasn't populated
       #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
@@ -39598,6 +39641,7 @@ class AutoMunge:
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
+    traindata_orig = postprocess_dict['traindata']
     if traindata is True:
       postprocess_dict['traindata'] = True
     else:
@@ -40416,7 +40460,7 @@ class AutoMunge:
         df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
     #reset traindata entry in postprocess_dict to avoid overwrite of external
-    postprocess_dict['traindata'] = False
+    postprocess_dict['traindata'] = traindata_orig
 
     #printout display progress
     if printstatus is True:
