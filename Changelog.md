@@ -3611,6 +3611,7 @@ am.postmunge(postprocess_dict, df_test)
 - which is relevent to a handful of transforms in library like noise injection and smoothing
 - added traindata support to existing transforms where relevant
 - and thus of course added traindata entry to normalization_dict passed to custom_test in automunge
+- note that validation data prepared in automunge uses basis of automunge(.) traindata parameter
 - note traindata differs from testnoise assignparam option available for noise transforms
 - as testnoise turns on for all data in automunge and postmunge
 - while traindata allows user to distinguish treatment between test data in automunge and postmunge
