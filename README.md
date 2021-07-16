@@ -2043,7 +2043,7 @@ some cases comparable to those listed above for training data, but differ in tha
 sets will not include a returned 'NArw' (infill marker) even when parameter NArw_marker 
 passed as True.
 - lbnb: for numerical data, a label set is treated with an 'nmbr' z-score normalization.
-- lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+- lbor: for categoric data, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
 
 Other label categories are available for assignment in assigncat, described below in the 
 library of transforms section for label set encodings.
