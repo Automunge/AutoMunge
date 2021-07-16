@@ -128,7 +128,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -354,7 +354,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -546,7 +546,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, traindata = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -683,6 +683,13 @@ Otherwise validation rows will be randomly selected. The third option 'traintest
 is comparable to True for the training set and shuffles the returned test sets
 as well. Note that all corresponding returned sets are consistently shuffled 
 (such as between train/labels/trainID sets).
+
+* traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
+is called that treats train data different than test data (currently only relevant to 
+DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
+as True treats df_test as a train set for purposes of these specific transforms, otherwise
+default of False treats df_test as a test set (which turns off noise injection for DP transforms).
+Note that traindata is available in normalization_dict for custom_test transforms.
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -1980,6 +1987,7 @@ is called that treats train data different than test data (currently only releva
 DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP transforms).
+Note that traindata is available in normalization_dict for custom_test transforms.
 
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
 Designates the composition of the sets returned
@@ -4289,10 +4297,10 @@ def custom_train_template(df, column, normalization_dict):
   #returns normalization_dict, which is a dictionary for storing properties derived from train data
   #that may then be accessed to consistently transform test data
   #note that any desired drift statistics can also be stored in normalization_dict
-  #e.g. normalization_dict = {'property' : property}
+  #e.g. normalization_dict.update({'property' : property})
   
   #Please note that normalization_dict has reserved strings in the keys 
-  #of 'inplace', 'suffix', and 'tempcolumns'
+  #of 'inplace', 'suffix', 'printstatus', 'traindata', and 'tempcolumns'
 
   #note that prior to this function call 
   #a datatype casting based on the NArowtype processdict entry may have been performed
@@ -4380,7 +4388,7 @@ def custom_train_template(df, column, normalization_dict):
   #Note that it is ok to delete the received column from dataframe as part of transform if desired
   #If any other temporary columns were created as part of transform that weren't returned
   #their column headers should be logged as a normalization_dict entry under 'tempcolumns'
-  # normalization_dict.update('tempcolumns' : [tempcolumn]}
+  # e.g. normalization_dict.update('tempcolumns' : [tempcolumn]}
 
   return df, normalization_dict
 ```
@@ -4407,6 +4415,7 @@ def custom_test_template(df, column, normalization_dict):
 
   #Also receives a normalization_dict dictionary
   #Which will be the dictionary populated in and returned from custom_train
+  #with an added entry of 'traindata' corresponding to the postmunge(.) parameter
 
   #note that prior to this function call 
   #a datatype casting based on the NArowtype processdict entry may have been performed
