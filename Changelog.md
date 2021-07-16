@@ -3615,3 +3615,9 @@ am.postmunge(postprocess_dict, df_test)
 - note traindata differs from testnoise assignparam option available for noise transforms
 - as testnoise turns on for all data in automunge and postmunge
 - while traindata allows user to distinguish treatment between test data in automunge and postmunge
+
+6.46
+- reverted to convention that label sets with two unique values in train set given a lbbn root category instead of lbor under automation
+- reverted to convention that traindata option is specific to postmunge in dual/singleprocess convention
+- (in hindsight having to align for validation data kind of made this muddy, much cleaner to keep it a postmunge option, all potential workflows supported with combination of automunge and postmunge)
+- lifted requirement for reserved strings in the keys of normalization_dict accessed in custom_train convention
