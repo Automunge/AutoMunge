@@ -24,13 +24,13 @@ For simplicity just going to copy the code directly from code base where these d
     #populates the transform_dict data structure
     #which is the internal library that is subsequently consolidated 
     #with any user passed transformdict
-    
+      
     #transform_dict is for purposes of populating
     #for each transformation category's use as a root category
     #a "family tree" set of associated transformation categories
     #which are for purposes of specifying the type and order of transformation functions
     #to be applied when a transformation category is assigned as a root category
-    
+      
     #we'll refer to the category key to a family as the "root category"
     #we'll refer to a transformation category entered into 
     #a family tree primitive as a "tree category"
@@ -45,13 +45,13 @@ For simplicity just going to copy the code directly from code base where these d
     #a root category may be assigned to a column with the user passed assigncat
     #or when not specified may be determined under automation via _evalcategory
 
-    #when it applying transformations
+    #when applying transformations
     #the transformation functions associated with a root category
     #will not be applied unless that same category is populated as a tree category
 
     #the family tree primitives are for purposes of specifying order of transformations
     #as may include generations and branches of derivations
-    #as well as for managing columns retentions in the returned data
+    #as well as for managing column retentions in the returned data
     #(as in some cases intermediate stages of transformations may or may not have desired retention)
 
     #the family tree primitives can be distinguished by types of 
@@ -85,10 +85,10 @@ For simplicity just going to copy the code directly from code base where these d
 
     #each of the family tree primitives associated with a root category
     #may have entries of zero, one, or more transformation categories
-    
+      
     #when a root category is assigned to a column
     #the upstream primitives are inspected
-    
+      
     #when a tree category is found 
     #as an entry to an upstream primitive associated with the root category
     #the transformation functions associated with the tree category are performed
@@ -103,7 +103,7 @@ For simplicity just going to copy the code directly from code base where these d
     #as an entry to an upstream primitive with offspring
     #after the associated transformation function is performed
     #the downstream primitives of the family tree of the tree category is inspected
-    #and those downstream primitives are treated as a susequent generation's upstream primitives
+    #and those downstream primitives are treated as a subsequent generation's upstream primitives
     #where the input column to that subsequent generation is the column returned 
     #from the transformation function associated with the upstream tree category
 
@@ -3424,29 +3424,29 @@ For simplicity just going to copy the code directly from code base where these d
     '''
     #creates a dictionary storing all of the processing functions for each
     #category. Note that the convention is that every dualprocess entry 
-    #(to process both train and text set in automunge) is meant
-    #to have a coresponding postprocess entry (to process the test set in 
+    #(to process both train and test data in automunge) is meant
+    #to have a corresponding postprocess entry (to process the test set in 
     #postmunge). If the dualprocess/postprocess pair aren't included a 
-    #singleprocess funciton will be instead which processes a single column
+    #singleprocess function should be instead which processes a single column
     #at a time and is neutral to whether that set is from train or test data.
-    
-    #note that the functionpointer entry is currenlty only available for user passed processdict
+      
+    #note that the functionpointer entry is currently only available for user passed processdict
     #this internal library process_dict does not accept functionpointer entries
-    
+      
     #A user should pass either a pair of processing functions to both 
     #dualprocess and postprocess, or alternatively just a single processing
     #function to singleprocess, and omit or pass None to those not used.
     #A user can also pass an inversion function to inverseprocess if available.
     #Most of the transforms defined internal to the library follow this convention.
-
+    
     #dualprocess: for passing a processing function in which normalization 
     #             parameters are derived from properties of the training set
     #             and jointly process the train set and if available corresponding test set
-
+    
     #singleprocess: for passing a processing function in which no normalization
     #               parameters are needed from the train set to process the
     #               test set, such that train and test sets processed separately
-
+    
     #postprocess: for passing a processing function in which normalization 
     #             parameters originally derived from the train set are applied
     #             to separately process a corresponding test set
@@ -3456,7 +3456,7 @@ For simplicity just going to copy the code directly from code base where these d
     #                a corresponding forward pass transform
     #                An entry should correspond to the dualprocess or singleprocess entry.
 
-    #___________________________________________________________________________
+    #__________________________________________________________________________
     #Alternative streamlined processing function conventions are also available 
     #which may be populated as entries to custom_train / custom_test / custom_inversion.
     #These conventions are documented in the readme section "Custom Transformation Functions".
