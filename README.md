@@ -675,14 +675,15 @@ that there may be energy efficiency benefits at scale to basing this to 16.
 Note that integer data types are still retained with this option.
 
 * shuffletrain: can be passed as one of _{True, False, 'traintest'}_ which 
-indicates if the rows in df_train will be shuffled prior to carving out the 
-validation sets.  This value defaults to True. Note that if this value is set to 
-False then any validation sets will be pulled from the bottom x% sequential 
-rows of the df_train dataframe. (Where x% is the sum of validation ratios.) 
-Otherwise validation rows will be randomly selected. The third option 'traintest'
-is comparable to True for the training set and shuffles the returned test sets
-as well. Note that all corresponding returned sets are consistently shuffled 
-(such as between train/labels/trainID sets).
+indicates if the returned sets will have their rows shuffled. Defaults to True 
+for shuffling the train data but not the test data. False deactivates. To shuffle 
+both train and test data can pass as 'traintest'. Note that this impacts the
+validation split if a valpercent was passed, where under the default of True
+validation data will be randomly sampled and shuffled, or when shuffletrain is 
+deactivated validation data will be based on a partiion of sequential rows from 
+the bottom of the train set. Note that row correspondance with shuffling is
+maintained between train / ID / label sets. Note that we recommend deactivating 
+shuffletrain for sequential (time-series) data. 
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -1263,6 +1264,97 @@ as well as an entry in the processdict described below for assigning associated 
 Note that the library has an internally defined library of transformation categories prepopulated in the
 internal transform_dict which are detailed below in the Library of Transformations section of this document.
 For clarity transformdict refers to the user passed data structure which is subsequently consolidated into the internal "transform_dict" (with underscore) data structure.
+
+```
+    #transform_dict is for purposes of populating
+    #for each transformation category's use as a root category
+    #a "family tree" set of associated transformation categories
+    #which are for purposes of specifying the type and order of transformation functions
+    #to be applied when a transformation category is assigned as a root category
+      
+    #we'll refer to the category key to a family as the "root category"
+    #we'll refer to a transformation category entered into 
+    #a family tree primitive as a "tree category"
+
+    #a transformation category may serve as both a root category
+    #and a tree category
+
+    #each transformation category will have a set of properties assigned
+    #in the corresponding process_dict data structure
+    #including associated transformation functions, data properties, and etc.
+
+    #a root category may be assigned to a column with the user passed assigncat
+    #or when not specified may be determined under automation via _evalcategory
+
+    #when applying transformations
+    #the transformation functions associated with a root category
+    #will not be applied unless that same category is populated as a tree category
+
+    #the family tree primitives are for purposes of specifying order of transformations
+    #as may include generations and branches of derivations
+    #as well as for managing column retentions in the returned data
+    #(as in some cases intermediate stages of transformations may or may not have desired retention)
+
+    #the family tree primitives can be distinguished by types of 
+    #upstream/downstream, supplement/replace, offsping/no offspring
+
+    #___________
+    #'parents' :
+    #upstream / first generation / replaces column / with offspring
+
+    #'siblings':
+    #upstream / first generation / supplements column / with offspring
+
+    #'auntsuncles' :
+    #upstream / first generation / replaces column / no offspring
+
+    #'cousins' :
+    #upstream / first generation / supplements column / no offspring
+
+    #'children' :
+    #downstream parents / offspring generations / replaces column / with offspring
+
+    #'niecesnephews' :
+    #downstream siblings / offspring generations / supplements column / with offspring
+
+    #'coworkers' :
+    #downstream auntsuncles / offspring generations / replaces column / no offspring
+
+    #'friends' :
+    #downstream cousins / offspring generations / supplements column / no offspring
+    #___________
+
+    #each of the family tree primitives associated with a root category
+    #may have entries of zero, one, or more transformation categories
+      
+    #when a root category is assigned to a column
+    #the upstream primitives are inspected
+      
+    #when a tree category is found 
+    #as an entry to an upstream primitive associated with the root category
+    #the transformation functions associated with the tree category are performed
+
+    #if any tree categories are populated in the upstream replacement primitives
+    #their inclusion supercedes supplement primitive entries
+    #and so the input column to the transformation is not retained in the returned set
+    #with the column replacement either achieved by an inplace transformation
+    #or subsequent deletion operation
+
+    #when a tree category is found
+    #as an entry to an upstream primitive with offspring
+    #after the associated transformation function is performed
+    #the downstream primitives of the family tree of the tree category is inspected
+    #and those downstream primitives are treated as a subsequent generation's upstream primitives
+    #where the input column to that subsequent generation is the column returned 
+    #from the transformation function associated with the upstream tree category
+
+    #this is an easy point of confusion so as further clarification on this point
+    #the downstream primitives associated with a root category
+    #will not be inspected when root category is applied
+    #unless that root category is also entered as a tree category entry
+    #in one of the root category's upstream primitives with offspring
+```
+
 Once a root category has been defined, it can be assigned to a received column in assigncat.
 For example, a user wishing to define a new set of transformations for a numerical set can define a new root category 'newt' 
 that combines NArw, min-max, box-cox, z-score, and standard deviation bins by passing a 
@@ -4182,7 +4274,7 @@ as postreports_dict['pm_miscparameters_results']. (If the function fails to comp
 ### Root Category Family Tree Definitions
 The family tree definitions reference documentation are now recorded in a seperate file in the github repo titled "FamilyTrees.md".
 
-...
+ ___ 
 
 ## Custom Transformation Functions
 
