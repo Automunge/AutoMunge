@@ -6912,7 +6912,7 @@ class AutoMunge:
     inplaceperformed = False
     
     #final upstream transform from parents or auntsuncles is elligible for inplace
-    #as long as no supplement transforms were applied
+    #when a replacement transform is to be applied
     final_upstream = False
     if len(transform_dict[category]['auntsuncles']) == 0:
       if len(transform_dict[category]['parents']) > 0:
@@ -7302,90 +7302,96 @@ class AutoMunge:
     for column_dict in column_dict_list:
       postprocess_dict = self._dictupdate(column, column_dict, postprocess_dict)
 
-      #note this only works for single column source, as currently implemented
-      #multicolumn transforms (such as text or bins) cannot serve as parents
-      #a future extension may check the categorylist from column_dict for 
-      #purposes of transforms applied to multicolumn source
-      parentcolumn = list(column_dict.keys())[0]
+    #we take an arbitrary column returned from upstream transform as first entry in categorylist
+    #to serve as parentcolumn input to next generation transform
+    #if downstream transform includes support for multi-column input
+    #they can use parentcolumn to access from column_dict the upstream categorylist and normalization_dict
+    if len(column_dict_list) > 0:
+      column_dict = column_dict_list[0]
+      support_column = list(column_dict.keys())[0]
+      support_categorylist = column_dict[support_column]['categorylist']
+      parentcolumn = support_categorylist[0]
+      
+      #only proceed to next generation if parent did not return an empty set
 
-    #if transform_dict[parent] != None:
+      #if transform_dict[parent] != None:
 
-    #initialize in case no downstream performed
-    parent_inplaceperformed = False
-    
-    #process any children
-    
-    #final upstream transform from parents or auntsuncles is elligible for inplace
-    #as long as no supplement transforms were applied
-    final_downstream = False
-    if len(transform_dict[parent]['coworkers']) == 0:
-      if len(transform_dict[parent]['children']) > 0:
-        final_downstream = transform_dict[parent]['children'][-1]
-    else:
-      if len(transform_dict[parent]['coworkers']) > 0:
-        final_downstream = transform_dict[parent]['coworkers'][-1]
+      #initialize in case no downstream performed
+      parent_inplaceperformed = False
 
-    #process any niecesnephews
-    #note the function applied is comparable to processsibling, just a different
-    #parent column
-    for niecenephew in transform_dict[parent]['niecesnephews']:
+      #process any children
 
-      if niecenephew != None:
-
-        #process the niecenephew
-        #note the function applied is processparent (using recursion)
-        #parent column
-        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
-        self._processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #process any friends
-    for friend in transform_dict[parent]['friends']:
-
-      if friend != None:
-
-        #process the friend
-        #note the function applied is processcousin
-        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
-        self._processcousin(df_train, df_test, parentcolumn, friend, origcategory, final_downstream, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
-    
-    for child in transform_dict[parent]['children']:
-
-      if child != None:
-
-        #process the child
-        #note the function applied is processparent (using recursion)
-        #parent column
-        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
-        self._processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #process any coworkers
-    for coworker in transform_dict[parent]['coworkers']:
-
-      if coworker != None:
-
-        #process the coworker
-        #note the function applied is processcousin
-        df_train, df_test, postprocess_dict, parent_inplaceperformed = \
-        self._processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                           process_dict, transform_dict, postprocess_dict, assign_param)
-
-    #if we had replacement transformations performed then mark column for deletion
-    #(circle of life)
-    if len(transform_dict[parent]['children']) \
-    + len(transform_dict[parent]['coworkers']) > 0 \
-    and parent_inplaceperformed is False:
-      #here we'll only address downstream generaitons
-      if parentcolumn in postprocess_dict['column_dict']:
-        postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
+      #final downstream transform from coworkers or children is elligible for inplace
+      #when a replacement transform is to be applied
+      final_downstream = False
+      if len(transform_dict[parent]['coworkers']) == 0:
+        if len(transform_dict[parent]['children']) > 0:
+          final_downstream = transform_dict[parent]['children'][-1]
       else:
-        if parentcolumn not in postprocess_dict['orig_noinplace']:
-          postprocess_dict['orig_noinplace'].append(parentcolumn)
-    elif parent_inplaceperformed is True:
-      if parentcolumn in postprocess_dict['column_dict']:
-        postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = 'inplace'
+        if len(transform_dict[parent]['coworkers']) > 0:
+          final_downstream = transform_dict[parent]['coworkers'][-1]
+
+      #process any niecesnephews
+      #note the function applied is comparable to processsibling, just a different
+      #parent column
+      for niecenephew in transform_dict[parent]['niecesnephews']:
+
+        if niecenephew != None:
+
+          #process the niecenephew
+          #note the function applied is processparent (using recursion)
+          #parent column
+          df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+          self._processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
+                             process_dict, transform_dict, postprocess_dict, assign_param)
+
+      #process any friends
+      for friend in transform_dict[parent]['friends']:
+
+        if friend != None:
+
+          #process the friend
+          #note the function applied is processcousin
+          df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+          self._processcousin(df_train, df_test, parentcolumn, friend, origcategory, final_downstream, \
+                             process_dict, transform_dict, postprocess_dict, assign_param)
+
+      for child in transform_dict[parent]['children']:
+
+        if child != None:
+
+          #process the child
+          #note the function applied is processparent (using recursion)
+          #parent column
+          df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+          self._processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
+                             process_dict, transform_dict, postprocess_dict, assign_param)
+
+      #process any coworkers
+      for coworker in transform_dict[parent]['coworkers']:
+
+        if coworker != None:
+
+          #process the coworker
+          #note the function applied is processcousin
+          df_train, df_test, postprocess_dict, parent_inplaceperformed = \
+          self._processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
+                             process_dict, transform_dict, postprocess_dict, assign_param)
+
+      #if we had replacement transformations performed then mark column for deletion
+      #(circle of life)
+      if len(transform_dict[parent]['children']) \
+      + len(transform_dict[parent]['coworkers']) > 0 \
+      and parent_inplaceperformed is False:
+        #here we'll only address downstream generaitons
+        if parentcolumn in postprocess_dict['column_dict']:
+          postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
+        else:
+          if parentcolumn not in postprocess_dict['orig_noinplace']:
+            postprocess_dict['orig_noinplace'].append(parentcolumn)
+      elif parent_inplaceperformed is True:
+        if parentcolumn in postprocess_dict['column_dict']:
+          postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = 'inplace'
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
@@ -7663,16 +7669,6 @@ class AutoMunge:
     mdf_train, normalization_dict = \
     postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_train, suffixcolumn, params)
     
-    #We'll have convention that if a corresponding custom_test_template wasn't populated
-    #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
-    if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
-    and postprocess_dict['process_dict'][treecategory]['custom_test'] != None:
-      mdf_test = \
-      postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
-    else:
-      mdf_test, _1 = \
-      postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
-    
     returned_columns = list(mdf_train)
     
     #newcolumns_list is list of returned columns including suffixcolumn
@@ -7680,6 +7676,20 @@ class AutoMunge:
     #this might be a different order of columns vs the dataframe, that is ok for our usage
     #the ^ operation is to accomodate both inplace scenarios
     newcolumns_list = list((set(initial_columns) ^ set(returned_columns)) - set(initial_columns) )
+
+    #to be consistent with postmunge, if newcolumns_list is empty then we'll just delete the suffix column in mdf_test
+    if len(newcolumns_list) == 0:
+      del mdf_test[suffixcolumn]
+    else:
+      #We'll have convention that if a corresponding custom_test_template wasn't populated
+      #custom_test entry will either not be included or cast as None, in which case we apply custom_train to test data
+      if 'custom_test' in postprocess_dict['process_dict'][treecategory] \
+      and postprocess_dict['process_dict'][treecategory]['custom_test'] != None:
+        mdf_test = \
+        postprocess_dict['process_dict'][treecategory]['custom_test'](mdf_test, suffixcolumn, normalization_dict)
+      else:
+        mdf_test, _1 = \
+        postprocess_dict['process_dict'][treecategory]['custom_train'](mdf_test, suffixcolumn, params)
       
     #___
     
@@ -8250,7 +8260,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[suffixcolumn][0]
+    value = df[suffixcolumn].iat[0]
     if value != value:
       value = 0
 
@@ -8376,7 +8386,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[suffixcolumn][0]
+    value = df[suffixcolumn].iat[0]
     if value != value:
       value = 0
 
@@ -8489,7 +8499,7 @@ class AutoMunge:
     
     #then one more infill with to address scenario when data wasn't numeric
     #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column][0]
+    value = df[shft_column].iat[0]
     if value != value:
       value = 0
 
@@ -9520,7 +9530,7 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
-    
+
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -24205,6 +24215,8 @@ class AutoMunge:
     #find labelctgy from process_dict based on this origcategory
     labelscategory = process_dict[origcategory]['labelctgy']
 
+    #this is an exception to convention elsewhere that MLinfilltype is based on tree category
+    #here we're inspecting based on root category
     MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
 
     #columns_labels may be reset for numeric labels, labels is fixed
@@ -26168,7 +26180,7 @@ class AutoMunge:
       if len(binary_mode) > 0:
         binary_mode = binary_mode[0]
       else:
-        binary_mode = tempdf['onehot'][0]
+        binary_mode = tempdf['onehot'].iat[0]
       
 #       if len(binary_mode) < 1:
 #         binary_mode = 0
@@ -28517,14 +28529,14 @@ class AutoMunge:
     if len(familytree['coworkers']) > 0:
       new_labelctgy = familytree['coworkers'][0]
 
-      if printstatus != 'silent':
+      if printstatus is True:
         print("labelctgy selected as ", new_labelctgy)
         print()
 
     elif len(familytree['friends']) > 0:
       new_labelctgy = familytree['friends'][0]
 
-      if printstatus != 'silent':
+      if printstatus is True:
         print("labelctgy selected as ", new_labelctgy)
         print()
 
@@ -28534,7 +28546,7 @@ class AutoMunge:
       new_labelctgy = \
       self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
-      if printstatus != 'silent':
+      if printstatus is True:
         print("labelctgy selected as ", new_labelctgy)
         print()
 
@@ -28544,7 +28556,7 @@ class AutoMunge:
       new_labelctgy = \
       self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
-      if printstatus != 'silent':
+      if printstatus is True:
         print("labelctgy selected as ", new_labelctgy)
         print()
 
@@ -29729,28 +29741,37 @@ class AutoMunge:
                 df[columnkey] = np.where(df_mask['mask'] == 1, np.nan, df[columnkey])
                 
     return df
-  
+
   def _df_split(self, df, ratio, shuffle_param, randomseed):
     """
     #performs a split of passed dataframe df
     #based on proportions of ratio where 0<ratio<1
-    #bool shuffle False means rows taken from bottom of set sequentially
-    #bool shuffle True means randomly selected rows 
+    #bool shuffle_param False means rows taken from bottom of set sequentially
+    #bool shuffle_param True means randomly sampled rows 
     #per seeding of randomseed
+    #with the validation set df2 returned shuffled
+    #and the train set df1 not shuffled, just removed rows present in df2
     #(if run on two df's with same number of rows, will return consistent partitioning)
     #returns two dataframes df1 and df2
     """
 
     if ratio > 0 and ratio < 1:
+    
+      if shuffle_param is False:
 
-      start = int(df.shape[0] * (1-ratio))
-      end = df.shape[0]
+        start = int(df.shape[0] * (1-ratio))
+        end = df.shape[0]
+        
+        df1 = df[0:start]
+        df2 = df[start:end]
 
-      if shuffle_param is True:
-        df = self._df_shuffle(df, randomseed)
-
-      df1 = df[0:start]
-      df2 = df[start:end]
+      elif shuffle_param is True:
+        
+        #these rows will be shuffled
+        df2 = df.sample(frac=ratio, random_state=randomseed)
+        
+        #these rows won't be shuffled, this will just remove rows present in df2
+        df1 = df.drop(df2.index)
 
     else:
 
@@ -29758,7 +29779,6 @@ class AutoMunge:
       df2 = pd.DataFrame()
 
     return df1, df2
-    
   
   def _df_shuffle(self, df, randomseed):
     """
@@ -30390,7 +30410,7 @@ class AutoMunge:
     #printout display progress
     if printstatus is True:
       print("_______________")
-      print("Begin Automunge processing")
+      print("Begin Automunge")
       print("")
 
     #functionality to support passed numpy arrays
@@ -30658,10 +30678,10 @@ class AutoMunge:
         df_trainID = pd.DataFrame()
         df_validationID1 = pd.DataFrame()
 
-      df_train = df_train.reset_index(drop=True)
-      df_validation1 = df_validation1.reset_index(drop=True)
-      df_trainID = df_trainID.reset_index(drop=True)
-      df_validationID1 = df_validationID1.reset_index(drop=True)
+      # df_train = df_train.reset_index(drop=True)
+      # df_validation1 = df_validation1.reset_index(drop=True)
+      # df_trainID = df_trainID.reset_index(drop=True)
+      # df_validationID1 = df_validationID1.reset_index(drop=True)
 
     #else if total validation was <= 0.0
     else:
@@ -31492,8 +31512,6 @@ class AutoMunge:
         print("")
 
     #then if shuffle was elected perform here
-    #note that this will be redundant with any shuffling operation 
-    #that may have been performed as part of validation split
     if shuffletrain is True or shuffletrain == 'traintest':
       
       #shuffle training set and labels
@@ -31618,7 +31636,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.46'
+    automungeversion = '6.47'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31827,7 +31845,10 @@ class AutoMunge:
         print("Begin validation set processing with Postmunge")
         print("")
 
-      #(postmunge shuffletrain not needed since data was already shuffled)
+      #(postmunge shuffletrain not needed since validation data was already shuffled in _df_split if shuffletrain was activated)
+
+      #temp dataframe to recover index (postmunge partitions non-range index into ID set)
+      temp_valindex = pd.DataFrame(np.zeros((df_validation1.shape[0], 1))).set_index(df_validation1.index)
 
       #process validation set consistent to train set with postmunge here
       #note that traindata parameter consistent with what passed to automunge(.)
@@ -31835,6 +31856,12 @@ class AutoMunge:
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                     pandasoutput = True, printstatus = printstatus, \
                     shuffletrain = False)
+
+      df_validation1.index = temp_valindex.index
+      if len(list(df_validationlabels1)) > 0:
+        df_validationlabels1.index = temp_valindex.index
+
+      del temp_valindex
 
     if totalvalidationratio <= 0.0:
       df_validation1 = pd.DataFrame()
@@ -31951,7 +31978,7 @@ class AutoMunge:
     inplaceperformed = False
     
     #final upstream transform from parents or auntsuncles is elligible for inplace
-    #as long as no supplement transforms were applied
+    #when a replacement transform is applied
     final_upstream = False
     if len(transform_dict[category]['auntsuncles']) == 0:
       if len(transform_dict[category]['parents']) > 0:
@@ -32026,13 +32053,6 @@ class AutoMunge:
     #then delete the associated parent column 
     for columndict_column in postprocess_dict['column_dict']:
       if postprocess_dict['column_dict'][columndict_column]['deletecolumn'] is True:
-
-        # #first we'll remove the column from columnslists 
-        # for columnslistcolumn in postprocess_dict['column_dict'][columndict_column]['columnslist']:
-
-        #   if columndict_column in postprocess_dict['column_dict'][columnslistcolumn]['columnslist']:
-
-        #     postprocess_dict['column_dict'][columnslistcolumn]['columnslist'].remove(columndict_column)
 
         #now we'll delete column
         #note this only worksa on single column  parents, need to incioroprate categorylist
@@ -32200,71 +32220,74 @@ class AutoMunge:
       process_dict[parent]['singleprocess'](df_test, column, origcategory, \
                                             parent, postprocess_dict, params)
 
-    #this is used to derive the new columns from the trasform
+    #this is used to derive the new columns from the transform
     newcolumnsset = set(df_test)
+    
+    #the " - {column}" is to accomodate both inplace scenarios
+    support_newcolumns = (origcolumnsset ^ newcolumnsset) - {column}
+    
+    #downstream transform only performed if upstream did not return empty set
+    if len(support_newcolumns) > 0:
+      support_newcolumn = list(support_newcolumns)[0]
+      support_categorylist = postprocess_dict['column_dict'][support_newcolumn]['categorylist']
 
-    #derive the new columns from the trasform
-    categorylist = list(origcolumnsset^newcolumnsset)
+      #to be consistent with automunge(.), parentcolumn is selected as first entry in upstream categorylist
+      parentcolumn = support_categorylist[0]
 
-    for entry in categorylist:
-      if entry in postprocess_dict['column_dict']:
-        if column == postprocess_dict['column_dict'][entry]['inputcolumn']:
-          parentcolumn = entry
-      
-    #final upstream transform from parents or auntsuncles is elligible for inplace
-    #as long as no supplement transforms were applied
-    final_downstream = False
-    if len(transform_dict[parent]['coworkers']) == 0:
-      if len(transform_dict[parent]['children']) > 0:
-        final_downstream = transform_dict[parent]['children'][-1]
-    else:
-      if len(transform_dict[parent]['coworkers']) > 0:
-        final_downstream = transform_dict[parent]['coworkers'][-1]
+      #final downstream transform from coworkers or children is elligible for inplace
+      #when a replacement transform is applied
+      final_downstream = False
+      if len(transform_dict[parent]['coworkers']) == 0:
+        if len(transform_dict[parent]['children']) > 0:
+          final_downstream = transform_dict[parent]['children'][-1]
+      else:
+        if len(transform_dict[parent]['coworkers']) > 0:
+          final_downstream = transform_dict[parent]['coworkers'][-1]
 
-    #process any niecesnephews
-    for niecenephew in transform_dict[parent]['niecesnephews']:
+      #process any niecesnephews
+      for niecenephew in transform_dict[parent]['niecesnephews']:
 
-      if niecenephew != None:
+        if niecenephew != None:
 
-        #process the niecenephew
-        #note the function applied is postprocessparent (using recursion)
-        df_test = \
-        self._postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, assign_param)
-        
-    #process any friends
-    for friend in transform_dict[parent]['friends']:
+          #process the niecenephew
+          #note the function applied is postprocessparent (using recursion)
+          df_test = \
+          self._postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
+                                  process_dict, transform_dict, postprocess_dict, assign_param)
 
-      if friend != None:
+      #process any friends
+      for friend in transform_dict[parent]['friends']:
 
-        #process the friend
-        #note the function applied is processcousin
-        df_test = \
-        self._postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, assign_param)
+        if friend != None:
 
-    #process any children
-    for child in transform_dict[parent]['children']:
+          #process the friend
+          #note the function applied is processcousin
+          df_test = \
+          self._postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
+                                  process_dict, transform_dict, postprocess_dict, assign_param)
 
-      if child != None:
+      #process any children
+      for child in transform_dict[parent]['children']:
 
-        #process the child
-        #note the function applied is postprocessparent (using recursion)
-        #parent column
-        df_test = \
-        self._postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
-                                transform_dict, postprocess_dict, assign_param)
+        if child != None:
 
-    #process any coworkers
-    for coworker in transform_dict[parent]['coworkers']:
+          #process the child
+          #note the function applied is postprocessparent (using recursion)
+          #parent column
+          df_test = \
+          self._postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
+                                  transform_dict, postprocess_dict, assign_param)
 
-      if coworker != None:
+      #process any coworkers
+      for coworker in transform_dict[parent]['coworkers']:
 
-        #process the coworker
-        #note the function applied is processcousin
-        df_test = \
-        self._postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                                process_dict, transform_dict, postprocess_dict, assign_param)
+        if coworker != None:
+
+          #process the coworker
+          #note the function applied is processcousin
+          df_test = \
+          self._postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
+                                  process_dict, transform_dict, postprocess_dict, assign_param)
 
     return df_test
 
@@ -39611,7 +39634,7 @@ class AutoMunge:
     #printout display progress
     if printstatus is True:
       print("_______________")
-      print("Begin Postmunge processing")
+      print("Begin Postmunge")
       print("")
     
     #feature selection analysis performed here if elected
