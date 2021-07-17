@@ -3621,3 +3621,24 @@ am.postmunge(postprocess_dict, df_test)
 - reverted to convention that traindata option is specific to postmunge in dual/singleprocess convention
 - (in hindsight having to align for validation data kind of made this muddy, much cleaner to keep it a postmunge option, all potential workflows supported with combination of automunge and postmunge)
 - lifted requirement for reserved strings in the keys of normalization_dict accessed in custom_train convention
+
+6.47
+- updated custom_test application convention in automunge to be consistent with postmunge
+- from the standpoint that if custom_train returned an empty set (including deletion of suffixcolumn)
+- then suffixcolumn simply deleted from mdf_test without calling custom_test
+- corrected some code comments in processfamily and processparent (and corresponding postprocess functions) regarding inplace elligibility
+- updated processparent and postprocessparent to eliminate an edge case so that downstream transforms are halted when the associated upstream transform returned an empty set
+- if user needs support for this scenario, need to configure upstream transform so that in the null scenario instead of returning empty set it performs passthrough
+- also updated the parentcolumn derivation for passing an input column to downstream generations in processparent and postprocessparent
+- to ensure consistent parentcolumn applied in both
+- corrected a code comment in processparent that stated that downstream transforms require as input transforms returning a single column
+- prior configuration already supported performing downstream transforms on multi-column sets with dual/single process convention
+- just hadn't documented it well since don't currently have any applications in the library
+- the convention is downstream transforms on received multicolumn sets will recieve as input a single column (which is now the first entry in the upstream categorylist)
+- which they can then use as a key to access the upstream caterogylist and normalization_dict from column_dict if needed
+- updated the validation split performed in df_split to remove a redundant shuffle
+- in the process found and fixed small snafu interfering with index retention in cases of validation split
+- used that as a hint that needed to audit index retention, so ran everything with all options on and yeah looked good accross all returned sets
+- fixed some printout categorizations for labelctgy assignment
+- corrected single entry access approach to pandas.iat in a few places
+- streamlined printouts at start of automunge / postmunge function calls (removed word "processing")
