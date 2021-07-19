@@ -3635,7 +3635,7 @@ am.postmunge(postprocess_dict, df_test)
 - prior configuration already supported performing downstream transforms on multi-column sets with dual/single process convention
 - just hadn't documented it well since don't currently have any applications in the library
 - the convention is downstream transforms on received multicolumn sets will recieve as input a single column (which is now the first entry in the upstream categorylist)
-- which they can then use as a key to access the upstream caterogylist and normalization_dict from column_dict if needed
+- which they can then use as a key to access the upstream categorylist and normalization_dict from column_dict if needed
 - updated the validation split performed in df_split to remove a redundant shuffle
 - in the process found and fixed small snafu interfering with index retention in cases of validation split
 - used that as a hint that needed to audit index retention, so ran everything with all options on and yeah looked good accross all returned sets
