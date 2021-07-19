@@ -1435,7 +1435,7 @@ Note that transformdict entries can be defined to overwrite existing root catego
 For example, if we wanted our default numerical scaling to be by min-max instead of z-score normalization, one way we could accomplish
 that is to overwrite the 'nmbr' family tree which is the default root category applied to numeric sets under automation. (Other default
 root categories under automation are detailed further below in the 
-"[Default Tranformstions](https://github.com/Automunge/AutoMunge#default-transformations)" section.)
+"[Default Tranformations](https://github.com/Automunge/AutoMunge#default-transformations)" section.)
 ```
 transformdict =  {'nmbr' : {'auntsuncles' : 'mnmx',
                             'cousins'     : 'NArw'}}
