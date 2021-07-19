@@ -1431,6 +1431,16 @@ Since there is recursion involved a user should be careful of creating infinite 
 downstream primitive entries with offspring whose own offspring coincide with an earlier generation.
 (The presence of infinite loops is tested for to a max depth of 1111 offspring, an arbitrary figure.)
 
+Note that transformdict entries can be defined to overwrite existing root category entries defined in the internal library.
+For example, if we wanted our default numerical scaling to be by min-max instead of z-score normalization, one way we could accomplish
+that is to overwrite the 'nmbr' family tree which is the default root category applied to numeric sets under automation. (Other default
+root categories under automation are detailed further below in the 
+"[Default Tranformstions](https://github.com/Automunge/AutoMunge#default-transformations)" section.)
+```
+transformdict =  {'nmbr' : {'auntsuncles' : 'mnmx',
+                            'cousins'     : 'NArw'}}
+```
+
 Note that when we define a new root category family tree such as the 'newt' example shown above, we also need 
 to define a corresponding processdict entry for the new category, which we detail next.
 
