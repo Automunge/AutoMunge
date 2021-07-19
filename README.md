@@ -1435,7 +1435,8 @@ Note that transformdict entries can be defined to overwrite existing root catego
 For example, if we wanted our default numerical scaling to be by min-max instead of z-score normalization, one way we could accomplish
 that is to overwrite the 'nmbr' family tree which is the default root category applied to numeric sets under automation. (Other default
 root categories under automation are detailed further below in the 
-"[Default Tranformations](https://github.com/Automunge/AutoMunge#default-transformations)" section.)
+"[Default Tranformations](https://github.com/Automunge/AutoMunge#default-transformations)" section.) An alternate approach could be to
+overwrite the nmbr processdict entry which we'll demonstrate shortly.
 ```
 transformdict =  {'nmbr' : {'auntsuncles' : 'mnmx',
                             'cousins'     : 'NArw'}}
@@ -1698,6 +1699,18 @@ updated defaultparams.
 ```
 processdict =  {'mnmx' : {'functionpointer' : 'mnmx',
                           'defaultparams'   : {'floor' : True}}}
+```
+
+Note that processdict entries can be defined to overwrite existing category entries defined in the internal library.
+For example, if we wanted our default numerical scaling to be by min-max instead of z-score normalization, one way we could accomplish
+this is to overwrite the 'nmbr' transformation functions accessed from processdict, where nmbr is the default root category applied to 
+numeric sets under automation, whose family tree has nmbr as a tree category entry for accessing the transformation functions. 
+(Other default root categories under automation are detailed further below in the 
+"[Default Tranformations](https://github.com/Automunge/AutoMunge#default-transformations)" section.) This approach differs
+from overwriting the nmbr transformdict entry as demonstrated above in that the update would be carried through to all instances where nmbr is
+accessed as a tree category accross the library of family trees.
+```
+processdict =  {'nmbr' : {'functionpointer' : 'mnmx'}}
 ```
 
 Processing functions following the conventions of those defined internal to the library
