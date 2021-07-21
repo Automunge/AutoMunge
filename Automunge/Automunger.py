@@ -27390,18 +27390,18 @@ class AutoMunge:
     
     #check inversion
     inversion_valresult = False
-    if not isinstance(inversion, list) and inversion not in {False, 'test', 'labels', 'denselabels'}:
+    if not isinstance(inversion, list) and not isinstance(inversion, set) and inversion not in {False, 'test', 'labels', 'denselabels'}:
       inversion_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for inversion parameter.")
-        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
+        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
         print()
-    elif not isinstance(inversion, list) and inversion not in {'test', 'labels', 'denselabels'} \
+    elif not isinstance(inversion, list) and not isinstance(inversion, set) and inversion not in {'test', 'labels', 'denselabels'} \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for inversion parameter.")
-        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', or a list of columns}")
+        print("Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
         print()
       
     pm_miscparameters_results.update({'inversion_valresult' : inversion_valresult})
@@ -31636,7 +31636,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.47'
+    automungeversion = '6.48'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43448,6 +43448,58 @@ class AutoMunge:
       df_test, recovered_list, inversion_info_dict = \
       self._df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
 
+      if printstatus is True:
+        print("Inversion succeeded in recovering original form for columns:")
+        print(recovered_list)
+        print()
+
+      if pandasoutput is False:
+
+        df_test = df_test.to_numpy()
+
+      return df_test, recovered_list, inversion_info_dict
+
+    #the set case is for when user wants to specify a specific target for inversion path
+    #and convention is set case accepts a single entry
+    if isinstance(inversion, set):
+      
+      #convention is set case accepts single entry
+      #so we'll just confirm
+      if len(inversion) != 1:
+        
+        if printstatus != 'silent':
+          print("error: inversion was passed as a set with more than one entry")
+          print("the inversion set case is for specifying a single target inversion path")
+          print("and thus accepts a set of one string entry representing a returned column header")
+          
+      #temporarily recast as a list
+      inversion = list(inversion)
+        
+      #using pre_dimred_finalcolumns_train to accomodate post Binary inversion application
+      # finalcolumns_train = postprocess_dict['finalcolumns_train']
+      finalcolumns_train = postprocess_dict['pre_dimred_finalcolumns_train']
+      
+      #add excl suffix to passthrough columns if applicable
+      if postprocess_dict['excl_suffix'] is False:
+        self._list_replace(inversion, postprocess_dict['excl_suffix_conversion_dict'])
+        self._list_replace(finalcolumns_train, postprocess_dict['excl_suffix_conversion_dict'])
+        
+      #now convert inversion to string entry (of returned column header)
+      inversion = inversion[0]
+      
+      #confirm entry is a returned column header
+      if inversion not in finalcolumns_train:
+        
+        if printstatus != 'silent':
+          print("error: inversion was passed as a set with entry not matching one of the returned columns")
+          print("the inversion set case is for specifying a single target inversion path")
+          print("and thus accepts a set of one string entry representing a returned column header")
+          
+      origcolumn = postprocess_dict['column_dict'][inversion]['origcolumn']
+      
+      df_test, recovered_list, inversion_info_dict = \
+      self._df_inversion_meta(df_test, [origcolumn], postprocess_dict, printstatus, manual_path = inversion)
+      
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
         print(recovered_list)
