@@ -2050,13 +2050,17 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _'report_full'_ means that the full assessment is performed and returned with no 
   processing of data
 
-* inversion: defaults to False, may be passed as one of {False, ‘test’, ‘labels’, 'denselabels', or a list}, 
+* inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
 mirroring the inversion of those applied in automunge(.), the form of test data or labels 
-data to consistency with the source columns as were originally passed to automunge(.). When 
-passed as a list, accepts list of source column or returned column headers for inversion target. 
-'denselabels' is for label set inversion in which labels were prepared in multiple formats,
-such as to recover the original form on each basis for comparison.
+data to consistency with the source columns as were originally passed to automunge(.). As further clarification, 
+passing inversion='test' should be in conjunction with passing df_test = test (where test is a dataframe of train 
+or test data returned from an automunge or postmunge call), and passing inversion='labels' should be in conjunction 
+with passing df_test = test_labels (where test_labels is a dataframe of labels or test_labels returned from an 
+automunge or postmunge call). When inversion is passed as a list, accepts list of source column or returned column 
+headers for inversion targets. When inversion is passed as a set, accepts a set with single entry of a returned 
+column header serving as a custom target for the inversion path. 'denselabels' is for label set inversion in which 
+labels were prepared in multiple formats, such as to recover the original form on each basis for comparison.
 The inversion operation is supported by the optional process_dict entries ‘info_retention’ and 
 ‘inverseprocess’. Note that columns are only returned for those sets in which a path of 
 inversion was available by processdict inverseprocess entries. Note that the path of 
