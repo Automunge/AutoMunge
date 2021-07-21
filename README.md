@@ -1205,7 +1205,6 @@ are based on the rows corresponding to activations from the NArw_marker paramete
 
 assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
 ```
-Please note that support of assigninfill to label columns is intended as a future extension.
 
 * assignnan: for use to designate data set entries that will be targets for infill, such as 
 may be entries not covered by NArowtype definitions from processdict. For example, we have 
