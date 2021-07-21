@@ -4590,7 +4590,7 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
   stdev = normalization_dict['stdev']
   multiplier = normalization_dict['multiplier']
 
-  #Now initialize the inputcolumn
+  #Now initialize the inputcolumn (here we are creating a new column with header inputcolumn)
   df[inputcolumn] = 0
 
   #So for the example of z-score normalization, we know returnedcolumn_list will only have one entry
