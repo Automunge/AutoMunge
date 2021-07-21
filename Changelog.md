@@ -3653,3 +3653,25 @@ am.postmunge(postprocess_dict, df_test)
 - in default configuration, inversion selects an inversion path based on heuristic of shortest path of transformations with full information retention
 - in the new custom inversion path option, alternate inversion paths can be specified
 - which I don't have a specific use case in mind, just seemed like a reasonable extension
+
+6.49
+- simplified index recovery for validation data
+- dropped printouts for stndrdinfill
+- which were there to indicate columns with no infill performed as part of ML infill or assigninfill
+- in which case infill defers to default infill perfomed as part of transformation function
+- realized the inclusion was kind of cluttering the printouts
+- and by omitting printouts just for this case there is no loss of information content
+- moved validation that populated processing functions are callable
+- from within the process family functions to distinct validation function _check_processdict4
+- this validation now limited to entries in user passed processdict (after any functionpointer entries are populated)
+- and validates that entries to any of the processing function slots (dual/single/post/inverseprocess or custom_train/custom_test/custom_inverison)
+- are either callable functions or passed as None
+- validation results returned in printouts and as check_processdict4_valresult
+- a few improvements to functionpointer support function _grab_functionpointer_entries_support
+- added support for edge scenario of self-referential pointers linked from a chain
+- which were previously treated as infinite loops
+- also removed a check for processing functions that was sort of superfluous
+- a few small cleanups for clarity
+- change evalcat format check from type to callable to be consistent with processing functions
+- removed a comment in read me about adding assigninfill support for label sets
+- if alternate infill conventions are desired for labels they can be applied with defaultinfill processdict entry in custom_train convention
