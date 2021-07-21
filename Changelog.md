@@ -3642,3 +3642,14 @@ am.postmunge(postprocess_dict, df_test)
 - fixed some printout categorizations for labelctgy assignment
 - corrected single entry access approach to pandas.iat in a few places
 - streamlined printouts at start of automunge / postmunge function calls (removed word "processing")
+
+6.48
+- new option for the postmunge inversion parameter to specify a custom inversion path
+- custom inversion path can be specified by passing inversion as a single entry set
+- containing a string of a returned column header with suffix appenders
+- such as to recover a specific input column based on inverting from a starting point of a specific target returned representation
+- (note that label inversion is also available to collectively invert each of returned representations by the 'denselabels' option)
+- inversion is for recovering the form of input data from train or test data returned from an automunge(.) or postmunge(.) call
+- in default configuration, inversion selects an inversion path based on heuristic of shortest path of transformations with full information retention
+- in the new custom inversion path option, alternate inversion paths can be specified
+- which I don't have a specific use case in mind, just seemed like a reasonable extension
