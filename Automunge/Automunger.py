@@ -7114,6 +7114,7 @@ class AutoMunge:
     #used on the niecesnephews primitive downstream of parents or siblings since 
     #they don't have children (they're way to young for that)
     #note the processing funcitons are accessed through the process_dict
+    #note that validation of processing functions in user passed processdict takes place in _check_processdict4
     
     #note that the presence of a custom_train processing function for a tree category
     #takes precedence over a dualprocess function
@@ -7124,10 +7125,6 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
 
     '''
-
-    #for checking type of processdict entries of custom externally defined transformation functions
-    def _check_function():
-      return
     
     inplaceperformed = False
     inplacecandidate = False
@@ -7157,8 +7154,7 @@ class AutoMunge:
     #if this is a custom process function
     #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
     if 'custom_train' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['custom_train'], type(self._processcousin)) \
-    or isinstance(process_dict[cousin]['custom_train'], type(_check_function))):
+    and process_dict[cousin]['custom_train'] != None:
       
       #note that _custom_process_wrapper accesses the copy of process_dict saved within postprocess_dict
       df_train, df_test, column_dict_list = \
@@ -7170,8 +7166,7 @@ class AutoMunge:
     
     #elif this is a dual process function
     elif 'dualprocess' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['dualprocess'], type(self._processcousin)) \
-    or isinstance(process_dict[cousin]['dualprocess'], type(_check_function))):
+    and process_dict[cousin]['dualprocess'] != None:
 
       df_train, df_test, column_dict_list = \
       process_dict[cousin]['dualprocess'](df_train, df_test, column, origcategory, \
@@ -7182,8 +7177,7 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['singleprocess'], type(self._processcousin)) \
-    or isinstance(process_dict[cousin]['singleprocess'], type(_check_function))):
+    and process_dict[cousin]['singleprocess'] != None:
 
       df_train, column_dict_list =  \
       process_dict[cousin]['singleprocess'](df_train, column, origcategory, \
@@ -7212,6 +7206,7 @@ class AutoMunge:
     #used on the children primitive downstream of parents or siblings, allowing
     #the children to have children of their own, you know, grandchildren and stuff.
     #note the processing functions are accessed through the process_dict
+    #note that validation of processing functions in user passed processdict takes place in _check_processdict4
     
     #note that the presence of a custom_train processing function for a tree category
     #takes precedence over a dualprocess function
@@ -7224,10 +7219,6 @@ class AutoMunge:
     #we want to apply in order of
     #upstream process, niecesnephews, friends, children, coworkers
     '''
-
-    #for checking type of processdict entries of custom externally defined transformation functions
-    def _check_function():
-      return
 
     #upstream process
     
@@ -7259,8 +7250,7 @@ class AutoMunge:
     #if this is a custom process function 
     #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
     if 'custom_train' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['custom_train'], type(self._processparent)) \
-    or isinstance(process_dict[parent]['custom_train'], type(_check_function))):
+    and process_dict[parent]['custom_train'] != None:
       
       #note that _custom_process_wrapper accesses the copy of process_dict saved within postprocess_dict
       df_train, df_test, column_dict_list = \
@@ -7272,8 +7262,7 @@ class AutoMunge:
     
     #elif this is a dual process function
     elif 'dualprocess' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['dualprocess'], type(self._processparent)) \
-    or isinstance(process_dict[parent]['dualprocess'], type(_check_function))):
+    and process_dict[parent]['dualprocess'] != None:
 
       df_train, df_test, column_dict_list = \
       process_dict[parent]['dualprocess'](df_train, df_test, column, origcategory, \
@@ -7284,8 +7273,7 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['singleprocess'], type(self._processparent)) \
-    or isinstance(process_dict[parent]['singleprocess'], type(_check_function))):
+    and process_dict[parent]['singleprocess'] != None:
 
       df_train, column_dict_list =  \
       process_dict[parent]['singleprocess'](df_train, column, origcategory, \
@@ -25315,14 +25303,14 @@ class AutoMunge:
 
             if iteration == 0:
               
-              #stndrdinfill (just prinouts, this was done in processing funcitons)
-              if column in postprocess_assigninfill_dict['stdrdinfill']:
+              # #stndrdinfill (just prinouts, this was done in processing funcitons)
+              # if column in postprocess_assigninfill_dict['stdrdinfill']:
 
-                #printout display progress
-                if printstatus is True:
-                  print("infill to column: ", column)
-                  print("     infill type: stdrdinfill")
-                  print("")
+              #   #printout display progress
+              #   if printstatus is True:
+              #     print("infill to column: ", column)
+              #     print("     infill type: stdrdinfill")
+              #     print("")
                   
               #zeroinfill
               if column in postprocess_assigninfill_dict['zeroinfill']:
@@ -25612,14 +25600,14 @@ class AutoMunge:
 
             if iteration == 0:
               
-              #stndrdinfill (just prinouts, this was done in processing funcitons)
-              if column in postprocess_assigninfill_dict['stdrdinfill']:
+              # #stndrdinfill (just prinouts, this was done in processing funcitons)
+              # if column in postprocess_assigninfill_dict['stdrdinfill']:
 
-                #printout display progress
-                if printstatus is True:
-                  print("infill to column: ", column)
-                  print("     infill type: stdrdinfill")
-                  print("")
+              #   #printout display progress
+              #   if printstatus is True:
+              #     print("infill to column: ", column)
+              #     print("     infill type: stdrdinfill")
+              #     print("")
 
               #zeroinfill:
               if column in postprocess_assigninfill_dict['zeroinfill']:
@@ -27344,11 +27332,11 @@ class AutoMunge:
     #check evalcat
     evalcat_valresult = False
     if evalcat is not False \
-    and type(evalcat) != types.FunctionType:
+    and callable(evalcat):
       evalcat_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for evalcat parameter.")
-        print("evalcat allowable values are False or as a defined function per READ ME.")
+        print("evalcat allowable values are False or as a callable function per READ ME.")
       
     miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
     
@@ -28562,6 +28550,38 @@ class AutoMunge:
 
     return new_labelctgy
 
+  def _check_processdict4(self, processdict, printstatus):
+    """
+    #Validates that any processing function entries in user passed processdict
+    #are either a callable function or passed as None
+    #note this takes place after functionpointer entries are accessed
+    """
+
+    check_processdict4_valresult = False
+
+    checked_slots = ['dualprocess', 'singleprocess', 'postprocess', 'inverseprocess', \
+                     'custom_train', 'custom_test', 'custom_inversion']
+
+    for category in processdict:
+
+      for checked_slot in checked_slots:
+
+        if checked_slot in processdict[category]:
+
+          if not callable(processdict[category][checked_slot]) \
+          and processdict[category][checked_slot] != None:
+
+            check_processdict4_valresult = True
+
+            if printstatus != 'silent':
+
+              print("warning of potential error")
+              print("for processdict entry associated with category ", category)
+              print("a processing function was entered in slot for ", checked_slot)
+              print("which was not callable or passed as None")
+
+    return check_processdict4_valresult
+
   def _grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict, process_dict, \
                                             i, check_functionpointer_result, printstatus):
     """
@@ -28605,11 +28625,12 @@ class AutoMunge:
       
     else:
       
-      #(providing #_1_ and #_2_ as visualization aid for indentation scheme since using two space tabs)
+      #(providing #_1_ #_2_ etc as visualization aid for indentation scheme since using two space tabs)
       
       i+=1
       
       #_1_
+      #checking that pointercategory != targetcategory ensures self-referential are accessed from process_dict instead of processdict
       if pointercategory in processdict and pointercategory != targetcategory:
         
         #if function poitner points to a category that itself has a functionpointer
@@ -28619,12 +28640,14 @@ class AutoMunge:
         #_2_
         if 'functionpointer' in processdict[pointercategory]:
 
+          #_3_
           for update_target in update_targets:
             
             if update_target in processdict[pointercategory] \
             and update_target not in processdict[targetcategory]:
               processdict[targetcategory][update_target] = processdict[pointercategory][update_target]
               
+          #_3_
           #defaultparams gets special treatment since accessing entries in a dictionary
           if 'defaultparams' in processdict[pointercategory]:
             if 'defaultparams' in processdict[targetcategory]:
@@ -28634,45 +28657,74 @@ class AutoMunge:
             else:
               processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
           
-          #now new pointer category is the functionpointer entry of the prior functionpointer entry
-          pointercategory = processdict[pointercategory]['functionpointer']
+          #_3_
+          #make sure the linked pointercategory doesn't have self-referential functionpointer
+          #which happens when used to overwrite it's own process_dict entry
+          if pointercategory != processdict[pointercategory]['functionpointer']:
+
+            #now new pointer category is the functionpointer entry of the prior functionpointer entry
+            pointercategory = processdict[pointercategory]['functionpointer']
+
+            #follow through recursion
+            processdict, i, check_functionpointer_result = \
+            self._grab_functionpointer_entries_support(targetcategory, pointercategory, processdict, process_dict, \
+                                                       i, check_functionpointer_result, printstatus)
           
-          #follow through recursion
-          processdict, i, check_functionpointer_result = \
-          self._grab_functionpointer_entries_support(targetcategory, pointercategory, processdict, process_dict, \
-                                                     i, check_functionpointer_result, printstatus)
+          #_3_
+          #this elif is to accomodate self-referential functionpointers
+          #when linked from a chain 
+          #so that they aren't interpreted as infinite loops
+          #so instead of calling _grab_functionpointer_entries_support on processdict
+          #we'll just access from the corresponding process_dict entry
+          elif pointercategory == processdict[pointercategory]['functionpointer']:
+            
+            #_4_
+            if pointercategory in process_dict:
+
+              for update_target in update_targets:
+
+                if update_target in process_dict[pointercategory] \
+                and update_target not in processdict[targetcategory]:
+                  processdict[targetcategory][update_target] = process_dict[pointercategory][update_target]
+
+              #defaultparams gets special treatment since accessing entries in a dictionary
+              if 'defaultparams' in process_dict[pointercategory]:
+                if 'defaultparams' in processdict[targetcategory]:
+                  defaultparams = deepcopy(process_dict[pointercategory]['defaultparams'])
+                  defaultparams.update(processdict[targetcategory]['defaultparams'])
+                  processdict[targetcategory]['defaultparams'] = defaultparams
+                else:
+                  processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
+
+            #_4_
+            else:
+
+              check_functionpointer_result = True
+
+              if printstatus != 'silent':
+                print("error: user passed processdict entry for category ", pointercategory)
+                print("contained a self-referential functionpointer that did not point to a category found in process_dict")
+                print()            
             
         #_2_
-        else:
-          
-          #function pointers have to point to a category with either a functionpointer or processing function entries
-          if ('singleprocess' not in processdict[pointercategory]) and \
-              ('dualprocess' not in processdict[pointercategory] or 'postprocess' not in processdict[pointercategory]) \
-          and 'custom_train' not in processdict[pointercategory]:
+        #else grab and halt the chain since no functionpoitner populated for pointercategory
+        elif 'functionpointer' not in processdict[pointercategory]:
 
-            check_functionpointer_result = True
-            if printstatus != 'silent':
-              print("error: processdict entry found without functionpointer, custom_train / custom_test, dualprocess / postprocess, or singleprocess")
-              print("for processdict entry ", pointercategory)
-              print()
+          #_3_
+          for update_target in update_targets:
 
-          #so if processing function entries were present, we can grab them and pass to targetcategory and halt the chain
-          else:
-            
-            for update_target in update_targets:
+            if update_target in processdict[pointercategory] \
+            and update_target not in processdict[targetcategory]:
+              processdict[targetcategory][update_target] = processdict[pointercategory][update_target]
 
-              if update_target in processdict[pointercategory] \
-              and update_target not in processdict[targetcategory]:
-                processdict[targetcategory][update_target] = processdict[pointercategory][update_target]
-
-            #defaultparams gets special treatment since accessing entries in a dictionary
-            if 'defaultparams' in processdict[pointercategory]:
-              if 'defaultparams' in processdict[targetcategory]:
-                defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
-                defaultparams.update(processdict[targetcategory]['defaultparams'])
-                processdict[targetcategory]['defaultparams'] = defaultparams
-              else:
-                processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+          #defaultparams gets special treatment since accessing entries in a dictionary
+          if 'defaultparams' in processdict[pointercategory]:
+            if 'defaultparams' in processdict[targetcategory]:
+              defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
+              defaultparams.update(processdict[targetcategory]['defaultparams'])
+              processdict[targetcategory]['defaultparams'] = defaultparams
+            else:
+              processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
                 
       #_1_
       #if pointercategory wasn't in user passed processdict, we'll next check the internal library process_dict
@@ -28681,12 +28733,14 @@ class AutoMunge:
         #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
         #so we don't need as many steps as above, can just assume processing functions are present
         
+        #_2_
         for update_target in update_targets:
 
           if update_target in process_dict[pointercategory] \
           and update_target not in processdict[targetcategory]:
             processdict[targetcategory][update_target] = process_dict[pointercategory][update_target]
 
+        #_2_
         #defaultparams gets special treatment since accessing entries in a dictionary
         if 'defaultparams' in process_dict[pointercategory]:
           if 'defaultparams' in processdict[targetcategory]:
@@ -28704,7 +28758,8 @@ class AutoMunge:
         
         if printstatus != 'silent':
           print("error: user passed processdict entry for category ", targetcategory)
-          print("contained a functionpointer that did not point to a category with function definitions")
+          print("contained a functionpointer that did not point to a category found in processdict or process_dict")
+          print("note that self-referential functionpointers only supported when overwriting entry in process_dict")
           print()
 
     return processdict, i, check_functionpointer_result
@@ -30274,6 +30329,11 @@ class AutoMunge:
       miscparameters_results.update({'check_processdict_result' : check_processdict_result,
                                      'check_processdict_result2': check_processdict_result2})
 
+      #this function ensures any populated processing functions are either callable or None
+      check_processdict4_valresult = \
+      self._check_processdict4(processdict, printstatus)
+      miscparameters_results.update({'check_processdict4_valresult' : check_processdict4_valresult})
+
       #now consolidate user passed entries from processdict and internal library in process_dict
       process_dict.update(processdict)
       
@@ -30846,7 +30906,7 @@ class AutoMunge:
             if evalcat is False:
               category = self._evalcategory(df_train, column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
-            elif type(evalcat) == types.FunctionType:
+            elif callable(evalcat):
               category = evalcat(df_train, column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
       #
@@ -30859,7 +30919,7 @@ class AutoMunge:
         if evalcat is False:
           category = self._evalcategory(df_train, column, randomseed, eval_ratio, \
                                        numbercategoryheuristic, powertransform, False)
-        elif type(evalcat) == types.FunctionType:
+        elif callable(evalcat):
           category = evalcat(df_train, column, randomseed, eval_ratio, \
                              numbercategoryheuristic, powertransform, False)
           
@@ -30990,7 +31050,7 @@ class AutoMunge:
             if evalcat is False:
               labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
                                            numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
-            elif type(evalcat) == types.FunctionType:
+            elif callable(evalcat):
               labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                  numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
 
@@ -31010,7 +31070,7 @@ class AutoMunge:
         if evalcat is False:
           labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
                                              numbercategoryheuristic, False, True)
-        elif type(evalcat) == types.FunctionType:
+        elif callable(evalcat):
           labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
                                    numbercategoryheuristic, False, True)
           
@@ -31636,7 +31696,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.48'
+    automungeversion = '6.49'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -31847,8 +31907,8 @@ class AutoMunge:
 
       #(postmunge shuffletrain not needed since validation data was already shuffled in _df_split if shuffletrain was activated)
 
-      #temp dataframe to recover index (postmunge partitions non-range index into ID set)
-      temp_valindex = pd.DataFrame(np.zeros((df_validation1.shape[0], 1))).set_index(df_validation1.index)
+      #to recover index (postmunge partitions non-range index into ID set)
+      temp_valindex = df_validation1.index
 
       #process validation set consistent to train set with postmunge here
       #note that traindata parameter consistent with what passed to automunge(.)
@@ -31857,9 +31917,9 @@ class AutoMunge:
                     pandasoutput = True, printstatus = printstatus, \
                     shuffletrain = False)
 
-      df_validation1.index = temp_valindex.index
+      df_validation1.index = temp_valindex
       if len(list(df_validationlabels1)) > 0:
-        df_validationlabels1.index = temp_valindex.index
+        df_validationlabels1.index = temp_valindex
 
       del temp_valindex
 
@@ -32074,10 +32134,6 @@ class AutoMunge:
     #which takes precedence over a singleprocess function
     """
 
-    #for checking type of processdict entries of custom externally defined transformation functions
-    def _check_function():
-      return
-
     inplaceperformed = False
     inplacecandidate = False
     if final_upstream == cousin:
@@ -32113,16 +32169,14 @@ class AutoMunge:
     #if this is a custom process function
     #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
     if 'custom_train' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['custom_train'], type(self._postprocesscousin)) \
-    or isinstance(process_dict[cousin]['custom_train'], type(_check_function))):
+    and process_dict[cousin]['custom_train'] != None:
       
       df_test = \
       self._custom_postprocess_wrapper(df_test, column, postprocess_dict, columnkey_list, params)
     
     #elif this is a dual process function
     elif 'postprocess' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['postprocess'], type(self._postprocesscousin)) \
-    or isinstance(process_dict[cousin]['postprocess'], type(_check_function))):
+    and process_dict[cousin]['postprocess'] != None:
       
       df_test = \
       process_dict[cousin]['postprocess'](df_test, column, postprocess_dict, \
@@ -32130,8 +32184,7 @@ class AutoMunge:
 
     #else if this is a single process function
     elif 'singleprocess' in process_dict[cousin] \
-    and (isinstance(process_dict[cousin]['singleprocess'], type(self._postprocesscousin)) \
-    or isinstance(process_dict[cousin]['singleprocess'], type(_check_function))):
+    and process_dict[cousin]['singleprocess'] != None:
             
       df_test, _1 = \
       process_dict[cousin]['singleprocess'](df_test, column, origcategory, \
@@ -32153,10 +32206,6 @@ class AutoMunge:
     #takes precedence over a postprocess function
     #which takes precedence over a singleprocess function
     """
-
-    #for checking type of processdict entries of custom externally defined transformation functions
-    def _check_function():
-      return
     
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(df_test)
@@ -32196,16 +32245,14 @@ class AutoMunge:
     #if this is a custom process function
     #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
     if 'custom_train' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['custom_train'], type(self._postprocessparent)) \
-    or isinstance(process_dict[parent]['custom_train'], type(_check_function))):
+    and process_dict[parent]['custom_train'] != None:
       
       df_test = \
       self._custom_postprocess_wrapper(df_test, column, postprocess_dict, columnkey_list, params)
     
     #elif this is a dual process function
     elif 'postprocess' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['postprocess'], type(self._postprocessparent)) \
-    or isinstance(process_dict[parent]['postprocess'], type(_check_function))):
+    and process_dict[parent]['postprocess'] != None:
             
       df_test = \
       process_dict[parent]['postprocess'](df_test, column, postprocess_dict, \
@@ -32213,8 +32260,7 @@ class AutoMunge:
 
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in process_dict[parent] \
-    and (isinstance(process_dict[parent]['singleprocess'], type(self._postprocessparent)) \
-    or isinstance(process_dict[parent]['singleprocess'], type(check_function))):
+    and process_dict[parent]['singleprocess'] != None:
       
       df_test, _1 = \
       process_dict[parent]['singleprocess'](df_test, column, origcategory, \
