@@ -2137,11 +2137,13 @@ appropriate means of feature engineering and numerical encoding. The default
 categories of transformations are as follows:
 - nmbr: for numerical data, columns are treated with z-score normalization. If 
 binstransform parameter was activated this will be supplemented by a collection
-of bins indicating number of standard deviations from the mean.
+of bins indicating number of standard deviations from the mean. Note that deafult infill
+performed prior to ML infill is imputation with negative zero.
 - 1010: for categorical data excluding special cases described following, columns are 
 subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
-(which defaults to 255), the encoding will instead be by hashing.
+(which defaults to 255), the encoding will instead be by hashing. Note that for default 
+infill missing data has a distinct representation in the encoding space.
 - bnry: for categorical data of <=2 unique values excluding infill (e.g. NaN), the 
 column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
 set default to bnry.
@@ -2356,7 +2358,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
   - useful for: normalizing numeric sets of unknown distribution
-  - default infill: negative zero
+  - default infill: negzeroinfill
   - default NArowtype: numeric
   - suffix appender: '\_nmbr' in base configuration or based on the family tree category
   - assignparam parameters accepted:  
@@ -2366,10 +2368,12 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'abs_zero', defaults to True, deactivate to turn off conversion of negative zeros to positive zeros applied prior to infill (this is included to supplement negzeroinfill)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / std / max / min
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
+* nbr4: z-score normalization similar to nmbr but with defaultinfill of zeroinfill instead of negzeroinfill and with abs_zero parameter deactivated<br/>
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - min)
 My intuition says z-score has some benefits but really up to the user which they prefer.
@@ -4127,6 +4131,7 @@ avoid unintentional duplication.
 - 'mxab',
 - 'nbr2',
 - 'nbr3',
+- 'nbr4',
 - 'nmbd',
 - 'nmbr',
 - 'nmc2',
