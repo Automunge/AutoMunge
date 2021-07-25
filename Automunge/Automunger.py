@@ -1861,7 +1861,7 @@ class AutoMunge:
 
     transform_dict.update({'time' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['time'],
+                                     'auntsuncles'   : ['year'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -2564,7 +2564,7 @@ class AutoMunge:
     transform_dict.update({'wkdy' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['wkdy'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2573,7 +2573,7 @@ class AutoMunge:
     transform_dict.update({'bshr' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['bshr'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2582,7 +2582,7 @@ class AutoMunge:
     transform_dict.update({'hldy' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hldy'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2591,7 +2591,7 @@ class AutoMunge:
     transform_dict.update({'wkds' : {'parents'       : ['wkds'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['text'],
@@ -2600,7 +2600,7 @@ class AutoMunge:
     transform_dict.update({'wkdo' : {'parents'       : ['wkdo'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['ordl'],
@@ -2609,7 +2609,7 @@ class AutoMunge:
     transform_dict.update({'mnts' : {'parents'       : ['mnts'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['text'],
@@ -2618,7 +2618,7 @@ class AutoMunge:
     transform_dict.update({'mnto' : {'parents'       : ['mnto'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['ordl'],
@@ -3591,12 +3591,12 @@ class AutoMunge:
     #               from the pointer target are also populated when not previously specified.
 
     #___________________________________________________________________________
-    #defaultinfill: this option is specific to the custom_train convention, and serves to specify a default infill
+    #defaultinfill: this option serves to specify a default infill
     #               applied after NArowtype data type casting and preceding the transformation function.
     #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
     #               defaults to 'adjinfill' when not specified, can also pass as one of
     #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-    #                'zeroinfill', 'oneinfill', 'naninfill'}
+    #                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
     #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
     #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
     #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
@@ -3651,6 +3651,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3658,6 +3659,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3665,6 +3667,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3672,6 +3675,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3679,6 +3683,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3686,6 +3691,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3693,6 +3699,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3700,6 +3707,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3707,6 +3715,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3714,6 +3723,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3721,6 +3731,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3728,6 +3739,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3735,6 +3747,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3744,6 +3757,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3753,6 +3767,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3762,6 +3777,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3771,6 +3787,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3780,6 +3797,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3789,6 +3807,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3796,6 +3815,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3803,6 +3823,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3810,6 +3831,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3817,6 +3839,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3824,6 +3847,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3831,6 +3855,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3838,6 +3863,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3845,6 +3871,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3852,6 +3879,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3859,6 +3887,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3866,6 +3895,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3873,6 +3903,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3880,6 +3911,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3887,6 +3919,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3894,6 +3927,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3901,6 +3935,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3908,6 +3943,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3915,6 +3951,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -4002,6 +4039,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -4011,6 +4049,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr3'}})
@@ -4020,6 +4059,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'mean'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -4030,6 +4070,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'mean'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -4040,6 +4081,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'max'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -4050,6 +4092,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4059,6 +4102,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4068,6 +4112,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
@@ -4077,6 +4122,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
@@ -4086,6 +4132,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4096,13 +4143,17 @@ class AutoMunge:
                                   'defaultparams' : {'floor' : True},
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm6'}})
-    process_dict.update({'mnm7' : {'dualprocess' : None,
+    process_dict.update({'mnm7' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4112,6 +4163,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mxab,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mxab'}})
@@ -4121,6 +4173,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4130,6 +4183,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4139,6 +4193,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4148,6 +4203,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4157,6 +4213,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4166,6 +4223,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4175,6 +4233,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'onevalue'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
@@ -4185,6 +4244,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'zerovalue'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
@@ -4195,6 +4255,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_onht,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'onht'}})
@@ -4204,6 +4265,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -4213,6 +4275,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -4222,6 +4285,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4231,6 +4295,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
@@ -4240,6 +4305,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
@@ -4248,6 +4314,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'mnmx'}})
@@ -4255,6 +4322,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
@@ -4264,6 +4332,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'UPCS'}})
@@ -4273,6 +4342,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'onht'}})
@@ -4282,6 +4352,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4291,6 +4362,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4300,6 +4372,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4309,6 +4382,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4318,6 +4392,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ordl'}})
@@ -4327,6 +4402,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
@@ -4336,6 +4412,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4345,6 +4422,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4354,6 +4432,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : '1010'}})
@@ -4363,6 +4442,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'splt'}})
@@ -4372,6 +4452,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
@@ -4383,6 +4464,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4394,6 +4476,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4403,6 +4486,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True,
                                                      'minsplit' : 1},
@@ -4415,6 +4499,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -4425,6 +4510,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
@@ -4436,6 +4522,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4447,6 +4534,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4458,6 +4546,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4469,6 +4558,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4480,6 +4570,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4491,6 +4582,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'concurrent_activations': True,
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
@@ -4502,6 +4594,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'concurrent_activations': True,
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
@@ -4513,6 +4606,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4524,6 +4618,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4535,6 +4630,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp19'}})
@@ -4544,6 +4640,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4554,6 +4651,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4564,6 +4662,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4574,6 +4673,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4584,6 +4684,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4592,6 +4693,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hash'}})
@@ -4599,6 +4701,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'space' : '',
                                                      'excluded_characters' : []},
                                   'NArowtype' : 'justNaN',
@@ -4608,6 +4711,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hs10,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'hs10'}})
@@ -4617,6 +4721,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hash'}})
@@ -4626,6 +4731,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hsh2'}})
@@ -4635,6 +4741,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hs10'}})
@@ -4653,6 +4760,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_src2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src2'}})
@@ -4662,6 +4770,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_src3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src3'}})
@@ -4680,6 +4789,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4687,6 +4797,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_strn,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4696,6 +4807,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_strg,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'strg'}})
@@ -4705,6 +4817,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4715,6 +4828,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4725,6 +4839,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4735,6 +4850,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4746,6 +4862,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4757,6 +4874,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4768,6 +4886,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4779,6 +4898,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4790,6 +4910,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4801,6 +4922,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4811,6 +4933,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4821,6 +4944,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4831,6 +4955,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4842,6 +4967,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4853,6 +4979,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4864,6 +4991,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4875,6 +5003,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4886,6 +5015,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4897,6 +5027,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4907,6 +5038,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4917,6 +5049,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4927,6 +5060,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4938,6 +5072,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4949,6 +5084,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4960,6 +5096,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4971,6 +5108,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4982,6 +5120,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4993,6 +5132,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -5004,6 +5144,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -5015,6 +5156,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -5026,6 +5168,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5035,6 +5178,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5044,6 +5188,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
@@ -5053,6 +5198,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord5'}})
@@ -5062,6 +5208,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
@@ -5071,6 +5218,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
@@ -5080,6 +5228,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -5089,6 +5238,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -5098,6 +5248,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -5107,6 +5258,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -5114,6 +5266,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_ucct,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'ucct'}})
@@ -5123,6 +5276,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5132,15 +5286,19 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'or10' : {'dualprocess' : None,
+    process_dict.update({'or10' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
@@ -5150,6 +5308,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5159,6 +5318,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5168,6 +5328,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5177,6 +5338,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5186,6 +5348,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5195,6 +5358,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5204,6 +5368,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5213,6 +5378,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5222,6 +5388,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5231,6 +5398,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5240,6 +5408,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5249,6 +5418,7 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5258,20 +5428,27 @@ class AutoMunge:
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'om10' : {'dualprocess' : None,
+    process_dict.update({'om10' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mmor' : {'dualprocess' : None,
+    process_dict.update({'mmor' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -5281,6 +5458,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
@@ -5290,6 +5468,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'output_distribution' : 'normal'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -5300,6 +5479,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'output_distribution' : 'uniform'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -5308,20 +5488,28 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'tmsc' : {'dualprocess' : None,
+    process_dict.update({'tmsc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'defaultparams' : {},
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'time' : {'dualprocess' : None,
+    process_dict.update({'time' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
+                                  'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
@@ -5329,6 +5517,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmzn'}})
@@ -5336,13 +5525,15 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'dat2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hldy'}})
@@ -5350,6 +5541,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5357,6 +5549,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5364,6 +5557,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5371,6 +5565,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5379,15 +5574,22 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_time,
                                   'inverseprocess' : self._inverseprocess_year,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'scale' : 'year',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
-    process_dict.update({'yea2' : {'dualprocess' : None,
+    process_dict.update({'yea2' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
+                                  'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
@@ -5397,6 +5599,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrsn'}})
@@ -5406,6 +5609,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrcs'}})
@@ -5415,6 +5619,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnth'}})
@@ -5459,6 +5664,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnsn'}})
@@ -5468,6 +5674,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mncs'}})
@@ -5477,6 +5684,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdsn'}})
@@ -5486,6 +5694,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdcs'}})
@@ -5495,6 +5704,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'days'}})
@@ -5532,6 +5742,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dysn'}})
@@ -5541,6 +5752,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dycs'}})
@@ -5550,6 +5762,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhms'}})
@@ -5559,6 +5772,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhmc'}})
@@ -5568,6 +5782,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hour'}})
@@ -5598,6 +5813,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrsn'}})
@@ -5607,6 +5823,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrcs'}})
@@ -5616,6 +5833,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmss'}})
@@ -5625,6 +5843,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmsc'}})
@@ -5634,6 +5853,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mint'}})
@@ -5664,6 +5884,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'misn'}})
@@ -5673,6 +5894,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mics'}})
@@ -5682,6 +5904,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mssn'}})
@@ -5691,6 +5914,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mscs'}})
@@ -5700,6 +5924,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scnd'}})
@@ -5716,6 +5941,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scsn'}})
@@ -5725,6 +5951,7 @@ class AutoMunge:
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sccs'}})
@@ -5732,6 +5959,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5739,6 +5967,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5746,6 +5975,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
@@ -5753,6 +5983,7 @@ class AutoMunge:
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
@@ -5762,6 +5993,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5771,6 +6003,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5780,6 +6013,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5808,6 +6042,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
@@ -5817,6 +6052,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
@@ -5826,6 +6062,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'logn'}})
@@ -5835,6 +6072,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5844,6 +6082,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sqrt,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sqrt'}})
@@ -5853,6 +6092,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_addd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'addd'}})
@@ -5862,6 +6102,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_sbtr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sbtr'}})
@@ -5871,6 +6112,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mltp'}})
@@ -5880,6 +6122,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_divd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'divd'}})
@@ -5889,6 +6132,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_rais,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'rais'}})
@@ -5898,6 +6142,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'absl'}})
@@ -5925,6 +6170,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt3'}})
@@ -5934,6 +6180,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt4'}})
@@ -5941,6 +6188,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_wkdy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'wkdy'}})
@@ -5948,6 +6196,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_bshr,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bshr'}})
@@ -5955,6 +6204,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_hldy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'hldy'}})
@@ -5962,6 +6212,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
@@ -5969,6 +6220,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5976,6 +6228,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
@@ -5983,6 +6236,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5992,6 +6246,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bins'}})
@@ -6001,6 +6256,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'normalizedinput' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -6011,6 +6267,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bsor'}})
@@ -6021,6 +6278,7 @@ class AutoMunge:
                                   'info_retention' : False,
                                   'defaultparams' : {'normalizedinput' : True},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'btor'}})
@@ -6030,6 +6288,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
@@ -6039,6 +6298,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -6049,6 +6309,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -6059,6 +6320,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
@@ -6068,6 +6330,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
@@ -6078,6 +6341,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
@@ -6117,6 +6381,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
@@ -6125,6 +6390,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6135,6 +6401,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6184,6 +6451,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6193,6 +6461,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6202,6 +6471,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6211,6 +6481,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6219,6 +6490,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bnwo,
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6229,6 +6501,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bnwo,
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6240,6 +6513,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6248,6 +6522,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6258,6 +6533,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6278,6 +6554,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
@@ -6296,6 +6573,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
@@ -6314,6 +6592,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPrt'}})
@@ -6323,6 +6602,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
@@ -6342,6 +6622,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
@@ -6361,6 +6642,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -6371,6 +6653,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
@@ -6389,6 +6672,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
@@ -6407,6 +6691,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -6443,6 +6728,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6461,6 +6747,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt1'}})
@@ -6470,6 +6757,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'integer_bits' : 15,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'numeric',
@@ -6481,6 +6769,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'fractional_bits' : 13},
                                   'NArowtype' : 'nonnegativenumeric',
@@ -6492,6 +6781,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'integer_bits' : 16,
                                                      'fractional_bits' : 0},
@@ -6504,6 +6794,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
@@ -6513,6 +6804,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
@@ -6522,6 +6814,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
@@ -6531,6 +6824,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
@@ -6600,6 +6894,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
@@ -6609,6 +6904,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc3'}})
@@ -6618,6 +6914,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc4'}})
@@ -6627,6 +6924,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
@@ -6637,6 +6935,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc6'}})
@@ -6646,6 +6945,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
@@ -6656,6 +6956,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
@@ -6666,6 +6967,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
@@ -6674,6 +6976,7 @@ class AutoMunge:
                                   'singleprocess' : self._process_shfl,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'shfl'}})
@@ -6683,6 +6986,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -6692,6 +6996,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
@@ -6701,6 +7006,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
@@ -6710,6 +7016,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -6719,6 +7026,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
@@ -6742,6 +7050,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
@@ -6751,6 +7060,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -6760,6 +7070,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : '1010'}})
@@ -6769,6 +7080,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -6778,6 +7090,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
@@ -6787,6 +7100,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -6796,6 +7110,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnry'}})
@@ -6805,6 +7120,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'lbsm'}})
@@ -6814,6 +7130,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
@@ -6831,6 +7148,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
@@ -6840,6 +7158,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
@@ -6849,6 +7168,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'integer_bits' : 4,
                                                      'fractional_bits' : 3,
                                                      'sign_bit' : True},
@@ -6881,6 +7201,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'multiply' : -1},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -6891,6 +7212,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'buckets' : [0]},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
@@ -7190,6 +7512,21 @@ class AutoMunge:
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
       postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, cousin)
 
+    else:
+
+      column_dict_list = []
+
+      if postprocess_dict['printstatus'] != 'silent':
+        
+        #(a formal validation result for this scenario is pending)
+        print('Please note that a tree category was accessed as category ', cousin)
+        print('Originating from generations of root category ', origcategory)
+        print('Which did not have processing functions populated in processdict')
+        print('Processing functions in custom_train or dual/single/post process convention ')
+        print('Are required when a category is accessed as a tree category entry in a family tree.')
+        print('Otherwise tree category is treated as None and no downstream generations are accessed.')
+        print()
+
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
       postprocess_dict = self._dictupdate(column, column_dict, postprocess_dict)
@@ -7285,6 +7622,21 @@ class AutoMunge:
       
       #columnkey_dict used in postprocess functions in a few cases to derive a normkey
       postprocess_dict = self._populate_columnkey_dict(column_dict_list, postprocess_dict, parent)
+
+    else:
+
+      column_dict_list = []
+
+      if postprocess_dict['printstatus'] != 'silent':
+
+        #(a formal validation result for this scenario is pending)
+        print('Please note that a tree category was accessed as category ', parent)
+        print('Originating from generations of root category ', origcategory)
+        print('Which did not have processing functions populated in processdict')
+        print('Processing functions in custom_train or dual/single/post process convention ')
+        print('Are required when a category is accessed as a tree category entry in a family tree.')
+        print('Otherwise tree category is treated as None and no downstream generations are accessed.')
+        print()
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -7546,7 +7898,7 @@ class AutoMunge:
     if 'defaultinfill' in postprocess_dict['process_dict'][treecategory]:
       if isinstance(postprocess_dict['process_dict'][treecategory]['defaultinfill'], str) \
       and postprocess_dict['process_dict'][treecategory]['defaultinfill'] \
-      in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}:
+      in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'negzeroinfill', 'naninfill'}:
         defaultinfill = postprocess_dict['process_dict'][treecategory]['defaultinfill']
     
     #a few special cases to accomodate NArowtype / defaultinfill compatibilities
@@ -7638,6 +7990,11 @@ class AutoMunge:
       #note that transform may not return a 1 value, for final returned 1 use assigninfill
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(1)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
+
+    elif defaultinfill in {'negzeroinfill'}:
+      
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(-0.)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(-0.)
       
     elif defaultinfill in {'naninfill'}:
       #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
@@ -7799,6 +8156,213 @@ class AutoMunge:
       column_dict_list.append(column_dict.copy())
 
     return mdf_train, mdf_test, column_dict_list
+
+  def _apply_defaultinfill(self, df, suffixcolumn, postprocess_dict, treecategory = False, defaultinfill_dict = False):
+    """
+    Applies default infill based on defaultinfill processdict entry
+    Where if defaultinfill not populated defers to adjinfill
+    
+    This function can optionally be called internal to the transformation functions
+    In dual/single/post process convention
+    Where it is intended for application after suffixcolumn creation
+    And after data type casting based on NArowtype
+    
+    Accepts input of train or test data as df
+    suffixcolumn is the target column
+    postprocess_dict is used to access process_dict
+    treecategory is the tree category associated with the transform, which can be passed as False within postprocess functions
+    (treecategory won't be inspected when defaultinfill_dict is populated)
+    defaultinfill_dict passed as False for train data, test data recieves entries populated from train data
+    
+    note that defaultinfill_dict should be externally stored in normalization_dict
+    
+    If custom default infill desired for a transform can designate naninfill (or simply omit this function call)
+    
+    defaultinfill support / default entry for a transform 
+    will be noted in the familytrees process_dict population
+
+    note that zeroinfill and oneinfill may not return a final 0/1 value if further operations applied in transform
+    for final returned 0/1 can use assigninfill
+
+    note that negzeroinfill intended for use in qbt1 family of transforms
+    """    
+    
+    #if this is test data then we are expecting a populated defaultinfill_dict from the train data
+    #otherwise we'll initialize
+    
+    #which will default to adjacent cell infill unless otherwise specified in processdict
+    #here for simplicity we'll run through each defaultinfill twice
+    #first if is for test data, the else will be for train data
+    
+    traindata = False
+    if defaultinfill_dict is not False and 'defaultinfill' in defaultinfill_dict:
+      
+      traindata = True
+      
+      defaultinfill = defaultinfill_dict['defaultinfill']
+      
+      if defaultinfill in {'adjinfill'}:
+
+        #apply ffill to replace NArows with value from adjacent cell in preceding row
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
+
+        #we'll follow with a bfill just in case first row had a nan
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
+        
+      elif defaultinfill in {'meaninfill'}:
+
+        infill_mean = defaultinfill_dict['infill_mean']
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_mean)
+
+      elif defaultinfill in {'medianinfill'}:
+
+        infill_median = defaultinfill_dict['infill_median']
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_median)
+
+      elif defaultinfill in {'modeinfill'}:
+
+        infill_mode = defaultinfill_dict['infill_mode']
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_mode)
+
+      elif defaultinfill in {'lcinfill'}:
+
+        infill_lc = defaultinfill_dict['infill_lc']
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_lc)
+        
+      elif defaultinfill in {'zeroinfill'}:
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(0)
+
+      elif defaultinfill in {'oneinfill'}:
+        
+        df[suffixcolumn] = df[suffixcolumn].fillna(1)
+
+      elif defaultinfill in {'negzeroinfill'}:
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(-0.)
+
+      elif defaultinfill in {'naninfill'}:
+        #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
+        pass
+
+      #finally if prior infill still resulted in nan we'll just plug with 0
+      if defaultinfill not in {'naninfill'}:
+        
+        df[suffixcolumn] = df[suffixcolumn].fillna(0)
+
+    #else if this is train data we'll also populate the defaultinfill_dict
+    else:
+      
+      #we'll apply a default infill
+      #contingent on the 'NArowtype' of the tree category serving as basis for this transform
+      NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
+
+      defaultinfill = 'adjinfill'
+      if 'defaultinfill' in postprocess_dict['process_dict'][treecategory]:
+        if isinstance(postprocess_dict['process_dict'][treecategory]['defaultinfill'], str) \
+        and postprocess_dict['process_dict'][treecategory]['defaultinfill'] \
+        in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'negzeroinfill', 'naninfill'}:
+          defaultinfill = postprocess_dict['process_dict'][treecategory]['defaultinfill']
+
+      #a few special cases to accomodate NArowtype / defaultinfill compatibilities
+
+      #'meaninfill' and 'medianinfill' intended for numeric data, if not a numeric NArowtype adjinfill applied
+      if defaultinfill in {'meaninfill', 'medianinfill'}:
+        if NArowtype not in {'numeric', 'integer', 'positivenumeric', 'nonnegativenumeric', 'nonzeronumeric'}:
+          defaultinfill = 'adjinfill'
+
+      #'datetime' NArowtype only accepts adjinfill or naninfill
+      if NArowtype in {'datetime'}:
+        if defaultinfill not in {'adjinfill', 'naninfill'}:
+          defaultinfill = 'adjinfill'
+
+      #no infill performed for 'exclude' NArowtype
+      if NArowtype in {'exclude'}:
+        defaultinfill = 'naninfill'
+
+      #initialize a dictionary to pass default infill parameters between automunge and postmunge in column_dict
+      defaultinfill_dict = {'defaultinfill' : defaultinfill}
+    
+      if defaultinfill in {'adjinfill'}:
+
+        #apply ffill to replace NArows with value from adjacent cell in preceding row
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
+
+        #we'll follow with a bfill just in case first row had a nan
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
+
+      elif defaultinfill in {'meaninfill'}:
+
+        infill_mean = df[suffixcolumn].mean()
+        defaultinfill_dict.update({'infill_mean' : infill_mean})
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_mean)
+
+      elif defaultinfill in {'medianinfill'}:
+
+        infill_median = df[suffixcolumn].median()
+        defaultinfill_dict.update({'infill_median' : infill_median})
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_median)
+
+      elif defaultinfill in {'modeinfill'}:
+
+        infill_mode = df[suffixcolumn].mode()
+
+        if len(infill_mode) > 0:
+          infill_mode = infill_mode[0]
+        else:
+          infill_mode = 0
+
+        defaultinfill_dict.update({'infill_mode' : infill_mode})
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_mode)
+
+      elif defaultinfill in {'lcinfill'}:
+
+        #(zzzinfill as used here is just an arbitrary string)
+        mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
+        mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
+        mode_valuecounts_list = list(mode_valuecounts_list.index)
+
+        if len(mode_valuecounts_list) > 0:
+          infill_lc = mode_valuecounts_list[-1]
+        else:
+          infill_lc = 0
+
+        defaultinfill_dict.update({'infill_lc' : infill_lc})
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(infill_lc)
+
+      elif defaultinfill in {'zeroinfill'}:
+
+        #note that transform may not return a 0 value, for final returned 0 use assigninfill
+        df[suffixcolumn] = df[suffixcolumn].fillna(0)
+
+      elif defaultinfill in {'oneinfill'}:
+
+        #note that transform may not return a 1 value, for final returned 1 use assigninfill
+        df[suffixcolumn] = df[suffixcolumn].fillna(1)
+
+      elif defaultinfill in {'negzeroinfill'}:
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(-0.)
+
+      elif defaultinfill in {'naninfill'}:
+        #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
+        #note an adjinfill is applied later in this function, for final returned nan use assigninfill
+        pass
+
+      #finally if prior infill still resulted in nan we'll just plug with 0
+      if defaultinfill not in {'naninfill'}:
+
+        df[suffixcolumn] = df[suffixcolumn].fillna(0)
+    
+    return df, defaultinfill_dict
 
   def _df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}, printstatus = False):
     """
@@ -8133,10 +8697,6 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-
     #subtract mean from column for both train and test
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn] - mean
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
@@ -8152,7 +8712,18 @@ class AutoMunge:
     #offset, multiplier are parameters that defaults to zero, one
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / std * multiplier + offset
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
-    
+
+    #replace any negative zero floats with positive zero. Negative zero is reserved for default infill
+    mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == 0, 0, mdf_train[suffixcolumn])
+    mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == 0, 0, mdf_test[suffixcolumn])
+
+    #apply defaultinfill based on processdict entry
+    #this will default to negzeroinfill
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
 #     #change data type for memory savings
 #     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.float32)
 #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
@@ -8164,7 +8735,8 @@ class AutoMunge:
                                               'max' : maximum, 'min' : minimum, \
                                               'offset' : offset, 'multiplier': multiplier, \
                                               'cap' : cap, 'floor' : floor, \
-                                              'inplace' : inplace, 'suffix' : suffix}}
+                                              'inplace' : inplace, 'suffix' : suffix,
+                                              'defaultinfill_dict' : defaultinfill_dict}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8233,12 +8805,10 @@ class AutoMunge:
     
     #convert all values to either numeric or NaN
     df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce')
-    
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill') 
+
+    #apply defaultinfill based on processdict entry
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     #subtract preceding row
     df[suffixcolumn] = df[suffixcolumn] - df[suffixcolumn].shift(periods = periods)
@@ -8276,7 +8846,8 @@ class AutoMunge:
                                               'mean' : mean, \
                                               'std' : std, \
                                               'periods' : periods, \
-                                              'inplace' : inplace}}
+                                              'inplace' : inplace,
+                                              'defaultinfill_dict' : defaultinfill_dict}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8348,11 +8919,9 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce')
     
-    #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')  
+    #apply defaultinfill based on processdict entry
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
 #     #we're going to take difference of average of last two rows with two rows preceding
 #     df[column + '_dxd2'] = (df[column + '_dxd2'] + df[column + '_dxd2'].shift()) / 2 \
@@ -8405,7 +8974,8 @@ class AutoMunge:
                                               'std' : std, \
                                               'periods' : periods, \
                                               'inplace' : inplace,
-                                              'suffix' : suffix}}
+                                              'suffix' : suffix,
+                                              'defaultinfill_dict' : defaultinfill_dict}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8436,6 +9006,12 @@ class AutoMunge:
     #accepts parameter 'periods' for number of time steps, defaults to one
     #accepts parameter 'suffix' for column suffix appender
     #such as may be useful if applying this transform to the same column more than once
+
+    #shft family of transforms is special case in the library since an aggregated NArw
+    #wouldn't align with missing data entries (as rows are shifted by some period)
+    #since we need to set NArowtype to exclude (which prevents aggregation of missing data markers)
+    #we will omit defaultinfill support which does not apply infill to exclude NArowtype
+    #and apply adjinfill here in transform
     '''
     
     suffixoverlap_results = {}
@@ -8473,26 +9049,18 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     df[shft_column] = pd.to_numeric(df[shft_column], errors='coerce')
     
+    #shift from preceding row
+    df[shft_column] = df[shft_column].shift(periods = periods)
+
     #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
     df[shft_column] = df[shft_column].fillna(method='ffill')
     
     #we'll follow with a bfill just in case first row had a nan
-    df[shft_column] = df[shft_column].fillna(method='bfill') 
-    
-    #shift from preceding row
-    df[shft_column] = df[shft_column].shift(periods = periods)
-    
-    #first row will have a nan so just one more backfill
     df[shft_column] = df[shft_column].fillna(method='bfill')
-    
-    #then one more infill with to address scenario when data wasn't numeric
-    #get arbitrary cell value, if one is nan then all will be
-    value = df[shft_column].iat[0]
-    if value != value:
-      value = 0
 
-      df[shft_column] = df[shft_column].fillna(value)
-    
+    #then a final infill in case data was non-numeric
+    df[shft_column] = df[shft_column].fillna(0)
+
     #create list of columns
     nmbrcolumns = [shft_column]
 
@@ -8566,7 +9134,7 @@ class AutoMunge:
       suffix = treecategory
       
     #center can be passed as 'mean' or 'max', which serves as subtractor in numerator of normalization 
-    #MADn applies mean, MAD3 applies max
+    #MADn applies mean, MAD3 applies max (max option inspired by discussions at Real World Risk Institute)
     if 'center' in params:
       center = params['center']
     else:
@@ -8605,9 +9173,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     if center == 'mean':
 
@@ -8644,7 +9214,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, 'center' : center, \
                                               'maximum':maximum, 'minimum':minimum, \
-                                              'inplace' : inplace, 'suffix' : suffix}}
+                                              'inplace' : inplace, 'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8741,9 +9312,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #get maximum value of training column
     maximum = mdf_train[suffixcolumn].max()
@@ -8804,7 +9377,8 @@ class AutoMunge:
                                               'cap' : cap, \
                                               'floor' : floor, \
                                               'suffix' : suffix, \
-                                              'inplace' : inplace}}
+                                              'inplace' : inplace, \
+                                              'defaultinfill_dict' : defaultinfill_dict}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -8922,9 +9496,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
     
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #avoid outlier div by zero when max = min
     maxminusmin = quantilemax - quantilemin
@@ -8953,6 +9529,7 @@ class AutoMunge:
                                               'qmax' : qmax, \
                                               'qmin' : qmin, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict, \
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -9027,9 +9604,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #get maximum value of training column
     maximum = mdf_train[suffixcolumn].max()
@@ -9060,6 +9639,7 @@ class AutoMunge:
                                               'mean' : mean, \
                                               'std' : std, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict, 
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -9236,9 +9816,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #edge case (only neccesary so scalingapproach is assigned)
     if maximum != maximum:
@@ -9312,6 +9894,7 @@ class AutoMunge:
                                               'floor' : floor, \
                                               'divisor' : divisor, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict, 
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -9450,9 +10033,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
       
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #avoid outlier div by zero when max = min
     maxminusmin = maximum - minimum
@@ -9483,6 +10068,7 @@ class AutoMunge:
                                               'cap' : cap, \
                                               'floor' : floor, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -9682,6 +10268,13 @@ class AutoMunge:
           mdf_test[suffixcolumn] = \
           np.where(mdf_test[suffixcolumn] == value, binary_missing_plug, mdf_test[suffixcolumn])
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill in which casee the next line will dictate)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
       #replace missing data with specified classification
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(binary_missing_plug)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
@@ -9729,6 +10322,7 @@ class AutoMunge:
       oneratio = 0
       zeroratio = 0
       bnrycolumns = [suffixcolumn]
+      defaultinfill_dict = {'defaultinfill' : 'naninfill'}
 
   #     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
   #                                                   'onevalue' : onevalue, \
@@ -9743,6 +10337,7 @@ class AutoMunge:
                                                   'zeroratio' : zeroratio, \
                                                   'str_convert' : str_convert, \
                                                   'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
                                                   'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
@@ -9804,6 +10399,13 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -9926,6 +10528,7 @@ class AutoMunge:
                                       'inverse_labels_dict' : inverse_labels_dict, \
                                       'text_categorylist' : categorylist, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'str_convert' : str_convert}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -9987,6 +10590,12 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -10087,6 +10696,7 @@ class AutoMunge:
       tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
 
       textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       tc_ratio : tcratio}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -10161,6 +10771,12 @@ class AutoMunge:
       mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
       mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
@@ -10324,6 +10940,7 @@ class AutoMunge:
                                       'LSfit' : LSfit, \
                                       'testsmooth' : testsmooth, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'categorylist' : textcolumns}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -10377,6 +10994,11 @@ class AutoMunge:
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     df[suffixcolumn] = df[suffixcolumn].astype(str).transform(len)
     
     #grab a fe4w driftreport metrics:
@@ -10404,6 +11026,7 @@ class AutoMunge:
                                           'mean' : mean, \
                                           'std' : std, \
                                           'suffix' : suffix, \
+                                          'defaultinfill_dict' : defaultinfill_dict,
                                           'inplace' : inplace }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -10468,6 +11091,11 @@ class AutoMunge:
       self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     #convert to uppercase string based on activate parameter
     if activate is True:
@@ -10482,7 +11110,9 @@ class AutoMunge:
     UPCScolumns = [suffixcolumn]
 
     #create normalization dictionary
-    normalization_dict = {suffixcolumn : {'activate' : activate, 'suffix' : suffix}}
+    normalization_dict = {suffixcolumn : {'activate' : activate, 
+                                          'defaultinfill_dict' : defaultinfill_dict, 
+                                          'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10764,6 +11394,13 @@ class AutoMunge:
       
       mdf_test[newcolumn] = mdf_test[column].copy()
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -10815,6 +11452,7 @@ class AutoMunge:
                                       'preint_newcolumns' : preint_newcolumns, \
                                       'int_headers' : int_headers, \
                                       'int_labels_dict' : int_labels_dict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -11132,6 +11770,12 @@ class AutoMunge:
     self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[newcolumn] = mdf_test[column].copy()
+
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
     mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -11162,6 +11806,7 @@ class AutoMunge:
                                       'spl2_overlap_dict' : spl2_overlap_dict, \
                                       'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
                                       'spl5_zero_dict' : spl5_zero_dict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'minsplit' : minsplit}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -11451,6 +12096,13 @@ class AutoMunge:
       
       mdf_test[newcolumn] = mdf_test[column].copy()
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -11621,6 +12273,7 @@ class AutoMunge:
                                     'preint_newcolumns' : preint_newcolumns, \
                                     'int_headers' : int_headers, \
                                     'int_labels_dict' : int_labels_dict, \
+                                    'defaultinfill_dict' : defaultinfill_dict,
                                     'inverse_int_labels_dict' : inverse_int_labels_dict}}
 
         column_dict = {tc : {'category' : treecategory, \
@@ -11818,6 +12471,13 @@ class AutoMunge:
   
       mdf_test[newcolumn] = mdf_test[column].copy()
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -11869,6 +12529,7 @@ class AutoMunge:
                                       'preint_newcolumns' : preint_newcolumns, \
                                       'int_headers' : int_headers, \
                                       'int_labels_dict' : int_labels_dict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inverse_int_labels_dict' : inverse_int_labels_dict}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -12068,6 +12729,13 @@ class AutoMunge:
   
       mdf_test[newcolumn] = mdf_test[column].copy()
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -12241,6 +12909,7 @@ class AutoMunge:
                                     'preint_newcolumns' : preint_newcolumns, \
                                     'int_headers' : int_headers, \
                                     'int_labels_dict' : int_labels_dict, \
+                                    'defaultinfill_dict' : defaultinfill_dict,
                                     'inverse_int_labels_dict' : inverse_int_labels_dict}}
 
         column_dict = {tc : {'category' : treecategory, \
@@ -12360,6 +13029,13 @@ class AutoMunge:
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)    
       
     #convert column to string, note this means that missing data converted to 'nan'
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
@@ -12455,14 +13131,16 @@ class AutoMunge:
         
     def _md5_hash(wordlist):
       """
-      applies an md5 hashing to the list of words
-      this conversion to ingtegers is known as "the hashing trick"
+      applies either md5 hashing to the list of words or python default hashing
+      this conversion to integers is known as "the hashing trick"
       md5 is partly inspired by tensorflow keras_preprocessing hashing_trick function
-      requires importing from hashlib import md5
+      requires importing from hashlib import md5 which is performed above
       here n is the range of integers for vocabulary
       0 is reserved for use to pad lists of shorter length
+      (salt and hash_alg are accessible even though not explicitly passed)
       """
       if hash_alg == 'md5':
+        #this is the line (excluding the salt option) that was partly inspired by a line in a Keras function
         return [int(md5((salt + word).encode()).hexdigest(), 16) % (vocab_size-1) + 1 for word in wordlist]
       else:
         return [hash(salt + word) % (vocab_size-1) + 1 for word in wordlist]
@@ -12554,6 +13232,7 @@ class AutoMunge:
                                       'max_column_count' : max_column_count, \
                                       'hash_alg' : hash_alg, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}
       
       column_dict = { hc : {'category' : treecategory, \
@@ -12655,6 +13334,13 @@ class AutoMunge:
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
     #convert column to string, note this means that missing data converted to 'nan'
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
@@ -12680,6 +13366,7 @@ class AutoMunge:
       this conversion to ingtegers is known as "the hashing trick"
       requires importing from hashlib import md5 if hash_alg = "md5"
       here n is the range of integers for vocabulary
+      similar comment to _process_hash that md5 was partly inspired by a line in a keras function
       """
       if hash_alg == 'md5':
         return int(md5((salt + entry).encode()).hexdigest(), 16) % (vocab_size)
@@ -12736,6 +13423,7 @@ class AutoMunge:
                                       'excluded_characters' : excluded_characters, \
                                       'hash_alg' : hash_alg, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}      
       
       column_dict = { hc : {'category' : treecategory, \
@@ -13039,6 +13727,13 @@ class AutoMunge:
         
         mdf_test[newcolumn] = mdf_test[column].copy()
 
+        #apply defaultinfill based on processdict entry
+        #(this will default to naninfill)
+        mdf_train, defaultinfill_dict = \
+        self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -13087,6 +13782,7 @@ class AutoMunge:
                                       'inverse_search_dict' : inverse_search_dict, \
                                       'aggregated_dict' : aggregated_dict, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'search_preflattening' : search_preflattening}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -13233,6 +13929,12 @@ class AutoMunge:
         
         mdf_test[newcolumn] = mdf_test[column].copy()
 
+        #apply defaultinfill based on processdict entry
+        mdf_train, defaultinfill_dict = \
+        self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -13251,6 +13953,7 @@ class AutoMunge:
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'srch_newcolumns_src3'   : newcolumns, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'search' : search}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -13491,6 +14194,11 @@ class AutoMunge:
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     for sublist in aggregate:
       
       if not isinstance(sublist, list):
@@ -13513,7 +14221,7 @@ class AutoMunge:
 
           df[suffixcolumn] = np.where(df[suffixcolumn] == sublist[i], sublist[-1], df[suffixcolumn])
 
-    normalization_dict = {suffixcolumn : {'aggregate' : aggregate, 'suffix' : suffix}}
+    normalization_dict = {suffixcolumn : {'aggregate' : aggregate, 'suffix' : suffix, 'defaultinfill_dict' : defaultinfill_dict}}
     
     nmbrcolumns = [suffixcolumn]
     
@@ -13637,6 +14345,11 @@ class AutoMunge:
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     df[suffixcolumn] = df[column].astype(str)
     df[suffixcolumn] = df[suffixcolumn].replace(overlap_dict)
 
@@ -13653,6 +14366,7 @@ class AutoMunge:
     nmbrcolumns = [suffixcolumn]
 
     nmbrnormalization_dict = {suffixcolumn : {'overlap_dict' : overlap_dict, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'suffix' : suffix}}
 #                                                   'mean' : mean, \
 #                                                   'maximum' : maximum, \
@@ -13699,6 +14413,11 @@ class AutoMunge:
     
     df, suffixoverlap_results = \
     self._df_copy_train(df, column, strg_column, suffixoverlap_results, postprocess_dict['printstatus'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, strg_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     df[strg_column] = df[strg_column].astype(str)
 
@@ -13706,7 +14425,7 @@ class AutoMunge:
 
     column_dict = {strg_column : {'category' : treecategory, \
                                  'origcategory' : category, \
-                                 'normalization_dict' : {strg_column:{'suffix' : suffix}}, \
+                                 'normalization_dict' : {strg_column:{'suffix' : suffix, 'defaultinfill_dict' : defaultinfill_dict}}, \
                                  'origcolumn' : column, \
                                  'inputcolumn' : column, \
                                  'columnslist' : [strg_column], \
@@ -13824,6 +14543,11 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, nmrc_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     df[nmrc_column] = df[nmrc_column].astype(str)
     df[nmrc_column] = df[nmrc_column].replace(overlap_dict)
@@ -13853,6 +14577,7 @@ class AutoMunge:
                                             'maximum' : maximum, \
                                             'minimum' : minimum, \
                                             'convention' : convention, \
+                                            'defaultinfill_dict' : defaultinfill_dict,
                                             'suffix' : suffix }}
     
     column_dict_list = []
@@ -13989,6 +14714,10 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
+
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, nmrc_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
                 
     mdf_train[nmrc_column] = mdf_train[nmrc_column].astype(str)
     mdf_train[nmrc_column] = mdf_train[nmrc_column].replace(overlap_dict)
@@ -14077,7 +14806,11 @@ class AutoMunge:
                 if in_dict is False:
 
                   test_overlap_dict.update({unique : np.nan})
-    
+
+    #apply defaultinfill to test data based on processdict entry
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, nmrc_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+
     #great now that test_overlap_dict is populated
     mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
     mdf_test[nmrc_column] = mdf_test[nmrc_column].replace(test_overlap_dict)
@@ -14110,6 +14843,7 @@ class AutoMunge:
                                             'maxlength' : maxlength, \
                                             'convention' : convention, \
                                             'suffix' : suffix, \
+                                            'defaultinfill_dict' : defaultinfill_dict,
                                             'test_same_as_train' : test_same_as_train}}
     
     column_dict_list = []
@@ -14210,6 +14944,13 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
@@ -14370,6 +15111,7 @@ class AutoMunge:
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert, \
                                   'suffix' : suffix, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
     
       column_dict = {tc : {'category' : treecategory, \
@@ -14466,6 +15208,13 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
@@ -14625,6 +15374,7 @@ class AutoMunge:
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert, \
                                   'suffix' : suffix, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
     
       column_dict = {tc : {'category' : treecategory, \
@@ -14717,18 +15467,12 @@ class AutoMunge:
     mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), mdf_train[suffixcolumn], np.nan)
     mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
     
-    #apply ffill to replace nan with value from adjacent cell in pre4ceding row
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
-    
-    #then one more infill with to address scenario when data wasn't numeric
-    #get arbitrary cell value, if one is nan then all will be
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #get maximum train set activation which for ord3 will be least frequent entry
     maxactivation = int(mdf_train[suffixcolumn].max())
@@ -14838,6 +15582,7 @@ class AutoMunge:
                                           'minentrycount' : minentrycount, \
                                           'minentryratio' : minentryratio, \
                                           'suffix' : suffix, \
+                                          'defaultinfill_dict' : defaultinfill_dict,
                                           'inplace' : inplace}}
     
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -14897,6 +15642,13 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
@@ -15003,6 +15755,7 @@ class AutoMunge:
       normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
                                   'ordinal_overlap_replace' : overlap_replace, \
                                   'suffix' : suffix, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'ordl_activations_dict' : ordl_activations_dict}}
     
       column_dict = {tc : {'category' : treecategory, \
@@ -15062,6 +15815,13 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
     if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #replace NA with a dummy variable
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
@@ -15268,6 +16028,7 @@ class AutoMunge:
                                   '_1010_binary_column_count' : binary_column_count, \
                                   '_1010_activations_dict' : _1010_activations_dict, \
                                   'suffix' : suffix, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'str_convert' : str_convert}}
     
       column_dict = {tc : {'category' : treecategory, \
@@ -15316,16 +16077,21 @@ class AutoMunge:
       
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-    
+
     #convert improperly formatted values to datetime in new column
     df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
-    
+
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
     #would be required
     #For now we'll defer to Dollly Parton
     df[suffixcolumn] = df[suffixcolumn].dt.hour
     df[suffixcolumn] = df[suffixcolumn].between(start, end)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill, recommend to otherwise apply naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     #reduce memory footprint
     df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
@@ -15337,7 +16103,9 @@ class AutoMunge:
     activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 
+                                          'defaultinfill_dict' : defaultinfill_dict,
+                                          'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15390,6 +16158,11 @@ class AutoMunge:
     df[suffixcolumn] = pd.DatetimeIndex(df[suffixcolumn]).dayofweek
     
     df[suffixcolumn] = df[suffixcolumn].between(0,4)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill, recommend to otherwise apply naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     #reduce memory footprint
     df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
@@ -15401,7 +16174,9 @@ class AutoMunge:
     activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 
+                                          'defaultinfill_dict' : defaultinfill_dict,
+                                          'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15481,6 +16256,11 @@ class AutoMunge:
     #activate boolean identifier for holidays
     df[suffixcolumn] = df[suffixcolumn].isin(holidays)
 
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill, recommend to otherwise apply naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     #reduce memory footprint
     df[suffixcolumn] = df[suffixcolumn].astype(np.int8)
     
@@ -15491,7 +16271,9 @@ class AutoMunge:
     activationratio = df[suffixcolumn].sum() / df[suffixcolumn].shape[0]
 
     #create normalization dictionary
-    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 'suffix' : suffix}}
+    normalization_dict = {suffixcolumn : {'activationratio' : activationratio, 
+                                          'defaultinfill_dict' : defaultinfill_dict,
+                                          'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15561,7 +16343,12 @@ class AutoMunge:
     
 #     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
 
-    #we'll use convention for default infill of eight days a week
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
+    #when defaultinfill passed as naninfill reverts to default infill of eight days a week
     df[suffixcolumn] = df[suffixcolumn].fillna(7)
     
     #reduce memory footprint
@@ -15592,6 +16379,7 @@ class AutoMunge:
                                           'sun_ratio' : sun_ratio, \
                                           'infill_ratio' : infill_ratio, \
                                           'suffix' : suffix, \
+                                          'defaultinfill_dict' : defaultinfill_dict,
                                           'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -15659,6 +16447,11 @@ class AutoMunge:
     #would be required
     #For now we'll defer to Dollly Parton
     df[suffixcolumn] = pd.DatetimeIndex(df[suffixcolumn]).month
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
 #     df[column+'_wkdy'] = df[column+'_wkdy'].between(0,4)
 
@@ -15703,6 +16496,7 @@ class AutoMunge:
                                           'nov_ratio' : nov_ratio, \
                                           'dec_ratio' : dec_ratio, \
                                           'suffix' : suffix, \
+                                          'defaultinfill_dict' : defaultinfill_dict,
                                           'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -15775,6 +16569,11 @@ class AutoMunge:
       
       df[suffixcolumn] = df[suffixcolumn].dt.tz_convert(timezone)
 
+      #apply defaultinfill based on processdict entry
+      #(this will default to naninfill)
+      df, defaultinfill_dict = \
+      self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
     
@@ -15782,6 +16581,7 @@ class AutoMunge:
     
     normalization_dict = {suffixcolumn : {'timezone' : timezone, \
                                           'suffix' : suffix, \
+                                          'defaultinfill' : 'naninfill',
                                           'inplace' : inplace}}
 
     for dc in datecolumns:
@@ -15994,16 +16794,11 @@ class AutoMunge:
     timemin = mdf_train[time_column].min()
     timestd = mdf_train[time_column].std()
     
-    #default infill is adjacent cell
-    mdf_train[time_column] = mdf_train[time_column].fillna(method='ffill')
-    mdf_train[time_column] = mdf_train[time_column].fillna(method='bfill')
-    
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-    
-    #backup default infill for cases without valid entries
-    mdf_train[time_column] = mdf_train[time_column].fillna(0)
-    mdf_test[time_column] = mdf_test[time_column].fillna(0)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, time_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, time_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #we'll only return a column if meaningful training data present
     #because it is not uncommon for time series to only contain single time scale recording
@@ -16033,6 +16828,7 @@ class AutoMunge:
                            'timemax'       : timemax, \
                            'timemin'       : timemin, \
                            'timestd'       : timestd, \
+                           'defaultinfill_dict' : defaultinfill_dict,
                            'inplace'       : inplace}}
 
         column_dict = {tc : {'category' : treecategory, \
@@ -16131,13 +16927,13 @@ class AutoMunge:
     elif scale == 'second':
       mdf_train[time_column] = mdf_train[time_column].dt.second
       mdf_test[time_column] = mdf_test[time_column].dt.second
-      
-    #default infill is adjacent cell
-    mdf_train[time_column] = mdf_train[time_column].fillna(method='ffill')
-    mdf_train[time_column] = mdf_train[time_column].fillna(method='bfill')
-    
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-    mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, time_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, time_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
     #grab a few drift metrics
     timemean = mdf_train[time_column].mean()
@@ -16146,10 +16942,6 @@ class AutoMunge:
     timestd = mdf_train[time_column].std()
 
     maxminusmin = timemax - timemin
-    
-    #backup default infill for cases without valid entries
-    mdf_train[time_column] = mdf_train[time_column].fillna(0)
-    mdf_test[time_column] = mdf_test[time_column].fillna(0)
       
     #formula for scaling is (x - scaler) / divisor
     #normalizaiton is either zscore/minmax/unscaled
@@ -16193,6 +16985,7 @@ class AutoMunge:
                            'timemin'       : timemin, \
                            'timestd'       : timestd, \
                            'maxminusmin'   : maxminusmin, \
+                           'defaultinfill_dict' : defaultinfill_dict,
                            'inplace'       : inplace}}
 
         column_dict = {tc : {'category' : treecategory, \
@@ -16210,6 +17003,7 @@ class AutoMunge:
         column_dict_list.append(column_dict.copy())
         
     else:
+
       del mdf_train[time_column]
       del mdf_test[time_column]
       column_dict_list = []
@@ -16321,8 +17115,11 @@ class AutoMunge:
     if mean_impute != mean_impute:
       mean_impute = 0
       
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean_impute)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean_impute)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #apply transform
     if qttf is not False:
@@ -16348,6 +17145,7 @@ class AutoMunge:
                                   'ignore_implicit_zeros' : ignore_implicit_zeros,
                                   'subsample' : subsample,
                                   'random_state' : random_state,
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'suffix' : suffix}}
       
       column_dict = { nc : {'category' : treecategory, \
@@ -16422,9 +17220,11 @@ class AutoMunge:
       mean = 0
       bxcx_lmbda = False
     
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #edge case to avoid stats.boxcox error
     if mdf_train[suffixcolumn].nunique() == 1:
@@ -16480,6 +17280,7 @@ class AutoMunge:
                                   'max_train' : max_train, \
                                   'max_test' : max_test, \
                                   'suffix' : suffix, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
       
       column_dict = { nc : {'category' : treecategory, \
@@ -16564,9 +17365,11 @@ class AutoMunge:
     if meanlog != meanlog:
       meanlog = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meanlog)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
 #     #replace missing data with 0
 #     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
@@ -16579,7 +17382,10 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 'inplace' : inplace, 'suffix' : suffix}}
+    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 
+                                              'inplace' : inplace, 
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16668,9 +17474,11 @@ class AutoMunge:
     if meanlog != meanlog:
       meanlog = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meanlog)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
 #     #replace missing data with 0
 #     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
@@ -16683,7 +17491,10 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 'inplace' : inplace, 'suffix' : suffix}}
+    nmbrnormalization_dict = {suffixcolumn : {'meanlog' : meanlog, 
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'inplace' : inplace, 
+                                              'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16772,9 +17583,11 @@ class AutoMunge:
     if meansqrt != meansqrt:
       meansqrt = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(meansqrt)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meansqrt)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
 #     #replace missing data with 0
 #     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
@@ -16787,7 +17600,10 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {suffixcolumn : {'meansqrt' : meansqrt, 'inplace' : inplace, 'suffix' : suffix}}
+    nmbrnormalization_dict = {suffixcolumn : {'meansqrt' : meansqrt, 
+                                              'inplace' : inplace,
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -16862,7 +17678,6 @@ class AutoMunge:
     mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
     mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
-    
     #apply addition
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn] + add
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] + add
@@ -16873,9 +17688,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
@@ -16883,6 +17700,7 @@ class AutoMunge:
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
                                               'add' : add, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -16968,9 +17786,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
@@ -16978,6 +17798,7 @@ class AutoMunge:
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
                                               'subtract' : subtract, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -17063,17 +17884,19 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
                                               'multiply' : multiply, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -17103,7 +17926,7 @@ class AutoMunge:
     #process_divd(.)
     #function to apply division transform
     #accepts parameter 'divide' for amount of division, otherwise defaults to dividing by 2
-    #applies an division transform
+    #applies a division transform
     #replaces non-numeric entries with set mean after division
     #returns same dataframes with new column of name suffixcolumn
     '''
@@ -17151,8 +17974,7 @@ class AutoMunge:
     mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
     mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
-    
-    #apply multiplication
+    #apply division
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn] / divide
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / divide
     
@@ -17162,10 +17984,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
@@ -17174,6 +17997,7 @@ class AutoMunge:
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
                                               'divide' : divide, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -17246,7 +18070,7 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[suffixcolumn] = pd.to_numeric(mdf_train[suffixcolumn], errors='coerce')
     mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
-    
+
     #apply addition
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn] ** raiser
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] ** raiser
@@ -17257,9 +18081,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
@@ -17267,6 +18093,7 @@ class AutoMunge:
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, \
                                               'raiser' : raiser, \
                                               'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
                                               'inplace' : inplace}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -17345,14 +18172,19 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(mean)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
-    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'inplace' : inplace, 'suffix' : suffix}}
+    nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 
+                                              'inplace' : inplace,
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'suffix' : suffix}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -17914,9 +18746,11 @@ class AutoMunge:
         mean = 0
         std = 1
       
-      #replace missing data with training set mean
-      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
       if normalizedinput is False:
 
@@ -17989,6 +18823,7 @@ class AutoMunge:
                                         'binsstd' : std, \
                                         'normalizedinput' : normalizedinput, \
                                         'suffix' : suffix, \
+                                        'defaultinfill_dict' : defaultinfill_dict,
                                         tc_ratio : tcratio}}
 
         column_dict = { nc : {'category' : treecategory, \
@@ -18092,9 +18927,11 @@ class AutoMunge:
         mean = 0
         std = 1
 
-      #replace missing data with training set mean
-      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
       if normalizedinput is False:
 
@@ -18172,6 +19009,7 @@ class AutoMunge:
                                         'bincuts' : bincuts, \
                                         'binlabels' : binlabels, \
                                         'suffix' : suffix, \
+                                        'defaultinfill_dict' : defaultinfill_dict,
                                         'inplace' : inplace}}
 
         column_dict = { nc : {'category' : treecategory, \
@@ -18236,9 +19074,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #evaluate train set for transformation parameters
     bn_min = mdf_train[binscolumn].min()
@@ -18313,6 +19153,7 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bn_width_bnwd' : bn_width, \
                                       'textcolumns' : textcolumns, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       tc_ratio : tcratio}}
 
       column_dict = { nc : {'category' : treecategory, \
@@ -18388,9 +19229,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
-    #replace missing data with training set mean
-    mdf_train[binscolumn] = mdf_train[binscolumn].fillna(mean)
-    mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
     #evaluate train set for transformation parameters
     bn_min = mdf_train[binscolumn].min()
@@ -18459,6 +19302,7 @@ class AutoMunge:
                                       'bn_width' : bn_width, \
                                       'activations_list' : activations_list, \
                                       'ordl_activations_dict' : ordl_activations_dict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : treecategory, \
@@ -18784,17 +19628,12 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-      #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='ffill')
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
-
-      #we'll follow with a bfill just in case first row had a nan
-      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(method='bfill')
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
-
-      #and if the entire set was nan we'll infill with a 0 plug
-      mdf_train[binscolumn] = mdf_train[binscolumn].fillna(0)
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+      #apply defaultinfill based on processdict entry
+      #(this will default to adjinfill)
+      mdf_train, defaultinfill_dict = \
+      self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
       #returned data type is conditional on the size of encoding space
       max_encoding = bn_count - 1
@@ -18816,6 +19655,7 @@ class AutoMunge:
       bn_count = bincount
       bins_id = False
       bins_cuts = False
+      defaultinfill_dict = {'defaultinfill' : 'adjinfill'}
 
     #create list of columns
     nmbrcolumns = [binscolumn]
@@ -18845,6 +19685,7 @@ class AutoMunge:
                                       'bins_cuts' : bins_cuts, \
                                       'bincount' : bincount, \
                                       'ordl_activations_dict' : ordl_activations_dict, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : treecategory, \
@@ -19142,6 +19983,8 @@ class AutoMunge:
     #and returning in one-hot encoded set
     
     #removes buckets without activations in train set
+
+    #default infill is no acitvations in a row
     '''
     
     suffixoverlap_results = {}
@@ -19524,6 +20367,13 @@ class AutoMunge:
 
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(float)
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #replace missing data with infill_activation
     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
@@ -19568,6 +20418,7 @@ class AutoMunge:
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : treecategory, \
@@ -19693,6 +20544,12 @@ class AutoMunge:
     
     mdf_train[binscolumn] = mdf_train[binscolumn].astype(float)
     mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #replace missing data with infill_activation
     mdf_train[binscolumn] = mdf_train[binscolumn].fillna(infill_activation)
@@ -19737,6 +20594,7 @@ class AutoMunge:
                                       'trainmax' : trainmax, \
                                       'trainmin' : trainmin, \
                                       'suffix' : suffix, \
+                                      'defaultinfill_dict' : defaultinfill_dict,
                                       'inplace' : inplace}}
 
       column_dict = { nc : {'category' : treecategory, \
@@ -20186,9 +21044,11 @@ class AutoMunge:
     if mean != mean:
       mean = 0
     
-    #replace missing data with training set mean
-    mdf_train[DPrt_column] = mdf_train[DPrt_column].fillna(mean)
-    mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(mean)
+    #apply defaultinfill based on processdict entry
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, DPrt_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, DPrt_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #edge case (only neccesary so scalingapproach is assigned)
     if maximum != maximum:
@@ -20336,6 +21196,7 @@ class AutoMunge:
                                              'floor' : floor, \
                                              'divisor' : divisor, \
                                              'suffix' : suffix, \
+                                             'defaultinfill_dict' : defaultinfill_dict,
                                              'testnoise' : testnoise, \
                                             }}
     
@@ -20630,11 +21491,16 @@ class AutoMunge:
     maximum = df[qbt1_column].max()
     mean = df[qbt1_column].mean()
     stdev = df[qbt1_column].std()
+
+    #we'll have convention that all floats of negative zero converted to zero prior to infill
+    df[qbt1_column] = np.where(df[qbt1_column] == 0, 0, df[qbt1_column])
     
     #default infill is 0, kind of arbitrary, there's no perfect solution
     #recomend supplementing with NArw if a marker needed
-    df[qbt1_column] = df[qbt1_column].fillna(0)
-    
+    #apply defaultinfill based on processdict entry
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, qbt1_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+
     #overflow is when entries have inadequate bits to represent, we'll set to 0 consistent with infill
     overflow = 0
     for i in range(integer_bits):
@@ -20674,6 +21540,7 @@ class AutoMunge:
     #populate sign column, note that 0 is positive, 1 is negative
     if sign_bit is True:
       df[sign_columns[0]] = np.where(df[qbt1_column] < 0, 1, 0)
+      df[sign_columns[0]] = np.where(df[qbt1_column] == -0., 1, 0)
       
       #set data type
       df[sign_columns[0]] = df[sign_columns[0]].astype(np.int8)
@@ -20731,6 +21598,7 @@ class AutoMunge:
                                   'mean' : mean, \
                                   'stdev' : stdev, \
                                   'overflow' : overflow, \
+                                  'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
       
       column_dict = {ac : {'category' : treecategory, \
@@ -20956,20 +21824,14 @@ class AutoMunge:
     mdf_train[exclcolumn] = pd.to_numeric(mdf_train[exclcolumn], errors='coerce')
     mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
     
-    if len(mdf_train[exclcolumn].mode())<1:
-      fillvalue = mdf_train[exclcolumn].mean()
-    else:
-      fillvalue = mdf_train[exclcolumn].mode()[0]
-      
-    #special case if column didn't have any numeric entries
-    if fillvalue != fillvalue:
-      fillvalue = 0
+    #apply defaultinfill based on processdict entry
+    #(this will default to mode infill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, exclcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, exclcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
-    #replace missing data with fill value
-    mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
-    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
-    
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 'inplace' : inplace, 'suffix' : suffix}}
+    exc2_normalization_dict = {exclcolumn : {'defaultinfill_dict' : defaultinfill_dict, 'inplace' : inplace, 'suffix' : suffix}}
     
     column_dict_list = []
 
@@ -21046,18 +21908,12 @@ class AutoMunge:
     mdf_train[exclcolumn] = np.where(mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), mdf_train[exclcolumn], np.nan)
     mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
 
-    if len(mdf_train[exclcolumn].mode())<1:
-      fillvalue = mdf_train[exclcolumn].mean()
-    else:
-      fillvalue = mdf_train[exclcolumn].mode()[0]
-      
-    #special case if column didn't have any numeric entries
-    if fillvalue != fillvalue:
-      fillvalue = 0
-    
-    #replace missing data with fill value
-    mdf_train[exclcolumn] = mdf_train[exclcolumn].fillna(fillvalue)
-    mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+    #apply defaultinfill based on processdict entry
+    #(this will default to adjinfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, exclcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, exclcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
     #set data type based on integertype parameter
     if integertype == 'singlct':
@@ -21082,7 +21938,7 @@ class AutoMunge:
       mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.int32)
       mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.int32)
       
-    exc2_normalization_dict = {exclcolumn : {'fillvalue' : fillvalue, 
+    exc2_normalization_dict = {exclcolumn : {'defaultinfill_dict' : defaultinfill_dict, 
                                              'inplace' : inplace, 
                                              'suffix' : suffix,
                                              'encodingspace' : encodingspace,
@@ -21149,16 +22005,13 @@ class AutoMunge:
     
     #we'll do the adjacent cell infill after the shuffle operation
     
-    #apply ffill to replace NArows with value from adjacent cell in preceding row
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
-    
-    #we'll follow with a bfill just in case first row had a nan
-    df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
-    
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    df, defaultinfill_dict = \
+    self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     
     #create list of columns
     nmbrcolumns = [suffixcolumn]
-
 
     nmbrnormalization_dict = {suffixcolumn : {'inplace' : inplace, 'suffix' : suffix}}
 
@@ -25175,6 +26028,9 @@ class AutoMunge:
     if 'zeroinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['zeroinfill'] = []
 
+    if 'negzeroinfill' not in postprocess_assigninfill_dict:
+      postprocess_assigninfill_dict['negzeroinfill'] = []
+
     if 'oneinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['oneinfill'] = []
       
@@ -25329,6 +26185,25 @@ class AutoMunge:
 
                 df_test = \
                 self._zeroinfillfunction(df_test, column, postprocess_dict, \
+                                        masterNArows_test)
+
+              #negzeroinfill
+              if column in postprocess_assigninfill_dict['negzeroinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: negzeroinfill")
+                  print("")
+
+                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+                df_train = \
+                self._negzeroinfillfunction(df_train, column, postprocess_dict, \
+                                        masterNArows_train)
+
+                df_test = \
+                self._negzeroinfillfunction(df_test, column, postprocess_dict, \
                                         masterNArows_test)
 
               #oneinfill
@@ -25621,6 +26496,19 @@ class AutoMunge:
                 df_test = \
                 self._zeroinfillfunction(df_test, column, postprocess_dict, \
                                         masterNArows_test)
+
+              #negzeroinfill:
+              if column in postprocess_assigninfill_dict['negzeroinfill']:
+
+                #printout display progress
+                if printstatus is True:
+                  print("infill to column: ", column)
+                  print("     infill type: negzeroinfill")
+                  print("")
+
+                df_test = \
+                self._negzeroinfillfunction(df_test, column, postprocess_dict, \
+                                        masterNArows_test)
                 
               #oneinfill:
               if column in postprocess_assigninfill_dict['oneinfill']:
@@ -25853,6 +26741,41 @@ class AutoMunge:
     #reset data type to ensure returned data is consistent with what was passed
     df[column] = \
     df[column].astype({column:df_temp_dtype[column].dtypes})
+    
+    return df
+
+  def _negzeroinfillfunction(self, df, column, postprocess_dict, \
+                             masterNArows):
+
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
+    
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+
+    infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
+    
+    infill = pd.DataFrame(np.where(infill[column] == 1, -0., infill[column]))
+    
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #insert infill
+    df = self._insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist, singlecolumncase=True)
+
+    #reset data type to ensure returned data is consistent with what was passed
+    #(we won't do this for naninfill since nan may be different data type)
+    # df[column] = \
+    # df[column].astype({column:df_temp_dtype[column].dtypes})
     
     return df
     
@@ -29376,14 +30299,16 @@ class AutoMunge:
       #now we'll apply process_1010 
       df_train, df_test, Binary_column_dict_list = \
       self._process_1010(df_train, df_test, 'Binary', 'Binary', '1010', \
-                         {'printstatus' : postprocess_dict['printstatus']}, {})
+                         { 'process_dict': postprocess_dict['process_dict'],
+                           'printstatus' : postprocess_dict['printstatus']}, {})
       
     if Binary in {'ordinal', 'ordinalretain'}:
       
       #now we'll apply process_1010 
       df_train, df_test, Binary_column_dict_list = \
       self._process_ord3(df_train, df_test, 'Binary', 'Binary', 'ord3', \
-                         {'printstatus' : postprocess_dict['printstatus']}, {})
+                         { 'process_dict': postprocess_dict['process_dict'],
+                           'printstatus' : postprocess_dict['printstatus']}, {})
     
     Binary_dict = {'column_dict' : {}}
     
@@ -30206,7 +31131,7 @@ class AutoMunge:
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                         '(category)' : {'(column)'   : {'(parameter)' : 42}}},
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
-                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
+                                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False,
@@ -31696,7 +32621,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.49'
+    automungeversion = '6.50'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32500,6 +33425,10 @@ class AutoMunge:
         
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
 
+      elif defaultinfill in {'negzeroinfill'}:
+        
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(-0.)
+
       elif defaultinfill in {'naninfill'}:
         #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
         pass
@@ -32630,6 +33559,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       suffixcolumn = column + '_' + suffix
 
@@ -32652,9 +33583,6 @@ class AutoMunge:
         mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-
       #subtract mean from column
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - mean
 
@@ -32664,6 +33592,14 @@ class AutoMunge:
       #divide column values by std
       #offset, multiplier are parameters that defaults to zero, one
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
+
+      #convert any negative zero to zero (negative zero reserved for default infill)
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[suffixcolumn] == 0, 0., mdf_test[suffixcolumn])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #     #change data type for memory savings
   #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.float32)
@@ -32714,6 +33650,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['center']
       maximum = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maximum']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -32726,8 +33664,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       if center == 'mean':
 
@@ -32796,6 +33735,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -32808,9 +33749,10 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
-      
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+
       #avoid outlier div by zero when max = min
       maxminusmin = maximum - minimum
       if maxminusmin == 0:
@@ -32875,6 +33817,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -32897,8 +33841,9 @@ class AutoMunge:
       mdf_test.loc[mdf_test[suffixcolumn] < quantilemin, (suffixcolumn)] \
       = quantilemin
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #avoid outlier div by zero when max = min
       maxminusmin = quantilemax - quantilemin
@@ -32947,6 +33892,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -32959,8 +33906,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #avoid outlier div by zero 
       if maxabs == 0:
@@ -33040,6 +33988,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -33062,8 +34012,9 @@ class AutoMunge:
         mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #avoid outlier div by zero when max = min
       maxminusmin = maximum - minimum
@@ -33141,6 +34092,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -33163,8 +34116,9 @@ class AutoMunge:
         mdf_test.loc[mdf_test[suffixcolumn] < floor, (suffixcolumn)] \
         = floor
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #perform min-max scaling to test set using values from train
       mdf_test[suffixcolumn] = (mdf_test[suffixcolumn] - mean) / \
@@ -33219,6 +34173,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -33230,6 +34186,10 @@ class AutoMunge:
       
       if str_convert is True:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace missing data with specified classification
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(binary_missing_plug)
@@ -33287,6 +34247,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       tempcolumn = column + '_' + suffix + '_'
 
@@ -33299,6 +34261,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -33402,6 +34368,9 @@ class AutoMunge:
           
     #normkey is False when process function returns empty set
     if normkey is not False:
+
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
     
       tempsuffix = str(mdf_test[column].unique()[0])
 
@@ -33416,6 +34385,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -33518,6 +34491,9 @@ class AutoMunge:
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       tempcolumn = column + '_' + suffix + '_'
 
@@ -33533,6 +34509,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
@@ -33761,6 +34741,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       test_same_as_train = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -33813,6 +34795,10 @@ class AutoMunge:
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
+
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
 #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -33870,6 +34856,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidate_nonoverlaps']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
 #       newcolumns = \
 #       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['spl2_newcolumns']
@@ -33956,6 +34944,10 @@ class AutoMunge:
 #       mdf_train[newcolumn] = mdf_train[column].copy()
       mdf_test[newcolumn] = mdf_test[column].copy()
 
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+
 #       mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
 
@@ -34028,6 +35020,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -34080,6 +35074,10 @@ class AutoMunge:
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
+
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
 #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -34199,6 +35197,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -34253,6 +35253,10 @@ class AutoMunge:
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
+
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
 #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -34327,6 +35331,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_same_as_train']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       #now for mdf_test we'll only consider those overlaps already identified from train set
       
@@ -34381,6 +35387,10 @@ class AutoMunge:
         
 #         mdf_train[newcolumn] = mdf_train[column].copy()
         mdf_test[newcolumn] = mdf_test[column].copy()
+
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
 #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -34515,6 +35525,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -34526,6 +35538,10 @@ class AutoMunge:
         mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
         mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #convert column to string, note this means that missing data converted to 'nan'
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
@@ -34717,6 +35733,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -34728,6 +35746,10 @@ class AutoMunge:
         mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
         mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
         
       #convert column to string, note this means that missing data converted to 'nan'
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
@@ -34918,6 +35940,9 @@ class AutoMunge:
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
 #       #now for mdf_test
 
@@ -34963,6 +35988,10 @@ class AutoMunge:
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
           mdf_test[newcolumn] = mdf_test[column].copy()
+
+          #apply defaultinfill based on processdict entry
+          mdf_test, _1 = \
+          self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -35048,6 +36077,9 @@ class AutoMunge:
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       #now for mdf_test
 
@@ -35093,6 +36125,10 @@ class AutoMunge:
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
           mdf_test[newcolumn] = mdf_test[column].copy()
+
+          #apply defaultinfill based on processdict entry
+          mdf_test, _1 = \
+          self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -35272,6 +36308,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['test_same_as_train']
       suffix = \
       postprocess_dict['column_dict'][nmrc_column]['normalization_dict'][nmrc_column]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       mdf_test[nmrc_column] = mdf_test[column].copy()
       
@@ -35358,6 +36396,10 @@ class AutoMunge:
                   if in_dict is False:
 
                     test_overlap_dict.update({unique : np.nan})
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, nmrc_column, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #great now that test_overlap_dict is populated
       mdf_test[nmrc_column] = mdf_test[nmrc_column].astype(str)
@@ -35409,6 +36451,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -35424,6 +36468,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
@@ -35526,6 +36574,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -35541,6 +36591,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
@@ -35633,6 +36687,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -35648,15 +36704,9 @@ class AutoMunge:
       #non integers are subject to infill
       mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
       
-      #apply ffill to replace nan with value from adjacent cell in pre4ceding row
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
-      
-      #we'll follow with a bfill just in case first row had a nan
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
-      
-      #then one more infill with to address scenario when data wasn't numeric
-      #get arbitrary cell value, if one is nan then all will be
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #get maximum train set activation which for ord3 will be least frequent entry
       maxactivation = int(mdf_test[suffixcolumn].max())
@@ -35712,6 +36762,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
       
@@ -35724,6 +36776,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
@@ -35803,6 +36859,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -35815,6 +36873,10 @@ class AutoMunge:
       #if set is categorical we'll need the plug value for missing values included
       if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #replace NA with a dummy variable
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
@@ -35918,6 +36980,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       time_column = column + '_' + suffix
 
@@ -36024,12 +37088,9 @@ class AutoMunge:
           #we'll scale periodicity by hour
           mdf_test[time_column] = (mdf_test[time_column].dt.minute + mdf_test[time_column].dt.second / 60) * 2 * np.pi / 60
 
-        #default infill is adjacent cell
-        mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-        mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-
-        #backup default infill for cases without valid entries
-        mdf_test[time_column] = mdf_test[time_column].fillna(0)
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, time_column, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
         #apply trigometric transform
 
@@ -36079,6 +37140,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['scaler']
       divisor = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
     
       time_column = column + '_' + suffix
 
@@ -36105,12 +37168,9 @@ class AutoMunge:
       elif scale == 'second':
         mdf_test[time_column] = mdf_test[time_column].dt.second
 
-      #apply default infill
-      mdf_test[time_column] = mdf_test[time_column].fillna(method='ffill')
-      mdf_test[time_column] = mdf_test[time_column].fillna(method='bfill')
-
-      #backup default infill for cases without valid entries
-      mdf_test[time_column] = mdf_test[time_column].fillna(0)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, time_column, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #apply normalization
       if normalization != 'unscaled':
@@ -36147,6 +37207,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['qttf']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       suffixcolumn = column + '_' + suffix
       
@@ -36156,8 +37218,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
-      #now default imputation with mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean_impute)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
         
       #apply transform to test set
       if qttf is not False:
@@ -36196,6 +37259,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       suffixcolumn = column + '_' + suffix
       
@@ -36213,8 +37278,9 @@ class AutoMunge:
       
       test_bxcx_lmbda = None
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #edge case to avoid stats.boxcox error
       if mdf_test[suffixcolumn].nunique() == 1:
@@ -36278,6 +37344,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36299,8 +37367,9 @@ class AutoMunge:
       #get mean of training data
       meanlog = meanlog  
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #     #replace missing data with 0
   #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
@@ -36345,6 +37414,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36366,8 +37437,9 @@ class AutoMunge:
       #get mean of training data
       meanlog = meanlog  
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meanlog)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #     #replace missing data with 0
   #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
@@ -36412,6 +37484,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36433,8 +37507,9 @@ class AutoMunge:
       #get mean of training data
       meansqrt = meansqrt  
 
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(meansqrt)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
   #     #replace missing data with 0
   #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
@@ -36482,6 +37557,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36496,8 +37573,9 @@ class AutoMunge:
       #lperform addition
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] + add
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36539,6 +37617,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36553,8 +37633,9 @@ class AutoMunge:
       #lperform subtraction
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - subtract
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36596,6 +37677,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36610,8 +37693,9 @@ class AutoMunge:
       #lperform addition
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] * multiply
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36651,6 +37735,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36665,8 +37751,9 @@ class AutoMunge:
       #lperform addition
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / divide
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36706,6 +37793,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36720,8 +37809,9 @@ class AutoMunge:
       #lperform addition
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] ** raiser
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36759,6 +37849,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffixcolumn = column + '_' + suffix
 
@@ -36773,8 +37865,9 @@ class AutoMunge:
       #lperform addition
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].abs()
       
-      #replace missing data with training set mean
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -36830,7 +37923,6 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
-
 
       #create copy with negative values
       negtempcolumn = column + '_negtemp'
@@ -37111,6 +38203,8 @@ class AutoMunge:
       normalizedinput = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['normalizedinput']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       binscolumn = column + '_' + suffix
 
@@ -37119,8 +38213,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       if normalizedinput is False:
 
@@ -37199,6 +38294,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       binscolumn = column + '_' + suffix
 
@@ -37210,8 +38307,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       if normalizedinput is False:
       
@@ -37274,6 +38372,8 @@ class AutoMunge:
       bins_cuts = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bins_cuts']
       bn_width = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bn_width_bnwd']
       textcolumns = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       binscolumn = column + '_' + suffix
       
@@ -37283,8 +38383,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #create bins based on standard deviation increments
 #       binscolumn = column + '_bnwd'
@@ -37347,6 +38448,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       binscolumn = column + '_' + suffix
       
@@ -37358,8 +38461,9 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[binscolumn] = pd.to_numeric(mdf_test[binscolumn], errors='coerce')
 
-      #replace missing data with training set mean
-      mdf_test[binscolumn] = mdf_test[binscolumn].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
       #create bins based on standard deviation increments
   #     binscolumn = column + '_bnwo'
@@ -37495,6 +38599,8 @@ class AutoMunge:
       bincount = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['bincount']
       inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       binscolumn = column + '_' + suffix
       
@@ -37517,14 +38623,9 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
               labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        #apply ffill to replace NArows with value from adjacent cell in pre4ceding row
-        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='ffill')
-
-        #we'll follow with a bfill just in case first row had a nan
-        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(method='bfill')
-
-        #and if the entire set was nan we'll infill with a 0 plug
-        mdf_test[binscolumn] = mdf_test[binscolumn].fillna(0)
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
         #returned data type is conditional on the size of encoding space
         max_encoding = bn_count - 1
@@ -37825,6 +38926,8 @@ class AutoMunge:
       inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       binscolumn = column + '_' + suffix
       
@@ -37846,6 +38949,10 @@ class AutoMunge:
             labels = bins_id, precision=len(str(len(bins_id))))
 
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #replace missing data with infill_activation
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
@@ -37898,6 +39005,8 @@ class AutoMunge:
       inplace = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       binscolumn = column + '_' + suffix
       
@@ -37924,6 +39033,10 @@ class AutoMunge:
             labels = bins_id, precision=len(str(len(bins_id))))
     
       mdf_test[binscolumn] = mdf_test[binscolumn].astype(float)
+
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, binscolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #replace missing data with infill_activation
       mdf_test[binscolumn] = mdf_test[binscolumn].fillna(infill_activation)
@@ -38199,6 +39312,8 @@ class AutoMunge:
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
       #initialize returned column and support columns
       DPrt_column = column + '_' + suffix
@@ -38221,8 +39336,9 @@ class AutoMunge:
         mdf_test.loc[mdf_test[DPrt_column] < floor, (DPrt_column)] \
         = floor
 
-      #replace missing data with training set mean
-      mdf_test[DPrt_column] = mdf_test[DPrt_column].fillna(mean)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, DPrt_column, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #avoid outlier div by zero when max = min
       maxminusmin = maximum - minimum
@@ -38478,8 +39594,8 @@ class AutoMunge:
     #normkey is False when process function returns empty set
     if normkey is not False:
       
-      fillvalue = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
@@ -38498,8 +39614,9 @@ class AutoMunge:
       
       #fillvalue = mdf_train[exclcolumn].mode()[0]
       
-      #replace missing data with fill value
-      mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, exclcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
 
     else:
 
@@ -38528,8 +39645,8 @@ class AutoMunge:
     #normkey is False when process function returns empty set
     if normkey is not False:
       
-      fillvalue = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fillvalue']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
@@ -38555,8 +39672,9 @@ class AutoMunge:
       
       #fillvalue = mdf_train[exclcolumn].mode()[0]
       
-      #replace missing data with fill value
-      mdf_test[exclcolumn] = mdf_test[exclcolumn].fillna(fillvalue)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, exclcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #set data type based on integertype parameter
       if integertype == 'singlct':
