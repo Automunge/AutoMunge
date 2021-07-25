@@ -3675,3 +3675,28 @@ am.postmunge(postprocess_dict, df_test)
 - change evalcat format check from type to callable to be consistent with processing functions
 - removed a comment in read me about adding assigninfill support for label sets
 - if alternate infill conventions are desired for labels they can be applied with defaultinfill processdict entry in custom_train convention
+
+6.50
+- added NArw_marker support to a few datetime family trees in whose omission had been an oversight
+- fixed a bug with root category 'time'
+- which was as a result of 'time' being entered in the 'time' family tree as a tree category
+- where the 'time' process_dict entry was not populated with processing functions
+- which is ok as long as a category is primarily intended to be applied as a root category but not a tree category
+- otherwise when applied as a tree category no transforms are performed and downstream offspring not inspected when applicable
+- updated the processfamily functions so that this scenario no longer produces error, just no transforms applied with printout for clarity
+- oh and started to update process_dict entries in general for root categories lacking processing functions so they could be used as tree categories and midway decided some categories it actually makes more sense to leave them without, now that this scenario no longer halts operation won't be an issue
+- changed default infill for datetime transforms (excluding timezone) to adjinfill
+- reconsidered default infill for passthrough transforms with defaultinfill support (e.g. exc2 and exc5)
+- previously we had applied mode infill based on neutrality towards numeric or categoric features
+- decided mode is too computationally expensive for a passthrough transform, so reverting to adjinfill as default for categories built on top of exc2 / exc5
+- updated default infill for shfl from adjinfill to naninfill
+- added defaultinfill processdict specification support to dual/single/post process convention
+- (a handful of transforms still pending support for esoteric reasons, those without process_dict defaultinfill specification in familytrees file)
+- new option for defaultinfill as negzeroinfill, which is imputation by the float negative 0 (-0.)
+- negzeroinfill is the new default infill for nmbr (z-score normalization) and qbt1
+- as benefit the convention allows user to eliminate the NArw aggregation without loss of information content
+- note that nmbr is the default transform for numeric sets under automation
+- and previously applied meaninfill as precursor to ML infill which since the data is centered was equivalent to zero infill
+- we anticipate there may be potential for downstream libraries to build capabilities to selectively distinguish between zero and negative zero based on the use case, otherwise we believe negative zero will be neutral towards model performance
+- as a bonus the convention benefits interpretibility by visual inspection as user can distinguish between imputation points without NArw when ML infill not applied
+- negzeroinfill also available for assignment via assigninfill
