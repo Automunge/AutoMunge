@@ -6789,7 +6789,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
-                                  'defaultinfill' : 'negzeroinfill',
+                                  'defaultinfill' : 'zeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'fractional_bits' : 13},
                                   'NArowtype' : 'nonnegativenumeric',
@@ -6801,7 +6801,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
-                                  'defaultinfill' : 'negzeroinfill',
+                                  'defaultinfill' : 'zeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'integer_bits' : 16,
                                                      'fractional_bits' : 0},
@@ -21496,6 +21496,13 @@ class AutoMunge:
       sign_bit = params['sign_bit']
     else:
       sign_bit = True
+
+    #abs_zero accepts boolean defaulting to True for conversion of negative zero to positive
+    #which is in place to ensure defaultinfill of negzeroinfill returns distinct encoding
+    if 'abs_zero' in params:
+      abs_zero = params['abs_zero']
+    else:
+      abs_zero = True
       
     qbt1_column = column + '_' + suffix
     
@@ -21522,7 +21529,8 @@ class AutoMunge:
     stdev = df[qbt1_column].std()
 
     #we'll have convention that all floats of negative zero converted to zero prior to infill
-    df[qbt1_column] = np.where(df[qbt1_column] == 0, 0, df[qbt1_column])
+    if abs_zero is True:
+      df[qbt1_column] = np.where(df[qbt1_column] == 0, 0, df[qbt1_column])
     
     #default infill is 0, kind of arbitrary, there's no perfect solution
     #recomend supplementing with NArw if a marker needed
@@ -21565,11 +21573,16 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, allcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
-      
+
     #populate sign column, note that 0 is positive, 1 is negative
     if sign_bit is True:
-      df[sign_columns[0]] = np.where(df[qbt1_column] < 0, 1, 0)
-      df[sign_columns[0]] = np.where(df[qbt1_column] == -0., 1, 0)
+
+      #this returns sign column as -1 for negative entries (including negative zero) else 1
+      df[sign_columns[0]] = 1
+      df[sign_columns[0]] = np.copysign(df[sign_columns[0]], df[qbt1_column])
+
+      #then convert so sign column is 1 for negative else 0
+      df[sign_columns[0]] = np.where(df[sign_columns[0]] == -1, 1, 0)
       
       #set data type
       df[sign_columns[0]] = df[sign_columns[0]].astype(np.int8)
@@ -21627,6 +21640,7 @@ class AutoMunge:
                                   'mean' : mean, \
                                   'stdev' : stdev, \
                                   'overflow' : overflow, \
+                                  'abs_zero' : abs_zero, \
                                   'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
       
@@ -32650,7 +32664,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.51'
+    automungeversion = '6.52'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
