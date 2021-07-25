@@ -1649,6 +1649,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : ['bint']}})
+
+    transform_dict.update({'nbr4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
     
     transform_dict.update({'MADn' : {'parents'       : [],
                                      'siblings'      : [],
@@ -4010,6 +4019,17 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr3'}})
+    process_dict.update({'nbr4' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'zeroinfill',
+                                  'defaultparams' : {'abs_zero' : False},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'MADn' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_MADn,
