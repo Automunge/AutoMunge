@@ -2356,7 +2356,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
   - useful for: normalizing numeric sets of unknown distribution
-  - default infill: negative zero
+  - default infill: negzeroinfill
   - default NArowtype: numeric
   - suffix appender: '\_nmbr' in base configuration or based on the family tree category
   - assignparam parameters accepted:  
@@ -2366,10 +2366,12 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       cap and floor based on pre-transform values
     - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
+    - 'abs_zero', defaults to True, deactivate to turn off conversion of negative zeros to positive zeros applied prior to infill (this is included to supplement negzeroinfill)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: mean / std / max / min
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
+* nbr4: z-score normalization similar to nmbr but with defaultinfill of zeroinfill instead of negzeroinfill and with abs_zero parameter deactivated<br/>
 * mean/mea2/mea3: mean normalization (like z-score in the numerator and min-max in the denominator)<br/>
 (x - mean) / (max - min)
 My intuition says z-score has some benefits but really up to the user which they prefer.
@@ -2624,7 +2626,7 @@ Default register sizes were selected to accommodate z-score normalized data with
 standard deviations from mean and approximately 4 significant figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
 * qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
   - useful for: feeding normalized floats to quantum circuits
-  - default infill: negative zero
+  - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt1_2^#' where # integer associated with register and also '_qbt1_sign'
   - assignparam parameters accepted: 
@@ -2639,7 +2641,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
 * qbt2: binary encoded signed integers with registers for sign and integers, default overflow at +/-32,767
   - useful for: feeding floats to quantum circuits
   - default infill: zero
-  - default NArowtype: negative zero
+  - default NArowtype: numeric
   - suffix appender: '_qbt2_2^#' where # integer associated with register and also '_qbt2_sign'
   - assignparam parameters accepted: 
     - suffix: defaults to 'qbt2'
@@ -2652,7 +2654,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - inversion available: yes with full recovery
 * qbt3: binary encoded unsigned floats with registers for integers and fractionals, default overflow at 8.000 and <0
   - useful for: feeding unsigned normalized floats to quantum circuits
-  - default infill: negative zero
+  - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt3_2^#' where # integer associated with register
   - assignparam parameters accepted: 
@@ -2665,7 +2667,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - inversion available: yes with full recovery
 * qbt4: binary encoded unsigned integers with registers for integers, default overflow at 65,535 and <0
   - useful for: feeding unsigned floats to quantum circuits
-  - default infill: negative zero
+  - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt4_2^#' where # integer associated with register
   - assignparam parameters accepted: 
@@ -2687,7 +2689,7 @@ Other Q Notation root categories:
 ### Numeric Set Bins and Grainings
 * pwrs: bins groupings by powers of 10 (for values >0)
   - useful for: feature engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
-  - default infill: no activation (defaultinfill not supported)
+  - default infill: no activation
   - default NArowtype: positivenumeric
   - suffix appender: '\_pwrs_10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
@@ -2700,7 +2702,7 @@ Other Q Notation root categories:
   - inversion available: yes with partial recovery
 * pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
   - useful for: feature engineering for linear models, also for oversampling bins with TrainFreqLevelizer parameter
-  - default infill: no activation (defaultinfill not supported)
+  - default infill: no activation
   - default NArowtype: nonzeronumeric
   - suffix appender: '\_pwr2_10^#' or '\_pwr2_-10^#' where # is integer indicating target powers of 10 for column
   - assignparam parameters accepted: 
@@ -2714,7 +2716,7 @@ Other Q Notation root categories:
 * pwor: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10
   - useful for: ordinal version of pwrs
-  - default infill: zero (defaultinfill not supported)
+  - default infill: zero
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
@@ -2726,7 +2728,7 @@ value fell with respect to powers of 10
 * por2: for numerical sets, outputs an ordinal encoding indicating where a
 value fell with respect to powers of 10 (comparable to pwor with negvalues parameter activated)
   - useful for: ordinal version of pwr2
-  - default infill: zero (a distinct encoding) (defaultinfill not supported)
+  - default infill: zero (a distinct encoding)
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
@@ -2817,7 +2819,7 @@ bins default to width of 1/1000/1000000 e.g. for bnwd/bnwK/bnwM
 * bnep/bne7/bne9: for numerical set graining to equal population bins for one-hot encoded bins. 
 bin count defaults to 5/7/9 e.g. for bnep/bne7/bne9
   - useful for: bins for sets with unknown demarcations
-  - default infill: no activation (defaultinfill not supported)
+  - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bnep\_#1' where #1 is the bin identifier (# from min) (or bne7/bne9 instead of bnep)
   - assignparam parameters accepted: 
@@ -2843,7 +2845,7 @@ bin count defaults to 5/7/9 e.g. for bneo/bn7o/bn9o
   - inversion available: yes with partial recovery
 * bkt1: for numerical set graining to user specified encoded bins. First and last bins unconstrained.
   - useful for: bins for sets with known irregular demarcations
-  - default infill: no activation (defaultinfill not supported)
+  - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt1\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
@@ -2856,7 +2858,7 @@ bin count defaults to 5/7/9 e.g. for bneo/bn7o/bn9o
   - inversion available: yes with partial recovery
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
   - useful for: bins for sets with known irregular demarcations, similar to preceding but first and last bins bounded
-  - default infill: no activation (defaultinfill not supported)
+  - default infill: no activation
   - default NArowtype: numeric
   - suffix appender: '\_bkt2\_#1' where #1 is the bin identifier (# from min)
   - assignparam parameters accepted: 
@@ -2951,7 +2953,7 @@ nmrc numeric string parsing top extract numbers from string sets
 * shft/shf2/shf3: shifted data forward by a period number of time steps defaulting to 1/2/3. Note that NArw aggregation
 not supported for shift transforms, infill only available as adjacent cell
   - useful for: time series data, carrying prior time steps forward
-  - default infill: adjacent cells (defaultinfill not supported)
+  - default infill: adjacent cells
   - default NArowtype: numeric
   - suffix appender: '_shft'  in base configuration or based on the family tree category
   - assignparam parameters accepted: 
@@ -3227,7 +3229,7 @@ time scale returned in separate columns. If a particular time scale is not prese
 * date/dat2: for datetime formatted data, segregates data by time scale to multiple
 columns (year/month/day/hour/minute/second) and then performs z-score normalization
   - useful for: datetime entries of mixed time scales where periodicity is not relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
   - assignparam parameters accepted:
@@ -3241,7 +3243,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
   - inversion available: pending
 * year/mnth/days/hour/mint/scnd: segregated by time scale and z-score normalization
   - useful for: datetime entries of single time scale where periodicity is not relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (_year, _mnth, _days, _hour, _mint, _scnd)
   - driftreport postmunge metrics: timemean / timemax / timemin / timestd
@@ -3250,7 +3252,7 @@ columns (year/month/day/hour/minute/second) and then performs z-score normalizat
 * mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs: segregated by time scale and 
 dual columns with sin and cos transformations for time scale period (e.g. 12 months, 24 hrs, 7 days, etc)
   - useful for: datetime entries of single time scale where periodicity is relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mnsn/mncs/dysn/dycs/hrsn/hrcs/misn/mics/scsn/sccs)
   - assignparam parameters accepted:
@@ -3261,7 +3263,7 @@ dual columns with sin and cos transformations for time scale period (e.g. 12 mon
 * mdsn/mdcs: similar sin/cos treatment, but for combined month/day, note that periodicity is based on 
 number of days in specific months, including account for leap year, with 12 month periodicity
   - useful for: datetime entries of single time scale combining months and days where periodicity is relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (mdsn/mdcs)
   - assignparam parameters accepted:
@@ -3270,7 +3272,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: pending
 * dhms/dhmc: similar sin/cos treatment, but for combined day/hour/min, with 7 day periodicity
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (dhms/dhmc)
   - assignparam parameters accepted:
@@ -3280,7 +3282,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * hmss/hmsc: similar sin/cos treatment, but for combined hour/minute/second, with 24 hour periodicity
   - useful for: datetime entries of single time scale combining time scales where periodicity is relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
   - assignparam parameters accepted:
@@ -3290,7 +3292,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * mssn/mscs: similar sin/cos treatment, but for combined minute/second, with 1 hour periodicity
   - useful for: datetime entries of single time scale combining time scales below minute threshold where periodicity is relevant
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for (hmss/hmsc)
   - assignparam parameters accepted:
@@ -3301,7 +3303,7 @@ number of days in specific months, including account for leap year, with 12 mont
 * dat6: default transformation set for time series data, returns:
 'year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy'
   - useful for: datetime entries of multiple time scales where periodicity is relevant, default date-time encoding, includes bins for holidays, business hours, and weekdays
-  - default infill: adjinfill
+  - default infill: mean
   - default NArowtype: datetime
   - suffix appender: includes appenders for ('year', 'mdsn', 'mdcs', 'hmss', 'hmsc', 'bshr', 'wkdy', 'hldy')
   - assignparam parameters accepted:
@@ -3316,7 +3318,7 @@ number of days in specific months, including account for leap year, with 12 mont
 ### Date-Time Data Bins
 * wkdy: boolean identifier indicating whether a datetime object is a weekday
   - useful for: supplementing datetime encodings with weekday bins
-  - default infill: adjinfill
+  - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_wkdy' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3337,7 +3339,7 @@ number of days in specific months, including account for leap year, with 12 mont
   - inversion available: pending
 * mnts/mnto: encoded months 1-12, 'mnts' for one-hot via 'text', 'mnto' for ordinal via 'ord3'
   - useful for: supplementing datetime encodings with month bins
-  - default infill: adjinfill
+  - default infill: 0
   - default NArowtype: datetime
   - suffix appender: '_mnts' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3349,8 +3351,8 @@ number of days in specific months, including account for leap year, with 12 mont
 * bshr: boolean identifier indicating whether a datetime object falls within business
 hours (9-5, time zone unaware)
   - useful for: supplementing datetime encodings with business hour bins
-  - default infill: adjinfill
-  - default NArowtype: datetime
+  - default infill: datetime
+  - default NArowtype: justNaN
   - suffix appender: '_bshr' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'start' and 'end', which default to 9 and 17
@@ -3361,7 +3363,7 @@ hours (9-5, time zone unaware)
 * hldy: boolean identifier indicating whether a datetime object is a US Federal
 holiday
   - useful for: supplementing datetime encodings with holiday bins
-  - default infill: adjinfill
+  - default infill: none
   - default NArowtype: datetime
   - suffix appender: '_hldy' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
@@ -3383,7 +3385,7 @@ category associated with the transformation function may be different than the r
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream nmbr (as DPn3) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream nmbr cleans data
   - default NArowtype: numeric
   - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
@@ -3401,7 +3403,7 @@ on flip_prob parameter.
 from a Gaussian which defaults to 0 mu and 0.03 sigma. Note that noise is scaled to ensure output
 remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling pos noise when scaled input >0.5)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream mnmx (as DPm2) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream mnmx cleans data
   - default NArowtype: numeric
   - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
@@ -3440,7 +3442,7 @@ and with same default parameter values
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream bnry (as DPb2) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream bnry cleans data
   - default NArowtype: justNaN
   - suffix appender: '_DPb2_DPbn'
   - assignparam parameters accepted: 
@@ -3456,7 +3458,7 @@ flips the activations per parameter flip_prob which defaults to 0.03 to a random
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo4) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '_DPo4_DPod'
   - assignparam parameters accepted: 
@@ -3470,10 +3472,9 @@ on number of activations)
 * DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
 flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
-on number of activations), followed by a one-hot encoding. Note that assignparam for noise injection
-can be passed to the intermediate category DPo2 which applies the DPod trasnform.
+on number of activations), followed by a one-hot encoding
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo5) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\DPo5\DPo2\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 
@@ -3487,10 +3488,9 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
 * DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
 flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
-on number of activations), followed by a 1010 binary encoding.  Note that assignparam for noise injection
-can be passed to the intermediate category DPo3 which applies the DPod trasnform.
+on number of activations), followed by a 1010 binary encoding
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
-  - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo6) cleans data
+  - default infill: the DP function does not apply a default infill assume upstream ord3 cleans data
   - default NArowtype: justNaN
   - suffix appender: '\DPo6\DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
@@ -3527,7 +3527,7 @@ Note that for assignnan designation of infill designations, excl is excluded fro
 (exc3 and exc4 have downstream standard deviation or power of 10 bins aggregated such as may be beneficial
 when applying TrainLabelFreqLevel to a numeric label set)
   - useful for: passthrough sets where all numeric entries desired, exc3 and exc4 useful for oversampling with numeric labels by TrainFreqLevelizer
-  - default infill: adjinfill
+  - default infill: mode
   - default NArowtype: numeric
   - suffix appender: '_exc2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3537,7 +3537,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - inversion available: yes
 * exc5/exc8: passes source column unaltered other than force to numeric, mode infill applied for non-integers
   - useful for: passthrough sets where all numeric entries desired
-  - default infill: adjinfill
+  - default infill: mode
   - default NArowtype: integer
   - suffix appender: '_exc5' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3584,7 +3584,7 @@ Does not prepare column for ML on its own (e.g. returned data will carry forward
 be numeric and predictive methods like ML infill and feature selection may not work for that scenario
 unless an additional transform is applied downstream.)
   - useful for: shuffle useful to negate feature from influencing inference
-  - default infill: naninfill
+  - default infill: exclude
   - default NArowtype: justNAN
   - suffix appender: '_shfl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3783,7 +3783,7 @@ within the overlaps
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
 for identified overlap entries.
   - useful for: identifying specific entry character subsets by search
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch\_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 
@@ -3797,7 +3797,7 @@ for identified overlap entries.
   - inversion available: yes with partial recovery
 * src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
   - useful for: similar to srch slight variation on implementation
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src2_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 
@@ -3812,7 +3812,7 @@ for identified overlap entries.
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
 for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
   - useful for: ordinal version of srch
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src4' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
@@ -4127,6 +4127,7 @@ avoid unintentional duplication.
 - 'mxab',
 - 'nbr2',
 - 'nbr3',
+- 'nbr4',
 - 'nmbd',
 - 'nmbr',
 - 'nmc2',
