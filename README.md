@@ -172,7 +172,7 @@ am.automunge(df_train, df_test = False,
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
-                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
+                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False,
@@ -590,7 +590,7 @@ am.automunge(df_train, df_test = False,
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
-                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
+                             'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False,
@@ -1166,7 +1166,7 @@ accept parameters.
 #Here are the current infill options built into our library, which
 #we are continuing to build out.
 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
-                'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
+                'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[], 
                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]}
 ```
 A user may add column identifier strings to each of these lists to designate the 
@@ -1181,21 +1181,22 @@ to True. Note that for single entry column assignments a user can just pass the 
 or integer of the column header without the list brackets. Note that the infilled cells
 are based on the rows corresponding to activations from the NArw_marker parameter.
 ```
-#  - stdrdinfill  : the default infill specified in the library of transformations for 
-#                   each transform below. 
-#  - MLinfill     : for MLinfill to distinct columns when MLinfill parameter not activated
-#  - zeroinfill   : inserting the integer 0 to missing cells. 
-#  - oneinfill    : inserting the integer 1. 
-#  - adjinfill    : passing the value from the preceding row to missing cells. 
-#  - meaninfill   : inserting the mean derived from the train set to numeric columns. 
-#  - medianinfill : inserting the median derived from the train set to numeric columns. 
-#                   (Note currently boolean columns derived from numeric are not supported 
-#                   for mean/median and for those cases default to those infill from stdrdinfill.) 
-#  - modeinfill   : inserting the most common value for a set, note that modeinfill 
-#                   supports multi-column boolean encodings, such as one-hot encoded sets or 
-#                   binary encoded sets. 
-#  - lcinfill     : comparable to modeinfill but with least common value instead of most. 
-#  - naninfill    : inserting NaN to missing cells. 
+#  - stdrdinfill   : the default infill specified in the library of transformations for 
+#                    each transform below. 
+#  - MLinfill      : for MLinfill to distinct columns when MLinfill parameter not activated
+#  - zeroinfill    : inserting the integer 0 to missing cells. 
+#  - oneinfill     : inserting the integer 1. 
+#  - negzeroinfill : inserting the float -0.
+#  - adjinfill     : passing the value from the preceding row to missing cells. 
+#  - meaninfill    : inserting the mean derived from the train set to numeric columns. 
+#  - medianinfill  : inserting the median derived from the train set to numeric columns. 
+#                    (Note currently boolean columns derived from numeric are not supported 
+#                    for mean/median and for those cases default to those infill from stdrdinfill.) 
+#  - modeinfill    : inserting the most common value for a set, note that modeinfill 
+#                    supports multi-column boolean encodings, such as one-hot encoded sets or 
+#                    binary encoded sets. 
+#  - lcinfill      : comparable to modeinfill but with least common value instead of most. 
+#  - naninfill     : inserting NaN to missing cells. 
 
 #an example of passing columns to assign infill via assigninfill:
 #for source column 'column1', which hypothetically is returned through automunge(.) as
@@ -1481,7 +1482,7 @@ We'll describe the options for processdict entries here. For clarity processdict
 #                a corresponding forward pass transform
 #                An entry should correspond to the dualprocess or singleprocess entry.
 
-#___________________________________________________________________________
+#__________________________________________________________________________
 #Alternative streamlined processing function conventions are also available 
 #which may be populated as entries to custom_train / custom_test / custom_inversion.
 #These conventions are documented in the readme section "Custom Transformation Functions".
@@ -1573,12 +1574,12 @@ We'll describe the options for processdict entries here. For clarity processdict
 #               from the pointer target are also populated when not previously specified.
 
 #___________________________________________________________________________
-#defaultinfill: this option is specific to the custom_train convention, and serves to specify a default infill
+#defaultinfill: this option serves to specify a default infill
 #               applied after NArowtype data type casting and preceding the transformation function.
 #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
 #               defaults to 'adjinfill' when not specified, can also pass as one of
 #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-#                'zeroinfill', 'oneinfill', 'naninfill'}
+#                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
 #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
 #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
 #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
@@ -1631,6 +1632,8 @@ processdict =  {'newt' : {'dualprocess'   : am._process_mnmx,
 ```
 
 Note that these processing functions won't be applied when 'newt' is assigned as a root category to a column in assigncat, unless the category is also populated as an entry to one of the associated family tree primitives in the transformdict entry.
+
+Note that all of the processing functions can be omitted or populated with values of None, as may be desired when the category is primarily intended for use as a root category and not a tree category. (If in such case the category is applied as a tree category when accessed no transforms will be applied and no downstream offspring will be inspected when applicable).
 
 Optionally, some additional values can be incorporated into the processdict to 
 support inversion for a transformation category:
@@ -4590,7 +4593,7 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
   stdev = normalization_dict['stdev']
   multiplier = normalization_dict['multiplier']
 
-  #Now initialize the inputcolumn (here we are creating a new column with header inputcolumn)
+  #Now initialize the inputcolumn
   df[inputcolumn] = 0
 
   #So for the example of z-score normalization, we know returnedcolumn_list will only have one entry
