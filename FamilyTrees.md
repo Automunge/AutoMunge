@@ -1814,7 +1814,7 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'time' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['time'],
+                                     'auntsuncles'   : ['year'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -2517,7 +2517,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'wkdy' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['wkdy'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2526,7 +2526,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'bshr' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['bshr'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2535,7 +2535,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'hldy' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hldy'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2544,7 +2544,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'wkds' : {'parents'       : ['wkds'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['text'],
@@ -2553,7 +2553,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'wkdo' : {'parents'       : ['wkdo'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['ordl'],
@@ -2562,7 +2562,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'mnts' : {'parents'       : ['mnts'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['text'],
@@ -2571,7 +2571,7 @@ For simplicity just going to copy the code directly from code base where these d
     transform_dict.update({'mnto' : {'parents'       : ['mnto'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['ordl'],
@@ -3548,12 +3548,12 @@ For simplicity just going to copy the code directly from code base where these d
     #               from the pointer target are also populated when not previously specified.
 
     #___________________________________________________________________________
-    #defaultinfill: this option is specific to the custom_train convention, and serves to specify a default infill
+    #defaultinfill: this option serves to specify a default infill
     #               applied after NArowtype data type casting and preceding the transformation function.
     #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
     #               defaults to 'adjinfill' when not specified, can also pass as one of
     #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-    #                'zeroinfill', 'oneinfill', 'naninfill'}
+    #                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
     #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
     #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
     #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
@@ -3608,6 +3608,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3615,6 +3616,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3622,6 +3624,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3629,6 +3632,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3636,6 +3640,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3643,6 +3648,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3650,6 +3656,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3657,6 +3664,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3664,6 +3672,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3671,6 +3680,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3678,6 +3688,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3685,6 +3696,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3692,6 +3704,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3701,6 +3714,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3710,6 +3724,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3719,6 +3734,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3728,6 +3744,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3737,6 +3754,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3746,6 +3764,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -3753,6 +3772,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3760,6 +3780,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3767,6 +3788,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3774,6 +3796,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3781,6 +3804,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3788,6 +3812,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3795,6 +3820,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3802,6 +3828,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3809,6 +3836,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3816,6 +3844,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3823,6 +3852,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3830,6 +3860,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
@@ -3837,6 +3868,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3844,6 +3876,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3851,6 +3884,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3858,6 +3892,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3865,6 +3900,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3872,6 +3908,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
@@ -3959,6 +3996,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -3968,6 +4006,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr3'}})
@@ -3977,6 +4016,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'mean'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -3987,6 +4027,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'mean'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -3997,6 +4038,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'center' : 'max'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -4007,6 +4049,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4016,6 +4059,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4025,6 +4069,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
@@ -4034,6 +4079,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
@@ -4043,6 +4089,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4053,13 +4100,17 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'floor' : True},
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm6'}})
-    process_dict.update({'mnm7' : {'dualprocess' : None,
+    process_dict.update({'mnm7' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -4069,6 +4120,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mxab,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mxab'}})
@@ -4078,6 +4130,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4087,6 +4140,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4096,6 +4150,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
@@ -4105,6 +4160,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4114,6 +4170,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4123,6 +4180,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
@@ -4132,6 +4190,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'onevalue'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
@@ -4142,6 +4201,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'zerovalue'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
@@ -4152,6 +4212,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_onht,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'onht'}})
@@ -4161,6 +4222,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -4170,6 +4232,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -4179,6 +4242,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4188,6 +4252,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
@@ -4197,6 +4262,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
@@ -4205,6 +4271,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'mnmx'}})
@@ -4212,6 +4279,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
@@ -4221,6 +4289,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'UPCS'}})
@@ -4230,6 +4299,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'onht'}})
@@ -4239,6 +4309,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4248,6 +4319,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4257,6 +4329,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
@@ -4266,6 +4339,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4275,6 +4349,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ordl'}})
@@ -4284,6 +4359,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
@@ -4293,6 +4369,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4302,6 +4379,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4311,6 +4389,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : '1010'}})
@@ -4320,6 +4399,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'splt'}})
@@ -4329,6 +4409,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
@@ -4340,6 +4421,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4351,6 +4433,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4360,6 +4443,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True,
                                                      'minsplit' : 1},
@@ -4372,6 +4456,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -4382,6 +4467,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
@@ -4393,6 +4479,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4404,6 +4491,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4415,6 +4503,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4426,6 +4515,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4437,6 +4527,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4448,6 +4539,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'concurrent_activations': True,
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
@@ -4459,6 +4551,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'concurrent_activations': True,
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
@@ -4470,6 +4563,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4481,6 +4575,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
@@ -4492,6 +4587,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp19'}})
@@ -4501,6 +4597,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4511,6 +4608,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4521,6 +4619,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4531,6 +4630,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4541,6 +4641,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -4549,6 +4650,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hash'}})
@@ -4556,6 +4658,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'space' : '',
                                                      'excluded_characters' : []},
                                   'NArowtype' : 'justNaN',
@@ -4565,6 +4668,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hs10,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'hs10'}})
@@ -4574,6 +4678,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hash'}})
@@ -4583,6 +4688,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hsh2'}})
@@ -4592,6 +4698,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hs10'}})
@@ -4610,6 +4717,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_src2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src2'}})
@@ -4619,6 +4727,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_src3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src3'}})
@@ -4637,6 +4746,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4644,6 +4754,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_strn,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
@@ -4653,6 +4764,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_strg,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'strg'}})
@@ -4662,6 +4774,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4672,6 +4785,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4682,6 +4796,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4692,6 +4807,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4703,6 +4819,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4714,6 +4831,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4725,6 +4843,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4736,6 +4855,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4747,6 +4867,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'numbers',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4758,6 +4879,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4768,6 +4890,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4778,6 +4901,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4788,6 +4912,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4799,6 +4924,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4810,6 +4936,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4821,6 +4948,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4832,6 +4960,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4843,6 +4972,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'commas',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4854,6 +4984,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4864,6 +4995,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4874,6 +5006,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces'},
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
@@ -4884,6 +5017,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4895,6 +5029,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4906,6 +5041,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : True},
                                   'NArowtype' : 'parsenumeric',
@@ -4917,6 +5053,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4928,6 +5065,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4939,6 +5077,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'convention' : 'spaces',
                                                      'test_same_as_train' : False},
                                   'NArowtype' : 'parsenumeric',
@@ -4950,6 +5089,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4961,6 +5101,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4972,6 +5113,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
@@ -4983,6 +5125,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -4992,6 +5135,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5001,6 +5145,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
@@ -5010,6 +5155,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord5'}})
@@ -5019,6 +5165,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
@@ -5028,6 +5175,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
@@ -5037,6 +5185,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -5046,6 +5195,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -5055,6 +5205,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -5064,6 +5215,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -5071,6 +5223,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_ucct,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'ucct'}})
@@ -5080,6 +5233,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5089,15 +5243,19 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'or10' : {'dualprocess' : None,
+    process_dict.update({'or10' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
@@ -5107,6 +5265,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5116,6 +5275,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5125,6 +5285,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5134,6 +5295,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : False,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
@@ -5143,6 +5305,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5152,6 +5315,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5161,6 +5325,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5170,6 +5335,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5179,6 +5345,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5188,6 +5355,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5197,6 +5365,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5206,6 +5375,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
@@ -5215,20 +5385,27 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
+                                   'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'om10' : {'dualprocess' : None,
+    process_dict.update({'om10' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mmor' : {'dualprocess' : None,
+    process_dict.update({'mmor' : {'dualprocess' : self._process_ord3,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_ord3,
+                                  'inverseprocess' : self._inverseprocess_ord3,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
@@ -5238,6 +5415,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
@@ -5247,6 +5425,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'output_distribution' : 'normal'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -5257,6 +5436,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'output_distribution' : 'uniform'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -5265,20 +5445,28 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'tmsc' : {'dualprocess' : None,
+    process_dict.update({'tmsc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_tmsc,
+                                  'defaultparams' : {},
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'time' : {'dualprocess' : None,
+    process_dict.update({'time' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
-                                  'inplace_option' : False,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
+                                  'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
@@ -5286,6 +5474,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'tmzn'}})
@@ -5293,13 +5482,15 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
-                                  'labelctgy' : 'time'}})
+                                  'labelctgy' : 'year'}})
     process_dict.update({'dat2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'hldy'}})
@@ -5307,6 +5498,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5314,6 +5506,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5321,6 +5514,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5328,6 +5522,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'year'}})
@@ -5336,15 +5531,22 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_time,
                                   'inverseprocess' : self._inverseprocess_year,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'scale' : 'year',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
-    process_dict.update({'yea2' : {'dualprocess' : None,
+    process_dict.update({'yea2' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : None,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
+                                  'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
+                                  'defaultparams' : {'scale' : 'year',
+                                                     'normalization' : 'zscore'},
+                                  'inplace_option' : True,
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
@@ -5354,6 +5556,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrsn'}})
@@ -5363,6 +5566,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrcs'}})
@@ -5372,6 +5576,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'month',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnth'}})
@@ -5416,6 +5621,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnsn'}})
@@ -5425,6 +5631,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mncs'}})
@@ -5434,6 +5641,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdsn'}})
@@ -5443,6 +5651,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdcs'}})
@@ -5452,6 +5661,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'day',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'days'}})
@@ -5489,6 +5699,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dysn'}})
@@ -5498,6 +5709,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dycs'}})
@@ -5507,6 +5719,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhms'}})
@@ -5516,6 +5729,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhmc'}})
@@ -5525,6 +5739,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'hour',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hour'}})
@@ -5555,6 +5770,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrsn'}})
@@ -5564,6 +5780,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrcs'}})
@@ -5573,6 +5790,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmss'}})
@@ -5582,6 +5800,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmsc'}})
@@ -5591,6 +5810,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'minute',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mint'}})
@@ -5621,6 +5841,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'misn'}})
@@ -5630,6 +5851,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mics'}})
@@ -5639,6 +5861,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mssn'}})
@@ -5648,6 +5871,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mscs'}})
@@ -5657,6 +5881,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'second',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scnd'}})
@@ -5673,6 +5898,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scsn'}})
@@ -5682,6 +5908,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sccs'}})
@@ -5689,6 +5916,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5696,6 +5924,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5703,6 +5932,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
@@ -5710,6 +5940,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
@@ -5719,6 +5950,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5728,6 +5960,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5737,6 +5970,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5765,6 +5999,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
@@ -5774,6 +6009,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
@@ -5783,6 +6019,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'logn'}})
@@ -5792,6 +6029,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -5801,6 +6039,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sqrt,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sqrt'}})
@@ -5810,6 +6049,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_addd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'addd'}})
@@ -5819,6 +6059,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_sbtr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sbtr'}})
@@ -5828,6 +6069,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mltp'}})
@@ -5837,6 +6079,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_divd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'divd'}})
@@ -5846,6 +6089,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_rais,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'rais'}})
@@ -5855,6 +6099,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'absl'}})
@@ -5882,6 +6127,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt3'}})
@@ -5891,6 +6137,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt4'}})
@@ -5898,6 +6145,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_wkdy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'wkdy'}})
@@ -5905,6 +6153,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_bshr,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bshr'}})
@@ -5912,6 +6161,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_hldy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'hldy'}})
@@ -5919,6 +6169,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
@@ -5926,6 +6177,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5933,6 +6185,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
@@ -5940,6 +6193,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5949,6 +6203,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bins'}})
@@ -5958,6 +6213,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'normalizedinput' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -5968,6 +6224,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bsor'}})
@@ -5978,6 +6235,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : False,
                                   'defaultparams' : {'normalizedinput' : True},
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'btor'}})
@@ -5987,6 +6245,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
@@ -5996,6 +6255,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -6006,6 +6266,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
@@ -6016,6 +6277,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
@@ -6025,6 +6287,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
@@ -6035,6 +6298,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
@@ -6074,6 +6338,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
@@ -6082,6 +6347,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6092,6 +6358,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6141,6 +6408,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6150,6 +6418,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6159,6 +6428,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6168,6 +6438,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6176,6 +6447,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bnwo,
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6186,6 +6458,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bnwo,
                                   'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6197,6 +6470,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6205,6 +6479,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6215,6 +6490,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_bneo,
                                   'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
                                   'inplace_option' : True,
                                   'NArowtype' : 'numeric',
@@ -6235,6 +6511,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
@@ -6253,6 +6530,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
@@ -6271,6 +6549,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPrt'}})
@@ -6280,6 +6559,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
@@ -6299,6 +6579,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
@@ -6318,6 +6599,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -6328,6 +6610,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
@@ -6346,6 +6629,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
@@ -6364,6 +6648,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
@@ -6400,6 +6685,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
@@ -6418,6 +6704,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'qbt1'}})
@@ -6427,6 +6714,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'integer_bits' : 15,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'numeric',
@@ -6438,6 +6726,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'fractional_bits' : 13},
                                   'NArowtype' : 'nonnegativenumeric',
@@ -6449,6 +6738,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'sign_bit' : False,
                                                      'integer_bits' : 16,
                                                      'fractional_bits' : 0},
@@ -6461,6 +6751,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
@@ -6470,6 +6761,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
@@ -6479,6 +6771,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
@@ -6488,6 +6781,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
@@ -6557,6 +6851,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
@@ -6566,6 +6861,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc3'}})
@@ -6575,6 +6871,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc4'}})
@@ -6584,6 +6881,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
@@ -6594,6 +6892,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc6'}})
@@ -6603,6 +6902,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'singlct'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
@@ -6613,6 +6913,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
@@ -6623,6 +6924,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'integertype' : 'integer'},
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
@@ -6631,6 +6933,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_shfl,
                                   'postprocess' : None,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'shfl'}})
@@ -6640,6 +6943,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -6649,6 +6953,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
@@ -6658,6 +6963,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ord3,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
@@ -6667,6 +6973,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -6676,6 +6983,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
@@ -6699,6 +7007,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
@@ -6708,6 +7017,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
@@ -6717,6 +7027,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : '1010'}})
@@ -6726,6 +7037,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -6735,6 +7047,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
@@ -6744,6 +7057,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_text,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
@@ -6753,6 +7067,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnry'}})
@@ -6762,6 +7077,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'lbsm'}})
@@ -6771,6 +7087,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
@@ -6788,6 +7105,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
@@ -6797,6 +7115,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
@@ -6806,6 +7125,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
                                   'defaultparams' : {'integer_bits' : 4,
                                                      'fractional_bits' : 3,
                                                      'sign_bit' : True},
@@ -6838,6 +7158,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'multiply' : -1},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -6848,6 +7169,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'buckets' : [0]},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
