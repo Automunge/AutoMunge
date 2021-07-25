@@ -3700,3 +3700,12 @@ am.postmunge(postprocess_dict, df_test)
 - we anticipate there may be potential for downstream libraries to build capabilities to selectively distinguish between zero and negative zero based on the use case, otherwise we believe negative zero will be neutral towards model performance
 - as a bonus the convention benefits interpretibility by visual inspection as user can distinguish between imputation points without NArw when ML infill not applied
 - negzeroinfill also available for assignment via assigninfill
+
+6.51
+- new assignparam option for nmbr transform as abs_zero
+- abs_zero accepts booleans and defaulting to True
+- when activated, abs_zero converts any negative zeros to positive zero prior to imputation
+- as may desired to ensure the negzeroinfill imputation maintains a unique encoding in the data
+- new transformation category nbr4
+- similar to z-score normalization configuration prior to 6.50 update (with new abs_zero parameter deactivated)
+- except changed defaultinfill for nbr4 from meaninfill to zeroinfill to solve rounding issue sometimes causing mean imputation to return as tiny decimal instead of zero
