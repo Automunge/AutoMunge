@@ -1696,6 +1696,15 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : ['bint']}})
+
+    transform_dict.update({'nbr4' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nbr4'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
     
     transform_dict.update({'MADn' : {'parents'       : [],
                                      'siblings'      : [],
@@ -4053,6 +4062,17 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr3'}})
+    process_dict.update({'nbr4' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'zeroinfill',
+                                  'defaultparams' : {'abs_zero' : False},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'nmbr'}})
     process_dict.update({'MADn' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_MADn,
@@ -8634,6 +8654,13 @@ class AutoMunge:
     else:
       floor = False
 
+    #abs_zero accepts boolean defaulting to True for conversion of negative zero to positive
+    #which is in place to ensure defaultinfill of negzeroinfill returns distinct encoding
+    if 'abs_zero' in params:
+      abs_zero = params['abs_zero']
+    else:
+      abs_zero = True
+
     suffixcolumn = column + '_' + suffix
 
     if inplace is not True:
@@ -8714,8 +8741,9 @@ class AutoMunge:
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
 
     #replace any negative zero floats with positive zero. Negative zero is reserved for default infill
-    mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == 0, 0, mdf_train[suffixcolumn])
-    mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == 0, 0, mdf_test[suffixcolumn])
+    if abs_zero is True:
+      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == 0, 0, mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == 0, 0, mdf_test[suffixcolumn])
 
     #apply defaultinfill based on processdict entry
     #this will default to negzeroinfill
@@ -8735,6 +8763,7 @@ class AutoMunge:
                                               'max' : maximum, 'min' : minimum, \
                                               'offset' : offset, 'multiplier': multiplier, \
                                               'cap' : cap, 'floor' : floor, \
+                                              'abs_zero' : abs_zero, \
                                               'inplace' : inplace, 'suffix' : suffix,
                                               'defaultinfill_dict' : defaultinfill_dict}}
 
@@ -32621,7 +32650,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.50'
+    automungeversion = '6.51'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33555,6 +33584,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
       floor = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
+      abs_zero = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['abs_zero']
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       suffix = \
@@ -33594,8 +33625,9 @@ class AutoMunge:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] / std * multiplier + offset
 
       #convert any negative zero to zero (negative zero reserved for default infill)
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[suffixcolumn] == 0, 0., mdf_test[suffixcolumn])
+      if abs_zero is True:
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == 0, 0., mdf_test[suffixcolumn])
 
       #apply defaultinfill based on processdict entry
       mdf_test, _1 = \
