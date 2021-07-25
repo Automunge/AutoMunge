@@ -3709,3 +3709,11 @@ am.postmunge(postprocess_dict, df_test)
 - new transformation category nbr4
 - similar to z-score normalization configuration prior to 6.50 update (with new abs_zero parameter deactivated)
 - except changed defaultinfill for nbr4 from meaninfill to zeroinfill to solve rounding issue sometimes causing mean imputation to return as tiny decimal instead of zero
+
+6.52
+- found and fixed a snafu in qbt1 transform originating from 6.50
+- everything now aligned with original intent for 6.50 and back working as it should
+- added abs_zero assignparam support to qbt1, defaulting to True
+- abs_zero is boolean defaulting to True which converts received negative zeros to positive zero
+- updated qbt1 family of transforms for cases that don't default to a returned sign column (qbt3 and qbt4) to defaultinfill of zeroinfill instead of negzeroinfill
+- corrected a typo in read me library of transforms, mmq3 now corrected to read mmq2
