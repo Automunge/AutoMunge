@@ -2656,7 +2656,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - inversion available: yes with full recovery
 * qbt3: binary encoded unsigned floats with registers for integers and fractionals, default overflow at 8.000 and <0
   - useful for: feeding unsigned normalized floats to quantum circuits
-  - default infill: negative zero
+  - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt3_2^#' where # integer associated with register
   - assignparam parameters accepted: 
@@ -2669,7 +2669,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
   - inversion available: yes with full recovery
 * qbt4: binary encoded unsigned integers with registers for integers, default overflow at 65,535 and <0
   - useful for: feeding unsigned floats to quantum circuits
-  - default infill: negative zero
+  - default infill: zero
   - default NArowtype: numeric
   - suffix appender: '_qbt4_2^#' where # integer associated with register
   - assignparam parameters accepted: 
@@ -2685,7 +2685,7 @@ Other Q Notation root categories:
 - nmqb has upstream z score to qbt1 and z score not retained
 - nmq2 has upstream z score to qbt1 and z score is retained
 - mmqb has upstream min max to qbt3 and min max not retained
-- mmq3 has upstream min max to qbt3 and min max is retained
+- mmq2 has upstream min max to qbt3 and min max is retained
 - lgnr logarithmic number representation, registers 1 for sign, 1 for log sign, 4 log integer registers, 3 log fractional registers
 
 ### Numeric Set Bins and Grainings
