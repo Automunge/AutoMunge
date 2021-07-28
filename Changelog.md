@@ -3726,3 +3726,36 @@ am.postmunge(postprocess_dict, df_test)
 - the intermediate if statement I just struck, I think from a while back I was trying to get just a little too creative and was trying to treat numeric sets with 3 unique entries as a one hot encoding instead of normalization (for reasons that I'm now having a hard time trying to identify, in other words I don't think there was a good reason), to make matters worse along the way the 3 state one-hot got converted to a binarization and yeah long story short (too late) etc
 - so now the corrected (and simplified) convention is that all majority numeric sets (with integers or floats) under automation are normalized, unless the set is received as a pandas 'categoric' data type, and then they are treated to a binarizaiton by bnry or 1010 based on their unique entry count
 - also removed an unused code snippet in same function
+
+6.54
+- added a clarification to read me that under automation numeric data received as pandas categoric data type will be treated as categoric for binarization instead of normalizations
+- new temporary postproccess_dict entry temp_miscparameters_results added at initialization
+- temp_miscparameters_results is for storing validaiton results recieved in various support functions that might not have access to miscparameters_results
+- which is then consolidated with miscparameters_results and the temporary entry struck
+- new validation result reported in miscparameters_results as treecategory_with_empty_processing_functions_valresult
+- which is for the tree category without processing functions populated that we noted in 6.50
+- validation result is populated with unique entry for each occurance recording the tree category without processing functions and the associated root category whose generations included the tree category
+- populated with key as integer i incremented with each occurance as:
+treecategory_with_empty_processing_functions_valresult = \
+{i : {'treecategory' : treecategory,
+      'rootcategory' : rootcategory}}
+- identified a superfluous copy operation within the transformation functions associated with populating returned column_dict data structure
+- so globally struck this copy operation
+- created a new support function for one hot encoding as _onehot_support
+- this function returns a comparable order of columns as would pd.get_dummies
+- the index retention convention is also comparable
+- part of the reason for creating this function is so will be able to experiment with variations
+- for potential use in different transformation function scenarios
+- new trigometric family of transforms sint/cost/tant/arsn/arcs/artn
+- built on top of numpy trigometric operations np.sin, np.cos, np.tan, np.arcsin, np.arccos, np.arctan
+- inversion supported with partial information recovery
+- defaults to defaultinfill of adjinfill (since these are for periodic sets a static imputation makes less sense)
+- the inspiration for incorporporating trigometric functions came from looking at a calculator
+- audited family trees for cases with omitted NArw_marker support, found a few entries whose omission I believe was accidental
+- in the process identified by memory I think a case where I may not have provided sufficient citation at the time of rollout
+- for clarity, our use of adjacent sin and cos transformations for periodic datetime data, as well as binarization as an alternative to onehot encoding
+- were direclty inspired by github issue suggestions submitted by github user "solalatus"
+- (I had noted his input in acknowledgements of one of papers, just thought might be worth reiterating)
+- this user provided links to blog posts associated with both of these concepts which were rolled out in 2.47
+- the datetime blog post was an article by Ian London titled "Encoding cyclical continuous features - 24-hour time"
+- the binarization blog was one of a few articles, not sure which, I think it was a blog post by Rakesh Ravi titled "One-Hot Encoding is making your Tree-Based Ensembles worse, here’s why?"
