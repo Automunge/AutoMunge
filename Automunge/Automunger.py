@@ -1790,7 +1790,7 @@ class AutoMunge:
     transform_dict.update({'mnm7' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mnmx', 'bins'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -1853,7 +1853,7 @@ class AutoMunge:
     transform_dict.update({'mea3' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mean', 'bins'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -1961,7 +1961,7 @@ class AutoMunge:
     transform_dict.update({'yrcs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['yrcs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -1970,7 +1970,7 @@ class AutoMunge:
     transform_dict.update({'yrsn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['yrsn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2033,7 +2033,7 @@ class AutoMunge:
     transform_dict.update({'mnsn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mnsn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2042,7 +2042,7 @@ class AutoMunge:
     transform_dict.update({'mncs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mncs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2051,7 +2051,7 @@ class AutoMunge:
     transform_dict.update({'mdsn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mdsn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2060,7 +2060,7 @@ class AutoMunge:
     transform_dict.update({'mdcs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mdcs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2114,7 +2114,7 @@ class AutoMunge:
     transform_dict.update({'dysn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['dysn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2123,7 +2123,7 @@ class AutoMunge:
     transform_dict.update({'dycs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['dycs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2132,7 +2132,7 @@ class AutoMunge:
     transform_dict.update({'dhms' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['dhms'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2141,7 +2141,7 @@ class AutoMunge:
     transform_dict.update({'dhmc' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['dhmc'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2186,7 +2186,7 @@ class AutoMunge:
     transform_dict.update({'hrsn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hrsn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2195,7 +2195,7 @@ class AutoMunge:
     transform_dict.update({'hrcs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hrcs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2204,7 +2204,7 @@ class AutoMunge:
     transform_dict.update({'hmss' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hmss'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2213,7 +2213,7 @@ class AutoMunge:
     transform_dict.update({'hmsc' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['hmsc'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2258,7 +2258,7 @@ class AutoMunge:
     transform_dict.update({'misn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['misn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2267,7 +2267,7 @@ class AutoMunge:
     transform_dict.update({'mics' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mics'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2276,7 +2276,7 @@ class AutoMunge:
     transform_dict.update({'mssn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mssn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2285,7 +2285,7 @@ class AutoMunge:
     transform_dict.update({'mscs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['mscs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2312,7 +2312,7 @@ class AutoMunge:
     transform_dict.update({'scsn' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['scsn'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -2321,7 +2321,7 @@ class AutoMunge:
     transform_dict.update({'sccs' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['sccs'],
-                                     'cousins'       : [],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -3249,6 +3249,60 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : ['shfl'],
                                      'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'sint' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['sint'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'cost' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['cost'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'tant' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['tant'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'arsn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['arsn'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'arcs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['arcs'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'artn' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['artn'],
+                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -7000,6 +7054,60 @@ class AutoMunge:
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'shfl'}})
+    process_dict.update({'sint' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'sin'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'sint'}})
+    process_dict.update({'cost' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'cos'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'cost'}})
+    process_dict.update({'tant' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'tan'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'tant'}})
+    process_dict.update({'arsn' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'arcsin'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'arsn'}})
+    process_dict.update({'arcs' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'arccos'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'arcs'}})
+    process_dict.update({'artn' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'operation' : 'arctan'},
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'artn'}})
     process_dict.update({'nmbd' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
@@ -7488,7 +7596,7 @@ class AutoMunge:
         else:
           inplaceperformed = False
     else:
-      #user cannot manually specify inplace by design
+      #user cannot manually specify inplace as True by design
       if ('inplace' in params and params['inplace'] is True):
         inplaceperformed = False
         params.update({'inplace' : False})
@@ -7534,11 +7642,9 @@ class AutoMunge:
 
     else:
 
-      column_dict_list = []
 
       if postprocess_dict['printstatus'] != 'silent':
         
-        #(a formal validation result for this scenario is pending)
         print('Please note that a tree category was accessed as category ', cousin)
         print('Originating from generations of root category ', origcategory)
         print('Which did not have processing functions populated in processdict')
@@ -7546,6 +7652,39 @@ class AutoMunge:
         print('Are required when a category is accessed as a tree category entry in a family tree.')
         print('Otherwise tree category is treated as None and no downstream generations are accessed.')
         print()
+
+      column_dict_list = []
+
+      #populate validation result
+      #we'll have convention of populating an entry each time this validation result identified
+      #with a key of an integer iterated with each occurance
+      #and populated with details of treecategory without processing functions and associated root category 
+      # treecategory_with_empty_processing_functions_valresult = {i : {'treecategory' : treecategory,
+      #                                                                'rootcategory' : rootcategory}}
+
+      if 'treecategory_with_empty_processing_functions_valresult' not in postprocess_dict['temp_miscparameters_results']:
+        postprocess_dict['temp_miscparameters_results'].update({'treecategory_with_empty_processing_functions_valresult' : {}})
+
+      #validation results reported with key of an integer incremented with each occurance
+      #get value of current max entry 
+      #(here using pandas as a hack since python doesn't have clean max item in list, works bacause are numeric)
+      max_valkey_i = pd.DataFrame({'temp' : list(postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'])}).max()
+
+      #this returns max_valkey_i as a series with one integer entry, with entry as NaN when no entries present
+      if (max_valkey_i != max_valkey_i).iat[0]:
+        max_valkey_i = -1
+      else:
+        max_valkey_i = int(max_valkey_i)
+
+      #initialize our valitation result reporting, which notes the tree category without processing functions
+      #as well as the root category in whose generations this tree category was found
+      treecategory_with_empty_processing_functions_valresult = {max_valkey_i+1 : {'treecategory' : cousin,
+                                                                                  'rootcategory' : origcategory}}
+
+      #populate the validation results in postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult']
+      postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'].update(
+        treecategory_with_empty_processing_functions_valresult
+        )
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -7599,7 +7738,7 @@ class AutoMunge:
         else:
           inplaceperformed = False
     else:
-      #user cannot manually specify inplace by design
+      #user cannot manually specify inplace as True by design
       if ('inplace' in params and params['inplace'] is True):
         inplaceperformed = False
         params.update({'inplace' : False})
@@ -7645,11 +7784,8 @@ class AutoMunge:
 
     else:
 
-      column_dict_list = []
-
       if postprocess_dict['printstatus'] != 'silent':
 
-        #(a formal validation result for this scenario is pending)
         print('Please note that a tree category was accessed as category ', parent)
         print('Originating from generations of root category ', origcategory)
         print('Which did not have processing functions populated in processdict')
@@ -7657,6 +7793,39 @@ class AutoMunge:
         print('Are required when a category is accessed as a tree category entry in a family tree.')
         print('Otherwise tree category is treated as None and no downstream generations are accessed.')
         print()
+
+      column_dict_list = []
+
+      #populate validation result
+      #we'll have convention of populating an entry each time this validation result identified
+      #with a key of an integer iterated with each occurance
+      #and populated with details of treecategory without processing functions and associated root category 
+      # treecategory_with_empty_processing_functions_valresult = {i : {'treecategory' : treecategory,
+      #                                                                'rootcategory' : rootcategory}}
+
+      if 'treecategory_with_empty_processing_functions_valresult' not in postprocess_dict['temp_miscparameters_results']:
+        postprocess_dict['temp_miscparameters_results'].update({'treecategory_with_empty_processing_functions_valresult' : {}})
+
+      #validation results reported with key of an integer incremented with each occurance
+      #get value of current max entry
+      #(here using pandas as a hack since python doesn't have clean max item in list, works bacause are numeric)
+      max_valkey_i = pd.DataFrame({'temp' : list(postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'])}).max()
+
+      #this returns max_valkey_i as a series with one integer entry, with entry as NaN when no entries present
+      if (max_valkey_i != max_valkey_i).iat[0]:
+        max_valkey_i = -1
+      else:
+        max_valkey_i = int(max_valkey_i)
+
+      #initialize our valitation result reporting, which notes the tree category without processing functions
+      #as well as the root category in whose generations this tree category was found
+      treecategory_with_empty_processing_functions_valresult = {max_valkey_i+1 : {'treecategory' : parent,
+                                                                                  'rootcategory' : origcategory}}
+
+      #populate the validation results in postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult']
+      postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'].update(
+        treecategory_with_empty_processing_functions_valresult
+        )
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -8173,7 +8342,7 @@ class AutoMunge:
                                  'deletecolumn' : False, \
                                  'custom_process_wrapper_dict' : custom_process_wrapper_dict}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -8598,7 +8767,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -8784,7 +8953,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -8895,7 +9064,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
 
@@ -9023,7 +9192,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
 
@@ -9132,7 +9301,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
 
@@ -9263,7 +9432,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -9426,7 +9595,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -9578,7 +9747,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -9688,7 +9857,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -9943,7 +10112,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -10117,7 +10286,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -10386,7 +10555,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -10572,7 +10741,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -10644,9 +10813,9 @@ class AutoMunge:
     labels_test.sort(axis=0)
     labels_test = list(labels_test)
 
-    #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+    #one hot encoding support function
+    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=0)
+    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
 
     #append column header name to each category listing
     labels_train = [column + '_' + entry for entry in labels_train]
@@ -10740,7 +10909,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -10984,7 +11153,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -11075,7 +11244,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
   
@@ -11161,7 +11330,7 @@ class AutoMunge:
                            'deletecolumn' : False, \
                            'inplace' : inplace}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -11496,7 +11665,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -11850,7 +12019,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -12317,7 +12486,7 @@ class AutoMunge:
                              'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
       
     else:
       
@@ -12573,7 +12742,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -12953,7 +13122,7 @@ class AutoMunge:
                              'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
       
     else:
       
@@ -13276,7 +13445,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
 
@@ -13467,7 +13636,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
 
@@ -13611,7 +13780,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -13826,7 +13995,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -13997,7 +14166,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     if len(newcolumns) == 0:
       
@@ -14191,7 +14360,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -14271,7 +14440,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
 
@@ -14418,7 +14587,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
 
@@ -14465,7 +14634,7 @@ class AutoMunge:
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -14625,7 +14794,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return df, column_dict_list
 
@@ -14891,7 +15060,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
   
@@ -15155,7 +15324,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -15418,7 +15587,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -15631,7 +15800,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -15799,7 +15968,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -16072,7 +16241,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -16153,7 +16322,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -16224,7 +16393,7 @@ class AutoMunge:
                            'deletecolumn' : False, \
                            'suffixoverlap_results' : suffixoverlap_results}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -16321,7 +16490,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
   
@@ -16428,7 +16597,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
   
@@ -16545,7 +16714,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -16627,7 +16796,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -16872,7 +17041,7 @@ class AutoMunge:
                              'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
         
     else:
       del mdf_train[time_column]
@@ -17029,7 +17198,7 @@ class AutoMunge:
                              'suffixoverlap_results' : suffixoverlap_results, \
                              'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
         
     else:
 
@@ -17189,7 +17358,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
 
@@ -17324,7 +17493,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
 
@@ -17433,7 +17602,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -17542,7 +17711,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -17651,7 +17820,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -17749,7 +17918,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -17847,7 +18016,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -17945,7 +18114,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -18046,7 +18215,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -18142,7 +18311,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
   
@@ -18232,7 +18401,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -18377,10 +18546,10 @@ class AutoMunge:
     #combine the two columns
     mdf_train[tempcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[tempcolumn])
     mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
-    
-    #pandas one hot encoder
-    df_train_cat = pd.get_dummies(mdf_train[tempcolumn])
-    df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+
+    #one hot encoding support function
+    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=0)
+    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
     
     labels_train = list(df_train_cat)
     labels_test = list(df_test_cat)
@@ -18458,7 +18627,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
   
@@ -18701,7 +18870,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
         
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
 
@@ -18867,7 +19036,7 @@ class AutoMunge:
                               'suffixoverlap_results' : suffixoverlap_results, \
                               'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
           
     else:
       
@@ -19053,7 +19222,7 @@ class AutoMunge:
                               'suffixoverlap_results' : suffixoverlap_results, \
                               'deletecolumn' : False}}
 
-        column_dict_list.append(column_dict.copy())
+        column_dict_list.append(column_dict)
 
     else:
       
@@ -19197,7 +19366,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
        
     return mdf_train, mdf_test, column_dict_list
 
@@ -19346,7 +19515,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -19532,7 +19701,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
        
     return mdf_train, mdf_test, column_dict_list
 
@@ -19729,7 +19898,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -20000,7 +20169,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -20151,7 +20320,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -20297,7 +20466,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
        
     return mdf_train, mdf_test, column_dict_list
   
@@ -20462,7 +20631,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -20638,7 +20807,7 @@ class AutoMunge:
                             'suffixoverlap_results' : suffixoverlap_results, \
                             'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
 
@@ -20756,7 +20925,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -20898,7 +21067,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -21243,7 +21412,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -21330,7 +21499,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -21447,7 +21616,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
 
@@ -21656,7 +21825,7 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
       
     return df, column_dict_list
   
@@ -21690,7 +21859,7 @@ class AutoMunge:
     #                                   'deletecolumn' : False}}
     
     # #now append column_dict onto postprocess_dict
-    # column_dict_list.append(column_dict.copy())
+    # column_dict_list.append(column_dict)
 
     return df, column_dict_list
   
@@ -21747,7 +21916,7 @@ class AutoMunge:
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -21820,7 +21989,7 @@ class AutoMunge:
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict)
 
     return df, column_dict_list
 
@@ -21891,7 +22060,7 @@ class AutoMunge:
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -22002,7 +22171,7 @@ class AutoMunge:
                                  'deletecolumn' : False}}
     
     #now append column_dict onto postprocess_dict
-    column_dict_list.append(column_dict.copy())
+    column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
   
@@ -22075,9 +22244,55 @@ class AutoMunge:
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
 
-      column_dict_list.append(column_dict.copy())
+      column_dict_list.append(column_dict)
         
     return df, column_dict_list
+
+  def _custom_train_trig(self, df, column, normalization_dict):
+    """
+    single process function in custom_train convention 
+    for use to apply trigometric transformations to a numeric feature
+    built on top of numpy trigometric operations np.sin, np.cos, np.tan, np.arcsin, np.arccos, np.arctan
+    accepts parameter 'operation' as one of {'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'} defaulting to sin
+    default infill per process_dict entry
+    note that numpy trig fucntions sometimes return flag printout for invalid input values
+    in returned sets these instances will have a defaultinfill of 0 applied followed by any MLinfill when applicable
+    """
+    
+    #check for parameter
+    if 'operation' in normalization_dict:
+      operation = normalization_dict['operation']
+      
+    #or otherwise assign and save a default value
+    else:
+      operation = 'sin'
+      normalization_dict.update({'operation' : operation})
+      
+    #a few drift stats before transform
+    minimum = df[column].min()
+    maximum = df[column].max()
+    normalization_dict.update({'minimum' : minimum,
+                              'maximum' : maximum})
+      
+    if operation == 'sin':
+      df[column] = np.sin(df[column])
+      
+    if operation == 'cos':
+      df[column] = np.cos(df[column])
+      
+    if operation == 'tan':
+      df[column] = np.tan(df[column])
+      
+    if operation == 'arcsin':
+      df[column] = np.arcsin(df[column])
+      
+    if operation == 'arccos':
+      df[column] = np.arccos(df[column])
+      
+    if operation == 'arctan':
+      df[column] = np.arctan(df[column])
+      
+    return df, normalization_dict
 
   def _evalcategory(self, df_source, column, randomseed, eval_ratio, \
                    numbercategoryheuristic, powertransform, labels = False):
@@ -25020,6 +25235,64 @@ class AutoMunge:
 #       np.zeros((np_onehot.shape[0], nbrcolumns))
 
     return np_1010
+
+  def _onehot_support(self, df, column, scenario=0):
+    """
+    Receives a dataframe df and target column column and a scenario id
+    Converts a single column of entries that may include numeric, string, and nan
+    Into a one hot encoding returned in a seperate dataframe df2 with a matched index
+    With columns in order of increasing numeric and then increasing string
+    Without column or activation for nan
+    This function returns a comparable order of columns as would pd.get_dummies
+    And the convention of a matched index is also comparable
+    Part of the reason for creating this function is so will have ability to experiment with variations
+    For potential use in different transformation function scenarios
+    """
+    
+    #current configuration is scenario 0
+    if scenario == 0:
+
+      #this is unique list in order of first occurance in set
+      unique_list = list(df[column].unique())
+
+      #to sort the unique list we'll seperate between numeric and string and sort each seperately
+
+      #first populate a sorted list of numeric entries from the unique_list
+      unique_list_numeric = [(isinstance(x, (int, float)), x) for x in unique_list]
+      unique_list_numeric_two = []
+      for type_tuple in unique_list_numeric:
+        if type_tuple[0]:
+          unique_list_numeric_two.append(type_tuple[1])
+      unique_list_numeric_two = sorted(unique_list_numeric_two)
+
+      #now populate a sorted list of string entries from the unique_list
+      unique_list_string = [(isinstance(x, (str)), x) for x in unique_list]
+      unique_list_string_two = []
+      for type_tuple in unique_list_string:
+        if type_tuple[0]:
+          unique_list_string_two.append(type_tuple[1])
+      unique_list_string_two = sorted(unique_list_string_two)
+
+      #then combine the sorted numeric and sorted string
+      unique_list = unique_list_numeric_two + unique_list_string_two
+
+      #then apply the one-hot encoding
+      #initalize df2
+      df2 = pd.DataFrame()
+      for entry in unique_list:
+        #omit nan
+        if entry == entry:
+          #populate column of activations in df2
+          df2[entry] = pd.Series(np.where(df[column] == entry, 1, 0))
+
+      #match df2 index to df, note df2 empty when df[column] was all nan so access index differently
+      if len(list(df2)) != 0:
+        df2.index = df.index
+      else:
+        df2 = pd.DataFrame(df[column])
+        del df2[column]
+    
+    return df2
 
   def _LabelSetGenerator(self, df, column, label):
     '''
@@ -31779,11 +32052,14 @@ class AutoMunge:
     #and the passed variables may be accessed in various support functions
     #the remainder of returned postprocess_dict entries 
     #are populated at completion of processing and infill
+    #note that temp_miscparameters_results is later consolidated with miscparameters_results
+    #and used to store validaiton results internal to various support functions
     #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
     postprocess_dict = {'column_dict' : {},
                         'columnkey_dict' : {},
                         'origcolumn' : {},
                         'orig_noinplace' : [],
+                        'temp_miscparameters_results' : {},
                         'process_dict' : process_dict,
                         'printstatus' : printstatus,
                         'randomseed' : randomseed,
@@ -32619,7 +32895,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.53'
+    automungeversion = '6.54'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -32697,6 +32973,10 @@ class AutoMunge:
                              'application_timestamp' : application_timestamp,
                              'version_combined' : version_combined})
     
+    #consolidate miscparameters_results and temp_miscparameters_results
+    postprocess_dict['miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
+    del postprocess_dict['temp_miscparameters_results']
+
     #support function to speed up postmunge when calling getNArows not needed
     excluded_from_postmunge_getNArows = \
     self._assemble_excluded_from_postmunge_getNArows(postprocess_dict)
@@ -33077,7 +33357,7 @@ class AutoMunge:
         else:
           inplaceperformed = False
     else:
-      #user cannot manually specify inplace by design
+      #user cannot manually specify inplace as True by design
       if ('inplace' in params and params['inplace'] is True):
         inplaceperformed = False
         params.update({'inplace' : False})
@@ -33153,7 +33433,7 @@ class AutoMunge:
         else:
           inplaceperformed = False
     else:
-      #user cannot manually specify inplace by design
+      #user cannot manually specify inplace as True by design
       if ('inplace' in params and params['inplace'] is True):
         inplaceperformed = False
         params.update({'inplace' : False})
@@ -34417,7 +34697,7 @@ class AutoMunge:
       labels_test = list(labels_test)
 
       #apply onehotencoding
-      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
 
       #append column header name to each category listing
       labels_test = [column + '_' + entry for entry in labels_test]
@@ -34667,7 +34947,7 @@ class AutoMunge:
       labels_test = list(labels_test)
 
       #apply onehotencoding
-      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
       
       #append column header name to each category listing
       labels_test = [column + '_' + entry for entry in labels_test]
@@ -34695,7 +34975,7 @@ class AutoMunge:
       columnNAr2 = column + '_zzzinfill'
       if columnNAr2 in mdf_test.columns:
         del mdf_test[columnNAr2]
-      
+
       #change data types to 8-bit (1 byte) integers for memory savings
       for textcolumn in textcolumns:
         
@@ -37985,7 +38265,7 @@ class AutoMunge:
       mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
 
       #apply onehotencoding
-      df_test_cat = pd.get_dummies(mdf_test[tempcolumn])
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
 
       #Get missing columns in test set that are present in training set
       missing_cols = set( textcolumns ) - set( df_test_cat.columns )
@@ -44000,6 +44280,42 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn] * ( (-1) ** df[sign_columns[0]])
       
     return df, inputcolumn
+
+  def _custom_inversion_trig(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+    """
+    inversion fucntion in the custom_train convention
+    corresponding to custom_train_trig
+    built on top of numpy inverse trigometric operations np.sin, np.cos, np.tan, np.arcsin, np.arccos, np.arctan
+    """
+
+    #First let's access the values we'll need from the normalization_dict
+    operation = normalization_dict['operation']
+
+    #Now initialize the inputcolumn
+    df[inputcolumn] = 0
+
+    #access the returned column from returnedcolumn_list which will have one entry
+    returnedcolumn = returnedcolumn_list[0]
+    
+    if operation == 'sin':
+      df[inputcolumn] = np.arcsin(df[returnedcolumn])
+      
+    if operation == 'cos':
+      df[inputcolumn] = np.arccos(df[returnedcolumn])
+      
+    if operation == 'tan':
+      df[inputcolumn] = np.arctan(df[returnedcolumn])
+      
+    if operation == 'arcsin':
+      df[inputcolumn] = np.sin(df[returnedcolumn])
+      
+    if operation == 'arccos':
+      df[inputcolumn] = np.cos(df[returnedcolumn])
+      
+    if operation == 'arctan':
+      df[inputcolumn] = np.tan(df[returnedcolumn])
+
+    return df
 
   def _custom_inverseprocess_wrapper(self, df, categorylist, postprocess_dict):
     """
