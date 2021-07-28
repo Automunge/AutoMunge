@@ -2139,7 +2139,8 @@ categories of transformations are as follows:
 binstransform parameter was activated this will be supplemented by a collection
 of bins indicating number of standard deviations from the mean. Note that deafult infill
 performed prior to ML infill is imputation with negative zero. The exception is for
-numeric data received in a column with pandas 'categoric' data type.
+numeric data received in a column with pandas 'categoric' data type, which are instead binarized 
+consistent to categoric sets (as 1010 or bnry).
 - 1010: for categorical data excluding special cases described following, columns are 
 subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
@@ -2632,7 +2633,7 @@ Transforms are built on top of numpy np.sin/np.cos/np.tan/np.arcsin/np.arccos/np
   - driftreport postmunge metrics: maximum, minimum
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with partial recovery
-  
+
 Q Notation family of transforms return a multicolumn binary encoded set with registers for sign, integers, and fractionals.
 Transforms accept parameters integer_bits / fractional_bits / sign_bit for register sizes, care should be taken for 
 adequate registers to avoid overflow (overflow entries have values replaced with max or min capacity based on register sizes). 
