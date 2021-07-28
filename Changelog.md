@@ -3717,3 +3717,11 @@ am.postmunge(postprocess_dict, df_test)
 - abs_zero is boolean defaulting to True which converts received negative zeros to positive zero
 - updated qbt1 family of transforms for cases that don't default to a returned sign column (qbt3 and qbt4) to defaultinfill of zeroinfill instead of negzeroinfill
 - corrected a typo in read me library of transforms, mmq3 now corrected to read mmq2
+
+6.53
+- a walkthrough of the evalcategory function identified a snafu for numeric sets passed as pandas categoric type
+- it looks like had accidentially inserted an intermediate if statement in between a prior paired if/else combo and resulted in categoric sets with integer or float entries getting treated as numeric under automation
+- the intent was that received columns that are pandas type 'category' get treated to default categoric encoding (bnry or 1010), even in cases where their entries were numeric
+- the intermediate if statement I just struck, I think from a while back I was trying to get just a little too creative and was trying to treat numeric sets with 3 unique entries as a one hot encoding instead of normalization (for reasons that I'm now having a hard time trying to identify, in other words I don't think there was a good reason), to make matters worse along the way the 3 state one-hot got converted to a binarization and yeah long story short (too late) etc
+- so now the corrected (and simplified) convention is that all majority numeric sets (with integers or floats) under automation are normalized, unless the set is received as a pandas 'categoric' data type, and then they are treated to a binarizaiton by bnry or 1010 based on their unique entry count
+- also removed an unused code snippet in same function
