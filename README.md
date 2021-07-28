@@ -4698,10 +4698,9 @@ Have fun munging!!
 ...
 
 You can read more about the tool through the blog posts documenting the
-development online [here](https://medium.com/automunge) or for more
-writing there is a related collection of essays titled "From
-the Diaries of John Henry" which is available online at
-[turingsquared.com](https://turingsquared.com).
+development online at the [Automunge Medium Publication](https://medium.com/automunge) 
+or for more writing there is a related collection of essays titled [From
+the Diaries of John Henry](https://turingsquared.com).
 
 The Automunge website is helpfully located at 
 [automunge.com](https://automunge.com).
