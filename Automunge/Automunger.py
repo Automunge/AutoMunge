@@ -22254,13 +22254,6 @@ class AutoMunge:
       #count number of unique values
       nunique = df[column].nunique()
 
-      #check if nan present for cases where nunique == 3
-      nanpresent = False
-      if nunique == 3:
-        for unique in df[column].unique():
-          if unique != unique:
-            nanpresent = True
-
       #free memory (dtypes are memory hogs)
       del type1_df
 
@@ -22324,18 +22317,6 @@ class AutoMunge:
           else:
             category = defaultcategorical
 
-        #take account for numbercategoryheuristic
-        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-        #if nunique < numbercategoryheuristic:
-        if nunique <= 3:
-          if nunique == 3:
-            #category = 'text'
-            category = defaultcategorical
-          else:
-            category = defaultbnry
-  #       if True is False:
-  #         pass
-
         else:
           category = defaultnumerical
 
@@ -22352,12 +22333,6 @@ class AutoMunge:
             category = defaultbnry
           else:
             category = defaultcategorical
-
-        elif nunique <= 3:
-          if nunique == 3:
-            category = defaultcategorical
-          elif nunique <= 2:
-            category = defaultbnry
 
         else:
           category = defaultnumerical
@@ -22400,18 +22375,6 @@ class AutoMunge:
               else:
                 category = defaultcategorical
 
-    #         #take account for numbercategoryheuristic
-    #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-            if nunique <= 3:
-
-              if nunique == 3:
-                category = defaultcategorical
-              else:
-                category = defaultbnry
-
-    #         if True is False:
-    #           pass
-
             else:
 
               category = defaultnumerical
@@ -22432,14 +22395,6 @@ class AutoMunge:
                 category = defaultbnry
               else:
                 category = defaultcategorical
-
-            if df[column].nunique() <= 3:
-
-              if nunique == 3:
-                #category = 'text'
-                category = defaultcategorical
-              else:
-                category = defaultbnry
 
             else:
 
@@ -32664,7 +32619,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.52'
+    automungeversion = '6.53'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
