@@ -4824,7 +4824,8 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_srch,
                                   'inverseprocess' : self._inverseprocess_srch,
                                   'info_retention' : False,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'srch'}})
@@ -4833,7 +4834,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_src2,
                                   'inverseprocess' : self._inverseprocess_src2,
                                   'info_retention' : False,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4843,7 +4844,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_src3,
                                   'inverseprocess' : self._inverseprocess_src3,
                                   'info_retention' : False,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
@@ -4853,7 +4854,8 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_src4,
                                   'inverseprocess' : self._inverseprocess_src4,
                                   'info_retention' : False,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'src4'}})
@@ -7979,6 +7981,7 @@ class AutoMunge:
     """
     
     suffixoverlap_results = {}
+    custom_process_wrapper_dict = {}
     
     if 'inplace' in params:
       inplace = params['inplace']
@@ -8079,122 +8082,16 @@ class AutoMunge:
       pass
     
     #___
-
+    
     #Now that all nonvalid entries are cast as nan, we'll perform our infill
     #which will default to adjacent cell infill unless otherwise specified in processdict
-
-    defaultinfill = 'adjinfill'
-    if 'defaultinfill' in postprocess_dict['process_dict'][treecategory]:
-      if isinstance(postprocess_dict['process_dict'][treecategory]['defaultinfill'], str) \
-      and postprocess_dict['process_dict'][treecategory]['defaultinfill'] \
-      in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'negzeroinfill', 'naninfill'}:
-        defaultinfill = postprocess_dict['process_dict'][treecategory]['defaultinfill']
     
-    #a few special cases to accomodate NArowtype / defaultinfill compatibilities
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
     
-    #'meaninfill' and 'medianinfill' intended for numeric data, if not a numeric NArowtype adjinfill applied
-    if defaultinfill in {'meaninfill', 'medianinfill'}:
-      if NArowtype not in {'numeric', 'integer', 'positivenumeric', 'nonnegativenumeric', 'nonzeronumeric'}:
-        defaultinfill = 'adjinfill'
-        
-    #'datetime' NArowtype only accepts adjinfill or naninfill
-    if NArowtype in {'datetime'}:
-      if defaultinfill not in {'adjinfill', 'naninfill'}:
-        defaultinfill = 'adjinfill'
-        
-    #no infill performed for 'exclude' NArowtype
-    if NArowtype in {'exclude'}:
-      defaultinfill = 'naninfill'
-      
-    #initialize a dictionary to pass default infill parameters between automunge and postmunge in column_dict
-    custom_process_wrapper_dict = {'defaultinfill' : defaultinfill}
-    
-    #(note custom_process_wrapper_dict also may be used for storing properties associated with dtype conversion below)
-    
-    if defaultinfill in {'adjinfill'}:
-
-      #apply ffill to replace NArows with value from adjacent cell in preceding row
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='ffill')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
-
-      #we'll follow with a bfill just in case first row had a nan
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(method='bfill')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
-      
-    elif defaultinfill in {'meaninfill'}:
-      
-      infill_mean = mdf_train[suffixcolumn].mean()
-      custom_process_wrapper_dict.update({'infill_mean' : infill_mean})
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mean)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
-      
-    elif defaultinfill in {'medianinfill'}:
-      
-      infill_median = mdf_train[suffixcolumn].median()
-      custom_process_wrapper_dict.update({'infill_median' : infill_median})
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_median)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
-      
-    elif defaultinfill in {'modeinfill'}:
-      
-      infill_mode = mdf_train[suffixcolumn].mode()
-      
-      if len(infill_mode) > 0:
-        infill_mode = infill_mode[0]
-      else:
-        infill_mode = 0
-      
-      custom_process_wrapper_dict.update({'infill_mode' : infill_mode})
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_mode)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
-      
-    elif defaultinfill in {'lcinfill'}:
-      
-      #(zzzinfill as used here is just an arbitrary string)
-      mode_valuecounts_list = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-      mode_valuecounts_list = list(mode_valuecounts_list.index)
-
-      if len(mode_valuecounts_list) > 0:
-        infill_lc = mode_valuecounts_list[-1]
-      else:
-        infill_lc = 0
-      
-      custom_process_wrapper_dict.update({'infill_lc' : infill_lc})
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(infill_lc)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
-      
-    elif defaultinfill in {'zeroinfill'}:
-      
-      #note that transform may not return a 0 value, for final returned 0 use assigninfill
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
-      
-    elif defaultinfill in {'oneinfill'}:
-      
-      #note that transform may not return a 1 value, for final returned 1 use assigninfill
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(1)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
-
-    elif defaultinfill in {'negzeroinfill'}:
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(-0.)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(-0.)
-      
-    elif defaultinfill in {'naninfill'}:
-      #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
-      #note an adjinfill is applied later in this function, for final returned nan use assigninfill
-      pass
-      
-    #finally if prior infill still resulted in nan we'll just plug with 0
-    if defaultinfill not in {'naninfill'}:
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(0)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+    custom_process_wrapper_dict.update({'defaultinfill_dict' : defaultinfill_dict})
     
     #___
       
@@ -8374,6 +8271,8 @@ class AutoMunge:
     for final returned 0/1 can use assigninfill
 
     note that negzeroinfill intended for use in qbt1 family of transforms
+    
+    note that when column is pandas category dtype if an infill value not already a registered entry we add it with add_categories
     """    
     
     #if this is test data then we are expecting a populated defaultinfill_dict from the train data
@@ -8401,36 +8300,64 @@ class AutoMunge:
       elif defaultinfill in {'meaninfill'}:
 
         infill_mean = defaultinfill_dict['infill_mean']
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_mean not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_mean])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_mean)
 
       elif defaultinfill in {'medianinfill'}:
 
         infill_median = defaultinfill_dict['infill_median']
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_median not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_median])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_median)
 
       elif defaultinfill in {'modeinfill'}:
 
         infill_mode = defaultinfill_dict['infill_mode']
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_mode not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_mode])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_mode)
 
       elif defaultinfill in {'lcinfill'}:
 
         infill_lc = defaultinfill_dict['infill_lc']
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_lc not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_lc])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_lc)
         
       elif defaultinfill in {'zeroinfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if 0 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([0])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(0)
 
       elif defaultinfill in {'oneinfill'}:
         
+        if df[suffixcolumn].dtype.name == 'category':
+          if 1 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([1])
+        
         df[suffixcolumn] = df[suffixcolumn].fillna(1)
 
       elif defaultinfill in {'negzeroinfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if -0. not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([-0.])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(-0.)
 
@@ -8440,6 +8367,10 @@ class AutoMunge:
 
       #finally if prior infill still resulted in nan we'll just plug with 0
       if defaultinfill not in {'naninfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if 0 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([0])
         
         df[suffixcolumn] = df[suffixcolumn].fillna(0)
 
@@ -8488,6 +8419,10 @@ class AutoMunge:
 
         infill_mean = df[suffixcolumn].mean()
         defaultinfill_dict.update({'infill_mean' : infill_mean})
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_mean not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_mean])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_mean)
 
@@ -8495,6 +8430,10 @@ class AutoMunge:
 
         infill_median = df[suffixcolumn].median()
         defaultinfill_dict.update({'infill_median' : infill_median})
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_median not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_median])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_median)
 
@@ -8508,6 +8447,10 @@ class AutoMunge:
           infill_mode = 0
 
         defaultinfill_dict.update({'infill_mode' : infill_mode})
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_mode not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_mode])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_mode)
 
@@ -8524,20 +8467,36 @@ class AutoMunge:
           infill_lc = 0
 
         defaultinfill_dict.update({'infill_lc' : infill_lc})
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if infill_lc not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([infill_lc])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(infill_lc)
 
       elif defaultinfill in {'zeroinfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if 0 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([0])
 
         #note that transform may not return a 0 value, for final returned 0 use assigninfill
         df[suffixcolumn] = df[suffixcolumn].fillna(0)
 
       elif defaultinfill in {'oneinfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if 1 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([1])
 
         #note that transform may not return a 1 value, for final returned 1 use assigninfill
         df[suffixcolumn] = df[suffixcolumn].fillna(1)
 
       elif defaultinfill in {'negzeroinfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if -0. not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([-0.])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(-0.)
 
@@ -8548,6 +8507,10 @@ class AutoMunge:
 
       #finally if prior infill still resulted in nan we'll just plug with 0
       if defaultinfill not in {'naninfill'}:
+        
+        if df[suffixcolumn].dtype.name == 'category':
+          if 0 not in df[suffixcolumn].cat.categories:
+            df[suffixcolumn] = df[suffixcolumn].cat.add_categories([0])
 
         df[suffixcolumn] = df[suffixcolumn].fillna(0)
     
@@ -13689,6 +13652,39 @@ class AutoMunge:
     else:
       suffix = treecategory
       
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #for this transform, suffixcolumn is not returned in final set
+    #applying so that we can allow defaultinfill support without overwriting the input column
+    
+    suffixcolumn = column + '_' + suffix
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+      
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+      
     #we'll create mirror to account for any embdded lists of search terms for aggregation
     search_preflattening = search.copy()
     #this is kind of hacky just to reuse code below resetting this list to repopulate
@@ -13716,10 +13712,10 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train[newcolumn] = \
-      np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      np.where(mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
       
       mdf_test[newcolumn] = \
-      np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
     
     newcolumns = list(search_dict)
     
@@ -13734,25 +13730,30 @@ class AutoMunge:
     #now we consolidate activations
     #note that this only runs when aggregated_dict was populated with an embedded list of search terms
     for aggregated_dict_key in aggregated_dict:
-      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
-      
-      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+      if aggregated_dict_key in inverse_search_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
         
-        mdf_train[aggregated_dict_key_column] = \
-        np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
-        mdf_test[aggregated_dict_key_column] = \
-        np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
-        
-        del mdf_train[target_for_aggregation_column]
-        del mdf_test[target_for_aggregation_column]
-        
-        newcolumns.remove(target_for_aggregation_column)
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          
+          mdf_train[aggregated_dict_key_column] = \
+          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
+          mdf_test[aggregated_dict_key_column] = \
+          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+          
+          del mdf_train[target_for_aggregation_column]
+          del mdf_test[target_for_aggregation_column]
+          
+          newcolumns.remove(target_for_aggregation_column)
     
     for newcolumn in newcolumns:
 
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+      
+    #remove temporary support column
+    del mdf_train[suffixcolumn]
+    del mdf_test[suffixcolumn]
     
     column_dict_list = []
 
@@ -13766,6 +13767,8 @@ class AutoMunge:
                                       'search_preflattening' : search_preflattening, \
                                       'aggregated_dict' : aggregated_dict, \
                                       'suffix' : suffix, \
+                                      'inplace' : inplace, \
+                                      'defaultinfill_dict' : defaultinfill_dict, \
                                       'case' : case}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -13815,15 +13818,66 @@ class AutoMunge:
       search = params['search']
     else:
       search = []
+      
+    if 'case' in params:
+      case = params['case']
+    else:
+      case = True
 
     if 'suffix' in params:
       suffix = params['suffix']
     else:
       suffix = treecategory
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #for this transform, suffixcolumn is not returned in final set
+    #applying so that we can allow defaultinfill support without overwriting the input column
+    
+    suffixcolumn = column + '_' + suffix
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+      
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+    
+    #convert to uppercase string when case sensitivity not desired based on case parameter
+    if case is False:
+      #convert column to string except for nan infill points
+      mdf_train[suffixcolumn] = \
+      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str), mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
+      #convert to uppercase
+      mdf_train[suffixcolumn] = \
+      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].str.upper(), mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
     
     #first we find overlaps from mdf_train
     
-    unique_list = list(mdf_train[column].unique())
+    unique_list = list(mdf_train[suffixcolumn].unique())
 
     unique_list = list(map(str, unique_list))
     
@@ -13847,6 +13901,18 @@ class AutoMunge:
           aggregated_dict[str(entry[-1])].append(str(entry2))
         for entry2 in entry[-1:]:
           search.append(entry2)
+          
+    #when case sensitivity not desired convert search terms to uppercase strings
+    if case is False:
+      for i in range(len(search)):
+        search[i] = str(search[i]).upper()
+      #similarly convert aggregated_dict keys and value lists to uppercase
+      aggregated_dict_preconvert = deepcopy(aggregated_dict)
+      aggregated_dict = {}
+      for key, value in aggregated_dict_preconvert.items():
+        for i in range(len(value)):
+          value[i] = str(value[i]).upper()
+        aggregated_dict.update({str(key).upper() : value})
 
     #we'll populate overlap_dict as
     #{search_string : [list of associate categories with that overlap found]}
@@ -13921,16 +13987,9 @@ class AutoMunge:
         newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
-        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+        self._df_copy_train(mdf_train, suffixcolumn, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
         
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-        #apply defaultinfill based on processdict entry
-        #(this will default to naninfill)
-        mdf_train, defaultinfill_dict = \
-        self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-        mdf_test, _1 = \
-        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+        mdf_test[newcolumn] = mdf_test[suffixcolumn].copy()
 
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -13950,24 +14009,29 @@ class AutoMunge:
     #now we consolidate activations
     #note that this only runs when aggregated_dict was populated with an embedded list of search terms
     for aggregated_dict_key in aggregated_dict:
-      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
-      
-      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+      if aggregated_dict_key in inverse_search_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
         
-        mdf_train[aggregated_dict_key_column] = \
-        np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
-        mdf_test[aggregated_dict_key_column] = \
-        np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
-        
-        del mdf_train[target_for_aggregation_column]
-        del mdf_test[target_for_aggregation_column]
-        
-        newcolumns.remove(target_for_aggregation_column)
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          
+          mdf_train[aggregated_dict_key_column] = \
+          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
+          mdf_test[aggregated_dict_key_column] = \
+          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+          
+          del mdf_train[target_for_aggregation_column]
+          del mdf_test[target_for_aggregation_column]
+          
+          newcolumns.remove(target_for_aggregation_column)
         
     for newcolumn in newcolumns:
       mdf_train[newcolumn] = mdf_train[newcolumn].astype(np.int8)
       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+      
+    #remove temporary support column
+    del mdf_train[suffixcolumn]
+    del mdf_test[suffixcolumn]
     
     column_dict_list = []
 
@@ -13979,7 +14043,9 @@ class AutoMunge:
                                       'search' : search, \
                                       'inverse_search_dict' : inverse_search_dict, \
                                       'aggregated_dict' : aggregated_dict, \
+                                      'case' : case, \
                                       'suffix' : suffix, \
+                                      'inplace' : inplace, \
                                       'defaultinfill_dict' : defaultinfill_dict,
                                       'search_preflattening' : search_preflattening}}
       
@@ -14035,21 +14101,102 @@ class AutoMunge:
       search = params['search']
     else:
       search = []
+      
+    if 'case' in params:
+      case = params['case']
+    else:
+      case = True
 
     if 'suffix' in params:
       suffix = params['suffix']
     else:
       suffix = treecategory
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #for this transform, suffixcolumn is not returned in final set
+    #applying so that we can allow defaultinfill support without overwriting the input column
+    
+    suffixcolumn = column + '_' + suffix
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+      
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+    
+    #convert to uppercase string when case sensitivity not desired based on case parameter
+    if case is False:
+      #convert column to string except for nan infill points
+      mdf_train[suffixcolumn] = \
+      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str), mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
+      #convert to uppercase
+      mdf_train[suffixcolumn] = \
+      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].str.upper(), mdf_train[suffixcolumn])
+      mdf_test[suffixcolumn] = \
+      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
     
     #first we find overlaps from mdf_train
     
-    unique_list = list(mdf_train[column].unique())
+    unique_list = list(mdf_train[suffixcolumn].unique())
 
     unique_list = list(map(str, unique_list))
     
 #     maxlength = max(len(x) for x in unique_list)
     
 #     overlap_lengths = list(range(maxlength - 1, minsplit, -1))
+
+    #we'll create mirror to account for any embdded lists of search terms for aggregation
+    search_preflattening = search.copy()
+    #this is kind of hacky just to reuse code below resetting this list to repopulate
+    search = []
+    aggregated_dict = {}
+    
+    for entry in search_preflattening:
+      if type(entry) != type([]):
+        search.append(str(entry))
+      else:
+        aggregated_dict.update({str(entry[-1]):[]})
+        for entry2 in entry[0:-1]:
+          search.append(entry2)
+          aggregated_dict[str(entry[-1])].append(str(entry2))
+        for entry2 in entry[-1:]:
+          search.append(entry2)
+
+    #when case sensitivity not desired convert search terms to uppercase strings
+    if case is False:
+      for i in range(len(search)):
+        search[i] = str(search[i]).upper()
+      
+      #similarly convert aggregated_dict keys and value lists to uppercase
+      aggregated_dict_preconvert = deepcopy(aggregated_dict)
+      aggregated_dict = {}
+      for key, value in aggregated_dict_preconvert.items():
+        for i in range(len(value)):
+          value[i] = str(value[i]).upper()
+        aggregated_dict.update({str(key).upper() : value})
 
     #we'll populate overlap_dict as
     #{search_string : [list of associate categories with that overlap found]}
@@ -14082,7 +14229,7 @@ class AutoMunge:
            
     #now for mdf_test
     
-    unique_list_test = list(mdf_test[column].unique())
+    unique_list_test = list(mdf_test[suffixcolumn].unique())
 
     unique_list_test = list(map(str, unique_list_test))
 
@@ -14123,15 +14270,9 @@ class AutoMunge:
         newcolumn = column + '_' + suffix + '_' + dict_key
 
         mdf_train, suffixoverlap_results = \
-        self._df_copy_train(mdf_train, column, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+        self._df_copy_train(mdf_train, suffixcolumn, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
         
-        mdf_test[newcolumn] = mdf_test[column].copy()
-
-        #apply defaultinfill based on processdict entry
-        mdf_train, defaultinfill_dict = \
-        self._apply_defaultinfill(mdf_train, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-        mdf_test, _1 = \
-        self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
+        mdf_test[newcolumn] = mdf_test[suffixcolumn].copy()
 
         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -14143,6 +14284,33 @@ class AutoMunge:
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
         newcolumns.append(newcolumn)
+        
+    #now in case there are any aggregated activations, inspired by approach in srch
+    inverse_search_dict = dict(zip(search, newcolumns))
+    newcolumns_before_aggregation = newcolumns.copy()
+    
+    #now we consolidate activations
+    #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+    for aggregated_dict_key in aggregated_dict:
+      if aggregated_dict_key in inverse_search_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+        
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          
+          mdf_train[aggregated_dict_key_column] = \
+          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
+          mdf_test[aggregated_dict_key_column] = \
+          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+          
+          del mdf_train[target_for_aggregation_column]
+          del mdf_test[target_for_aggregation_column]
+          
+          newcolumns.remove(target_for_aggregation_column)
+        
+    #remove temporary support column
+    del mdf_train[suffixcolumn]
+    del mdf_test[suffixcolumn]
     
     column_dict_list = []
 
@@ -14150,8 +14318,12 @@ class AutoMunge:
 
       textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
                                       'srch_newcolumns_src3'   : newcolumns, \
+                                      'aggregated_dict' : aggregated_dict, \
+                                      'inverse_search_dict' : inverse_search_dict, \
+                                      'case' : case, \
                                       'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
+                                      'inplace': inplace, \
+                                      'defaultinfill_dict' : defaultinfill_dict, \
                                       'search' : search}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -14219,13 +14391,44 @@ class AutoMunge:
       case = params['case']
     else:
       case = True
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
 
     if 'suffix' in params:
       suffix = params['suffix']
     else:
       suffix = treecategory
 
+    #for this transform, suffixcolumn is not returned in final set
+    #applying so that we can allow defaultinfill support without overwriting the input column
+    
     suffixcolumn = column + '_' + suffix
+    
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+      
+    #apply defaultinfill based on processdict entry
+    #(this will default to naninfill)
+    mdf_train, defaultinfill_dict = \
+    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
+    mdf_test, _1 = \
+    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
       
     #we'll create mirror to account for any embdded lists of search terms for aggregation
     search_preflattening = search.copy()
@@ -14254,10 +14457,10 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
       mdf_train[newcolumn] = \
-      np.where(mdf_train[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      np.where(mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
       
       mdf_test[newcolumn] = \
-      np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+      np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
     
     newcolumns = list(search_dict)
 
@@ -14276,9 +14479,6 @@ class AutoMunge:
       ordl_dict1.update({i : newcolumn})
       ordl_dict2.update({newcolumn : i})
       i += 1
-      
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
       
     mdf_train[suffixcolumn] = 0
     mdf_test[suffixcolumn] = 0
@@ -14303,17 +14503,18 @@ class AutoMunge:
     #now we consolidate activations
     #note that this only runs when aggregated_dict was populated with an embedded list of search terms
     for aggregated_dict_key in aggregated_dict:
-      aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
-      aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
-      
-      for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-        target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-        target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+      if aggregated_dict_key in inverse_search_dict:
+        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+        aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
         
-        mdf_train[suffixcolumn] = \
-        np.where(mdf_train[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[suffixcolumn])
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
+        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+          
+          mdf_train[suffixcolumn] = \
+          np.where(mdf_train[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[suffixcolumn])
+          mdf_test[suffixcolumn] = \
+          np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
     #we'll base the integer type on number of ordinal entries
     max_encoding = len(ordl_dict1)
@@ -14345,7 +14546,9 @@ class AutoMunge:
                                       'case' : case, \
                                       'ordl_dict1' : ordl_dict1, \
                                       'activations_list' : list(ordl_dict1), \
+                                      'defaultinfill_dict' : defaultinfill_dict, \
                                       'suffix' : suffix, \
+                                      'inplace': inplace, \
                                       'ordl_dict2' : ordl_dict2}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -25243,8 +25446,9 @@ class AutoMunge:
     Into a one hot encoding returned in a seperate dataframe df2 with a matched index
     With columns in order of increasing numeric and then increasing string
     Without column or activation for nan
-    This function returns a comparable order of columns as would pd.get_dummies
-    And the convention of a matched index is also comparable
+    This function returns a similar order of columns as would pd.get_dummies
+    Although the sorted order of boolean entries is different
+    The convention of a matched index is comparable
     Part of the reason for creating this function is so will have ability to experiment with variations
     For potential use in different transformation function scenarios
     """
@@ -25261,7 +25465,7 @@ class AutoMunge:
       unique_list_numeric = [(isinstance(x, (int, float)), x) for x in unique_list]
       unique_list_numeric_two = []
       for type_tuple in unique_list_numeric:
-        if type_tuple[0]:
+        if type_tuple[0] and not isinstance(type_tuple[1], bool):
           unique_list_numeric_two.append(type_tuple[1])
       unique_list_numeric_two = sorted(unique_list_numeric_two)
 
@@ -25272,9 +25476,17 @@ class AutoMunge:
         if type_tuple[0]:
           unique_list_string_two.append(type_tuple[1])
       unique_list_string_two = sorted(unique_list_string_two)
+      
+      #now populate a sorted list of boolean entries
+      unique_list_bool = [(isinstance(x, (bool)), x) for x in unique_list]
+      unique_list_bool_two = []
+      for type_tuple in unique_list_bool:
+        if type_tuple[0]:
+          unique_list_bool_two.append(type_tuple[1])
+      unique_list_bool_two = sorted(unique_list_bool_two)
 
       #then combine the sorted numeric and sorted string
-      unique_list = unique_list_numeric_two + unique_list_string_two
+      unique_list = unique_list_numeric_two + unique_list_string_two + unique_list_bool_two
 
       #then apply the one-hot encoding
       #initalize df2
@@ -32895,7 +33107,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.54'
+    automungeversion = '6.55'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33661,60 +33873,11 @@ class AutoMunge:
       #Now that all nonvalid entries are cast as nan, we'll perform our default infill
 
       custom_process_wrapper_dict = postprocess_dict['column_dict'][normkey]['custom_process_wrapper_dict']
-      defaultinfill = custom_process_wrapper_dict['defaultinfill']
+      defaultinfill_dict = custom_process_wrapper_dict['defaultinfill_dict']
       
-      if defaultinfill in {'adjinfill'}:
-
-        #apply ffill to replace NArows with value from adjacent cell in preceding row
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='ffill')
-
-        #we'll follow with a bfill just in case first row had a nan
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(method='bfill')
-        
-      elif defaultinfill in {'meaninfill'}:
-
-        infill_mean = custom_process_wrapper_dict['infill_mean']
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mean)
-
-      elif defaultinfill in {'medianinfill'}:
-
-        infill_median = custom_process_wrapper_dict['infill_median']
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_median)
-
-      elif defaultinfill in {'modeinfill'}:
-
-        infill_mode = custom_process_wrapper_dict['infill_mode']
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_mode)
-
-      elif defaultinfill in {'lcinfill'}:
-
-        infill_lc = custom_process_wrapper_dict['infill_lc']
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(infill_lc)
-        
-      elif defaultinfill in {'zeroinfill'}:
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
-
-      elif defaultinfill in {'oneinfill'}:
-        
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(1)
-
-      elif defaultinfill in {'negzeroinfill'}:
-        
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(-0.)
-
-      elif defaultinfill in {'naninfill'}:
-        #naninfill is intended for cases when user wishes to apply a custom default infill inside of the transform
-        pass
-
-      #finally if prior infill still resulted in nan we'll just plug with 0
-      if defaultinfill not in {'naninfill'}:
-        
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(0)
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       #___
       
@@ -36140,28 +36303,50 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
       case = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+      
+      suffixcolumn = column + '_' + suffix
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+        
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
       
       for newcolumn in search_dict:
 
         mdf_test[newcolumn] = \
-        np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+        np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
         
       #now we consolidate activations
       #note that this only runs when aggregated_dict was populated with an embedded list of search terms
       for aggregated_dict_key in aggregated_dict:
-        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+        if aggregated_dict_key in inverse_search_dict:
+          aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
 
-        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+            target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
 
-          mdf_test[aggregated_dict_key_column] = \
-          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+            mdf_test[aggregated_dict_key_column] = \
+            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
 
-          del mdf_test[target_for_aggregation_column]
+            del mdf_test[target_for_aggregation_column]
 
       for newcolumn in newcolumns:
 
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+        
+      #remove temporary support column
+      del mdf_test[suffixcolumn]
 
     else:
 
@@ -36218,12 +36403,39 @@ class AutoMunge:
       
       aggregated_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
+      
+      case = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+      
+      suffixcolumn = column + '_' + suffix
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+        
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+      
+      #convert to uppercase string when case sensitivity not desired based on case parameter
+      if case is False:
+        #convert column to string except for nan infill points
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
+        #convert to uppercase
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
       
 #       #now for mdf_test
 
@@ -36268,11 +36480,7 @@ class AutoMunge:
           newcolumn = column + '_' + suffix + '_' + dict_key
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
-          mdf_test[newcolumn] = mdf_test[column].copy()
-
-          #apply defaultinfill based on processdict entry
-          mdf_test, _1 = \
-          self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+          mdf_test[newcolumn] = mdf_test[suffixcolumn].copy()
 
   #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -36285,21 +36493,25 @@ class AutoMunge:
       #now we consolidate activations
       #note that this only runs when aggregated_dict was populated with an embedded list of search terms
       for aggregated_dict_key in aggregated_dict:
-        aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+        if aggregated_dict_key in inverse_search_dict:
+          aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
 
-        for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-          target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+          for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+            target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
 
-          mdf_test[aggregated_dict_key_column] = \
-          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+            mdf_test[aggregated_dict_key_column] = \
+            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
 
-          del mdf_test[target_for_aggregation_column]
+            del mdf_test[target_for_aggregation_column]
 
-          newcolumns.remove(target_for_aggregation_column)
+            newcolumns.remove(target_for_aggregation_column)
 
       for newcolumn in newcolumns:
 
         mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
+        
+      #remove temporary support column
+      del mdf_test[suffixcolumn]
 
     else:
 
@@ -36355,16 +36567,49 @@ class AutoMunge:
       
       search = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search']
+      
+      aggregated_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['aggregated_dict']
+      
+      inverse_search_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
+      
+      case = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['case']
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       
+      suffixcolumn = column + '_' + suffix
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+        
+      #apply defaultinfill based on processdict entry
+      mdf_test, _1 = \
+      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+      
+      #convert to uppercase string when case sensitivity not desired based on case parameter
+      if case is False:
+        #convert column to string except for nan infill points
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
+        #convert to uppercase
+        mdf_test[suffixcolumn] = \
+        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
+      
       #now for mdf_test
 
-      unique_list_test = list(mdf_test[column].unique())
+      unique_list_test = list(mdf_test[suffixcolumn].unique())
 
       unique_list_test = list(map(str, unique_list_test))
 
@@ -36405,11 +36650,7 @@ class AutoMunge:
           newcolumn = column + '_' + suffix + '_' + dict_key
 
   #         mdf_train[newcolumn] = mdf_train[column].copy()
-          mdf_test[newcolumn] = mdf_test[column].copy()
-
-          #apply defaultinfill based on processdict entry
-          mdf_test, _1 = \
-          self._apply_defaultinfill(mdf_test, newcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+          mdf_test[newcolumn] = mdf_test[suffixcolumn].copy()
 
   #         mdf_train[newcolumn] = mdf_train[newcolumn].astype(str)
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(str)
@@ -36418,6 +36659,25 @@ class AutoMunge:
           mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
           newcolumns.append(newcolumn)
+          
+      #remove temporary support column
+      del mdf_test[suffixcolumn]
+      
+      #now we consolidate activations
+      #note that this only runs when aggregated_dict was populated with an embedded list of search terms
+      for aggregated_dict_key in aggregated_dict:
+        if aggregated_dict_key in inverse_search_dict:
+          aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+
+          for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+            target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+
+            mdf_test[aggregated_dict_key_column] = \
+            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+            del mdf_test[target_for_aggregation_column]
+
+            newcolumns.remove(target_for_aggregation_column)
 
     else:
 
@@ -36496,21 +36756,37 @@ class AutoMunge:
       
       inverse_search_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_search_dict']
+      
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      defaultinfill_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
       suffixcolumn = column + '_' + suffix
+
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
       
       if len(search_dict) == 0:
         mdf_test[suffixcolumn] = 0
         
       else:
 
+        #apply defaultinfill based on processdict entry
+        mdf_test, _1 = \
+        self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
+
         for newcolumn in search_dict:
 
           mdf_test[newcolumn] = \
-          np.where(mdf_test[column].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+          np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
 
     #     for newcolumn in newcolumns:
 
@@ -36526,15 +36802,16 @@ class AutoMunge:
         #now we consolidate activations
         #note that this only runs when aggregated_dict was populated with an embedded list of search terms
         for aggregated_dict_key in aggregated_dict:
-          aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
-          aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
+          if aggregated_dict_key in inverse_search_dict:
+            aggregated_dict_key_column = inverse_search_dict[aggregated_dict_key]
+            aggregated_dict_key_encoding = ordl_dict2[aggregated_dict_key_column]
 
-          for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
-            target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-            target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
+            for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
+              target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
+              target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
 
-            mdf_test[suffixcolumn] = \
-            np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
+              mdf_test[suffixcolumn] = \
+              np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
 
         #we'll base the integer type on number of ordinal entries
         max_encoding = len(ordl_dict1)
