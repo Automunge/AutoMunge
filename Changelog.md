@@ -3759,3 +3759,16 @@ treecategory_with_empty_processing_functions_valresult = \
 - this user provided links to blog posts associated with both of these concepts which were rolled out in 2.47
 - the datetime blog post was an article by Ian London titled "Encoding cyclical continuous features - 24-hour time"
 - the binarization blog was one of a few articles, not sure which, I think it was a blog post by Rakesh Ravi titled "One-Hot Encoding is making your Tree-Based Ensembles worse, here’s why?"
+
+6.55
+- added inplace support to search functions srch/src2/src3/src4
+- added defaultinfill support to search functions srch/src4
+- consolidated a redundant defaultinfill application to search functions src2/src3
+- added case assignparam support to search functions src2/src3 (previously included with srch/src4)
+- added support for aggregated search terms to src3 (previously included with srch/src2/src4)
+- found and fixed edge case in srch/src2/src4 for cases where an aggregated search term returns an empty set 
+- please note that our search functions are patent pending
+- added boolean entry support to the one-hot encoding support function rolled out in 6.54
+- boolean entries sorted differently than pd.get_dummies, which means there will be a small impact to backward compatibility associated with transforms that previously applied the pandas version corresponding to boolean entries
+- added defaultinfill support for received columns of pandas category dtype
+- consolidated a redundancy in defaultinfill code so as to use single common support function in both dual/single/post process and custom_train conventions
