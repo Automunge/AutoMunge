@@ -3800,7 +3800,7 @@ within the overlaps
 * srch: searches categorical sets for overlaps with user passed search string and returns new boolean column
 for identified overlap entries.
   - useful for: identifying specific entry character subsets by search
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_srch\_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 
@@ -3814,13 +3814,14 @@ for identified overlap entries.
   - inversion available: yes with partial recovery
 * src2: comparable to srch but expected to be more efficient when target set has narrow range of entries
   - useful for: similar to srch slight variation on implementation
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src2_##*##' where ##*## is target identified search string
   - assignparam parameters accepted: 
     - 'search': a list of strings, defaults as empty set
       (note search parameter list can included embedded lists of terms for 
       aggregated activations of terms in the sub-list)
+    - 'case': bool to indicate case sensitivity of search, defaults True
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: overlap_dict / splt_newcolumns_splt / minsplit
   - returned datatype: int8
@@ -3829,7 +3830,7 @@ for identified overlap entries.
 * src4: searches categorical sets for overlaps with user passed search string and returns ordinal column
 for identified overlap entries. (Note for multiple activations encoding priority given to end of list entries).
   - useful for: ordinal version of srch
-  - default infill: none (defaultinfill not supported)
+  - default infill: none
   - default NArowtype: justNaN
   - suffix appender: '\_src4' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
