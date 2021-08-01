@@ -2063,9 +2063,9 @@ automunge or postmunge call). When inversion is passed as a list, accepts list o
 headers for inversion targets. When inversion is passed as a set, accepts a set with single entry of a returned 
 column header serving as a custom target for the inversion path. 'denselabels' is for label set inversion in which 
 labels were prepared in multiple formats, such as to recover the original form on each basis for comparison.
-The inversion operation is supported by the optional process_dict entries ‘info_retention’ and 
-‘inverseprocess’. Note that columns are only returned for those sets in which a path of 
-inversion was available by processdict inverseprocess entries. Note that the path of 
+The inversion operation is supported by the optional process_dict entry 'info_retention' and required for inversion process_dict entry 
+'inverseprocess' (or 'custom_inversion'). Note that columns are only recovered for those sets in which a path of 
+inversion was available by these processdict entries. Note that the path of 
 inversion is prioritized to those returned sets with information retention and availability 
 of inverseprocess functions. Note that both feature importance and Binary dimensionality 
 reduction is supported, support is not expected for PCA. Note that recovery of label 
@@ -2073,7 +2073,10 @@ sets with label smoothing is supported. Note that during an inversion operation 
 postmunge function only considers the parameters postprocess_dict, df_test, inversion, 
 pandasoutput, and/or printstatus. Note that in an inversion operation the 
 postmunge(.) function returns three sets: a recovered set, a list of recovered columns, and 
-a dictionary logging results of the path selection process.
+a dictionary logging results of the path selection process. Please note that the general 
+convention in library is that entries not successfully recovered from inversion may be recorded 
+corresponding to the imputation value from the forward pass, NaN, or the reserved string 
+'zzzinfill' (for when column is returned with pandas object dtype).
 
 Here is an example of a postmunge call with inversion.
 ```
@@ -4315,7 +4318,6 @@ present in dataframe and return results in final printouts and postprocess_dict[
  ___ 
 ### Other Reserved Strings
 - 'zzzinfill': a reserved string entry to data sets that is used in many places as an infill values such as for categorical encodings.
-Note that when inversion is performed those entries without recovery are returned with this value.
 - 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
 - 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
@@ -4602,9 +4604,6 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
   
   #Note that the returned dataframe should retain the columns in returnedcolumn_list
   #Whose retention will be managed elsewhere
-  
-  #Please note that the general convention in library is that entries not successfully recovered
-  #may be recorded by the reserved string 'zzzinfill'
   """
 
   #As an example, here we'll be inverting the z-score normalization 
