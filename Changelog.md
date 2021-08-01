@@ -3772,3 +3772,11 @@ treecategory_with_empty_processing_functions_valresult = \
 - boolean entries sorted differently than pd.get_dummies, which means there will be a small impact to backward compatibility associated with transforms that previously applied the pandas version corresponding to boolean entries
 - added defaultinfill support for received columns of pandas category dtype
 - consolidated a redundancy in defaultinfill code so as to use single common support function in both dual/single/post process and custom_train conventions
+
+6.56
+- ok trying to formalize conventions for data returned from inversion
+- we had previously noted in read me that general convention is that data not successfully recovered was recorded the the reserved string 'zzzinfill'
+- a survey of the various transforms found that there are actually multiple conventions
+- for transforms that had some kind of imputation in the forward pass, the convention is data returned from inversion corresponds to that imputation
+- for transforms without imputation, such as one-hot encoding when ML infill not imputed, the revised convention is entries not recovered is now recored as NaN, which we believe is more inline with common practice
+- there is a still a scenario where returned data from inversion records entries without recovery as the reserved string 'zzzinfill', specifically for transforms that return from inversion a column of pandas object dtype and were empty entries may not correlate with missing data (such as string parsing and search functions), which is applied since pandas object dtype would otherwise convert NaN to the string 'nan'
