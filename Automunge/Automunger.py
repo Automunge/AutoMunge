@@ -33107,7 +33107,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.55'
+    automungeversion = '6.56'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -42926,7 +42926,7 @@ class AutoMunge:
     
     df[inputcolumn] = df[normkey].shift(periods = -periods)
     
-    df[inputcolumn] = df[inputcolumn].fillna('zzzinfill')
+    df[inputcolumn] = df[inputcolumn].fillna(np.nan)
         
     return df, inputcolumn
 
@@ -42952,7 +42952,7 @@ class AutoMunge:
       df[inputcolumn] = qttf.inverse_transform(pd.DataFrame(df[inputcolumn]))
 
     #to align with inversion convention
-    df[inputcolumn] = df[inputcolumn].fillna('zzzinfill')
+    df[inputcolumn] = df[inputcolumn].fillna(np.nan)
     
     return df, inputcolumn
   
@@ -43296,7 +43296,7 @@ class AutoMunge:
       
       i += 1
       
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     for column in categorylist:
         
@@ -43341,7 +43341,7 @@ class AutoMunge:
     
     i = - (bincount - 2) / 2 - 0.5
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     for bucket in binlabels:
       
@@ -43560,7 +43560,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
 
     #bins_cuts is False when original train set was all non-numeric
     if bins_cuts is not False:
@@ -43722,7 +43722,7 @@ class AutoMunge:
     df[inputcolumn] = 0
 
     #infill recovery
-    df[inputcolumn] = np.where(df[normkey] == infill_activation, 'zzzinfill', df[inputcolumn])
+    df[inputcolumn] = np.where(df[normkey] == infill_activation, np.nan, df[inputcolumn])
     
     for i in bins_id:
       
@@ -43774,7 +43774,7 @@ class AutoMunge:
     df[normkey] = df[normkey].astype(int, errors='ignore')
 
     #infill recovery
-    df[inputcolumn] = np.where(df[normkey] == infill_activation, 'zzzinfill', df[inputcolumn])
+    df[inputcolumn] = np.where(df[normkey] == infill_activation, np.nan, df[inputcolumn])
     
     for i in bins_id:
       
@@ -43799,12 +43799,15 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     for categorylist_entry in categorylist:
       
       df[inputcolumn] = \
       np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
+
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
       
     return df, inputcolumn
     
@@ -43828,7 +43831,10 @@ class AutoMunge:
     for categorylist_entry in categorylist:
       
       df[inputcolumn] = \
-      np.where(df[categorylist_entry], textlabelsdict_text[categorylist_entry], df[inputcolumn])
+      np.where(df[categorylist_entry] == 1, textlabelsdict_text[categorylist_entry], df[inputcolumn])
+
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
       
     return df, inputcolumn
 
@@ -43851,7 +43857,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     #only apply label smoothing inversion if this was a traindata set with smoothing applied
     unique_set = set(pd.unique(df[categorylist[0]]))
@@ -43865,6 +43871,9 @@ class AutoMunge:
       
       df[inputcolumn] = \
       np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
+
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
       
     return df, inputcolumn
   
@@ -43896,6 +43905,9 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[inputcolumn].replace(inverse_overlap_replace)
+    
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
     
     return df, inputcolumn
   
@@ -43930,6 +43942,9 @@ class AutoMunge:
     
     df[inputcolumn] = \
     df[inputcolumn].replace(inverse_overlap_replace)
+    
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
     
     return df, inputcolumn
 
@@ -44011,6 +44026,9 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn].astype('object')
 
     df[inputcolumn] = df[inputcolumn].replace(inverse_overlap_replace)
+    
+    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
+    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
       
     return df, inputcolumn
 
@@ -44024,6 +44042,8 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44063,7 +44083,7 @@ class AutoMunge:
         
         overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
         
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])    
 
     return df, inputcolumn
   
@@ -44080,7 +44100,7 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     
     #returning zeros from inversion is counter to the convention used in other transforms
-    #So we'll replace zeros with 'zzzinfill'
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44108,6 +44128,8 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44197,6 +44219,8 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44214,7 +44238,6 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-    
     df[inputcolumn] = 'zzzinfill'
     
     if int_headers is False:
@@ -44250,6 +44273,8 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44339,6 +44364,8 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44374,6 +44401,8 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44410,6 +44439,8 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44446,6 +44477,8 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -44484,6 +44517,8 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
+
+    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
