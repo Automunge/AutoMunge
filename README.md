@@ -894,32 +894,35 @@ little easier at small cost of aesthetics of any 'excl' pass-through column head
 Note that 'excl' can be cast as the default category under automation to columns not otherwise assigned by setting powertransform='excl'.)
 
 * ML_cmnd: 
+The ML_cmnd allows a user to pass parameters to the predictive algorithms
+used for ML infill / feature importance evaluation or PCA. (The default
+option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
+Forest implementation, other options are supported as one of {'randomforest', 
+'autogluon', 'catboost', 'flaml', 'xgboost'}, each discussed further below.
 
+Here is an example of the core components of specification, which include the 
+autoML_type to specify the learning library, the MLinfill_cmnd to pass parameters
+to the learning library, and similar options for PCA via PCA_type and PCA_cmnd.
 ```
 ML_cmnd = {'autoML_type':'randomforest',
            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
            'PCA_type':'default',
            'PCA_cmnd':{}}
 ```
-The ML_cmnd allows a user to pass parameters to the predictive algorithms
-used for ML infill / feature importance evaluation or PCA. (The default
-option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
-Forest implementation, other options are discussed below.)
 For example, a user who doesn't mind a little extra training time for ML infill 
 could increase the passed n_estimators beyond the scikit default of 100.
 
 ```
 ML_cmnd = {'autoML_type':'randomforest',
            'MLinfill_cmnd':{'RandomForestClassifier':{'n_estimators':1000},
-                            'RandomForestRegressor':{'n_estimators':1000}},
-           'PCA_type':'default',
-           'PCA_cmnd':{}}
+                            'RandomForestRegressor':{'n_estimators':1000}}}
            
 ```
 A user can also perform hyperparameter tuning of the parameters passed to the
 predictive algorithms by instead of passing distinct values passing lists or
-range of values. The hyperparameter tuning defaults to grid search for cases 
-where user passes parameters as lists or ranges, for example:
+range of values. This is currently supported for randomforest and xgboost.
+The hyperparameter tuning defaults to grid search for cases 
+where user passes any of fit parameters as lists or ranges, for example:
 ```
 ML_cmnd = {'autoML_type':'randomforest',
            'hyperparam_tuner':'gridCV',
@@ -929,19 +932,23 @@ ML_cmnd = {'autoML_type':'randomforest',
 A user can also perform randomized search via ML_cmnd, and pass parameters as 
 distributions via scipy stats module such as:
 ```
+from scipy import stats
 ML_cmnd = {'autoML_type':'randomforest',
            'hyperparam_tuner' : 'randomCV',
            'randomCV_n_iter'  : 15,
            'MLinfill_cmnd':{'RandomForestClassifier':{'max_depth':stats.randint(3,6)},
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
 ```
-There is an experimental option available to use an alternate autoML framework for ML infill 
-via the AutoGluon library. Requires externally installing AutoGluon library. 
-(If AutoGluon doesn't want to train a model for some particular column you can 
-run again after assigning that column to a different infill in assigninfill.) Note that since AutoGluon
-saves model properties in a local folder, when you process additional data with postmunge it will
+Other autoML options besides random forest are also supported, each of which requires installing
+the associated library (which aren't listed in the automunge dependancies). Citations associated with each
+of these libraries are provided for reference. 
+
+First we'll highlight AutoGluon. 
+Note that since AutoGluon saves model properties in a local folder, when you process additional data with postmunge it will
 need to be in a notebook saved in same directory as was used for automunge. Further information
-on AutoGluon library available on arxiv as [AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data](https://arxiv.org/abs/2003.06505) by Nick Erickson et al.
+on AutoGluon library available on arxiv as Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
+Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
+for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505).
 ```
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
 ML_cmnd = {'autoML_type':'autogluon'}
@@ -959,7 +966,9 @@ ML_cmnd = {'autoML_type': 'autogluon',
 Another autoML option for ML infill and feature importance is by the CatBoost library.
 Requires externally installing CatBoost library. Uses early stopping by default for regression 
 and no early stopping by default for classifier. Note that the random_seed 
-parameter is already passed based on the automunge(.) randomseed.
+parameter is already passed based on the automunge(.) randomseed. Further information
+on the CatBoost library is available on arxiv as Anna Veronika Dorogush, Vasily Ershov, Andrey Gulin. CatBoost: gradient 
+boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/abs/1810.11363).
 ```
 #CatBoost available by passing ML_cmnd as 
 ML_cmnd = {'autoML_type':'catboost'}
@@ -975,14 +984,10 @@ ML_cmnd = {'autoML_type':'catboost',
                               'catboost_regressor_model'  : {},
                               'catboost_regressor_fit'    : {}}}
 ```
-In general, accuracy performance of autoML options are expected as AutoGluon > CatBoost > Random Forest.
-In general, latency performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
-In general, memory performance of autoML options are expected as Random Forest > CatBoost > AutoGluon.
-And where Random Forest and Catboost are more portable than AutoGluon since don't require a local model 
-repository saved to hard drive. (For now retaining Random Forest as the default, of course a further
-tradeoff is that Random Forest doesn't include GPU support.)
 
-Another ML infill option is available by the FLAML library. 
+Another ML infill option is available by the FLAML library. Further information
+on the FLAML library is available on arxiv as Chi Wang, Qingyun Wu, Markus Weimer, 
+Erkang Zhu. FLAML: A Fast and Lightweight AutoML Library [arXiv:1911.04706](https://arxiv.org/abs/1911.04706).
 ```
 #FLAML available by passing ML_cmnd as 
 ML_cmnd = {'autoML_type':'flaml'}
@@ -995,8 +1000,46 @@ ML_cmnd = {'autoML_type':'flaml',
                               'flaml_regressor_fit'    : {'time_budget' : 15}}}
 ```
 
+Another option is available for gradient boosting via the XGBoost library. Further information
+on the XGBoost library is available on arxiv as Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable 
+Tree Boosting System [arXiv:1603.02754](https://arxiv.org/abs/1603.02754).
+
+The XGBoost implementation supports similar options for grid and random search as available for 
+random forest by passing parameters as lists, range, or distribution. 
+
+User can pass model initiliazation and fit parameters by e.g.
+```
+ML_cmnd = {'autoML_type'  :'xgboost',
+           'MLinfill_cmnd':{'xgboost_classifier_model': {'verbosity'    : 0},
+                            'xgboost_classifier_fit'  : {'learning_rate': 0.1},
+                            'xgboost_regressor_model' : {'verbosity'    : 0},
+                            'xgboost_regressor_fit'   : {'learning_rate': 0.1}}}
+```
+Hyperparameter tuning is available by grid search or random search, tuned for each feature. User
+can activate grid search tuning by passing any of the fit parameters as a list or range of values,
+with received static parameters (e.g. as a string, integer, or float) are untuned, e.g.
+```
+ML_cmnd = {'autoML_type'  :'xgboost',
+           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : 12},
+                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : 12}}}
+```
+Random search also accepts scipy stats distributions to fit parameters. To activate random search 
+set the hyperparam_tuner to 'randomCV' and set the desired number of iterations to randomCV_n_iter (defaults to 100).
+```
+from scipy import stats
+ML_cmnd = {'autoML_type'     :'xgboost',
+           'hyperparam_tuner':'randomCV', 
+           'randomCV_n_iter' : 5,
+           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : stats.randint(12,15)},
+                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : stats.randint(12,15)}}}
+```
+
 A user can also assign specific methods for PCA transforms. Current PCA_types
-supported include 'PCA', 'SparsePCA', and 'KernelPCA', all via Scikit-Learn.
+supported include one of {'PCA', 'SparsePCA', 'KernelPCA'}, all via Scikit-Learn.
 Note that the n_components are passed separately with the PCAn_components 
 argument noted above. A user can also pass parameters to the PCA functions
 through the PCA_cmnd, for example one could pass a kernel type for KernelPCA
@@ -4683,6 +4726,9 @@ boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/
 Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu. FLAML: A Fast and Lightweight AutoML Library
 [arXiv:1911.04706](https://arxiv.org/abs/1911.04706)
 
+Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable Tree Boosting System
+[arXiv:1603.02754](https://arxiv.org/abs/1603.02754)
+
 ...
 
 As a quick clarification on the various permutations of the term “Automunge” used in codebase:
@@ -4707,8 +4753,8 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
-Catboost or AutoGluon libraries which are released under the Apache License 2.0, as well as
-the FLAML library which is released under a MIT License.
+Catboost, AutoGluon, or XGBoost libraries which are released under the Apache License 2.0, as well as
+an option for the FLAML library which is released under a MIT License.
 
 ...
 
