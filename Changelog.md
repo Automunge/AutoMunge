@@ -3780,3 +3780,34 @@ treecategory_with_empty_processing_functions_valresult = \
 - for transforms that had some kind of imputation in the forward pass, the convention is data returned from inversion corresponds to that imputation
 - for transforms without imputation, such as one-hot encoding when ML infill not imputed, the revised convention is entries not recovered is now recored as NaN, which we believe is more inline with common practice
 - there is a still a scenario where returned data from inversion records entries without recovery as the reserved string 'zzzinfill', specifically for transforms that return from inversion a column of pandas object dtype and were empty entries may not correlate with missing data (such as string parsing and search functions), which is applied since pandas object dtype would otherwise convert NaN to the string 'nan'
+
+6.57
+- new gradient boosting option for ML infill via XGBoost
+- available by ML_cmnd = {'autoML_type':'xgboost'}
+- defaults to verbosity 0
+- can pass model initiliazation and fit parameters by e.g.
+ML_cmnd = {'autoML_type'  :'xgboost',
+           'MLinfill_cmnd':{'xgboost_classifier_model': {'verbosity'    : 0},
+                            'xgboost_classifier_fit'  : {'learning_rate': 0.1},
+                            'xgboost_regressor_model' : {'verbosity'    : 0},
+                            'xgboost_regressor_fit'   : {'learning_rate': 0.1}}}
+- hyperparameter tuning available by grid search or random search, tuned for each feature
+- can activate grid search tuning by passing any of the fit parameters as a list or range of values
+- received static parameters (e.g. as a string, integer, or float) are untuned, e.g.
+ML_cmnd = {'autoML_type'  :'xgboost',
+           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : 12},
+                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : 12}}}
+- random search also accepts scipy stats distributions to fit parameters
+- to activate random search set the hyperparam_tuner to 'randomCV'
+- and set the desired number of iterations to randomCV_n_iter (defaults to 100)
+from scipy import stats
+ML_cmnd = {'autoML_type'     :'xgboost',
+           'hyperparam_tuner':'randomCV', 
+           'randomCV_n_iter' : 5,
+           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : stats.randint(12,15)},
+                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
+                                                         'max_depth'    : stats.randint(12,15)}}}
+- also revisited random forest tuning and consolidated a redundant training operation
