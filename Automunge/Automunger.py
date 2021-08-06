@@ -23814,6 +23814,17 @@ class AutoMunge:
     #note this is only a temporary update to ML_cmnd and is not returned from function call
     if 'autoML_type' not in ML_cmnd:
       ML_cmnd.update({'autoML_type' : 'randomforest'})
+
+    #note that randomseed is received as the global automunge seed, 
+    #which may either be a specified value through randomseed parameter or derived as a random integer when not specified
+    #to introduce an option for stochasticity between iterations, we'll have a stochastic random seed 
+    #unique to each prediction model training, which will be on by default
+    #user can deactivate for more deterministic imputations with ML_cmnd['stochastic_training_seed'] = False
+    #currently randomseed is inspected in randomforest, catboost, and xgboost
+    if 'stochastic_training_seed' in ML_cmnd and ML_cmnd['stochastic_training_seed'] is False:
+      randomseed = randomseed
+    else:
+      randomseed = random.randint(0,4294967295)
     
     #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
     autoML_type = ML_cmnd['autoML_type']
@@ -24306,8 +24317,11 @@ class AutoMunge:
       #only insert infill if we have a valid model
       if model is not False:
 
-        #apply the function insertinfill(.) to insert missing value predicitons \
-        #to df's associated column
+        #apply _stochastic_impute to train data imputations based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+        df_traininfill, postprocess_dict = \
+        self._stochastic_impute(ML_cmnd, df_traininfill, column, postprocess_dict, df_train=df_train)
+
+        #apply the function insertinfill(.) to insert missing value predictions
         df_train = self._insertinfill(df_train, column, df_traininfill, category, \
                               pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
                               postprocess_dict, columnslist = columnslist, \
@@ -24317,6 +24331,10 @@ class AutoMunge:
         #to apply the model to predict the test set infill. 
 
         if any(x == True for x in masterNArows_train[origcolumn+'_NArows']):
+
+          #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+          df_testinfill, postprocess_dict = \
+          self._stochastic_impute(ML_cmnd, df_testinfill, column, postprocess_dict, df_train=False)
 
           df_test = self._insertinfill(df_test, column, df_testinfill, category, \
                              pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
@@ -24362,6 +24380,391 @@ class AutoMunge:
           df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
 
     return df_train, df_test, postprocess_dict, df_traininfill
+
+  def _stochastic_impute(self, ML_cmnd, df, column, postprocess_dict, df_train=False):
+    """
+    Master function for stochastic_impute
+    Which may be applied based on either ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+    calls one of support functions _stochastic_impute_categoric or _stochastic_impute_numeric based on the column's MLinfilltype
+    
+    ML_cmnd is user passed dictionary to specify any parameter deviations from default and activate stochastic_impute
+    column is one of the entries in target categorylist (this will only applied to each categorylist once)
+    df is either df_traininfill or df_testinfill
+    df_train is df_train as passed to infill with suffix appenders and only need be passed for train data in automunge
+    """
+    
+    category = postprocess_dict['column_dict'][column]['category']
+    MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+    
+    #if target is numeric (currently stochastic impute not supported for integer MLinfilltype)
+    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+      
+      if 'stochastic_impute_numeric' in ML_cmnd and ML_cmnd['stochastic_impute_numeric'] is True:
+        
+        #test data case
+        if df_train is False:
+          maximum=False
+          minimum=False
+        #train data case
+        else:
+          maximum = df_train[column].max()
+          minimum = df_train[column].min()
+        
+        df, postprocess_dict = \
+        self._stochastic_impute_numeric(ML_cmnd, df, column, postprocess_dict, maximum=maximum, minimum=minimum)
+      
+    #if target is categoric
+    if MLinfilltype in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act'}:
+      
+      if 'stochastic_impute_categoric' in ML_cmnd and ML_cmnd['stochastic_impute_categoric'] is True:
+      
+        #train data case
+        if df_train is not False:
+          df_train = df_train[categorylist]
+        
+        df, postprocess_dict = \
+        self._stochastic_impute_categoric(ML_cmnd, df, column, postprocess_dict, df_unique=df_train)
+
+    return df, postprocess_dict
+    
+  def _stochastic_impute_categoric(self, ML_cmnd, df, targetcolumn, postprocess_dict, df_unique=False):
+    """
+    Injects some stochasticity into categoric imputations derived from ML infill
+    df is df_traininfill for train data or df_testinfill for test data
+    which has a number of rows corrresponding to the number of imputations derived for this feature
+    note that df may have one or more columns of imputations
+    targetcolumn is one of entries from the categorylist (each categorylist will only be accessed once)
+    for target feature in returned automunge data with suffix where imputations will be injected
+    
+    df_unique is needed for train data and should be passed as a copy of the train set feature set before imputations
+    including all columns from the categorylist, as derived from the set df_train
+    which we will internally have redundant rows consolidated (i.e. so each unique set of values between columns represented once)
+    Note that df_unique needs to be passed for train data in automunge
+    And for test data in automunge or postmunge we'll access values from postprocess_dict
+    
+    The noise injection will be conducted by selected a subset of df rows to target noise by flip_prob ratio
+    and replace those target rows with a randomly sampled row from df_unique
+   
+    We will record any derived properties from automunge in a postprocess_dict entry 'stochastic_imputation_dict'
+    To ensure a consistent basis applied in postmunge imputations, such as a consistent df_unique, as
+    postprocess_dict['stochastic_imputation_dict'] = \
+    {targetcolumn : {'type' : 'categoric',
+                     'flip_prob' : flip_prob,
+                     'df_unique' : df_unique,
+                     }}
+    
+    Noise will default to a 0.03 injection ratio (flip_prob)
+    Note that these defaults can be specified to deviate from the shown defaults as
+    ML_cmnd['stochastic_impute_categoric_flip_prob'] = 0.03
+    The replacement activation set in cases of noise injection
+    Will be randomly drawn from a uniform problaility of one of the unique acitvation sets in df_train
+    Note that this includes possibility of replacement with the same activation set based on random draw
+    
+    Note that noise sampling from distributions is supported by numpy.random
+    
+    Note that in some cases, such as I believe for ordinal data, df will have single column with header 'infill'
+    And in other cases df will have zero, one or more columns with headers corresponding to categorylist entries
+    This function will return df with consistent headers as received
+    
+    Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_categoric'] = True
+
+    Note that if the recieved encoding had a default infill based on a distinct activation set, 
+    that set will be included in set of unique activaiton sets from df_unique
+    """
+    
+    #(inspected in _stochastic_impute)
+#     #Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
+#     if 'stochastic_impute_categoric' in ML_cmnd and ML_cmnd['stochastic_impute_categoric'] is True:     
+    
+    if 'stochastic_imputation_dict' not in postprocess_dict:
+      postprocess_dict.update({'stochastic_imputation_dict' : {}})
+
+    #test data case
+    if targetcolumn in postprocess_dict['stochastic_imputation_dict']:
+
+      #access parameter from entries recorded with train data
+      flip_prob = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['flip_prob']
+      df_unique = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['df_unique']
+
+    #train data case (in train data case user needs to pass entries for df_unique)
+    elif targetcolumn not in postprocess_dict['stochastic_imputation_dict']:
+
+      if 'stochastic_impute_categoric_flip_prob' in ML_cmnd:
+        flip_prob = ML_cmnd['stochastic_impute_categoric_flip_prob']
+      else:
+        flip_prob = 0.03
+
+      #now consolidate redundant rows in df_unique before saving to stochastic_imputation_dict
+      
+      #first we derive a mask based on presence of duplicate rows
+      mask = pd.Series(df_unique.duplicated())
+
+      #this operation inverts True and False in the mask for next operation
+      mask = pd.Series(np.where(mask == True, False, True))
+
+      #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
+      #which will likely be much fewer rows than received df_unique 
+      #since this is not applied to high cardinality sets (like hashing) based on their MLinfilltype
+      df_unique = df_unique.iloc[mask.to_numpy()]
+
+      #reset index in df_unique to a range index
+      df_unique = df_unique.reset_index(drop=True)
+
+      #store parameters for use with test data
+      postprocess_dict['stochastic_imputation_dict'].update({
+        targetcolumn : {
+          'type' : 'categoric',
+          'flip_prob' : flip_prob,
+          'df_unique' : df_unique,
+        }
+      })
+
+    #now proceed with noise injections
+
+    #for categoric imputations df may have zero, one, or more columns
+    if len(list(df)) > 0 \
+    and len(list(df)) == len(list(df_unique)) \
+    and df.shape[0] > 0:
+
+      #df later reverted back to orig_df_columns
+      orig_df_columns = list(df)
+
+      #I think df already has range index, this is just in case, later reverted back to orig_df_index
+      orig_df_index = df.index
+      df = df.reset_index(drop=True)
+
+      #confirm that column headers of df are consistent to df_unique
+      #I don't think they will be in different order but will check just in case
+      #(it is ok if they are in different order as long as headers are same as per set comparison)
+      #note we already confirmed number of columns is consistent in preceding if statement
+      if list(df.columns) != list(df_unique.columns) and set(df.columns) != set(df_unique.columns):
+        df.columns = df_unique.columns
+
+      #we'll have support columns of DPod_column_temp1 = 'tmp1' and DPod_column_temp2 = 'tmp2'
+      #and returned set will delete support columns and retain original received column naming conventions
+      #(using DPod naming as a shortcut so can repurpose code associated with DPod)
+      #don't have to worry about suffix overlap since columns in df will have returned columns with '_' + suffix
+      DPod_tempcolumn1 = 'tmp1'
+      DPod_tempcolumn2 = 'tmp2'
+
+      unique_count = df_unique.shape[0]
+      unique_range = list(range(unique_count))
+
+      #first we'll derive our sampled noise for injection
+
+      #DPod_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+      df[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])))
+
+      #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
+      df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])))
+
+      #now we'll populate another dataframe df_unique2 with index translated 
+      #so that rows are in order of sampled index numbers in df[DPod_tempcolumn2]
+      #this also results in a number of rows matching df
+      df_unique2 = df_unique.iloc[df[DPod_tempcolumn2]]
+      #and then reset that index to range
+      df_unique2 = df_unique2.reset_index(drop=True)
+
+      #now we can carry the values from df_unique2 to replace entries in df associated with noise injection
+      #here the columns in df_unique2 match the columns in df except df_unique2 does not include the tempcolumns
+      for column in df_unique2:
+
+        #setting to dataframe for single column case
+        df[column] = pd.DataFrame(np.where(df[DPod_tempcolumn1] == 1, df_unique2[column], df[column]))
+
+      #delete support columns
+      del df[DPod_tempcolumn1]
+      del df[DPod_tempcolumn2]
+
+      #recover columns and index to df in case they were renamed (such as may have taken place in a single column case)
+      df.columns = orig_df_columns
+      #recover index (not sure if this is neccesary just seems good practice)
+      df.index = orig_df_index
+      
+    #returned data now has a randomly drawn activation set injected to a subset of imputations (per flip_prob ratio)
+    return df, postprocess_dict
+
+  def _stochastic_impute_numeric(self, ML_cmnd, df, targetcolumn, postprocess_dict, maximum=False, minimum=False):
+    """
+    Injects some stochasticity into numeric imputations derived from ML infill
+    df is df_traininfill for train data or df_testinfill for test data
+    which has a number of rows corrresponding to the number of imputations derived for this feature
+    Note that maximum and minimum need to be specified for train data in automunge
+    And for test data in automunge or postmunge we'll access values from postprocess_dict
+    targetcolumn is the target feature in returned automunge data with suffix where imputations will be injected
+    
+    Since we only know that data is numeric and not what if any form of normalization
+    We will receive as input max and min values of the training feature set corresponding to imputations
+    And use that as boundaries for returned imputations with noise
+    Sort of similar to noise injections in DPmm transform
+    
+    We will record any derived properties from automunge in a postprocess_dict entry 'stochastic_imputation_dict'
+    To ensure a consistent basis applied in postmunge imputations, such as a consistent max/min, as
+    postprocess_dict['stochastic_imputation_dict'] = \
+    {targetcolumn : {'type' : 'numeric',
+                     'maximum' : maximum, 
+                     'minimum' : minimum, 
+                     'mu' : mu,
+                     'sigma' : sigma,
+                     'flip_prob' : flip_prob,
+                     'noisedistribution' : noisedistribution,
+                     }}
+    
+    Noise will default to mean of 0 and scale of 0.03 and gaussian distribution with a 0.1 injection ratio
+    And the noise will be injected to a min-max scaled representation of the imputations
+    Inspired by DPmm, derived noise is capped at +/- midpoint of received max/min
+    And imputations are converted to a min/max representation to apply similar formula to DPmm for scaled noise to avoid out of range
+    And then inverted back to original representation resulting in noise scaling comensorate with original range
+    Note that noise distribution may be sampled from the default of normal or laplace distributions with otherwise consistent parameter inputs
+    
+    Note that these defaults can be specified to deviate from the shown defaults as
+    ML_cmnd['stochastic_impute_numeric_mu'] = 0
+    ML_cmnd['stochastic_impute_numeric_sigma'] = 0.03
+    ML_cmnd['stochastic_impute_numeric_flip_prob'] = 0.06
+    ML_cmnd['stochastic_impute_numeric_noisedistribution'] = 'normal' (also accepts 'laplace')
+    
+    Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
+    
+    Note that noise sampling from distributions is supported by numpy.random
+    """
+    
+    #(inspected in _stochastic_impute)
+#     #Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
+#     if 'stochastic_impute_numeric' in ML_cmnd and ML_cmnd['stochastic_impute_numeric'] is True:      
+
+    if 'stochastic_imputation_dict' not in postprocess_dict:
+      postprocess_dict.update({'stochastic_imputation_dict' : {}})
+
+    #test data case
+    if targetcolumn in postprocess_dict['stochastic_imputation_dict']:
+
+      #access parameter from entries recorded with train data
+      maximum = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['maximum']
+      minimum = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['minimum']
+      mu = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['mu']
+      sigma = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['sigma']
+      flip_prob = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['flip_prob']
+      noisedistribution = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['noisedistribution']
+
+    #train data case (in train data case user needs to pass entries for maximum and minimum)
+    elif targetcolumn not in postprocess_dict['stochastic_imputation_dict']:
+
+      #access parameters from ML_cmnd if specified, else apply defaults
+      if 'stochastic_impute_numeric_mu' in ML_cmnd:
+        mu = ML_cmnd['stochastic_impute_numeric_mu']
+      else:
+        mu = 0
+
+      if 'stochastic_impute_numeric_sigma' in ML_cmnd:
+        sigma = ML_cmnd['stochastic_impute_numeric_sigma']
+      else:
+        sigma = 0.03
+
+      if 'stochastic_impute_numeric_flip_prob' in ML_cmnd:
+        flip_prob = ML_cmnd['stochastic_impute_numeric_flip_prob']
+      else:
+        flip_prob = 0.06
+
+      if 'stochastic_impute_numeric_noisedistribution' in ML_cmnd:
+        noisedistribution = ML_cmnd['stochastic_impute_numeric_noisedistribution']
+      else:
+        noisedistribution = 'normal'
+
+      #store parameters for use with test data
+      postprocess_dict['stochastic_imputation_dict'].update({
+        targetcolumn : {
+          'type' : 'numeric',
+          'maximum' : maximum, 
+          'minimum' : minimum, 
+          'mu' : mu,
+          'sigma' : sigma,
+          'flip_prob' : flip_prob,
+          'noisedistribution' : noisedistribution,
+        }
+      })
+
+    #now proceed with noise injections
+
+    max_minus_min = maximum - minimum
+
+    #for numeric imputations df will have one column
+    if len(list(df)) > 0 \
+    and df.shape[0] > 0 \
+    and max_minus_min == max_minus_min \
+    and max_minus_min != 0:
+
+      #for numeric injections df will only have one column (which should be header 'infill' based on current convention)
+      column = list(df)[0]
+
+      #convert imputations to a min/max representation to be consistent with noise range
+      df[column] = (df[column] - minimum) / max_minus_min
+
+      #derive noise
+
+      #we'll have support columns of DPmm_column = column + 'noise' and DPmm_column_temp1 = column + 'tmp1'
+      #and returned set will delete column and DPmm_column_temp1 and rename DPmm_column to column
+      #(using DPmm naming as a shortcut so can repurpose code associated with DPmm)
+      #don't have to worry about suffix overlap since df_traininfill only has one column (even in concurrent_nmbr case)
+      DPmm_column = column + 'noise'
+      DPmm_column_temp1 = column + 'tmp1'
+
+      #first we'll derive our sampled noise for injection (df.shape[0] corresponds to number of imputations)
+
+      #the default will sample noise from a normal distribution, 
+      #this will return both + and - values centered to mu and scaled to sigma
+      if noisedistribution == 'normal':
+        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+      
+      #or if user specified laplace to ML_cmnd['stochastic_impute_numeric_noisedistribution']
+      #(laplace has a higher prevalence of outliers, remember seeing discussions somewhere that may be preferred for differential privacy for instance)
+      elif noisedistribution == 'laplace':
+        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+      #binomial samples are returned as 1 for rows of imputation set to be targets for injections, else 0
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
+
+      #we then combine the two, resulting in a zero value for entries without injection and a noise value elsewhere
+      df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+
+      #cap outliers to ensure consistent returned range
+      df[DPmm_column] = np.where(df[DPmm_column] < -0.5, -0.5, df[DPmm_column])
+      df[DPmm_column] = np.where(df[DPmm_column] > 0.5, 0.5, df[DPmm_column])
+
+      #support column to signal sign of noise, 0 is neg, 1 is pos
+      df[DPmm_column_temp1] = 0
+      df[DPmm_column_temp1] = np.where(df[DPmm_column] >= 0., 1, df[DPmm_column_temp1])
+
+      #now inject noise, with scaled noise to maintain range 0-1
+      #basically we're taking the input df[column] and adding a noise value which may be scaled based on where df[column] falls
+      #where the (1 - df[DPmm_column_temp1]) multiplication is to turn on for negative noise
+      #and the (df[DPmm_column_temp1]) multiplication is to turn on for positive noise
+      #(so if df[column] <0.5, and neg noise, we scale noise to ensure can't result in returned value out of range, similarly for >0.5 and positive noise)
+      #this formula is a little counterintuitive, it works because df[column] is in mnmx representation with a range 0-1 and noise is capped at +/- 0.5
+      df[DPmm_column] = np.where(df[column] < 0.5, \
+                                  df[column] + \
+                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
+                                  (df[DPmm_column_temp1]) * (df[DPmm_column]), \
+                                  df[DPmm_column])
+
+      df[DPmm_column] = np.where(df[column] >= 0.5, \
+                                  df[column] + \
+                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
+                                  (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
+                                  df[DPmm_column])
+
+      #remove support columns
+      del df[column]
+      del df[DPmm_column_temp1]
+
+      #rename DPmm_column to column
+      df.rename(columns = {DPmm_column : column}, inplace = True)
+
+      #now invert the min/max scaling
+      df[column] = df[column] * max_minus_min + minimum
+      
+    #returned data now has stochastic noise injected to a subset of imputations (per flip_prob ratio)
+    return df, postprocess_dict
 
   def _assemble_autoMLer(self):
     """
@@ -25316,6 +25719,7 @@ class AutoMunge:
             model_params = ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
 
         default_model_params = {'verbosity' : 0,
+                                'seed' : randomseed,
                                 'use_label_encoder' : False}
 
         #now incorporate user passed parameters
@@ -25492,7 +25896,7 @@ class AutoMunge:
           if 'xgboost_regressor_model' in ML_cmnd['MLinfill_cmnd']:
             model_params = ML_cmnd['MLinfill_cmnd']['xgboost_regressor_model']
 
-        default_model_params = {'verbosity' : 0}
+        default_model_params = {'verbosity' : 0, 'seed' : randomseed}
 
         #now incorporate user passed parameters
         default_model_params.update(model_params)
@@ -41167,6 +41571,10 @@ class AutoMunge:
 
       #if model is not False:
       if postprocess_dict['column_dict'][column]['infillmodel'] is not False:
+
+        #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+        df_testinfill, postprocess_dict = \
+        self._stochastic_impute(ML_cmnd, df_testinfill, column, postprocess_dict, df_train=False)
 
         df_test = self._insertinfill(df_test, column, df_testinfill, category, \
                                pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
