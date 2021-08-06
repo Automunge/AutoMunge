@@ -768,7 +768,23 @@ note this is not an extensively tested hypothesis. This defaults to 1.
 Note that due to the sequence of model training / application, a comparable
 set prepared in automunge and postmunge with this option may vary slightly in 
 output (as automunge(.) will train separate models on each iteration and
-postmunge will just apply the final model on each iteration).
+postmunge will just apply the final model on each iteration). 
+
+Please note that early stopping is available for infilliterate based on a comparison
+on imputations of a current iteration to the preceding, in comparison to
+seperate tolerances associated with numeric features in aggregate and categoric
+features in aggregate. Early stopping evaluation can be activated by passing to ML_cmnd
+ML_cmnd['halt_iterate']=True. The tolerances can be updated from the shown defaults
+as ML_cmnd['categoric_tol']=0.05 and ML_cmnd['numeric_tol']=0.01. Further detail
+on early stopping criteria is that the numeric halting criteria is based on comparing 
+for each numeric feature the ratio of max(abs(delta)) between imputation iterations to 
+the mean(abs(entries)) of the current iteration, which are then weighted between features 
+by the quantity of imputations associated with each feature and compared to a numeric 
+tolerance value, and the categoric halting criteria is based on comparing the ratio of 
+number of inequal imputations between iterations to the total number of imputations accross 
+categoric features to a categoric tolerance value. Early stopping is applied as soon as
+the tolerances are met for both numeric and categoric features. If early stopping criteria 
+is not reached the specified infilliterate will serve as the maximum number of iterations.
 
 * randomseed: a positive integer used as a seed for randomness throughout 
 such as for repeatable data set shuffling, ML infill, and feature importance algorithms. 
