@@ -3811,3 +3811,18 @@ ML_cmnd = {'autoML_type'     :'xgboost',
                             'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
                                                          'max_depth'    : stats.randint(12,15)}}}
 - also revisited random forest tuning and consolidated a redundant training operation
+
+6.58
+- new early stopping criteria available for iterations of ML infill applied under infilliterate
+- ML infill still defaults to 1 iteration with increased specification available by the infilliterate parameter
+- the infilliterate parameter will serve as the maximum number of iterations when early stopping criteria not reached
+- user can activate early stopping criteria by passing an ML_cmnd entry as ML_cmnd['halt_iterate'] = True
+- which will evaluate imputation deirvations in comparison to the previous iteration and halt iterations when sufficiently low tolerance is reached
+- the evaluation considers seperately categoric features in aggregate and numeric features in aggregate
+- the categoric halting criteria is based on comparing the ratio of number of inequal imputations between iterations to the total number of imputations accross categoric features to a categoric tolerance value
+- the numeric halting criteria is based on comparing for each numeric feature the ratio of max(abs(delta)) between imputation iterations to the mean(abs(entries)) of the current iteration, which are then weighted between features by the quantity of imputations associated with each feature and compared to a numeric tolerance value
+- the tolerance values default to categoric_tol = 0.05 and numeric_tol = 0.01, each as can be user specificied by ML_cmnd entries of floats to ML_cmnd['categoric_tol'] and ML_cmnd['numeric_tol']
+- early stopping is applied when both the numeric featuers in aggregate and categoric features in aggregate are below threshold of their associated tolerances as evaluated for the current iteration in comparison to the preceding iteration
+- and the resulting number of iterations is then the infilliterate value applied in postmunge
+- please note that our numeric early stopping criteria was informed by review of the scikit-learn iterativeimputer approach, and our categoric early stopping criteria was informed by review of the MissForest early stopping criteria, however there are some fundamental differences with our approach in both cases
+- such as for instance the formula of our numeric criteria is unique, and the tolerance evaluation approach of our categoric criteria is unique
