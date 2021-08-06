@@ -3828,7 +3828,6 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - such as for instance the formula of our numeric criteria is unique, and the tolerance evaluation approach of our categoric criteria is unique
 
 6.59
-- added a random seed initialization to XGBoost training
 - introduced default convention of applying a stochasticly derived random seed to model training for each ML infill model, including each model accross features and each model accross iterations
 - to deactivate for deterministic training based on automunge randomseed parameter can pass ML_cmnd['stochastic_training_seed'] = False
 - please note that currently a randomseed is only inspected in randomforest, catboost, and xgboost autoML options
@@ -3847,4 +3846,4 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - please note that this includes the possibility that an injection entry will retain the original represtntation based on the random draw
 - please note that the associated parameters can be configured by ML_cmnd entries to 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_numeric_mu', 'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution'
 - (where these entries all accept floats except 'stochastic_impute_numeric_noisedistribution' accepting one of {'normal', 'laplace'}
-- please note that we suspect stochastic imputations may interfere with infilliterate early stopping criteria as rolled out in 6.58 based on the scale of injections
+- please note that we suspect stochastic imputations may have potential to interfere with infilliterate early stopping criteria as rolled out in 6.58 based on the scale of injections
