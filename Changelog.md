@@ -3826,3 +3826,25 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - and the resulting number of iterations is then the infilliterate value applied in postmunge
 - please note that our numeric early stopping criteria was informed by review of the scikit-learn iterativeimputer approach, and our categoric early stopping criteria was informed by review of the MissForest early stopping criteria, however there are some fundamental differences with our approach in both cases
 - such as for instance the formula of our numeric criteria is unique, and the tolerance evaluation approach of our categoric criteria is unique
+
+6.59
+- added a random seed initialization to XGBoost training
+- introduced default convention of applying a stochasticly derived random seed to model training for each ML infill model, including each model accross features and each model accross iterations
+- to deactivate for deterministic training based on automunge randomseed parameter can pass ML_cmnd['stochastic_training_seed'] = False
+- please note that currently a randomseed is only inspected in randomforest, catboost, and xgboost autoML options
+- new option for incorporating stochasticity into imputations derived through ML infill
+- can activate for numeric and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = True and/or ML_cmnd['stochastic_impute_numeric'] = True
+- stochastic imputations bear some similarity to DP family of noise injection transforms
+- in that sampled noise with numpy.random is injected into the imputations prior to insertion
+- for numeric stochastic imputation we applied a similar method to our DPmm transform
+- here we convert the imputation set into a min/max scaled reprentation to ensure noise distribution parameters aligned with range of data, with the scaling based on min/max found in the training data
+- we sampled noise from a gaussian distribution or optionally from a laplace distribution
+- with noise scaling defaulting to mu=0, sigma=0.03, and flip_prob=0.1 (where flip_prob is ratio of a feature set's imputations receiving injections)
+- note that in order to insure range of resulting imputations is consistent with range in df_train we cap outlier noise entries at +/- 0.5 and scale negative noise when min/max representation is below midpoint and scale positive noise when minmax representation is above the midpoint, resulting in a consistent returned range independant of noise sampling
+- after noise injection the imputation set is converted back by an inversion of the min/max representation
+- noise injection to categoric features are based on parameter defaulting as flip_prob=0.03 (where flip_prob is ratio of a feature set's imputations receiving injections)
+- injections are conducted randomly flipping the entries in a target row to a random draw from the set of unique activation sets (as may include 1 or more columns) based on draw from a uniform distribution
+- please note that this includes the possibility that an injection entry will retain the original represtntation based on the random draw
+- please note that the associated parameters can be configured by ML_cmnd entries to 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_numeric_mu', 'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution'
+- (where these entries all accept floats except 'stochastic_impute_numeric_noisedistribution' accepting one of {'normal', 'laplace'}
+- please note that we suspect stochastic imputations may interfere with infilliterate early stopping criteria as rolled out in 6.58 based on the scale of injections
