@@ -760,6 +760,12 @@ reverse sorting of columns by count of missing entries in the df_train set.
 ML infill without preprocessing transformations, can pass in conjunction parameter 
 powertransform = 'infill')
 
+Please note that for incorporating stochastic injections into the derived imputations, an
+option is available as further documented below in the ML_cmnd entries for 'stochastic_impute_categoric'
+and 'stochastic_impute_numeric'. Please note that by default the random seed passed to model
+training is stochastic between applications, as further documented below in the ML_cmnd entry for
+'stochastic_training_seed'.
+
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
 The assumption is that for sets with high frequency of missing values
@@ -1053,6 +1059,33 @@ ML_cmnd = {'autoML_type'     :'xgboost',
                             'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
                                                          'max_depth'    : stats.randint(12,15)}}}
 ```
+Please note that model training by default incorporates a random random seed with each application,
+as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
+automunge(.) randomseed parameter. 
+
+Please note that there is an option to inject stochastic noise into derived imputations that
+can be activated for numeric features by passing ML_cmnd['stochastic_impute_numeric'] = True
+and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = True. 
+
+Numeric noise injections sample from either a default normal distribution or optionally a laplace
+distribution. Default noise profile is mu=0, sigma=0.03, and flip_prob=0.1 (where flip_prob is ratio 
+of a feature set's imputations receiving injections). Please note that this scale is based on a 
+min/max scaled representation of the imputations. Parameters can be configured by passing 
+ML_cmnd entries as floats to ML_cmnd['stochastic_impute_numeric_mu'], 
+ML_cmnd['stochastic_impute_numeric_sigma'], 
+ML_cmnd['stochastic_impute_numeric_flip_prob'] or as a string to 
+ML_cmnd['stochastic_impute_numeric_noisedistribution'] as one of {'normal', 'laplace'}.
+
+Categoric noise injections sample from a uniform random draw from the set of unique
+activation sets in the training data (as may include one or more columns for 
+categoric representations), such that for a ratio of a feature's set's imputations based on 
+the flip_prob (defaulting to 0.03 for categoric), each target imputation activation set is replaced with 
+the randomly drawn activation set. Parameter can be configured by passing 
+an ML_cmnd entry as a float to ML_cmnd['stochastic_impute_categoric_flip_prob'].
+
+(Please note that we suspect stochastic injections to imputations may have potential to interfere
+with infilliterate early stopping criteria associated with ML_cmnd['halt_iterate'] documented
+above with the infilliterate parameter.)
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include one of {'PCA', 'SparsePCA', 'KernelPCA'}, all via Scikit-Learn.
