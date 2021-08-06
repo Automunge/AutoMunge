@@ -3839,7 +3839,7 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - for numeric stochastic imputation we applied a similar method to our DPmm transform
 - here we convert the imputation set into a min/max scaled reprentation to ensure noise distribution parameters aligned with range of data, with the scaling based on min/max found in the training data
 - we sampled noise from a gaussian distribution or optionally from a laplace distribution
-- with noise scaling defaulting to mu=0, sigma=0.03, and flip_prob=0.1 (where flip_prob is ratio of a feature set's imputations receiving injections)
+- with noise scaling defaulting to mu=0, sigma=0.03, and flip_prob=0.06 (where flip_prob is ratio of a feature set's imputations receiving injections)
 - note that in order to insure range of resulting imputations is consistent with range in df_train we cap outlier noise entries at +/- 0.5 and scale negative noise when min/max representation is below midpoint and scale positive noise when minmax representation is above the midpoint, resulting in a consistent returned range independant of noise sampling
 - after noise injection the imputation set is converted back by an inversion of the min/max representation
 - noise injection to categoric features are based on parameter defaulting as flip_prob=0.03 (where flip_prob is ratio of a feature set's imputations receiving injections)
