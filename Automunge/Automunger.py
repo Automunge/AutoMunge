@@ -24257,6 +24257,10 @@ class AutoMunge:
     #the revision of these functions to accept pandas series is a
     #possible future extension
     '''
+
+    #df_traininfill later returned to support infilliterate early stopping criteria
+    #returned as False when infill performed with another column from categorylist
+    df_traininfill = False
     
     if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
 
@@ -24357,7 +24361,7 @@ class AutoMunge:
           df_test[dtype_column] = \
           df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
 
-    return df_train, df_test, postprocess_dict
+    return df_train, df_test, postprocess_dict, df_traininfill
 
   def _assemble_autoMLer(self):
     """
@@ -26941,6 +26945,10 @@ class AutoMunge:
     #initialize validation results
     infill_validations = {}
 
+    #initialize early stopping support entries
+    halt_dict = {}
+    stop_count = infilliterate
+
     #if ML infill to be performed, validate that data is all numeric with all valid entries
     if len(postprocess_assigninfill_dict['MLinfill']) > 0:
 
@@ -26976,6 +26984,30 @@ class AutoMunge:
           print("______")
           print("ML infill infilliterate iteration: ", iteration + 1)
           print(" ")
+
+      #initalize halt_dict entry, iteration is the current integer >=0 associated with infilliterate
+      halt_dict_entry = \
+      {iteration : {
+        'stop_result' : False, 
+        'numeric_result' : False,
+        'categoric_result' : False,
+        'categoric_tuple_list' : [],
+        'numeric_tuple_list' : [],
+      }}
+
+      halt_dict.update(halt_dict_entry)
+
+      #df_infill_i is associated with the previous iteration and df_infill_iplus is associated with this iteration
+      if iteration > 0:
+        #access df_infill_iplus from previous iteration
+        df_infill_i = df_infill_iplus.copy()
+      else:
+        df_infill_i = pd.DataFrame()
+
+      #df_infill_iplus will be populated with a single column of infill entries for each set
+      #note entries will be in top rows with remainder padded out with NaN for disparate entry count between columns
+      #(we'll have access to the entry count in halt_dict when populating results)
+      df_infill_iplus = pd.DataFrame()
           
       #columns sorted by number of missing entries from most to least
       for column in sorted_columns_by_NaN_list:
@@ -27226,18 +27258,235 @@ class AutoMunge:
 
               infill_validations = \
               self._check_ML_infill(printstatus, df_train, column, postprocess_dict, infill_validations)
-
-              df_train, df_test, postprocess_dict = \
+              
+              #added a returned df_traininfill, convention is df_traininfill will be False when infillcomplete is True to ensure only one entry per categorylist
+              df_train, df_test, postprocess_dict, df_traininfill = \
               self._MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd, \
                                     printstatus)
+              
+              
+              MLinfilltype = postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
+              
+              if df_traininfill is not False:
+                
+                df_traininfill_rowcount = df_traininfill.shape[0]
 
+                #consolidate multicolumn infill into a single column of strings with header column
+                #convention is df_traininfill will have header 'infill' in single column case otherwise headers consistent with target columns
+                #note that for concurrent_nmbr and concurrent_act MLinfilltype this will be a single column
+                df_traininfill = \
+                self._consolidate_multicolumn(df_traininfill, column, MLinfilltype, postprocess_dict)
+                
+                #now concat that single column infill representation onto df_infill_iplus
+                df_infill_iplus = pd.concat([df_infill_iplus, df_traininfill], axis=1)
+                
+                #this will append additional entries onto the halt_dict
+                halt_dict = \
+                self._populate_halt_dict(df_infill_i, df_infill_iplus, MLinfilltype, halt_dict, iteration, column, df_traininfill_rowcount)
+                
       for columnname in df_train.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
       
-      iteration += 1
+      #calc stop_result
+      stop_result, halt_dict = \
+      self._calc_stop_result(halt_dict, iteration, ML_cmnd)
+      
+      if stop_result is True:
+        
+        if printstatus is True:
+          if print_infilliterate is True:
+            print()
+            print("ML infill infilliterate halted at iteration: ", iteration + 1)
+            print("______")
+            print(" ")
+
+        #stop_count will be the infilliterate threshold applied in postmunge, defaults to infilliterate value when stopping not reached
+        stop_count = iteration + 1
+
+        #setting iteration to infilliterate will halt iterations once this round of columns is complete
+        iteration = infilliterate
+      
+      else:
+        iteration += 1
     
-    return df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list
+    return df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count
+
+  def _consolidate_multicolumn(self, df_traininfill, column, MLinfilltype, postprocess_dict):
+    """
+    #consolidates multicolumn infill representations to a single column of aggregated strings with header column
+    #else returns received single column to same column but renamed to header column
+    """
+    
+    if MLinfilltype in {'multirt', '1010'}:
+      
+      categorylist = list(df_traininfill)
+      
+      #these have suffix included so won't have overlap with arbitrary column header 'zzzinfill'
+      df_traininfill['zzzinfill'] = ''
+      
+      for entry in categorylist:
+        
+        df_traininfill['zzzinfill'] = df_traininfill['zzzinfill'] + df_traininfill[entry].astype(str)
+        
+        del df_traininfill[entry]
+        
+      #now rename the target column
+      df_traininfill.rename(columns = {'zzzinfill' : column}, inplace = True)
+      
+    elif 'infill' in df_traininfill:
+        
+      df_traininfill.rename(columns = {'infill' : column}, inplace = True)
+    
+    return df_traininfill
+
+  def _populate_halt_dict(self, df_infill_i, df_infill_iplus, MLinfilltype, halt_dict, iteration, column, df_traininfill_rowcount):
+    """
+    Appends entries to halt_dict associated with the current target column
+    """
+
+    if iteration > 0:
+      
+      #if set is categoric
+      if MLinfilltype in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act'}:
+        
+        #this is a count of cases where imputations matched between iterations which signals that iterations are honing in on final form
+        sumofinequal = int(pd.DataFrame(df_infill_iplus[column][:df_traininfill_rowcount] != df_infill_i[column][:df_traininfill_rowcount]).sum())
+        
+        #this is a count of number of imputations associated with this infill
+        quantity = df_traininfill_rowcount
+        
+        ratio = sumofinequal / quantity
+        
+        categoric_tuple = (sumofinequal, quantity, ratio)
+        
+        halt_dict[iteration]['categoric_tuple_list'].append(categoric_tuple)
+        
+      #if set is numeric
+      if MLinfilltype in {'numeric', 'integer', 'concurrent_nmbr'}:
+        
+        #this is the max value found in absolute value of deltas between iterations
+        maxabsdelta = (df_infill_iplus[column][:df_traininfill_rowcount] - df_infill_i[column][:df_traininfill_rowcount]).abs().max()
+        
+        meanabs = df_infill_iplus[column][:df_traininfill_rowcount].abs().mean()
+        
+        quantity = df_traininfill_rowcount
+        
+        numeric_tuple = (maxabsdelta, meanabs, quantity)
+        
+        halt_dict[iteration]['numeric_tuple_list'].append(numeric_tuple)
+    
+    return halt_dict
+
+  def _calc_stop_result(self, halt_dict, iteration, ML_cmnd):
+    """
+    #calculates a result for stopping criteria
+    #note that the numeric criteria was partly inspired by review of scikit-learn iterativeimputer stopping criteria
+    #note that the categoric stopping criteria was partly inspired by review of MissForest stopping criteria
+    #although there are some fundamental differences in place for each
+    #receives tolerances in ML_cmnd as ML_cmnd['numeric_tol'] and ML_cmnd['categoric_tol']
+    #and when these entries are not populated defaults to numeric_tol = 0.01, categoric_tol = 0.05
+    #(these defaults are for the moment somewhat arbitrary and may be further refined in future update)
+    
+    #Please note that the stop_result is only returned as True 
+    #if early stopping was activated by ML_cmnd['halt_iterate'] = True
+    """
+    
+    #initialize
+    stop_result = False
+    
+    if 'categoric_tol' in ML_cmnd:
+      categoric_tol = ML_cmnd['categoric_tol']
+    else:
+      categoric_tol = 0.05
+      
+    if 'numeric_tol' in ML_cmnd:
+      numeric_tol = ML_cmnd['numeric_tol']
+    else:
+      numeric_tol = 0.01
+    
+    if iteration > 0:
+      
+      #_(1)_
+      
+      #first calculate categoric result based on aggregation of all categoric imputations
+      
+      categoric_tuple_list = halt_dict[iteration]['categoric_tuple_list']
+      
+      if len(categoric_tuple_list) == 0:
+        categoric_result = True
+      else:
+        
+        #result is based on whether sum(sumofinequal)/sum(quantity) < categoric_tol
+        categoric_result = False
+        
+        sum_sumofinequal = 0
+        sum_quantity = 0
+        
+        for categoric_tuple in categoric_tuple_list:
+
+          #note categoric_tuple = (sumofinequal, quantity, ratio)
+          
+          sum_sumofinequal += categoric_tuple[0]
+          sum_quantity += categoric_tuple[1]
+
+        if sum_sumofinequal / sum_quantity < categoric_tol:
+          
+          categoric_result = True
+          
+      #now calculate numeric result based on aggregation of all numeric imputations
+      
+      numeric_tuple_list = halt_dict[iteration]['numeric_tuple_list']
+      
+      if len(numeric_tuple_list) == 0:
+        numeric_result = True
+      else:
+        
+        #result is based on weighted average of ratio maxabsdelta/meanabs < numeric_tol
+        #(weighted by quantity of imputations associated with the ratio)
+        numeric_result = False
+        
+        quantity_times_ratio_sum = 0
+        quantity_sum = 0
+        
+        for numeric_tuple in numeric_tuple_list:
+
+          #note numeric_tuple = (maxabsdelta, meanabs, quantity)
+          
+          quantity = numeric_tuple[2]
+
+          if numeric_tuple[1] != 0:
+            ratio = numeric_tuple[0] / numeric_tuple[1]
+          
+            quantity_times_ratio_sum += quantity * ratio
+            
+            quantity_sum += quantity
+          
+        if quantity_sum == 0:
+          numeric_result = True
+          
+        elif quantity_times_ratio_sum / quantity_sum < numeric_tol:
+          numeric_result = True
+      
+      #_(1)_
+      stop_result = False
+      
+      if numeric_result is True and categoric_result is True:
+        
+        stop_result = True
+          
+      halt_dict[iteration]['numeric_result'] = numeric_result
+      halt_dict[iteration]['categoric_result'] = categoric_result
+      halt_dict[iteration]['stop_result'] = stop_result
+      
+      #check if user activated halt_iterate in ML_cmnd (early stopping for infilliterate)
+      if 'halt_iterate' in ML_cmnd and ML_cmnd['halt_iterate'] is True:
+        pass
+      else:
+        #stop_result recorded in halt_dict as evlauated but returned as False
+        stop_result = False
+
+    return stop_result, halt_dict
   
   def _apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
@@ -27252,7 +27501,9 @@ class AutoMunge:
     #as may be bneficial if set had a high number of infill for instance
     iteration = 0
 
-    infilliterate = postprocess_dict['infilliterate']
+    #note that stop_count may be less than the original infilliterate
+    #in cases when early stopping was evaluated based on ML_cmnd['halt_iterate'] 
+    infilliterate = postprocess_dict['stop_count']
     
     #if we're uysing this method we'll have some extra printouts
     if infilliterate > 1:
@@ -32917,7 +33168,7 @@ class AutoMunge:
                                           columns_train, postprocess_dict, MLinfill)
 
     #now apply infill
-    df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list = \
+    df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count = \
     self._apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, list(df_train), \
                         masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
@@ -33452,7 +33703,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.57'
+    automungeversion = '6.58'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33481,6 +33732,7 @@ class AutoMunge:
                              'TrainLabelFreqLevel' : TrainLabelFreqLevel,
                              'MLinfill' : MLinfill,
                              'infilliterate' : infilliterate,
+                             'stop_count' : stop_count, 
                              'eval_ratio' : eval_ratio,
                              'powertransform' : powertransform,
                              'binstransform' : binstransform,
