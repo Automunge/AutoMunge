@@ -1068,7 +1068,7 @@ can be activated for numeric features by passing ML_cmnd['stochastic_impute_nume
 and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = True. 
 
 Numeric noise injections sample from either a default normal distribution or optionally a laplace
-distribution. Default noise profile is mu=0, sigma=0.03, and flip_prob=0.1 (where flip_prob is ratio 
+distribution. Default noise profile is mu=0, sigma=0.03, and flip_prob=0.06 (where flip_prob is ratio 
 of a feature set's imputations receiving injections). Please note that this scale is based on a 
 min/max scaled representation of the imputations. Parameters can be configured by passing 
 ML_cmnd entries as floats to ML_cmnd['stochastic_impute_numeric_mu'], 
