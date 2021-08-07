@@ -3847,3 +3847,8 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - please note that the associated parameters can be configured by ML_cmnd entries to 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_numeric_mu', 'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution'
 - (where these entries all accept floats except 'stochastic_impute_numeric_noisedistribution' accepting one of {'normal', 'laplace'}
 - please note that we suspect stochastic imputations may have potential to interfere with infilliterate early stopping criteria as rolled out in 6.58 based on the scale of injections
+
+6.60
+- reverting the updates associated with 6.57
+- upon some reflection we do not feel we have sufficient comfort in our hyperparameter tuning implementation to justify gradient boosting from an autoML standpoint
+- and don't want to distract our users with an option that has tendency to overfit when not tuned
