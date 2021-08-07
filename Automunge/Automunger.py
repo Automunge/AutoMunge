@@ -60,8 +60,6 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
 # from catboost import CatBoostRegressor
-# from xgboost import XGBClassifier
-# from xgboost import XGBRegressor
 
 class AutoMunge:
   
@@ -23732,7 +23730,7 @@ class AutoMunge:
     #initialize tune_marker to default
     tune_marker = False
     
-    if autoML_type in {'randomforest', 'xgboost'}:
+    if autoML_type in {'randomforest'}:
     
       if 'MLinfill_cmnd' in ML_cmnd:
 
@@ -23772,7 +23770,7 @@ class AutoMunge:
     static_params = {}
     tune_params = {}
     
-    if autoML_type in {'randomforest', 'xgboost'}:
+    if autoML_type in {'randomforest'}:
       
       if 'MLinfill_cmnd' in ML_cmnd:
         
@@ -23820,7 +23818,7 @@ class AutoMunge:
     #to introduce an option for stochasticity between iterations, we'll have a stochastic random seed 
     #unique to each prediction model training, which will be on by default
     #user can deactivate for more deterministic imputations with ML_cmnd['stochastic_training_seed'] = False
-    #currently randomseed is inspected in randomforest, catboost, and xgboost
+    #currently randomseed is inspected in randomforest, catboost
     if 'stochastic_training_seed' in ML_cmnd and ML_cmnd['stochastic_training_seed'] is False:
       randomseed = randomseed
     else:
@@ -24819,15 +24817,7 @@ class AutoMunge:
                                        'onehotclassification'   : {'train'   : self._train_catboost_classifier, \
                                                                    'predict' : self._predict_catboost_classifier}, \
                                        'regression'             : {'train'   : self._train_catboost_regressor, \
-                                                                   'predict' : self._predict_catboost_regressor}},
-                     'xgboost'      : {'booleanclassification'  : {'train'   : self._train_xgboost_classifier, \
-                                                                   'predict' : self._predict_xgboost_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self._train_xgboost_classifier, \
-                                                                   'predict' : self._predict_xgboost_classifier}, \
-                                       'onehotclassification'   : {'train'   : self._train_xgboost_classifier, \
-                                                                   'predict' : self._predict_xgboost_classifier}, \
-                                       'regression'             : {'train'   : self._train_xgboost_regressor, \
-                                                                   'predict' : self._predict_xgboost_regressor}}})
+                                                                   'predict' : self._predict_catboost_regressor}}})
     
     return autoMLer
 
@@ -25658,356 +25648,6 @@ class AutoMunge:
     """
 
     from catboost import CatBoostRegressor
-    
-    if model is not False:
-      
-      infill = model.predict(fillfeatures)
-
-      return infill
-    
-    else:
-
-      infill = np.zeros(shape=(1,len(categorylist)))
-      
-      return infill
-
-  def _train_xgboost_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    """
-    #Trains a model for ML infill using xgboost classifier
-    #accepts parameters to model initialization as ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-    #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['xgboost_classifier_fit']
-    """
-
-    from xgboost import XGBClassifier
-    
-    try:
-
-      #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
-
-      ag_label_column = list(df_train_filllabel.columns)
-
-      #xgboost accepts single column labels as integers
-      if len(ag_label_column) > 1:
-        df_train_filllabel = self._convert_onehot_to_singlecolumn(df_train_filllabel)
-        df_train_filllabel = df_train_filllabel.astype(int)
-
-      #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
-      if 'hyperparam_tuner' in ML_cmnd:
-        MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-      else:
-        ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
-        MLinfill_tuner = 'gridCV'
-
-      #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
-      if MLinfill_tuner == 'randomCV':
-        if 'randomCV_n_iter' not in ML_cmnd:
-          ML_cmnd.update({'randomCV_n_iter' : 100})
-        randomCV_n_iter = ML_cmnd['randomCV_n_iter']
-
-      #check if tuning is desired based on whether parameters passed as list, range, or distribution
-      autoML_type = 'xgboost'
-      MLinfill_alg = 'xgboost_classifier_fit'
-      tune_marker = self._inspect_ML_cmnd(ML_cmnd, autoML_type, MLinfill_alg)
-
-      if tune_marker is False:
-
-        #user can pass parameters to xgboost model initialization in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-        model_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_classifier_model' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-
-        default_model_params = {'verbosity' : 0,
-                                'seed' : randomseed,
-                                'use_label_encoder' : False}
-
-        #now incorporate user passed parameters
-        default_model_params.update(model_params)
-        
-        #user can pass parameters to xgboost fit operation in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_fit']
-        fit_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_classifier_fit' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_classifier_fit']
-
-        default_fit_params = {}
-
-        #now incorporate user passed parameters
-        default_fit_params.update(fit_params)
-        
-        #quick check for edge case via heuristic
-        train_nunique = int(df_train_filllabel.nunique())
-        train_rows = int(df_train_filllabel.shape[0])
-        if train_nunique < 2 or train_nunique > 0.75 * train_rows:
-          model = False
-          return model
-
-        else:
-
-          #initialize model with parameters passed through xgboost_classifier_model and defaults
-          #(note that fit parameters can be passed to either model intiialization or fit, model parameters can only be passed to initialization)
-          model = XGBClassifier(**default_model_params)
-
-          #train the model without validation set
-          model.fit(
-            df_train_filltrain, df_train_filllabel, **default_fit_params
-          )
-
-          return model
-
-      if tune_marker is True:
-
-        #static_params are user passed parameters that won't be tuned and will be passed in model initialization, 
-        #tune_params are user passed fit parameters (passed as list or range) that will be tuned
-        static_params, tune_params = self._assemble_param_sets(ML_cmnd, autoML_type, MLinfill_alg)
-
-        #for now we'll default to grid scoring of ‘accuracy’
-        #I've heard that F1 score is a better general default, but not sure how it handles edge cases
-        #need to do a little more investsigation on this point
-        #(the problem with f1 is if folds split doesn't have fully represented activations triggers printouts)
-        grid_scoring = 'accuracy'
-        # grid_scoring = 'f1_weighted'
-        
-        #user can pass parameters to xgboost model initialization in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-        model_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_classifier_model' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-
-        default_model_params = {'verbosity' : 0,
-                                'use_label_encoder' : False}
-
-        #now incorporate user passed parameters
-        default_model_params.update(model_params)
-
-        #now incorporate user passed parameters
-        default_model_params.update(static_params)
-
-        #initialize model including both the default model initialization parameters and static parameters updated into the default
-        tuning_model = XGBClassifier(
-          **default_model_params
-        )
-
-        #now we'll initialize a grid search
-        if MLinfill_tuner == 'gridCV':
-
-          model = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                      param_grid = tune_params, scoring = grid_scoring)
-
-        elif MLinfill_tuner == 'randomCV':
-
-          model = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                            param_distributions = tune_params, scoring = grid_scoring, \
-                                            n_iter = randomCV_n_iter)
-
-        #accomodates edge case by heuristic
-        train_nunique = int(df_train_filllabel.nunique())
-        train_rows = int(df_train_filllabel.shape[0])
-        if train_nunique < 2 or train_nunique > 0.75 * train_rows:
-          model = False
-
-          return model
-
-        else:
-
-          fit_params = {}
-          model.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = model.best_params_    
-
-          if printstatus is True:
-
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          return model
-
-    #this is here just in case there are any edge case haven't identified yet
-    #hope to remove this once have sufficient comfort
-    except ValueError:
-      return False
-
-  def _predict_xgboost_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    """
-    #runs and inference operation
-    #on corresponding model trained in xgboost_classifier
-    #returns infill predictions
-
-    #the categorylist parameter is used to handle an edge case
-    #note that in some cases the passed categorylist may be a proxy list of equivalent length
-    #such as a range of integers
-    """
-
-    from xgboost import XGBClassifier
-    
-    if model is not False:
-      
-      infill = model.predict(fillfeatures)
-
-      if len(categorylist) > 1:
-
-        infill = self._convert_singlecolumn_to_onehot(infill, categorylist)
-
-      return infill
-    
-    else:
-
-      infill = np.zeros(shape=(1,len(categorylist)))
-      
-      return infill
-
-  def _train_xgboost_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    """
-    #Trains a model for ML infill using xgboost regressor
-    #accepts parameters to model initialization as ML_cmnd['MLinfill_cmnd']['xgboost_regressor_model']
-    #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['xgboost_regressor_fit']
-    """
-
-    from xgboost import XGBRegressor
-    
-    try:
-      
-      #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
-      if 'hyperparam_tuner' in ML_cmnd:
-        MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-      else:
-        ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
-        MLinfill_tuner = 'gridCV'
-
-      #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
-      if MLinfill_tuner == 'randomCV':
-        if 'randomCV_n_iter' not in ML_cmnd:
-          ML_cmnd.update({'randomCV_n_iter' : 100})
-        randomCV_n_iter = ML_cmnd['randomCV_n_iter']
-
-      #check if tuning is desired based on whether parameters passed as list, range, or distribution
-      autoML_type = 'xgboost'
-      MLinfill_alg = 'xgboost_regressor_fit'
-      tune_marker = self._inspect_ML_cmnd(ML_cmnd, autoML_type, MLinfill_alg)
-
-      if tune_marker is False:
-        
-        #user can pass parameters to xgboost model initialization in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-        model_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_regressor_model' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_regressor_model']
-
-        default_model_params = {'verbosity' : 0, 'seed' : randomseed}
-
-        #now incorporate user passed parameters
-        default_model_params.update(model_params)
-        
-        #user can pass parameters to xgboost fit operation in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_fit']
-        fit_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_regressor_fit' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_regressor_fit']
-
-        default_fit_params = {}
-
-        #now incorporate user passed parameters
-        default_fit_params.update(fit_params)
-
-        #check for edge case
-        train_nunique = int(df_train_filllabel.nunique())
-        if train_nunique < 2:
-          model = False
-          return model
-
-        else:
-
-          #initialize model
-          model = XGBRegressor(**default_model_params)
-
-          #train the model without validation set
-          model.fit(
-            df_train_filltrain, df_train_filllabel, **default_fit_params
-          )
-
-          return model
-
-      if tune_marker is True:
-
-        #static_params are user passed parameters that won't be tuned and will be passed in model initialization, 
-        #tune_params are user passed fit parameters (passed as list or range) that will be tuned
-        static_params, tune_params = self._assemble_param_sets(ML_cmnd, autoML_type, MLinfill_alg)
-
-        #for now we'll default to grid scoring of ‘neg_mean_squared_error’
-        #am not positive this is best default this is worth some further investigation when get a chance
-        grid_scoring = 'neg_mean_squared_error'
-        
-        #user can pass parameters to xgboost model initialization in ML_cmnd['MLinfill_cmnd']['xgboost_classifier_model']
-        model_params = {}
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'xgboost_regressor_model' in ML_cmnd['MLinfill_cmnd']:
-            model_params = ML_cmnd['MLinfill_cmnd']['xgboost_regressor_model']
-
-        default_model_params = {'verbosity' : 0,
-                                'use_label_encoder' : False}
-
-        #now incorporate user passed parameters
-        default_model_params.update(model_params)
-
-        #now incorporate user passed parameters
-        default_model_params.update(static_params)
-
-        #initialize model including both the default model initialization parameters and static parameters updated into the default
-        tuning_model = XGBRegressor(
-          **default_model_params
-        )
-
-        #now we'll initialize a grid search
-        if MLinfill_tuner == 'gridCV':
-
-          model = GridSearchCV(tuning_model, cv=5, iid='deprecated', \
-                               param_grid = tune_params, scoring = grid_scoring)
-
-        elif MLinfill_tuner == 'randomCV':
-
-          model = RandomizedSearchCV(tuning_model, cv=5, iid='deprecated', \
-                                     param_distributions = tune_params, scoring = grid_scoring, \
-                                     n_iter = randomCV_n_iter)
-
-        #accomodates edge case by heuristic
-        train_nunique = int(df_train_filllabel.nunique())
-        if train_nunique < 2:
-          model = False
-
-          return model
-
-        else:
-
-          fit_params = {}
-          model.fit(df_train_filltrain, df_train_filllabel, **fit_params)
-
-          #acess the tuned parameters based on the tuning operation
-          tuned_params = model.best_params_    
-
-          if printstatus is True:
-
-            print("tuned parameters:")
-            print(tuned_params)
-            print("")
-
-          return model
-
-    #this is here just in case there are any edge case haven't identified yet
-    #hope to remove this once have sufficient comfort
-    except ValueError:
-      return False
-
-  def _predict_xgboost_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    """
-    #runs and inference operation
-    #on corresponding model trained in xgboost_regressor
-    #returns infill predictions
-    """
-
-    from xgboost import XGBRegressor
     
     if model is not False:
       
@@ -34107,7 +33747,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.58'
+    automungeversion = '6.60'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
