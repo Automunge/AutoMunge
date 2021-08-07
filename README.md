@@ -920,7 +920,7 @@ The ML_cmnd allows a user to pass parameters to the predictive algorithms
 used for ML infill / feature importance evaluation or PCA. (The default
 option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
 Forest implementation, other options are supported as one of {'randomforest', 
-'autogluon', 'catboost', 'flaml', 'xgboost'}, each discussed further below.
+'autogluon', 'catboost', 'flaml'}, each discussed further below.
 
 Here is an example of the core components of specification, which include the 
 autoML_type to specify the learning library, the MLinfill_cmnd to pass parameters
@@ -942,7 +942,7 @@ ML_cmnd = {'autoML_type':'randomforest',
 ```
 A user can also perform hyperparameter tuning of the parameters passed to the
 predictive algorithms by instead of passing distinct values passing lists or
-range of values. This is currently supported for randomforest and xgboost.
+range of values. This is currently supported for randomforest.
 The hyperparameter tuning defaults to grid search for cases 
 where user passes any of fit parameters as lists or ranges, for example:
 ```
@@ -1022,43 +1022,6 @@ ML_cmnd = {'autoML_type':'flaml',
                               'flaml_regressor_fit'    : {'time_budget' : 15}}}
 ```
 
-Another option is available for gradient boosting via the XGBoost library. Further information
-on the XGBoost library is available on arxiv as Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable 
-Tree Boosting System [arXiv:1603.02754](https://arxiv.org/abs/1603.02754).
-
-The XGBoost implementation supports similar options for grid and random search as available for 
-random forest by passing parameters as lists, range, or distribution. 
-
-User can pass model initiliazation and fit parameters by e.g.
-```
-ML_cmnd = {'autoML_type'  :'xgboost',
-           'MLinfill_cmnd':{'xgboost_classifier_model': {'verbosity'    : 0},
-                            'xgboost_classifier_fit'  : {'learning_rate': 0.1},
-                            'xgboost_regressor_model' : {'verbosity'    : 0},
-                            'xgboost_regressor_fit'   : {'learning_rate': 0.1}}}
-```
-Hyperparameter tuning is available by grid search or random search, tuned for each feature. User
-can activate grid search tuning by passing any of the fit parameters as a list or range of values,
-with received static parameters (e.g. as a string, integer, or float) are untuned, e.g.
-```
-ML_cmnd = {'autoML_type'  :'xgboost',
-           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
-                                                         'max_depth'    : 12},
-                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
-                                                         'max_depth'    : 12}}}
-```
-Random search also accepts scipy stats distributions to fit parameters. To activate random search 
-set the hyperparam_tuner to 'randomCV' and set the desired number of iterations to randomCV_n_iter (defaults to 100).
-```
-from scipy import stats
-ML_cmnd = {'autoML_type'     :'xgboost',
-           'hyperparam_tuner':'randomCV', 
-           'randomCV_n_iter' : 5,
-           'MLinfill_cmnd':{'xgboost_classifier_fit'  : {'learning_rate': [0.1, 0.2],
-                                                         'max_depth'    : stats.randint(12,15)},
-                            'xgboost_regressor_fit'   : {'learning_rate': [0.1, 0.2],
-                                                         'max_depth'    : stats.randint(12,15)}}}
-```
 Please note that model training by default incorporates a random random seed with each application,
 as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
 automunge(.) randomseed parameter. 
@@ -4775,9 +4738,6 @@ boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/
 Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu. FLAML: A Fast and Lightweight AutoML Library
 [arXiv:1911.04706](https://arxiv.org/abs/1911.04706)
 
-Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable Tree Boosting System
-[arXiv:1603.02754](https://arxiv.org/abs/1603.02754)
-
 ...
 
 As a quick clarification on the various permutations of the term “Automunge” used in codebase:
@@ -4802,7 +4762,7 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
-Catboost, AutoGluon, or XGBoost libraries which are released under the Apache License 2.0, as well as
+Catboost, or AutoGluon libraries which are released under the Apache License 2.0, as well as
 an option for the FLAML library which is released under a MIT License.
 
 ...
