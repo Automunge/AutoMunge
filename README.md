@@ -760,6 +760,14 @@ reverse sorting of columns by count of missing entries in the df_train set.
 ML infill without preprocessing transformations, can pass in conjunction parameter 
 powertransform = 'infill')
 
+To exclude particular features from eachother's imputation model bases
+(such as may be desired in expectation of data leakage), a user can designate via
+entries to ML_cmnd['leakage_sets'], documented further below with ML_cmnd parameter.
+Please note that an operation is performed to evaluate for cases of a kind of data 
+leakage accross features associated with correlated presence of missing data
+accross rows, documented further below with ML_cmnd parameter. This operation
+can be deactivated by passing ML_cmnd['leakage_tolerance'] = False.
+
 Please note that for incorporating stochastic injections into the derived imputations, an
 option is available as further documented below in the ML_cmnd entries for 'stochastic_impute_categoric'
 and 'stochastic_impute_numeric'. Please note that by default the random seed passed to model
@@ -1049,6 +1057,30 @@ an ML_cmnd entry as a float to ML_cmnd['stochastic_impute_categoric_flip_prob'].
 (Please note that we suspect stochastic injections to imputations may have potential to interfere
 with infilliterate early stopping criteria associated with ML_cmnd['halt_iterate'] documented
 above with the infilliterate parameter.)
+
+To exclude particular features from eachother's imputation model bases
+(such as may be desired in expectation of data leakage), a user can designate via
+entries to ML_cmnd['leakage_sets'], which accepts entry of a list of column headers
+or as a list of lists of column headers, where for each list of column headers, 
+entry's will be excluded from eachother's imputation model basis. We suggest 
+populating with column headers in form of data passed to automunge(.) (before suffix
+appenders) although specific returred column headers can also be included if desired.
+
+Please note that an operation is performed to evaluate for cases of a kind of data 
+leakage accross features associated with correlated presence of missing data
+accross rows. Leakage tolerance is associated with an automated evaluation for a 
+potential source of data leakage accross features in their respective imputation 
+model basis. The method compares aggregated NArw activations from a target feature 
+in a train set to the surrounding features in a train set and for cases where 
+separate features share a high correlation of missing data based on the shown 
+formula we exclude those surrounding features from the imputation model basis 
+for the target feature. 
+
+((Narw1 + Narw2) == 2).sum() / NArw1.sum() > leakage_tolerance
+
+Where target features are those input columns with some returned coumn serving 
+as target for ML infill. leakage_tolerance defaults to 0.85 when not specified, 
+and can be set as 1 or False to deactivate the assessment.
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include one of {'PCA', 'SparsePCA', 'KernelPCA'}, all via Scikit-Learn.
