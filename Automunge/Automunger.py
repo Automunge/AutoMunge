@@ -23990,7 +23990,9 @@ class AutoMunge:
           postprocess_dict['column_dict'][entry].update({'_1010_categorylist_proxy_for_postmunge_MLinfill' : list(range(df_train_filllabel.shape[1]))})
         
         #only run following if we have any train rows needing infill
+
         if df_train_fillfeatures.shape[0] > 0:
+
           df_traininfill = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, df_train_fillfeatures, printstatus, list(range(df_train_filllabel.shape[1])))
 
           df_traininfill = \
@@ -24030,7 +24032,7 @@ class AutoMunge:
     return df_traininfill, df_testinfill, model, postprocess_dict
 
   def _createMLinfillsets(self, df_train, df_test, column, trainNArows, testNArows, \
-                         category, randomseed, postprocess_dict, columnslist = [], \
+                         category, randomseed, postprocess_dict, ML_cmnd, columnslist = [], \
                          categorylist = []):
     '''
     #update createMLinfillsets as follows:
@@ -24063,111 +24065,102 @@ class AutoMunge:
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][category]['MLinfilltype'] in {'concurrent_act', 'concurrent_nmbr'}:
 
-        #first concatinate the NArows True/False designations to df_train & df_test
-        df_train = pd.concat([df_train, trainNArows], axis=1)
-        df_test = pd.concat([df_test, testNArows], axis=1)
-
         #create copy of df_train to serve as training set for fill
         df_train_filltrain = df_train.copy()
         #now delete rows coresponding to True
-        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
+        df_train_filltrain = df_train_filltrain.iloc[(trainNArows[trainNArows.columns[0]] == False).to_numpy()]
 
-        #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
+        #now delete columns = columnslist
         df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        leakage_set = []
+        if column in ML_cmnd['leakage_dict']:
+          leakage_set = ML_cmnd['leakage_dict'][column]
+          #this drop entries not in dataframe (just included as a precaution)
+          #this same derived leakage_set is used again below
+          leakage_set = list(set(leakage_set) & set(df_train_filltrain))
+          df_train_filltrain = df_train_filltrain.drop(leakage_set, axis=1)
 
         #create a copy of df_train[column] for fill train labels
         df_train_filllabel = pd.DataFrame(df_train[column].copy())
-        #concatinate with the NArows
-        df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
         #drop rows corresponding to True
-        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
-
-        #delete the NArows column
-        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
+        df_train_filllabel = df_train_filllabel.iloc[(trainNArows[trainNArows.columns[0]] == False).to_numpy()]
 
         #create features df_train for rows needing infill
-        #create copy of df_train (note it already has NArows included)
+        #create copy of df_train
         df_train_fillfeatures = df_train.copy()
-        #delete rows coresponding to False
-        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
+        #delete rows corresponding to False
+        df_train_fillfeatures = df_train_fillfeatures.iloc[(trainNArows[trainNArows.columns[0]] == True).to_numpy()]
         #delete columnslist and column+'_NArows'
         df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        df_train_fillfeatures = df_train_fillfeatures.drop(leakage_set, axis=1)
 
         #create features df_test for rows needing infill
-        #create copy of df_test (note it already has NArows included)
+        #create copy of df_test
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
+        df_test_fillfeatures = df_test_fillfeatures.iloc[(testNArows[testNArows.columns[0]] == True).to_numpy()]
         #delete column and column+'_NArows'
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
-
-        #delete NArows from df_train, df_test
-        df_train = df_train.drop([trainNArows.columns[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        df_test_fillfeatures = df_test_fillfeatures.drop(leakage_set, axis=1)
 
       #else if categorylist wasn't single entry
       else:
 
-        #create a list of columns representing columnslist exlucding elements from
-        #categorylist
-        noncategorylist = columnslist[:]
-        #this removes categorylist elements from noncategorylist
-        noncategorylist = list(set(noncategorylist).difference(set(categorylist)))
-
-        #first concatinate the NArows True/False designations to df_train & df_test
-        df_train = pd.concat([df_train, trainNArows], axis=1)
-        df_test = pd.concat([df_test, testNArows], axis=1)
-
         #create copy of df_train to serve as training set for fill
         df_train_filltrain = df_train.copy()
         #now delete rows coresponding to True
-        df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
+        df_train_filltrain = df_train_filltrain.iloc[(trainNArows[trainNArows.columns[0]] == False).to_numpy()]
 
-        #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
+        #now delete columns = columnslist
         df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-        df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        leakage_set = []
+        if column in ML_cmnd['leakage_dict']:
+          leakage_set = ML_cmnd['leakage_dict'][column]
+          #this drop entries not in dataframe, such as based on other drops like for NArows above
+          #this same derived leakage_set is used again below
+          leakage_set = list(set(leakage_set) & set(df_train_filltrain))
+          df_train_filltrain = df_train_filltrain.drop(leakage_set, axis=1)
 
         #create a copy of df_train[categorylist] for fill train labels
         df_train_filllabel = df_train[categorylist].copy()
-        #concatinate with the NArows
-        df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
         #drop rows corresponding to True
-        df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
-
-        #delete the NArows column
-        df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
+        df_train_filllabel = df_train_filllabel.iloc[(trainNArows[trainNArows.columns[0]] == False).to_numpy()]
 
         #create features df_train for rows needing infill
         #create copy of df_train (note it already has NArows included)
         df_train_fillfeatures = df_train.copy()
         #delete rows coresponding to False
-        df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
-        #delete columnslist and column+'_NArows'
+        df_train_fillfeatures = df_train_fillfeatures.iloc[(trainNArows[trainNArows.columns[0]] == True).to_numpy()]
+        
+        #delete columnslist
         df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-        df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        df_train_fillfeatures = df_train_fillfeatures.drop(leakage_set, axis=1)
 
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
-        #delete column and column+'_NArows'
+        df_test_fillfeatures = df_test_fillfeatures.iloc[(testNArows[testNArows.columns[0]] == True).to_numpy()]
+        #delete column
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        df_test_fillfeatures = df_test_fillfeatures.drop(leakage_set, axis=1)
 
-        #delete NArows from df_train, df_test
-        df_train = df_train.drop([trainNArows.columns[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns[0]], axis=1)
-
-    #if MLinfilltype in {'exclude'}:
+    #elif MLinfilltype not in supported entries:
     else:
 
       #create empty sets for now
-      #an extension of this method would be to implement a comparable method \
-      #for the time category, based on the columns output from the preprocessing
       df_train_filltrain = pd.DataFrame({'foo' : []}) 
       df_train_filllabel = pd.DataFrame({'foo' : []})
       df_train_fillfeatures = pd.DataFrame({'foo' : []})
@@ -24250,6 +24243,181 @@ class AutoMunge:
 
     return df
 
+  def _check_for_leakage(self, ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict):
+    """
+    compare aggregated NArw activations from a target feature in a train set 
+    to the surrounding features in a train set 
+    and for cases where separate features share a high correlation of missing data 
+    based on the shown formula
+    ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > tolerance
+    we exclude those surrounding features from the imputation model basis for the target feature
+    
+    target features are those features which will have any returned columns serving as ML infill target
+    
+    the results are appended to any entries in user specified ML_cmnd['leakage_sets']
+    for exclusion in associated ML infill bases
+    
+    accepts parameters ML_cmnd, postprocess_dict, masterNArows_train, MLinfill_targets
+    each as in form after application of transformations and before infill
+    and where MLinfill_targets is a list of targets for MLinfill imputation as recorded in postprocess_assigninfill_dict
+    
+    note that this function is to be applied prior to _convert_leakage_sets
+    
+    note that masterNArows_train will have headers derived as origcolumn+'_NArows'
+    and ML_cmnd['leakage_sets'] takes entries in form of a list of lists of input columns headers (origcolumn)
+    
+    note this operation can be deactivated by passing ML_cmnd['leakage_tolerance'] = 1 (or False)
+    for increased sensitivity, set a lower leakage_tolerance threshold, accepts floats in range 0-1 inclusive
+    """
+    
+    if 'leakage_tolerance' in ML_cmnd:
+      leakage_tolerance = ML_cmnd['leakage_tolerance']
+    else:
+      leakage_tolerance = 0.85
+      
+    #evaluation not perormed when leakage_tolerance == 1
+    if leakage_tolerance < 1 and leakage_tolerance is not False:
+
+      if 'leakage_sets' in ML_cmnd:
+        leakage_sets_orig = ML_cmnd['leakage_sets']
+      else:
+        leakage_sets_orig = [[]]
+
+      #if only a one tier set, embed in a list for common form
+      if len(leakage_sets_orig) > 0 and not isinstance(leakage_sets_orig[0], list) or leakage_sets_orig == []:
+        leakage_sets_orig = [leakage_sets_orig]
+
+      #leakage_sets_orig is based on what's passed through ML_cmnd, 
+      #leakage_sets derived here will later be added as well as returned seperately as ML_cmnd['leakage_sets_derived']
+      leakage_sets = [[]]
+
+      NArows_columns = list(masterNArows_train.columns)
+      
+      MLinfill_targets = postprocess_assigninfill_dict['MLinfill']
+      
+      MLinfill_targets = \
+      self._column_convert_support(MLinfill_targets, postprocess_dict, convert_to='input')
+      
+      #as received this includes label sets
+      origcolumns = list(postprocess_dict['origcolumn'])
+    
+      #remove the label entry
+      labelcolumn = False
+      for entry in origcolumns:
+        if postprocess_dict['origcolumn'][entry]['type'] == 'label':
+          origcolumns.remove(entry)
+
+      #for input column header
+      for targetcolumn in MLinfill_targets:
+        
+        targetcolumn_result_list = [targetcolumn]
+
+        targetcolumn_NArow = targetcolumn + '_NArows'
+
+        for othercolumn in origcolumns:
+
+          if othercolumn != targetcolumn:
+            
+            othercolumn_NArow = othercolumn + '_NArows'
+            
+            #checking for ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > tolerance
+            temp_df = pd.DataFrame(masterNArows_train[targetcolumn_NArow].astype(int) + masterNArows_train[othercolumn_NArow].astype(int))
+
+            numerator = temp_df[temp_df[0] == 2].shape[0]
+            denominator = masterNArows_train[masterNArows_train[targetcolumn_NArow] == True].shape[0]
+
+            if denominator > 0:
+              othercolumn_result = numerator / denominator
+            else:
+              othercolumn_result = 0
+            
+            #othercolumn_result will be a float potentially in range between 0 and 1 inclusive
+            if othercolumn_result > leakage_tolerance:
+              
+              targetcolumn_result_list.append(othercolumn)
+              
+        if len(targetcolumn_result_list) > 1:
+          
+          #adds an entry for targetcolumn in cases any of the othercolumns were appended on targetcolumn_result_list
+          leakage_sets.append(targetcolumn_result_list)
+     
+      #this replaces any ML_cmnd['leakage_sets'] entry with the updated set with results appended
+      ML_cmnd.update({'leakage_sets_derived' : leakage_sets})
+      ML_cmnd.update({'leakage_sets_orig' : leakage_sets_orig})
+
+      leakage_sets = leakage_sets + leakage_sets_orig
+      ML_cmnd.update({'leakage_sets' : leakage_sets})
+
+    return ML_cmnd
+
+  def _convert_leakage_sets(self, ML_cmnd, postprocess_dict):
+    """
+    ML_cmnd accepts entries to ML_cmnd['leakage_sets'] as a list of input columns or a list of list of input columns
+    each list of columns as can be considered an individual "leakage_set"
+    (refering to them as a set even thought populated as lists, just going to go with it)
+    
+    leakage sets are for purposes of specifying features that are to be excluded from each other's ML infill basis
+    _convert_leakage_sets is for purposes of converting the received form into a more useful data structure
+    mapping columns in the returned form with suffix appenders
+    
+    leakage_dict = \
+    {returnedcolumn : [list of returned columns to exclude from the key's basis]}
+    
+    note that we will only map returned columns not already included in the key returnedcolumn's columnslist
+    as columnslist entries are already excluded from each other's ML infill basis
+    
+    returns ML_cmnd with added entry ML_cmnd['leakage_dict']
+    
+    note this function is to be applied after transformations and before infill 
+    so we'll have access to column_dict in postprocess_dict
+    """
+    
+    leakage_sets = []
+    leakage_dict = {}
+    
+    #access leakage_sets from ML_cmnd
+    if 'leakage_sets' in ML_cmnd:
+      leakage_sets = ML_cmnd['leakage_sets']
+    
+    #if only a one tier set, embed in a list for common form
+    if len(leakage_sets) > 0 and not isinstance(leakage_sets[0], list) or leakage_sets == []:
+      leakage_sets = [leakage_sets]
+    
+    #convert leakage sets to equivent but with returned column header convention
+    leakage_sets_returned = []
+    for leakage_set in leakage_sets:
+      
+      #convert to an equivalent list of associated returned headers with suffix appenders
+      #this will likely increase the number of entries
+      leakage_set_returned = \
+      self._column_convert_support(leakage_set, postprocess_dict, convert_to='returned')
+      
+      leakage_sets_returned.append(leakage_set_returned)
+      
+    #now populate leakage_dict
+    for leakage_set_returned in leakage_sets_returned:
+      
+      for leakage_set_returned_entry_1 in leakage_set_returned:
+        
+        if leakage_set_returned_entry_1 not in leakage_dict:
+          
+          leakage_dict.update({leakage_set_returned_entry_1 : []})
+          
+        for leakage_set_returned_entry_2 in leakage_set_returned:
+          
+          #it is better python practice to search within a set than list, for now keeping these as lists for consistency
+          #this could be an opportunity for further tweaking for small performance benefit
+          if leakage_set_returned_entry_1 != leakage_set_returned_entry_2 \
+          and leakage_set_returned_entry_2 not in postprocess_dict['column_dict'][leakage_set_returned_entry_1]['columnslist'] \
+          and leakage_set_returned_entry_2 not in leakage_dict[leakage_set_returned_entry_1]:
+            
+            leakage_dict[leakage_set_returned_entry_1].append(leakage_set_returned_entry_2)
+            
+    #great leakage_dict is now populated, return in ML_cmnd
+    ML_cmnd.update({'leakage_dict' : leakage_dict})
+    
+    return ML_cmnd
+
   def _MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
                         ML_cmnd, printstatus):
@@ -24296,7 +24464,7 @@ class AutoMunge:
                          pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
                          pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
                          category, randomseed, postprocess_dict, \
-                         columnslist = columnslist, \
+                         ML_cmnd, columnslist = columnslist, \
                          categorylist = categorylist)
 
       #predict infill values using defined function predictinfill(.)
@@ -30313,7 +30481,14 @@ class AutoMunge:
     if 'PCA_cmnd' not in ML_cmnd:
       ML_cmnd.update({'PCA_cmnd':{}})
 
+    #populate an empty 'leakage_dict' so that feature importance can inspect when calling MLinfillfunction
+    if 'leakage_sets' not in ML_cmnd:
+      ML_cmnd.update({'leakage_sets':[]})
+    if 'leakage_dict' not in ML_cmnd:
+      ML_cmnd.update({'leakage_dict':{}})
+
     #we'll have default that boolean and ordinal excluded from PCA unless otherwise specified
+    #where boolean includes MLinfilltypes like multirt, 1010, concurrent_act, etc, and ordinal is singlct
     if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd'] and 'bool_ordl_PCAexcl' not in ML_cmnd['PCA_cmnd']:
       ML_cmnd['PCA_cmnd'].update({'bool_ordl_PCAexcl' : True})
 
@@ -30325,7 +30500,7 @@ class AutoMunge:
           print("acceptable values are one of {'gridCV', 'randomCV'}")
           print()
 
-    return result, ML_cmnd_hyperparam_tuner_valresult
+    return result, ML_cmnd_hyperparam_tuner_valresult, ML_cmnd
   
   def _check_assignparam(self, assignparam, process_dict, printstatus):
     """
@@ -31617,7 +31792,7 @@ class AutoMunge:
       
     return df, inputcolumn
   
-  def _convert_inf_to_nan(self, df, column, category, postprocess_dict):
+  def _convert_to_nan(self, df, column, category, postprocess_dict, convert_to_nan_list):
     """
     #converts all np.inf values in a dataframe to np.nan
     #similar to pandas pd.options.mode.use_inf_as_na = True
@@ -31627,8 +31802,9 @@ class AutoMunge:
     #don't apply to totalexclude MLinfilltype
     if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
 
-      df.loc[df[column] == np.inf, column] = np.nan
-      df.loc[df[column] == -np.inf, column] = np.nan
+      for entry in convert_to_nan_list:
+
+        df.loc[df[column] == entry, column] = np.nan
     
     return df
 
@@ -32207,6 +32383,58 @@ class AutoMunge:
       if target_for_substitution in targetlist:
         targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
     return
+
+  def _column_convert_support(self, mixedcolumns_list, postprocess_dict, convert_to='returned'):
+    """
+    Support function to convert a received list of column headers mixedcolumns_list
+    Which may optionally include a mixed set of input column headers and returned column headers with suffix appenders
+    to a returned list translatedcolumns_list
+    with a single representation of either the corresponding input or returned headers
+    (so either all input headers or all returned headers)
+    note that redundant derived input columns are returned as single entry
+    
+    postprocess_dict assumes the column_dict entries assosciated with transformation functions have already been populated
+    convert_to accepts one of {'returned', 'input'}, which is for specifying the returned form
+    
+    this type of operation is performed in several places already, just trying to formalize to a single implemetnation
+    intent is to replace a few insteances where this operation is performed to standardize in future update
+    """
+    
+    #user can pass a single header as string if they are lazy
+    if not isinstance(mixedcolumns_list, list):
+      mixedcolumns_list = [mixedcolumns_list]
+    
+    translatedcolumns_list = []
+    
+    #accomodate excl suffix scenario
+    if 'excl_suffix_inversion_dict' in postprocess_dict:
+      #if this takes place after any suffix conversion based on excl_suffix parameter
+      #we'll just convert to include suffix for simplicity
+      self._list_replace(mixedcolumns_list, postprocess_dict['excl_suffix_conversion_dict'])
+    
+    if convert_to == 'returned':
+      
+      for entry in mixedcolumns_list:
+        
+        if entry in postprocess_dict['origcolumn']:
+          translatedcolumns_list += postprocess_dict['origcolumn'][entry]['columnkeylist']
+          
+        elif entry in postprocess_dict['column_dict']:
+          translatedcolumns_list += [entry]
+          
+    elif convert_to == 'input':
+      
+      for entry in mixedcolumns_list:
+        
+        if entry in postprocess_dict['origcolumn']:
+          translatedcolumns_list += [entry]
+          
+        elif entry in postprocess_dict['column_dict']:
+          inputcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
+          if inputcolumn not in translatedcolumns_list:
+            translatedcolumns_list += [inputcolumn]
+            
+    return translatedcolumns_list
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
@@ -32296,8 +32524,13 @@ class AutoMunge:
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
     check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
-    #initialize ML_cmnd if incompletely specified
-    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult = self._check_ML_cmnd(ML_cmnd, printstatus)
+    
+    #ML_cmnd_orig is to record state of ML_cmnd as received
+    ML_cmnd_orig = deepcopy(ML_cmnd)
+
+    #initialize ML_cmnd if incompletely specified, also some validation tests
+    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult, ML_cmnd = \
+    self._check_ML_cmnd(ML_cmnd, printstatus)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
@@ -33005,8 +33238,10 @@ class AutoMunge:
 
       #we also have convention that infinity values are by default subjected to infill
       #based on understanding that ML libraries in general do not accept thesae kind of values
-      df_train = self._convert_inf_to_nan(df_train, column, category, postprocess_dict)
-      df_test = self._convert_inf_to_nan(df_test, column, category, postprocess_dict)
+      #as well as the python None value
+      convert_to_nan_list = [np.inf, -np.inf, None]
+      df_train = self._convert_to_nan(df_train, column, category, postprocess_dict, convert_to_nan_list)
+      df_test = self._convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
 
       #create NArows (column of True/False where True coresponds to missing data)
       trainNArows, drift_dict = self._getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
@@ -33053,7 +33288,8 @@ class AutoMunge:
         columnkey = columnkeylist[0]
 
       ##
-      postprocess_dict['origcolumn'].update({column : {'category' : category, \
+      postprocess_dict['origcolumn'].update({column : {'type' : 'train', \
+                                                       'category' : category, \
                                                        'columnkeylist' : columnkeylist, \
                                                        'columnkey' : columnkey}})
 
@@ -33136,8 +33372,8 @@ class AutoMunge:
       df_testlabels = self._assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan, postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_labels = self._convert_inf_to_nan(df_labels, labels_column, labelscategory, postprocess_dict)
-      df_testlabels = self._convert_inf_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict)
+      df_labels = self._convert_to_nan(df_labels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
+      df_testlabels = self._convert_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
 
       #printout display progress
       if printstatus is True:
@@ -33179,7 +33415,8 @@ class AutoMunge:
 
       finalcolumns_labels = list(df_labels)
 
-      postprocess_dict['origcolumn'].update({labels_column : {'category' : labelscategory, \
+      postprocess_dict['origcolumn'].update({labels_column : {'type' : 'label', \
+                                                              'category' : labelscategory, \
                                                               'columnkeylist' : finalcolumns_labels, \
                                                               'columnkey' : columnkey}})
       
@@ -33210,6 +33447,15 @@ class AutoMunge:
     postprocess_assigninfill_dict = \
     self._assemblepostprocess_assigninfill(assigninfill, list(df_train), \
                                           columns_train, postprocess_dict, MLinfill)
+
+    #now we'll check for any signs of data leakage across features
+    #as evidenced by high correlation of missing entries accross rows
+    #these results will be appended to any user passed leakage_sets
+    ML_cmnd = self._check_for_leakage(ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict)
+
+    #then we'll run a support function associated with an ML_cmnd entry inspected in ML infill
+    #to designate features excluded from each other's ML infill basis
+    ML_cmnd = self._convert_leakage_sets(ML_cmnd, postprocess_dict)
 
     #now apply infill
     df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count = \
@@ -33747,7 +33993,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.60'
+    automungeversion = '6.61'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -33818,6 +34064,7 @@ class AutoMunge:
                              'assign_param' : assign_param,
                              'assignnan' : assignnan,
                              'ML_cmnd' : ML_cmnd,
+                             'ML_cmnd_orig' : ML_cmnd_orig,
                              'miscparameters_results' : miscparameters_results,
                              'randomrandomseed' : randomrandomseed,
                              'printstatus' : printstatus,
@@ -40902,7 +41149,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def _createpostMLinfillsets(self, df_test, column, testNArows, category, \
+  def _createpostMLinfillsets(self, df_test, column, testNArows, category, ML_cmnd, \
                              postprocess_dict, columnslist = [], categorylist = []):
     '''
     #createpostMLinfillsets(df_test, column, testNArows, category, \
@@ -40928,118 +41175,49 @@ class AutoMunge:
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][category]['MLinfilltype'] in {'concurrent_act', 'concurrent_nmbr'}:
 
-        #first concatinate the NArows True/False designations to df_train & df_test
-  #       df_train = pd.concat([df_train, trainNArows], axis=1)
-        df_test = pd.concat([df_test, testNArows], axis=1)
-
-  #       #create copy of df_train to serve as training set for fill
-  #       df_train_filltrain = df_train.copy()
-  #       #now delete rows coresponding to True
-  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
-
-  #       #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
-  #       df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
-
-  #       #create a copy of df_train[column] for fill train labels
-  #       df_train_filllabel = pd.DataFrame(df_train[column].copy())
-  #       #concatinate with the NArows
-  #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
-  #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
-
-  #       #delete the NArows column
-  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
-
-  #       #create features df_train for rows needing infill
-  #       #create copy of df_train (note it already has NArows included)
-  #       df_train_fillfeatures = df_train.copy()
-  #       #delete rows coresponding to False
-  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
-  #       #delete columnslist and column+'_NArows'
-  #       df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
-
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
-        #delete column and column+'_NArows'
+        df_test_fillfeatures = df_test_fillfeatures.iloc[(testNArows[testNArows.columns[0]] == True).to_numpy()]
+        #delete column
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
+        
+        #now delete any columns associated with leakage_sets
+        leakage_set = []
+        if column in ML_cmnd['leakage_dict']:
+          leakage_set = ML_cmnd['leakage_dict'][column]
+          #this drop entries not in dataframe, such as based on other drops like for NArows above
+          #this same derived leakage_set is used again below
+          leakage_set = list(set(leakage_set) & set(df_test_fillfeatures))
+          df_test_fillfeatures = df_test_fillfeatures.drop(leakage_set, axis=1)
 
-        #delete NArows from df_train, df_test
-  #       df_train = df_train.drop([trainNArows.columns[0]], axis=1)
-        df_test = df_test.drop([testNArows.columns[0]], axis=1)
 
       #else if categorylist wasn't empty
       else:
 
-        #create a list of columns representing columnslist exlucding elements from
-        #categorylist
-        noncategorylist = columnslist[:]
-        #this removes categorylist elements from noncategorylist
-        noncategorylist = list(set(noncategorylist).difference(set(categorylist)))
-
-        #first concatinate the NArows True/False designations to df_train & df_test
-  #       df_train = pd.concat([df_train, trainNArows], axis=1)
-        df_test = pd.concat([df_test, testNArows], axis=1)
-
-  #       #create copy of df_train to serve as training set for fill
-  #       df_train_filltrain = df_train.copy()
-  #       #now delete rows coresponding to True
-  #       df_train_filltrain = df_train_filltrain[df_train_filltrain[trainNArows.columns[0]] == False]
-
-  #       #now delete columns = columnslist and the NA labels (orig column+'_NArows') from this df
-  #       df_train_filltrain = df_train_filltrain.drop(columnslist, axis=1)
-  #       df_train_filltrain = df_train_filltrain.drop([trainNArows.columns[0]], axis=1)
-
-  #       #create a copy of df_train[columnslist] for fill train labels
-  #       df_train_filllabel = df_train[columnslist].copy()
-  #       #concatinate with the NArows
-  #       df_train_filllabel = pd.concat([df_train_filllabel, trainNArows], axis=1)
-  #       #drop rows corresponding to True
-  #       df_train_filllabel = df_train_filllabel[df_train_filllabel[trainNArows.columns[0]] == False]
-
-  #       #now delete columns = noncategorylist from this df
-  #       df_train_filltrain = df_train_filltrain.drop(noncategorylist, axis=1)
-
-  #       #delete the NArows column
-  #       df_train_filllabel = df_train_filllabel.drop([trainNArows.columns[0]], axis=1)
-
-  #       #create features df_train for rows needing infill
-  #       #create copy of df_train (note it already has NArows included)
-  #       df_train_fillfeatures = df_train.copy()
-  #       #delete rows coresponding to False
-  #       df_train_fillfeatures = df_train_fillfeatures[(df_train_fillfeatures[trainNArows.columns[0]])]
-  #       #delete columnslist and column+'_NArows'
-  #       df_train_fillfeatures = df_train_fillfeatures.drop(columnslist, axis=1)
-  #       df_train_fillfeatures = df_train_fillfeatures.drop([trainNArows.columns[0]], axis=1)
-
         #create features df_test for rows needing infill
         #create copy of df_test (note it already has NArows included)
         df_test_fillfeatures = df_test.copy()
         #delete rows coresponding to False
-        df_test_fillfeatures = df_test_fillfeatures[(df_test_fillfeatures[testNArows.columns[0]])]
-        #delete column and column+'_NArows'
+        df_test_fillfeatures = df_test_fillfeatures.iloc[(testNArows[testNArows.columns[0]] == True).to_numpy()]
+        #delete column
         df_test_fillfeatures = df_test_fillfeatures.drop(columnslist, axis=1)
-        df_test_fillfeatures = df_test_fillfeatures.drop([testNArows.columns[0]], axis=1)
-
-        #delete NArows from df_train, df_test
-  #       df_train = df_train.drop([trainNArows.columns[0]], axis=1)
         
-        df_test = df_test.drop([testNArows.columns[0]], axis=1)
+        #now delete any columns associated with leakage_sets
+        leakage_set = []
+        if column in ML_cmnd['leakage_dict']:
+          leakage_set = ML_cmnd['leakage_dict'][column]
+          #this drop entries not in dataframe (as a precaution)
+          #this same derived leakage_set is used again below
+          leakage_set = list(set(leakage_set) & set(df_test_fillfeatures))
+          df_test_fillfeatures = df_test_fillfeatures.drop(leakage_set, axis=1)
 
-    #if MLinfilltype in {'exclude'}:
+
+    #elif MLinfilltype not in supported entries:
     else:
 
       #create empty sets for now
-      #an extension of this method would be to implement a comparable method \
-      #for the time category, based on the columns output from the preprocessing
-  #     df_train_filltrain = pd.DataFrame({'foo' : []}) 
-  #     df_train_filllabel = pd.DataFrame({'foo' : []})
-  #     df_train_fillfeatures = pd.DataFrame({'foo' : []})
       df_test_fillfeatures = pd.DataFrame({'foo' : []})
     
     return df_test_fillfeatures
@@ -41184,6 +41362,7 @@ class AutoMunge:
       origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
       category = postprocess_dict['column_dict'][column]['category']
       model = postprocess_dict['column_dict'][column]['infillmodel']
+      ML_cmnd = postprocess_dict['ML_cmnd']
       
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
@@ -41199,7 +41378,7 @@ class AutoMunge:
       df_test_fillfeatures = \
       self._createpostMLinfillsets(df_test, column, \
                          pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                         category, postprocess_dict, \
+                         category, ML_cmnd, postprocess_dict, \
                          columnslist = columnslist, \
                          categorylist = categorylist)
 
@@ -42388,8 +42567,9 @@ class AutoMunge:
       #assignnan application
       df_test = self._assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
 
-      #we also have convention that infinity values are by default subjected to infill
-      df_test = self._convert_inf_to_nan(df_test, column, category, postprocess_dict)
+      #we also have convention that infinity and None values are by default subjected to infill
+      convert_to_nan_list = [np.inf, -np.inf, None]
+      df_test = self._convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
 
       #create NArows (column of True/False where True coresponds to missing data)
       if driftreport in {'efficient', True}:
@@ -42443,7 +42623,7 @@ class AutoMunge:
       df_testlabels = self._assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_testlabels = self._convert_inf_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict)
+      df_testlabels = self._convert_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
 
       if printstatus is True:
         #printout display progress
