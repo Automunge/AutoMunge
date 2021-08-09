@@ -3852,3 +3852,25 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - reverting the updates associated with 6.57
 - upon some reflection we do not feel we have sufficient comfort in our hyperparameter tuning implementation to justify gradient boosting from an autoML standpoint
 - and don't want to distract our users with an option that has tendency to overfit when not tuned
+
+6.61
+- a few cleanups to support functions _createMLinfillsets and _createpostMLinfillsets
+- including replacement of a few kind of hacky concatinate and drops with a much cleaner pandas.iloc
+- (this funcion was first implemented very early in development)
+- new ML_cmnd option as can be passed to ML_cmnd['leakage_sets']
+- leakage_sets can be passed as either a list of input columns or a list of lists of input columns
+- user can also pass returned column headers if a subset of features derived from common input feature are the be included in a leakage set
+- where each list of input columns is for specification of features that are to be excluded from each other's ML infill basis
+- in other words, features with known data cross leakage issues can now be specified by user for accomodation in each other's ML infill basis
+- new ML_cmnd option as can be passed to ML_cmnd['leakage_tolerance']
+- leakage tolerance is associated with a new automated evaluation for a potential source of data leakage accross features in their respective imputation model basis
+- compares aggregated NArw activations from a target feature in a train set to the surrounding features in a train set and for cases where separate features share a high correlation of missing data based on the shown formula we exclude those surrounding features from the imputation model basis for the target feature. 
+- ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > leakage_tolerance
+- where target features are those input columns with some returned coumn serving as target for ML infill
+- leakage_tolerance defaults to 0.85 when not specified, and can be set as 1 or False to deactivate the assessment
+- to perform the operation, set ML_cmnd['leakage_tolerance'] to a float between 0-1
+- where the lower the value, the more likely for sets to be excluded between each other's basis
+- leakage_tolerance is implemented by adding results of evaluation to any user specified leakage_sets
+- where sets are collected in three forms in returned postprocess_dict['ML_cmnd'], as 'leakage_sets_orig' (user passed sets prior to derivations) 'leakage_sets_derived' (derived sets) and 'leakage_sets' (combination of orig and derived)
+- please note that there is a small latency penalty associated with this operation in automunge(.) and no meaningful penalty in postmunge(.)
+- new postprocess_dict entry ['ML_cmnd_orig'] which is a dictionary recording (for informational purposes) the original form of ML_cmnd as passed to automunge(.) prior to any initializations and updates such as based on leakage_tolerance or _check_ML_cmnd
