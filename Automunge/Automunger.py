@@ -24355,6 +24355,8 @@ class AutoMunge:
     ML_cmnd accepts entries to ML_cmnd['leakage_sets'] as a list of input columns or a list of list of input columns
     each list of columns as can be considered an individual "leakage_set"
     (refering to them as a set even thought populated as lists, just going to go with it)
+
+    note user can also pass column headers in leakage_sets as returned column headers to only exclude specific derived features
     
     leakage sets are for purposes of specifying features that are to be excluded from each other's ML infill basis
     _convert_leakage_sets is for purposes of converting the received form into a more useful data structure
@@ -30469,38 +30471,259 @@ class AutoMunge:
     #'PCA_type', 'PCA_cmnd'
     """
     
-    result = False
-    ML_cmnd_hyperparam_tuner_valresult = False
+    check_ML_cmnd_result = False
     
-    if 'autoML_type' not in ML_cmnd:
-      ML_cmnd.update({'autoML_type':'randomforest'})
-    if 'MLinfill_cmnd' not in ML_cmnd:
-      ML_cmnd.update({'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}}})
-    if 'PCA_type' not in ML_cmnd:
-      ML_cmnd.update({'PCA_type':'default'})
-    if 'PCA_cmnd' not in ML_cmnd:
-      ML_cmnd.update({'PCA_cmnd':{}})
+    def _populate_ML_cmnd_default(ML_cmnd, parameter, printstatus, check_ML_cmnd_result, default = False, valid_entries=False, valid_type = False):
+      if parameter in ML_cmnd:
+        if valid_entries is not False:
+          if ML_cmnd[parameter] not in valid_entries:
+            check_ML_cmnd_result = True
+            if printstatus != 'silent':
+              print("invalid entry passed to ML_cmnd key ", parameter)
+              print("acceptable values are one of", valid_entries)
+              print()
+              
+        if valid_type is not False:
+          if not isinstance(ML_cmnd[parameter], valid_type):
+            check_ML_cmnd_result = True
+            if printstatus != 'silent':
+              print("invalid entry type passed to ML_cmnd key ", parameter)
+              print("acceptable value type is", valid_type)
+              print()
+        
+      elif default is not False:
+        ML_cmnd.update({parameter : default})
+        
+      return ML_cmnd, check_ML_cmnd_result
+            
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'autoML_type', 
+                              printstatus, 
+                              check_ML_cmnd_result,
+                              default='randomforest', 
+                              valid_entries={'randomforest', 'autogluon', 'flaml', 'catboost'},
+                              valid_type=str)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'MLinfill_cmnd', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
+    ML_cmnd['MLinfill_cmnd'], check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd['MLinfill_cmnd'], 
+                              'RandomForestClassifier', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
+    ML_cmnd['MLinfill_cmnd'], check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd['MLinfill_cmnd'], 
+                              'RandomForestRegressor', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'PCA_type', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default='default', 
+                              valid_entries={'default', 'PCA', 'SparsePCA', 'KernelPCA'},
+                              valid_type=str)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'PCA_cmnd', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={'bool_ordl_PCAexcl' : True}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
+    #bool_PCA_excl if specified takes precedence over bool_ordl_PCAexcl
+    if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']:
+      ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
+      _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
+                                'bool_ordl_PCAexcl', 
+                                printstatus,  
+                                check_ML_cmnd_result,
+                                default=True, 
+                                valid_entries={True, False},
+                                valid_type=bool)
+    else:
+      ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
+      _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
+                                'bool_PCA_excl', 
+                                printstatus,  
+                                check_ML_cmnd_result,
+                                default=True, 
+                                valid_entries={True, False},
+                                valid_type=bool)
+    
+    ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
+                              'col_row_ratio', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.5, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'leakage_tolerance', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.85, 
+                              valid_entries=False,
+                              valid_type=(float, bool))
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'leakage_sets', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=[], 
+                              valid_entries=False,
+                              valid_type=list)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'leakage_dict', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'hyperparam_tuner', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default='gridCV', 
+                              valid_entries={'gridCV', 'randomCV'},
+                              valid_type=str)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'randomCV_n_iter', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=100, 
+                              valid_entries=False,
+                              valid_type=int)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_training_seed', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=True, 
+                              valid_entries={True, False},
+                              valid_type=bool)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_numeric', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=False, 
+                              valid_entries={True, False},
+                              valid_type=bool)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_numeric_mu', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.0, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_numeric_sigma', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.03, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_numeric_flip_prob', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.06, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_numeric_noisedistribution', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default='normal', 
+                              valid_entries={'normal', 'laplace'},
+                              valid_type=str)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_categoric', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=False, 
+                              valid_entries={True, False},
+                              valid_type=bool)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'stochastic_impute_categoric_flip_prob', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.03, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'halt_iterate', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=False, 
+                              valid_entries={True, False},
+                              valid_type=bool)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'categoric_tol', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.05, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'numeric_tol', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=0.01, 
+                              valid_entries=False,
+                              valid_type=float)
 
-    #populate an empty 'leakage_dict' so that feature importance can inspect when calling MLinfillfunction
-    if 'leakage_sets' not in ML_cmnd:
-      ML_cmnd.update({'leakage_sets':[]})
-    if 'leakage_dict' not in ML_cmnd:
-      ML_cmnd.update({'leakage_dict':{}})
-
-    #we'll have default that boolean and ordinal excluded from PCA unless otherwise specified
-    #where boolean includes MLinfilltypes like multirt, 1010, concurrent_act, etc, and ordinal is singlct
-    if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd'] and 'bool_ordl_PCAexcl' not in ML_cmnd['PCA_cmnd']:
-      ML_cmnd['PCA_cmnd'].update({'bool_ordl_PCAexcl' : True})
-
-    if 'hyperparam_tuner' in ML_cmnd:
-      if ML_cmnd['hyperparam_tuner'] not in {'gridCV', 'randomCV'}:
-        ML_cmnd_hyperparam_tuner_valresult = True
-        if printstatus != 'silent':
-          print("invalid entry passed to ML_cmnd['hyperparam_tuner']")
-          print("acceptable values are one of {'gridCV', 'randomCV'}")
-          print()
-
-    return result, ML_cmnd_hyperparam_tuner_valresult, ML_cmnd
+    return check_ML_cmnd_result, ML_cmnd
   
   def _check_assignparam(self, assignparam, process_dict, printstatus):
     """
@@ -32529,13 +32752,12 @@ class AutoMunge:
     ML_cmnd_orig = deepcopy(ML_cmnd)
 
     #initialize ML_cmnd if incompletely specified, also some validation tests
-    check_ML_cmnd_result, ML_cmnd_hyperparam_tuner_valresult, ML_cmnd = \
+    check_ML_cmnd_result, ML_cmnd = \
     self._check_ML_cmnd(ML_cmnd, printstatus)
 
     miscparameters_results.update({'check_assigncat_result' : check_assigncat_result, \
                                    'check_assigninfill_result' : check_assigninfill_result, \
-                                   'check_ML_cmnd_result' : check_ML_cmnd_result, \
-                                   'ML_cmnd_hyperparam_tuner_valresult' : ML_cmnd_hyperparam_tuner_valresult})
+                                   'check_ML_cmnd_result' : check_ML_cmnd_result})
     
     #initialize transform_dict which is the internal library of family trees
     transform_dict = self._assembletransformdict(binstransform, NArw_marker)
@@ -33993,7 +34215,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.61'
+    automungeversion = '6.62'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
