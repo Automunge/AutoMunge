@@ -924,11 +924,23 @@ little easier at small cost of aesthetics of any 'excl' pass-through column head
 Note that 'excl' can be cast as the default category under automation to columns not otherwise assigned by setting powertransform='excl'.)
 
 * ML_cmnd: 
-The ML_cmnd allows a user to pass parameters to the predictive algorithms
-used for ML infill / feature importance evaluation or PCA. (The default
-option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
+The ML_cmnd allows a user to set options or pass parameters to model training
+operations associated with ML infill, feature importance, or PCA. ML_cmnd is passed
+as a dictionary with first tier valid keys of:
+{'autoML_type', 'MLinfill_cmnd', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
+'leakage_sets', 'leakage_dict', 'hyperparam_tuner', 'randomCV_n_iter',
+'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
+'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
+
+When a user passed ML_cmnd as an empty dictionary, any default values are populated internally.
+
+The most relevant entries here are 'autoML_type' to choose the autoML framework for predictive
+models, and ML_cmnd to pass parameters to the models. The default option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
 Forest implementation, other options are supported as one of {'randomforest', 
 'autogluon', 'catboost', 'flaml'}, each discussed further below.
+
+(Other options are also documented later 
+in this section, like for early stopping thorugh iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc). 
 
 Here is an example of the core components of specification, which include the 
 autoML_type to specify the learning library, the MLinfill_cmnd to pass parameters
