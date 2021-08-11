@@ -3874,3 +3874,11 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - where sets are collected in three forms in returned postprocess_dict['ML_cmnd'], as 'leakage_sets_orig' (user passed sets prior to derivations) 'leakage_sets_derived' (derived sets) and 'leakage_sets' (combination of orig and derived)
 - please note that there is a small latency penalty associated with this operation in automunge(.) and no meaningful penalty in postmunge(.)
 - new postprocess_dict entry ['ML_cmnd_orig'] which is a dictionary recording (for informational purposes) the original form of ML_cmnd as passed to automunge(.) prior to any initializations and updates such as based on leakage_tolerance or _check_ML_cmnd
+
+6.62
+- new suite of parameter validations associated with the ML_cmnd parameter
+- which is data structure to set options and pass parameters to predictive models associated with ML infill, feature importance, or PCA
+- as well as various other ML infill options like early stopping thorugh iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc
+- also moved all of the default ML_cmnd initializations and validations into a single location for code clarity, now all performed in _check_ML_cmnd
+- should make future developments on this data structure much easier to maintain
+- parallel improved some corresponding internal documentation
