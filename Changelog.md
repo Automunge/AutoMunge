@@ -3882,3 +3882,14 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - also moved all of the default ML_cmnd initializations and validations into a single location for code clarity, now all performed in _check_ML_cmnd
 - should make future developments on this data structure much easier to maintain
 - parallel improved some corresponding internal documentation
+
+6.63
+- corrected function name of validate_allvalidnumeric to include leading underscore for consistent convention for internal functions applied for rest of library
+- reconfigured "leakage_dict" data structure population associated with leakage sets to be based on set aggregation
+- instead of prior configuration of searching within lists and etc
+- which will benefit automunge(.) latency associated with this operation
+- significant rewrite for speed and clarity of _evalcategory
+- revised the derivations of most common data types to a much more efficient method
+- resulting in a material improvement to automunge(.) latency
+- the rewrite also resulted in a much cleaner code presentation, we believe will make this function easier to understand now
+- (this function was one of the first ones that we wrote :)
