@@ -713,12 +713,9 @@ based on order of columns.)
 
 * powertransform: _(False/True/'excl'/'exc2'/'infill')_, defaults to False, when passed as 
 True an evaluation will be performed of distribution properties to select between
-box-cox, z-score, min-max scaling, or mean absolute deviation scaling normalization
+box-cox (bxcx), z-score (nmbr), min-max scaling (mnmx), or mean absolute deviation scaling (MAD3) normalization
 of numerical data. Note that after application of box-cox transform child columns 
-are generated for a subsequent z-score normalization. Please note that
-I don't consider the current means of distribution property evaluation highly
-sophisticated and we will continue to refine this method with further research
-going forward. Note that powertransform not applied to label columns by
+are generated for a subsequent z-score normalization. Note that powertransform not applied to label columns by
 default, but can still be applied by passing label column to ptfm in assigncat. 
 Additionally, powertransform may be passed as values 'excl' or 
 'exc2', where for 'excl' columns not explicitly assigned to a root category in 
