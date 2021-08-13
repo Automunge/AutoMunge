@@ -22500,7 +22500,6 @@ class AutoMunge:
   def _evalcategory(self, df_source, column, randomseed, eval_ratio, \
                    numbercategoryheuristic, powertransform, labels = False):
     '''
-    #evalcategory(df, column)
     #Function that takes as input a dataframe and associated column id \
     #evaluates the contents of cells and classifies the column into one of following categories
     
@@ -22546,17 +22545,24 @@ class AutoMunge:
     
     powertransform defaults to False to be consistent with defaults above
     powertransform when activated changes the defaults in a few different scenarios
-    when powertransform = 'excl' columns not explicitly assigned to a root category in assigncat will be left untouched
-    when powertransform = 'exc2' columns not explicitly assigned to a root category in assigncat will be forced to numeric and subject to default modeinfill. 
+    when powertransform = 'excl' columns not explicitly assigned to a root category in assigncat will be given excl passthorugh transform
+    when powertransform = 'exc2' columns not explicitly assigned to a root category in assigncat will be given exc2 passthorugh transform (forced to numeric and subject to default adjinfill). 
     when powertransform = 'infill' If the data is already numerically encoded with NaN entries for missing data, ML infill can be applied without further preprocessing transformations by passing
-    when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, nmbr, or mnmx.
+    when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, MAD3, nmbr, mnmx.
     
     note that labels = True also changes the defaults to align with conventions for label sets
     lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
     lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+    lbbn: for categoric data of <3 unique values, a label set is treated with a bnry binary encoding (single column binarization)
     
+    Note that label sets receive powertransform=False unless labels_column assigned to ptfm in assigncat
+    To apply other powertransform options to label sets one can manually specify a transform in assigncat
+
     #_evalcategory returns category id as a string
     '''
+    
+    #first we consider special cases associated with powertransform parameter passed as one of {'excl', 'exc2', 'infill'}
+    #an additional powertransform parameter scenario (when passed as True) is presented further below
     
     #we'll introduce convention of special values for powertransform to change default
     #we'll allow powertransform == 'excl' to signal that nonassigned columns should
@@ -22611,278 +22617,207 @@ class AutoMunge:
         category = 'exc2'
 
       #exc8 for integer type with unique ratio > 0.75 or if any negative integers present
+      #exc8 is integer MLinfilltype (ML infill applies integer regression)
       elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75) \
       or (actualfloatratio == 0 and actualintegerratio > 0 and setminimum < 0):
         category = 'exc8'
 
       #exc5 for integers
+      #exc5 is singlct MLinfilltype (ML infill applies ordinal classification)
       else:
         category = 'exc5'
-
+        
+      #____
+        
     else:
       
-      #_____
-      #a few default categories
+      #here are the default categories to be returned based on the evaluation
+      #note that these defaults are potentially substituted at close of this function when labels = True
       
       #default categorical
       #defaultcategorical = 'text'
       defaultcategorical = '1010'
       
-      #defaultordinal = 'ord3'
-      #defaultordinal applied when unique values exceeds numbercategoryheuristic
-      defaultordinal = 'hsh2'
-
-      defaultordinal_allunique = 'hash'
-
+      #defaultbnry is for categoric sets with nunique <= 2
       defaultbnry = 'bnry'
       
+      #defaultordinal applied when unique values exceeds numbercategoryheuristic
+      #defaultordinal = 'ord3'
+      defaultordinal = 'hsh2'
+      
+      #defaultordinal replaced with defaultordinal_allunique when nunique > 0.75*shape[0]
+      defaultordinal_allunique = 'hash'
+
+      #defaultnumerical is the default normalization to numeric sets
       defaultnumerical = 'nmbr'
       
+      #defaultdatetime is the default encoding to datetime sets
       defaultdatetime = 'dat6'
-
+      
+      #defaultnull is for sets with all missing data
       defaultnull = 'null'
       
-      #_____
-
+      #____
+      
+      #Now we'll sample a selection of rows from df_source to speed up this operation based on eval_ratio
+      
       rowcount = df_source.shape[0]
-
+      
       #we'll have convention that eval_ratio only applied for sets with >2,000 rows
       if rowcount < 2000:
         eval_ratio = 1.
       else:
+        #if eval_ratio was passed as float between 0-1 we apply it directly
         if eval_ratio > 0 and eval_ratio <= 1:
           eval_ratio = eval_ratio
+        #else if eval_ratio was passed as a number of rows we convert to a ratio
         else:
           eval_ratio = eval_ratio / rowcount
-      
+          
       #take a random sample of rows for evaluation based on eval_ratio heuristic
       df = pd.DataFrame(df_source[column]).sample(frac=eval_ratio, random_state=randomseed)
-
-      #I couldn't find a good pandas tool for evaluating data class, \
-      #So will produce an array containing data types of each cell and \
-      #evaluate for most common variable using the collections library
-
-      type1_df = df[column].transform(lambda x: type(x)).to_numpy()
       
-      #c = collections.Counter(type1_df)
-      c = Counter(type1_df)
-      mc2 = c.most_common(2)
-      mc = [mc2[0]]
+      #____
       
-      #count number of unique values
+      #Now we'll count the different considered data types
+      #In a few cases there will be deviations
+      #such as to account for our modeling missing data as NaN which is a float data type
+      #and datetime first attempts to convert entries to datetime 
+      #(in case entries are string or integer representations of datetimes)
+      
+      #we'll determine counts of NaN, np.number, str, datetime
+      #(it would be an easy extension to also check for integer count, leaving that for future consideration)
+      
+      #type_tuple_list will be populated with a tuple as ('type', type_ratio)
+      type_tuple_list = []
+      rowcount = df.shape[0]
+      
+      #we'll use .loc to select and count a slice of rows as a function of boolean array derived from the condition
+      
+      numericcount = df.loc[pd.to_numeric(df[column], errors='coerce') == df[column]].shape[0]
+      type_tuple_list.append(('number', numericcount / rowcount))
+      
+      nancount = df[column].isna().sum()
+      type_tuple_list.append(('nan', nancount / rowcount))
+      
+      stringcount = df.loc[df[column].astype(str) == df[column]].shape[0]
+      type_tuple_list.append(('string', stringcount / rowcount))
+      
+      datetimecount = \
+      df.loc[pd.to_datetime(df[column].astype(str), errors='coerce') == \
+             pd.to_datetime(df[column].astype(str), errors='coerce')].shape[0]
+      type_tuple_list.append(('datetime', datetimecount / rowcount))
+      
+      #now sort type_tuple_list by the type_ratio
+      type_tuple_list = sorted(type_tuple_list, key=lambda type_tuple: type_tuple[1], reverse=True)
+      
+      #mostcommon_type is type with highest ratio
+      mostcommon_type = 'nan'
+      if len(type_tuple_list) > 0:
+        mostcommon_type = type_tuple_list[0][0]
+        
+      #we'll also consider second_mostcommon_type such as for cases where most common is missing data
+      second_mostcommon_type = mostcommon_type
+      if len(type_tuple_list) > 1:
+        second_mostcommon_type = type_tuple_list[1][0]
+
+      #note that if most common is nan, we'll instead treat second most common as the most common
+      if mostcommon_type == 'nan':
+        mostcommon_type = second_mostcommon_type
+      
+      #Note that we'll also consider the pandas dtype associated with a column, particularily if is 'category'
+      pandas_dtype = df[column].dtype.name
+      
+      #We'll treat mostcommon_type as 'string' when pandas_dtype == 'category', which will result in a categoric encoding
+      if pandas_dtype == 'category':
+        mostcommon_type = 'string'
+      
+      #a few more statistics considered
       nunique = df[column].nunique()
 
-      #free memory (dtypes are memory hogs)
-      del type1_df
-
-      #additional array needed to check for time series
-
-      type2_df = df[column].transform(lambda x: type(pd.to_datetime(x, errors = 'coerce', utc=True))).to_numpy()
-
-      #datec = collections.Counter(type2_df)
-      datec = Counter(type2_df)
-      datemc = datec.most_common(1)
-      datemc2 = datec.most_common(2)
-
-      #this is to address scenario where only one value so we can still call mc2[1][0]
-      if len(datemc2) == len(datemc):
-        datemc2 = datemc + datemc
-
-      #free memory (dtypes are memory hogs)
-      del type2_df
-
-      #an extension of this approach could be for those columns that produce a text\
-      #category to implement an additional text to determine the number of \
-      #common groupings / or the amount of uniquity. For example if every row has\
-      #a unique value then one-hot-encoding would not be appropriate. It would \
-      #probably be apopropraite to either return an error message if this is found \
-      #or alternatively find a furhter way to automate this processing such as \
-      #look for contextual clues to groupings that can be inferred.
-
-      #This is kind of hack to evaluate class by comparing these with output of mc
-      checkint = 1
-      checkfloat = 1.1
-      checkstring = 'string'
-      checkNAN = np.nan
-
-      #there's probably easier way to do this, here will create a check for date
-      df_checkdate = pd.DataFrame([{'checkdate' : '7/4/2018'}])
-      df_checkdate['checkdate'] = pd.to_datetime(df_checkdate['checkdate'], errors = 'coerce')
-
-      #create dummy variable to store determined class (default is text class)
-      category = defaultcategorical
-
-      #if most common in column is string and > two values, set category to text
-      if isinstance(checkstring, mc[0][0]) and nunique > 2:
+      #____
+      
+      #now for categoric sets (where most common is string or we recieved column with pandas dtype of 'category')
+      #we have four scenarios
+      if mostcommon_type == 'string':
+        
+        #base configuration is defaultcategorical (binarization)
         category = defaultcategorical
-
-      #if most common is date, set category to date
-      if isinstance(df_checkdate['checkdate'][0], datemc[0][0]):
-        category = defaultdatetime
-
-      if df[column].dtype.name == 'category':
+        
+        #we have a single column binarization for two unique entries
         if nunique <= 2:
           category = defaultbnry
-        else:
-          category = defaultcategorical
-
-      #if most common in column is integer and > two values, set category to number of bxcx
-      if isinstance(checkint, mc[0][0]) and nunique > 2:
-
-        if df[column].dtype.name == 'category':
-          if nunique <= 2:
-            category = defaultbnry
-          else:
-            category = defaultcategorical
-
-        else:
-          category = defaultnumerical
-
-      #if most common in column is float, set category to number or bxcx
-      if isinstance(checkfloat, mc[0][0]):
-
-        #take account for numbercategoryheuristic
-        #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic \
-  #       if nunique < numbercategoryheuristic \
-  #       or df[column].dtype.name == 'category':
-  #       if df[column].dtype.name == 'category':
-        if df[column].dtype.name == 'category':
-          if nunique <= 2:
-            category = defaultbnry
-          else:
-            category = defaultcategorical
-
-        else:
-          category = defaultnumerical
-
-      #if most common in column is integer and <= two values, set category to binary
-      if isinstance(checkint, mc[0][0]) and nunique <= 2:
-        category = defaultbnry
-
-      #if most common in column is string and <= two values, set category to binary
-      if isinstance(checkstring, mc[0][0]) and nunique <= 2:
-        category = defaultbnry
-
-      #else if most common in column is NaN, re-evaluate using the second most common type
-      #(I suspect the below might be impacted if there are three dtypes instead of two,
-      #in which case the 50% ratio rule may not be valid, that is kind of remote edge case)
-      #elif df[column].isna().sum() >= df.shape[0] / 2:
-      if len(mc2) > 1:
-      
-        if df[column].isna().sum() >= df.shape[0] / 2:
-
-
-          #if 2nd most common in column is string and two values, set category to binary
-          if isinstance(checkstring, mc2[1][0]) and nunique == 2:
-            category = defaultbnry
-
-          #if 2nd most common in column is string and > two values, set category to text
-          if isinstance(checkstring, mc2[1][0]) and nunique > 2:
-            category = defaultcategorical
-
-          #if 2nd most common is date, set category to date   
-          if isinstance(df_checkdate['checkdate'][0], datemc2[1][0]):
-            category = defaultdatetime
-
-          #if 2nd most common in column is integer and > two values, set category to number
-          if isinstance(checkint, mc2[1][0]) and nunique > 2:
-
-            if df[column].dtype.name == 'category':
-              if nunique <= 2:
-                category = defaultbnry
-              else:
-                category = defaultcategorical
-
-            else:
-
-              category = defaultnumerical
-
-          #if 2nd most common in column is float, set category to number
-          if isinstance(checkfloat, mc2[1][0]):
-
-    #         #take account for numbercategoryheuristic
-    #         #if df[column].nunique() / df[column].shape[0] < numbercategoryheuristic:
-    #         if df[column].nunique() < numbercategoryheuristic:
-
-    #           category = 'text'
-
-    #         else:
-
-            if df[column].dtype.name == 'category':
-              if nunique <= 2:
-                category = defaultbnry
-              else:
-                category = defaultcategorical
-
-            else:
-
-              category = defaultnumerical
-
-          #if 2nd most common in column is integer and <= two values, set category to binary
-          if isinstance(checkint, mc2[1][0]) and nunique <= 2:
-            category = defaultbnry
-
-          #if 2nd most common in column is string and <= two values, set category to binary
-          if isinstance(checkstring, mc2[1][0]) and nunique <= 2:
-            category = defaultbnry
-
-      if df[column].isna().sum() == df.shape[0]:
-        category = defaultnull
-
-      #if category == 'text':
-      if category == defaultcategorical:
+          
+        #hashing is applied when nunique exceeds the automunge parameter numbercategoryheuristic
+        #which is an integer defaulting to 255
         if nunique > numbercategoryheuristic:
           category = defaultordinal
-        #here 0.75 is a heuristic, might be worth some fine tuning of this threshold
-        if nunique > df.shape[0] * 0.75:
-          category = defaultordinal_allunique
-
-      #new statistical tests for numerical sets from v2.25
-      #I don't consider mytself an expert here, these are kind of a placeholder while I conduct more research
-
-  #     #default to 'nmbr' category instead of 'bxcx'
-  #     if category == 'bxcx' and powertransform is False:
-  #       category = 'nmbr'
-
-      if category in {'nmbr', 'bxcx', defaultnumerical} \
+          
+        #multi-column hasing is reserved for unstructured text as evidenced by nearly all unique
+        if nunique > 0.75 * rowcount:
+          defaultordinal_allunique
+      
+      #now for numeric sets we default to z-score normalziation
+      #note this may be overwritten below based on powertransform parameter
+      elif mostcommon_type == 'number':
+        
+        category = defaultnumerical
+        
+      #now for datetime sets we apply a set of encodings per dat6 root category
+      elif mostcommon_type == 'datetime':
+        
+        category = defaultdatetime
+        
+      #final scenario is for all nan training data sets which are deleted by default
+      elif mostcommon_type == 'nan':
+        
+        category = defaultnull
+        
+      #____
+      
+      #When powertransform = True, we measure statistics of numeric sets for potential overwrite
+      if category in {defaultnumerical} \
       and powertransform is True:
         
+        #these statistic tests require at least three unique entries
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
-
-          #shapiro tests for normality, we'll use a common threshold p<0.05 to reject the normality hypothesis
+          
+          #shapiro tests for normality, p is the metric we can compare to threshold to reject the normality hypothesis
           stat, p = stats.shapiro(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+          
           #a typical threshold to test for normality is >0.05, let's try a lower bar for this application
           if p > 0.025:
-            category = 'nmbr'
-          if p <= 0.025:
+            category = defaultnumerical
+            
+          elif p <= 0.025:
+            
             #skewness helps recognize exponential distributions, reference wikipedia
             #reference from wikipedia
-    #       A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
-    #       A half-normal distribution has a skewness just below 1
-    #       An exponential distribution has a skewness of 2
-    #       A lognormal distribution can have a skewness of any positive value, depending on its parameters
-            #skewness = skew(df[column])
+            # A normal distribution and any other symmetric distribution with finite third moment has a skewness of 0
+            # A half-normal distribution has a skewness just below 1
+            # An exponential distribution has a skewness of 2
+            # A lognormal distribution can have a skewness of any positive value, depending on its parameters
+            
             skewness = stats.skew(df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float))
+            
             if skewness < 1.5:
               category = 'mnmx'
+              
             else:
-              #if powertransform is True:
-              if category in {'nmbr', 'bxcx'}:
-
-                #note we'll only allow bxcx category if all values greater than a clip value
-                #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
-                if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
-                  category = 'bxcx'
-
-                else:
-                  category = 'nmbr'
-
+              
+              #note we'll only allow bxcx category if all values greater than a clip value
+              #>0 (currently set at 0.1) since there is an asymptote for box-cox at 0
+              if (df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float) >= 0.1).all():
+                category = 'bxcx'
+                
               else:
                 category = 'MAD3'
-
+                
+      #____
+      
       del df
       
-      #special cases for evlauation of labels column
+      #we'll overwrite to the label defaults when this is a labels set as would be designated by labels parameter
       if labels is True:
 
         #(defaultnumerical = 'nmbr')
@@ -22906,7 +22841,7 @@ class AutoMunge:
         if category == 'text':
           category = 'lbor'
           
-        if category == 'bnry':
+        if category == defaultbnry:
           category = 'lbbn'
           
         #(defaultdatetime = 'dat6')
@@ -24403,21 +24338,20 @@ class AutoMunge:
         
         if leakage_set_returned_entry_1 not in leakage_dict:
           
-          leakage_dict.update({leakage_set_returned_entry_1 : []})
+          leakage_dict.update({leakage_set_returned_entry_1 : set()})
           
-        for leakage_set_returned_entry_2 in leakage_set_returned:
-          
-          #it is better python practice to search within a set than list, for now keeping these as lists for consistency
-          #this could be an opportunity for further tweaking for small performance benefit
-          if leakage_set_returned_entry_1 != leakage_set_returned_entry_2 \
-          and leakage_set_returned_entry_2 not in postprocess_dict['column_dict'][leakage_set_returned_entry_1]['columnslist'] \
-          and leakage_set_returned_entry_2 not in leakage_dict[leakage_set_returned_entry_1]:
-            
-            leakage_dict[leakage_set_returned_entry_1].append(leakage_set_returned_entry_2)
-            
+        #we'll add any entries from leakage_set_returned not already populated
+        leakage_dict[leakage_set_returned_entry_1] = \
+        leakage_dict[leakage_set_returned_entry_1] | set(leakage_set_returned)
+        
+    #now scrub columnslist entries for each key of leakage_dict (columnslists are handled seperately in _createMLinfillsets)
+    for leakage_dict_key in leakage_dict:
+      leakage_dict[leakage_dict_key] = \
+      leakage_dict[leakage_dict_key] - set(postprocess_dict['column_dict'][leakage_dict_key]['columnslist'])
+      
     #great leakage_dict is now populated, return in ML_cmnd
     ML_cmnd.update({'leakage_dict' : leakage_dict})
-    
+
     return ML_cmnd
 
   def _MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
@@ -26682,7 +26616,7 @@ class AutoMunge:
 
       #first validate that data is all valid numeric
       FS_numeric_data_result, FS_all_valid_entries_result = \
-      self.validate_allvalidnumeric(am_train, printstatus)
+      self._validate_allvalidnumeric(am_train, printstatus)
 
       FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
       FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
@@ -27167,13 +27101,13 @@ class AutoMunge:
     if len(postprocess_assigninfill_dict['MLinfill']) > 0:
 
       train_numeric_data_result, train_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_train, printstatus)
+      self._validate_allvalidnumeric(df_train, printstatus)
 
       infill_validations.update({'MLinfill_train_numeric_data_result': train_numeric_data_result})
       infill_validations.update({'MLinfill_train_all_valid_entries_result': train_all_valid_entries_result})
       
       test_numeric_data_result, test_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_test, printstatus)
+      self._validate_allvalidnumeric(df_test, printstatus)
 
       infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
       infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
@@ -27735,7 +27669,7 @@ class AutoMunge:
     if len(postprocess_assigninfill_dict['MLinfill']) > 0:
       
       test_numeric_data_result, test_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_test, printstatus)
+      self._validate_allvalidnumeric(df_test, printstatus)
 
       infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
       infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
@@ -29794,7 +29728,7 @@ class AutoMunge:
       
     return infill_validations
 
-  def validate_allvalidnumeric(self, df, printstatus):
+  def _validate_allvalidnumeric(self, df, printstatus):
     """
     #some methods in library, such as ML infilll, PCA, and feature importance, 
     #require all numeric data with all valid entries
@@ -33752,7 +33686,7 @@ class AutoMunge:
       #run validation to ensure the df_train contains all valid numeric entries
       #since a value comparison is performed as part of _evalPCA
       PCA_train_first_numeric_data_result, PCA_train_first_all_valid_entries_result = \
-      self.validate_allvalidnumeric(df_train, printstatus)
+      self._validate_allvalidnumeric(df_train, printstatus)
 
       miscparameters_results.update({'PCA_train_first_numeric_data_result': PCA_train_first_numeric_data_result})
       miscparameters_results.update({'PCA_train_first_all_valid_entries_result': PCA_train_first_all_valid_entries_result})
@@ -33818,13 +33752,13 @@ class AutoMunge:
 
         #run validation to ensure the PCA sets contain all valid numeric entries
         PCA_train_numeric_data_result, PCA_train_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_train, printstatus)
+        self._validate_allvalidnumeric(PCAset_train, printstatus)
   
         miscparameters_results.update({'PCA_train_numeric_data_result': PCA_train_numeric_data_result})
         miscparameters_results.update({'PCA_train_all_valid_entries_result': PCA_train_all_valid_entries_result})
       
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_test, printstatus)
+        self._validate_allvalidnumeric(PCAset_test, printstatus)
   
         miscparameters_results.update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         miscparameters_results.update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
@@ -34215,7 +34149,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.62'
+    automungeversion = '6.63'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -41897,7 +41831,7 @@ class AutoMunge:
 
         #first validate that data is all valid numeric
         FS_numeric_data_result, FS_all_valid_entries_result = \
-        self.validate_allvalidnumeric(am_train, printstatus)
+        self._validate_allvalidnumeric(am_train, printstatus)
   
         FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
         FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
@@ -42947,7 +42881,7 @@ class AutoMunge:
             
         #quick validation that PCA set has all valid numeric entries
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
-        self.validate_allvalidnumeric(PCAset_test, printstatus)
+        self._validate_allvalidnumeric(PCAset_test, printstatus)
   
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
