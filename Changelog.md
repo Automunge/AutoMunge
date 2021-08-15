@@ -3893,3 +3893,18 @@ ML_cmnd = {'autoML_type'     :'xgboost',
 - resulting in a material improvement to automunge(.) latency
 - the rewrite also resulted in a much cleaner code presentation, we believe will make this function easier to understand now
 - (this function was one of the first ones that we wrote :)
+
+6.64
+- removed collections.Counter import that is no longer used after 6.63 rewrite of _evalcategory
+- performed an audit of leakage_sets rolled out in 6.61
+- identified an opportunity for improved specification granularity
+- specifically, leakage_sets as implemented were for specifying bidirectional ML infill basis exclusions
+- i.e. for a list of features, every feature in list was excluded from basis of every other feature in list
+- realized there may be scenarios where a unidirectional exclusion is prefered
+- such as to exclude feature2 from feature1 basis but include feature1 in feature2 basis
+- so now in addition to ML_cmnd['leakage_sets'] for bidirectional specification, user can also specify unidirectional exclusions in ML_cmnd['leakage_dict'] which accepts dictionaries in form of column header key with value of a set of column headers
+leakage_dict = {feature1 : {feature2}}
+- where headers can be specified in input or returned header conventions or combinations thereof (where returned headers include suffix appenders)
+- note that as part of this update, ML infill exclusions derived as a result of leakage_tolerance specification are now captured in a unidirecitonal capacity as opposed to bidirectional
+- which is more in line with our description provided as part of conference review
+- note that in returned postprocess_dict['ML_cmnd'], the prior returned entries of leakage_sets_orig and leakage_sets_derived are now replaced with leakage_dict_orig and leakage_dict_derived
