@@ -757,9 +757,11 @@ reverse sorting of columns by count of missing entries in the df_train set.
 ML infill without preprocessing transformations, can pass in conjunction parameter 
 powertransform = 'infill')
 
-To exclude particular features from eachother's imputation model bases
+To bidirectionally exclude particular features from eachother's imputation model bases
 (such as may be desired in expectation of data leakage), a user can designate via
 entries to ML_cmnd['leakage_sets'], documented further below with ML_cmnd parameter.
+Or to unidirectionally exclude features from anoter's basis, a user can designate
+via entries to ML_cmnd['leakage_dict'], also documented below.
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
 accross rows, documented further below with ML_cmnd parameter. This operation
@@ -1067,13 +1069,18 @@ an ML_cmnd entry as a float to ML_cmnd['stochastic_impute_categoric_flip_prob'].
 with infilliterate early stopping criteria associated with ML_cmnd['halt_iterate'] documented
 above with the infilliterate parameter.)
 
-To exclude particular features from eachother's imputation model bases
+To bidirectionally exclude particular features from eachother's imputation model bases
 (such as may be desired in expectation of data leakage), a user can designate via
 entries to ML_cmnd['leakage_sets'], which accepts entry of a list of column headers
 or as a list of lists of column headers, where for each list of column headers, 
 entry's will be excluded from eachother's imputation model basis. We suggest 
 populating with column headers in form of data passed to automunge(.) (before suffix
-appenders) although specific returred column headers can also be included if desired.
+appenders) although specific returned column headers can also be included if desired.
+
+To unidirectionally exclude particular features from anotehr feature's imputation model basis, 
+a user can designate via entries to ML_cmnd['leakage_dict'], which accepts entry of a dicitonary
+with target feature keys and values of a set of features to exclude from the target feature's
+basis. This also accepts headers in either of input or returned convention.
 
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
