@@ -21,7 +21,6 @@ import types
 import datetime as dt
 
 #imports for _evalcategory, _getNArows
-from collections import Counter
 # from scipy.stats import shapiro
 # from scipy.stats import skew
 
@@ -24189,17 +24188,18 @@ class AutoMunge:
     
     target features are those features which will have any returned columns serving as ML infill target
     
-    the results are appended to any entries in user specified ML_cmnd['leakage_sets']
-    for exclusion in associated ML infill bases
+    the results are appended to any entries in user specified ML_cmnd['leakage_dict']
+    for unidirectional exclusion in associated ML infill bases
     
-    accepts parameters ML_cmnd, postprocess_dict, masterNArows_train, MLinfill_targets
+    accepts parameters ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict
     each as in form after application of transformations and before infill
-    and where MLinfill_targets is a list of targets for MLinfill imputation as recorded in postprocess_assigninfill_dict
+    and where MLinfill_targets is a list of targets in returned header convention for MLinfill imputation to be accessed from postprocess_assigninfill_dict
     
-    note that this function is to be applied prior to _convert_leakage_sets
+    note that this function is to be applied prior to _convert_leakage_dict which is prior to _convert_leakage_sets 
     
     note that masterNArows_train will have headers derived as origcolumn+'_NArows'
-    and ML_cmnd['leakage_sets'] takes entries in form of a list of lists of input columns headers (origcolumn)
+    and ML_cmnd['leakage_dict'] takes entries in form of {feature1 : {feature2}}
+    where feature2 entries are exlcuded from feature1 basis
     
     note this operation can be deactivated by passing ML_cmnd['leakage_tolerance'] = 1 (or False)
     for increased sensitivity, set a lower leakage_tolerance threshold, accepts floats in range 0-1 inclusive
@@ -24210,26 +24210,16 @@ class AutoMunge:
     else:
       leakage_tolerance = 0.85
       
-    #evaluation not perormed when leakage_tolerance == 1
+    leakage_dict_derived = {}
+      
+    #evaluation not performed when leakage_tolerance == 1 or leakage_tolerance is False
     if leakage_tolerance < 1 and leakage_tolerance is not False:
-
-      if 'leakage_sets' in ML_cmnd:
-        leakage_sets_orig = ML_cmnd['leakage_sets']
-      else:
-        leakage_sets_orig = [[]]
-
-      #if only a one tier set, embed in a list for common form
-      if len(leakage_sets_orig) > 0 and not isinstance(leakage_sets_orig[0], list) or leakage_sets_orig == []:
-        leakage_sets_orig = [leakage_sets_orig]
-
-      #leakage_sets_orig is based on what's passed through ML_cmnd, 
-      #leakage_sets derived here will later be added as well as returned seperately as ML_cmnd['leakage_sets_derived']
-      leakage_sets = [[]]
-
+      
       NArows_columns = list(masterNArows_train.columns)
       
       MLinfill_targets = postprocess_assigninfill_dict['MLinfill']
       
+      #convert MLinfill_targets to input header convention
       MLinfill_targets = \
       self._column_convert_support(MLinfill_targets, postprocess_dict, convert_to='input')
       
@@ -24245,44 +24235,126 @@ class AutoMunge:
       #for input column header
       for targetcolumn in MLinfill_targets:
         
-        targetcolumn_result_list = [targetcolumn]
-
         targetcolumn_NArow = targetcolumn + '_NArows'
 
         for othercolumn in origcolumns:
 
           if othercolumn != targetcolumn:
             
-            othercolumn_NArow = othercolumn + '_NArows'
-            
-            #checking for ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > tolerance
-            temp_df = pd.DataFrame(masterNArows_train[targetcolumn_NArow].astype(int) + masterNArows_train[othercolumn_NArow].astype(int))
+            if targetcolumn not in leakage_dict_derived \
+            or targetcolumn in leakage_dict_derived \
+            and othercolumn not in leakage_dict_derived[targetcolumn]:
 
-            numerator = temp_df[temp_df[0] == 2].shape[0]
-            denominator = masterNArows_train[masterNArows_train[targetcolumn_NArow] == True].shape[0]
+              othercolumn_NArow = othercolumn + '_NArows'
 
-            if denominator > 0:
-              othercolumn_result = numerator / denominator
-            else:
-              othercolumn_result = 0
-            
-            #othercolumn_result will be a float potentially in range between 0 and 1 inclusive
-            if othercolumn_result > leakage_tolerance:
-              
-              targetcolumn_result_list.append(othercolumn)
-              
-        if len(targetcolumn_result_list) > 1:
+              #checking for ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > tolerance
+              temp_df = pd.DataFrame(masterNArows_train[targetcolumn_NArow].astype(int) + masterNArows_train[othercolumn_NArow].astype(int))
+
+              numerator = temp_df[temp_df[0] == 2].shape[0]
+              denominator = masterNArows_train[masterNArows_train[targetcolumn_NArow] == True].shape[0]
+
+              if denominator > 0:
+                othercolumn_result = numerator / denominator
+              else:
+                othercolumn_result = 0
+
+              #othercolumn_result will be a float potentially in range between 0 and 1 inclusive
+              if othercolumn_result > leakage_tolerance:
+
+                if targetcolumn not in leakage_dict_derived:
+                  leakage_dict_derived.update({targetcolumn : set()})
+
+                leakage_dict_derived[targetcolumn] = \
+                leakage_dict_derived[targetcolumn] | {othercolumn}
+
+    ML_cmnd.update({'leakage_dict_derived' : leakage_dict_derived})
+
+    return ML_cmnd
+
+  def _convert_leakage_dict(self, ML_cmnd, postprocess_dict):
+    """
+    leakage_dict accepts entries in the form {feature1 : {feature2}}
+    where entries to the feature2 set are unidirectionally excluded from feature1 basis for ML infill
+    accepts features as column headers in either the input or returned convention with suffix
+    (and potentially mixed between the two)
+    
+    _convert_leakage_dict is for converting leakage_dict to a single convention of returned header
+    for both the keys and the value sets
+    
+    it returns the received leakage_dict as leakage_dict_orig
+    and a newly populated leakage_dict as leakage_dict
+    which includes entries converted to returned column convention
+    including a combination of those originating from leakage_dict_orig or leakage_dict_derived
+    
+    note this function is applied after _check_for_leakage
+    note that after this consolidation an additional consolidation is conducted in _convert_leakage_sets
+    to incorporate entries associated with leakage_sets
+    
+    (leakage_sets are for specifying bidirectional exclusions, leakage_dict is for specifying unidirectional, 
+    the _check_for_leakage function identifies unidirectional and returns as leakage_dict_derived
+    leakage_dict is converted to the final consolidated form inspected in _createMLinfillsets
+    which includes specifications for both unidirectional and birdirectional)
+    
+    note that a final bit of leakage_dict prep is later performed in _convert_leakage_sets to scrub columnslist entries
+    """
+    
+    if 'leakage_dict' in ML_cmnd:
+      leakage_dict_orig = ML_cmnd['leakage_dict']
+    else:
+      ML_cmnd.update({'leakage_dict':{}})
+      leakage_dict_orig = {}
+    ML_cmnd.update({'leakage_dict_orig' : leakage_dict_orig})
+      
+    if 'leakage_dict_derived' in ML_cmnd:
+      leakage_dict_derived = ML_cmnd['leakage_dict_derived']
+    else:
+      leakage_dict_derived = {}
+      
+    #we'll populate our consolidated entries in returned column convention in leakage_dict_converted
+    leakage_dict_converted = {}
+    
+    #first we'll convert the leakage_dict_orig keys to returned convention and populate in our empty leakage_dict_converted
+    for key in leakage_dict_orig:
+      
+      if key in postprocess_dict['origcolumn']:
+        
+        key_returned_list = postprocess_dict['origcolumn'][key]['columnkeylist']
+        
+        for key_returned in key_returned_list:
           
-          #adds an entry for targetcolumn in cases any of the othercolumns were appended on targetcolumn_result_list
-          leakage_sets.append(targetcolumn_result_list)
-     
-      #this replaces any ML_cmnd['leakage_sets'] entry with the updated set with results appended
-      ML_cmnd.update({'leakage_sets_derived' : leakage_sets})
-      ML_cmnd.update({'leakage_sets_orig' : leakage_sets_orig})
-
-      leakage_sets = leakage_sets + leakage_sets_orig
-      ML_cmnd.update({'leakage_sets' : leakage_sets})
-
+          leakage_dict_converted.update({key_returned : leakage_dict_orig[key]})
+          
+      else:
+        
+        leakage_dict_converted.update({key : leakage_dict_orig[key]})
+      
+    #next we add keys and values associated with leakage_dict_derived which will be received in inputcolumn form
+    for key in leakage_dict_derived:
+      
+      key_returned_list = postprocess_dict['origcolumn'][key]['columnkeylist']
+      
+      for key_returned in key_returned_list:
+        
+        if key_returned not in leakage_dict_converted:
+          
+          leakage_dict_converted.update({key_returned : leakage_dict_derived[key]})
+          
+        else:
+          
+          leakage_dict_converted[key_returned] = \
+          leakage_dict_converted[key_returned] | leakage_dict_derived[key]
+          
+    #then we'll translate all leakage_dict_converted values to returned convention
+    for key in leakage_dict_converted:
+      
+      translatedcolumns_list = \
+      self._column_convert_support(list(leakage_dict_converted[key]), postprocess_dict, convert_to='returned')
+      
+      leakage_dict_converted[key] = set(translatedcolumns_list)
+    
+    #the consolidated leakage_dict in returned column convention is returned as ML_cmnd['leakage_dict']
+    ML_cmnd['leakage_dict'] = leakage_dict_converted
+      
     return ML_cmnd
 
   def _convert_leakage_sets(self, ML_cmnd, postprocess_dict):
@@ -24290,31 +24362,40 @@ class AutoMunge:
     ML_cmnd accepts entries to ML_cmnd['leakage_sets'] as a list of input columns or a list of list of input columns
     each list of columns as can be considered an individual "leakage_set"
     (refering to them as a set even thought populated as lists, just going to go with it)
+    leakage_sets are for specifying bidirectional ML infill basis exclusions
 
     note user can also pass column headers in leakage_sets as returned column headers to only exclude specific derived features
+    in other words, leakage_set entries can be in either of ort mixed between input and returned header convention
     
     leakage sets are for purposes of specifying features that are to be excluded from each other's ML infill basis
     _convert_leakage_sets is for purposes of converting the received form into a more useful data structure
     mapping columns in the returned form with suffix appenders
+    by converting to form of leakage_dict
+    which will be recieved already populated with any entries from user specification or derived based on leakage tolerance
     
     leakage_dict = \
-    {returnedcolumn : [list of returned columns to exclude from the key's basis]}
+    {returnedcolumn : {set of returned columns to exclude from the key's basis}}
     
     note that we will only map returned columns not already included in the key returnedcolumn's columnslist
     as columnslist entries are already excluded from each other's ML infill basis
     
-    returns ML_cmnd with added entry ML_cmnd['leakage_dict']
+    returns ML_cmnd with edited entry ML_cmnd['leakage_dict']
     
     note this function is to be applied after transformations and before infill 
     so we'll have access to column_dict in postprocess_dict
     """
     
-    leakage_sets = []
-    leakage_dict = {}
-    
     #access leakage_sets from ML_cmnd
     if 'leakage_sets' in ML_cmnd:
       leakage_sets = ML_cmnd['leakage_sets']
+    else:
+      leakage_sets = []
+
+    #access leakage_sets from ML_cmnd
+    if 'leakage_dict' in ML_cmnd:
+      leakage_dict = ML_cmnd['leakage_dict']
+    else:
+      leakage_dict = {}
     
     #if only a one tier set, embed in a list for common form
     if len(leakage_sets) > 0 and not isinstance(leakage_sets[0], list) or leakage_sets == []:
@@ -33606,11 +33687,14 @@ class AutoMunge:
 
     #now we'll check for any signs of data leakage across features
     #as evidenced by high correlation of missing entries accross rows
-    #these results will be appended to any user passed leakage_sets
+    #these results will be appended to any user passed leakage_dict
+    #where leakage_dict is for unidirectional specificaiton of ML infill basis exclusions
     ML_cmnd = self._check_for_leakage(ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict)
 
-    #then we'll run a support function associated with an ML_cmnd entry inspected in ML infill
-    #to designate features excluded from each other's ML infill basis
+    #now we convert leakage_dict to returned header convention, including derived and user defined entries
+    ML_cmnd = self._convert_leakage_dict(ML_cmnd, postprocess_dict)
+
+    #then we'll populate additional leakage_dict entries associated with bidirectional leakage_sets specification
     ML_cmnd = self._convert_leakage_sets(ML_cmnd, postprocess_dict)
 
     #now apply infill
@@ -34149,7 +34233,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.63'
+    automungeversion = '6.64'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
