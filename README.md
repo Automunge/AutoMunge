@@ -438,7 +438,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-	     featureeval = False, traindata = False,
+             featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False)
 ```
@@ -1174,7 +1174,7 @@ assigncat = {'nbr2':['nmbrcolumn1', 'nmbrcolumn2']}
 Note that for single entry column assignments a user can just pass the string or integer 
 of the column header without the list brackets.
 
-* assignparam
+* assignparam:
 A user may pass column-specific or category specific parameters to those transformation 
 functions that accept parameters. Any parameters passed to automunge(.) will be saved in
 the postprocess_dict and consistently applied in postmunge(.). assignparam is 
@@ -3121,6 +3121,11 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: 
     - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in received column)
   - assignparam parameters accepted:
+    - 'null_activation': defaults to False, when True missing data is returned with distinct activation
+    - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
+    - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
   - returned datatype: int8
   - inversion available: yes with full recovery
@@ -3134,6 +3139,11 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'null_activation': defaults to False, when True missing data is returned with distinct activation
+    - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
+    - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - returned datatype: int8
@@ -4425,7 +4435,7 @@ present in dataframe and return results in final printouts and postprocess_dict[
 - 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
-populated with an index matching order of rows from original returned set, note that if this string is already present in the ID sets
+populated with an index matching order of rows from original returned set, note that if this header is already present in the ID sets
 it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number.
 
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
