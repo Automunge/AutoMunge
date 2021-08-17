@@ -3908,3 +3908,20 @@ leakage_dict = {feature1 : {feature2}}
 - note that as part of this update, ML infill exclusions derived as a result of leakage_tolerance specification are now captured in a unidirecitonal capacity as opposed to bidirectional
 - which is more in line with our description provided as part of conference review
 - note that in returned postprocess_dict['ML_cmnd'], the prior returned entries of leakage_sets_orig and leakage_sets_derived are now replaced with leakage_dict_orig and leakage_dict_derived
+
+6.65
+- a big cleanup to both text and onht transforms for one-hot encoding
+- in some portions may be considered a full rewrite
+- note that in addition to the suffix convention, onht has a few subtle distinctions vs. text
+- in text numbers are converted to strings prior to encoding, so 2 == '2' for instance (needed for suffix convention)
+- whereas in onht numbers and strings recieve a distinct activation (unless str_convert parameter activated)
+- also in text missing data is represented prior to ML infill as no activation, whereas prior onht missing data was given distinct activation
+- new convention for onht, missing data is returned without activation to be consistent with text
+- new set of parameters accepted for both text and onht as 'null_activation', 'all_activations', 'add_activations', 'less_activations', and 'consolidated_activations'
+- null_activation defaults to False, when True missing data is returned with distinct activation as per prior convention for onht
+- all_activations defaults to False, user can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
+- add_activations defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
+- less_activations defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+- consolidated_activations defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
+- the returned activation reported as the first entry in each consolidation list
+- also found and fixed edge case with pickle download operation to save a populated postprocess_dict associated with internal processdict manipulations editing exterior object (appeared to manifest when passing the same processdict to multiple automunge(.) calls without reinitializing)
