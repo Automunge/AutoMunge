@@ -10536,6 +10536,41 @@ class AutoMunge:
     else:
       str_convert = False
 
+    #null_activation is to have a distinct column for missing data
+    #note that when activated, entries in test set not found in train set will still be returned without activation
+    if 'null_activation' in params:
+      null_activation = params['null_activation']
+    else:
+      null_activation = False
+
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in params:
+      #accepts False or a list of activation targets
+      all_activations = params['all_activations']
+    else:
+      all_activations = False
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in params:
+      #accepts False or a list of added activation targets
+      add_activations = params['add_activations']
+    else:
+      add_activations = False
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in params:
+      #accepts False or a list of removed activation targets
+      less_activations = params['less_activations']
+    else:
+      less_activations = False
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in params:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = params['consolidated_activations']
+    else:
+      consolidated_activations = False
+
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -10591,24 +10626,54 @@ class AutoMunge:
     labels_test = sorted(labels_test, key=str)
     labels_test = list(labels_test)
 
-    #pandas one hot encoding doesn't sort integers and strings properly so using my own
-    df_train_cat = pd.DataFrame(mdf_train[tempcolumn])
-    df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
-    for entry in labels_train:
-      df_train_cat[entry] = np.where(mdf_train[tempcolumn] == entry, 1, 0)
-      df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
-    del df_train_cat[tempcolumn]
-    del df_test_cat[tempcolumn]
-    
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    if null_activation is False and 'zzzinfill' in labels_train:
+      labels_train.remove('zzzinfill')
+
+    if all_activations is not False:
+      labels_train = sorted(all_activations, key=str)
+
+    if add_activations is not False:
+      labels_train = list(set(labels_train) | set(add_activations))
+      labels_train = sorted(labels_train, key=str)
+
+    if less_activations is not False:
+      labels_train = list(set(labels_train) - set(less_activations))
+      labels_train = sorted(labels_train, key=str)
+
+    #one hot encoding support function
+    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=1, activations_list=labels_train)
+    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
+
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
+    labels_train_after_consolidation = labels_train.copy()
+    returned_consolidations = []
+    if consolidated_activations is not False:
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+      for consolidation_list in consolidated_activations:
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+        returned_consolidations.append(returned_consolidation)
+        if returned_consolidation not in df_train_cat:
+          labels_train_after_consolidation.append(returned_consolidation)
+          df_train_cat[returned_consolidation] = 0
+          df_test_cat[returned_consolidation] = 0
+        for consolidation_target in consolidation_list:
+          if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
+            labels_train_after_consolidation.remove(consolidation_target)
+            df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
+            df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+            del df_train_cat[consolidation_target]
+            del df_test_cat[consolidation_target]
+
     labels_dict = {}
     i = 0
-    for entry in labels_train:
+    for entry in labels_train_after_consolidation:
       labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
       i += 1
-    
-    #convert sparse array to pandas dataframe with column labels
-    df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_train
 
     #Get missing columns in test set that are present in training set
     missing_cols = set( df_train_cat.columns ) - set( labels_test )
@@ -10620,59 +10685,24 @@ class AutoMunge:
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
-    del mdf_train[tempcolumn]    
+    del mdf_train[tempcolumn]
     del mdf_test[tempcolumn]
     
-    #delete _NArw column, this will be processed seperately in the processfamily function
-    #delete support NArw2 column
-#     columnNArw = column + '_NArw'
-    columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in mdf_train.columns:
-      del mdf_train[columnNAr2]
-    if columnNAr2 in mdf_test.columns:
-      del mdf_test[columnNAr2]
-    if 'zzzinfill' in orig_labels_train:
-      orig_labels_train.remove('zzzinfill')
-
-#     del mdf_train[column + '_NAr2']    
-#     del mdf_test[column + '_NAr2']
-    
-    #create output of a list of the created column names
-    NAcolumn = columnNAr2
-    labels_train = list(df_train_cat)
-    if NAcolumn in labels_train:
-      labels_train.remove(NAcolumn)
-    textcolumns = labels_train
-    
-    #now we'll creaate a dicitonary of the columns : categories for later reference
-    #reminder here is list of. unque values from original column
-    #labels_train
-    
-    normalizationdictvalues = labels_train
-    normalizationdictkeys = textcolumns
-    
-    normalizationdictkeys = sorted(normalizationdictkeys, key=str)
-    normalizationdictvalues = sorted(normalizationdictvalues, key=str)
-    
-    #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
-    textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
-    
     #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in textcolumns:
+    for textcolumn in labels_train_after_consolidation:
       mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
       mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    categorylist = textcolumns.copy()
-#     categorylist.remove(columnNArw)
+    text_equiv_categorylist = labels_train_after_consolidation.copy()
 
     #now convert coloumn headers from text convention to onht convention
     mdf_train = mdf_train.rename(columns=labels_dict)
     mdf_test  = mdf_test.rename(columns=labels_dict)
     
-    textcolumns = [labels_dict[entry] for entry in textcolumns]
+    textcolumns = [labels_dict[entry] for entry in labels_train_after_consolidation]
     
     inverse_labels_dict = {value:key for key,value in labels_dict.items()}
 
@@ -10682,13 +10712,20 @@ class AutoMunge:
       tc_ratio = tc + '_ratio'
       tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
 
-      textnormalization_dict = {tc : {'textlabelsdict_onht' : textlabelsdict, \
-                                      tc_ratio : tcratio, \
+      textnormalization_dict = {tc : {tc_ratio : tcratio, \
                                       'labels_dict' : labels_dict, \
                                       'inverse_labels_dict' : inverse_labels_dict, \
-                                      'text_categorylist' : categorylist, \
+                                      'text_categorylist' : text_equiv_categorylist, \
+                                      'labels_train_before_consolidation' : labels_train, \
+                                      'labels_train_after_consolidation' : labels_train_after_consolidation, \
+                                      'returned_consolidations' : returned_consolidations, \
                                       'suffix' : suffix, \
                                       'defaultinfill_dict' : defaultinfill_dict,
+                                      'null_activation' : null_activation,
+                                      'all_activations' : all_activations,
+                                      'add_activations' : add_activations,
+                                      'less_activations' : less_activations,
+                                      'consolidated_activations' : consolidated_activations, \
                                       'str_convert' : str_convert}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -10730,6 +10767,41 @@ class AutoMunge:
     
     suffixoverlap_results = {}
     
+    #null_activation is to have a distinct column for missing data
+    #note that when activated, entries in test set not found in train set will still be returned without activation
+    if 'null_activation' in params:
+      null_activation = params['null_activation']
+    else:
+      null_activation = False
+      
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in params:
+      #accepts False or a list of activation targets
+      all_activations = params['all_activations']
+    else:
+      all_activations = False
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in params:
+      #accepts False or a list of added activation targets
+      add_activations = params['add_activations']
+    else:
+      add_activations = False
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in params:
+      #accepts False or a list of removed activation targets
+      less_activations = params['less_activations']
+    else:
+      less_activations = False
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in params:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = params['consolidated_activations']
+    else:
+      consolidated_activations = False
+    
     tempsuffix = str(mdf_train[column].unique()[0])
     
     tempcolumn = column + '_' + tempsuffix
@@ -10768,95 +10840,114 @@ class AutoMunge:
     #extract categories for column labels
     #note that .unique() extracts the labels as a numpy array
     labels_train = mdf_train[tempcolumn].unique()
-    labels_train.sort(axis=0)
+    labels_train = sorted(labels_train, key=str)
     labels_train = list(labels_train)
     orig_labels_train = list(labels_train.copy())
     labels_test = mdf_test[tempcolumn].unique()
-    labels_test.sort(axis=0)
+    labels_test = sorted(labels_test, key=str)
     labels_test = list(labels_test)
+    
+    #this is to save activations before converting to column header convention
+    labels_train_orig = labels_train.copy()
+    labels_test_orig = labels_test.copy()
+    
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    if null_activation is False and 'zzzinfill' in labels_train:
+      labels_train.remove('zzzinfill')
+      
+    if all_activations is not False:
+      labels_train = sorted(all_activations, key=str)
+      
+    if add_activations is not False:
+      labels_train = list(set(labels_train) | set(add_activations))
+      labels_train = sorted(labels_train, key=str)
+      
+    if less_activations is not False:
+      labels_train = list(set(labels_train) - set(less_activations))
+      labels_train = sorted(labels_train, key=str)
+      
+    #labels_train may have some edits based on parameters
+    labels_train_orig_afterparams = labels_train.copy()
+    labels_test_orig_afterparams = labels_test.copy()
 
     #one hot encoding support function
-    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=0)
-    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
-
-    #append column header name to each category listing
-    labels_train = [column + '_' + entry for entry in labels_train]
-    labels_test = [column + '_' + entry for entry in labels_test]
+    #note that since entries are all string we can just rely on sorting having already taken place so using scenario 1
+    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=1, activations_list=labels_train)
+    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
     
-    #convert sparse array to pandas dataframe with column labels
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
+    labels_train_after_consolidation = labels_train.copy()
+    returned_consolidations = []
+    if consolidated_activations is not False:
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+      for consolidation_list in consolidated_activations:
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+        returned_consolidations.append(returned_consolidation)
+        if returned_consolidation not in df_train_cat:
+          labels_train_after_consolidation.append(returned_consolidation)
+          df_train_cat[returned_consolidation] = 0
+          df_test_cat[returned_consolidation] = 0
+        for consolidation_target in consolidation_list:
+          if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
+            labels_train_after_consolidation.remove(consolidation_target)
+            df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
+            df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+            del df_train_cat[consolidation_target]
+            del df_test_cat[consolidation_target]
+
+    #append column header name to each category listing (can now discard labels_test since df_test_cat has headers per labels_train)
+    labels_train = [column + '_' + entry for entry in labels_train_after_consolidation]
+    
+    #in the returned dataframe df_train_cat, columns headers will match labels_train_orig_afterparams
+    #convert to column headers with returned header convention (column + _ + entry)
     df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_test
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
-
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[df_train_cat.columns]
+    df_test_cat.columns = labels_train
 
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
     
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
+    self._df_check_suffixoverlap(mdf_train, labels_train, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #concatinate the sparse set with the rest of our training data
     mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
     
-    #delete _NArw column, this will be processed seperately in the processfamily function
-    #delete support NArw2 column
-#     columnNArw = column + '_NArw'
-    columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in mdf_train.columns:
-      del mdf_train[columnNAr2]
-    if columnNAr2 in mdf_test.columns:
-      del mdf_test[columnNAr2]
-    if 'zzzinfill' in orig_labels_train:
-      orig_labels_train.remove('zzzinfill')
+    #note that at this point
+    #labels_train is the set of returned columns in the returned header convention
+    #textlabelsdict_text is used to support inversion
+    textlabelsdict_text = dict(zip(labels_train, labels_train_after_consolidation))
 
-#     del mdf_train[column + '_NAr2']    
-#     del mdf_test[column + '_NAr2']
-    
-    #create output of a list of the created column names
-    NAcolumn = columnNAr2
-    labels_train = list(df_train_cat)
-    if NAcolumn in labels_train:
-      labels_train.remove(NAcolumn)
-    textcolumns = labels_train
-    
-    #now we'll creaate a dicitonary of the columns : categories for later reference
-    #reminder here is list of. unque values from original column
-    #labels_train
-    
-    normalizationdictvalues = labels_train
-    normalizationdictkeys = textcolumns
-    
-    normalizationdictkeys.sort()
-    normalizationdictvalues.sort()
-    
-    #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
-    textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
-    
     #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in textcolumns:
+    for textcolumn in labels_train:
       mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
       mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
 
-    for tc in textcolumns:
+    for tc in labels_train:
     
       #new parameter collected for driftreport
       tc_ratio = tc + '_ratio'
       tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
+      
 
-      textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict, \
+      textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict_text,
                                       'defaultinfill_dict' : defaultinfill_dict,
+                                      'labels_train' : labels_train,
+                                      'labels_train_orig' : labels_train_orig,
+                                      'labels_train_orig_afterparams' : labels_train_orig_afterparams,
+                                      'labels_train_after_consolidation' : labels_train_after_consolidation,
+                                      'null_activation' : null_activation,
+                                      'all_activations' : all_activations,
+                                      'add_activations' : add_activations,
+                                      'less_activations' : less_activations,
+                                      'consolidated_activations' : consolidated_activations,
                                       tc_ratio : tcratio}}
       
       column_dict = {tc : {'category' : treecategory, \
@@ -10864,8 +10955,8 @@ class AutoMunge:
                            'normalization_dict' : textnormalization_dict, \
                            'origcolumn' : column, \
                            'inputcolumn' : column, \
-                           'columnslist' : textcolumns, \
-                           'categorylist' : textcolumns, \
+                           'columnslist' : labels_train, \
+                           'categorylist' : labels_train, \
                            'infillmodel' : False, \
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
@@ -26017,7 +26108,7 @@ class AutoMunge:
 
     return np_1010
 
-  def _onehot_support(self, df, column, scenario=0):
+  def _onehot_support(self, df, column, scenario=0, activations_list = []):
     """
     Receives a dataframe df and target column column and a scenario id
     Converts a single column of entries that may include numeric, string, and nan
@@ -26029,6 +26120,11 @@ class AutoMunge:
     The convention of a matched index is comparable
     Part of the reason for creating this function is so will have ability to experiment with variations
     For potential use in different transformation function scenarios
+    
+    scenario == 1 is for cases where activations_list is specified
+    where activations_list is a list of entries that may be found in column
+    and df2 is returned with columns matching activations_list with activations correpsonding to those entries
+    with columns in the order of activations_list
     """
     
     #current configuration is scenario 0
@@ -26074,6 +26170,20 @@ class AutoMunge:
         if entry == entry:
           #populate column of activations in df2
           df2[entry] = pd.Series(np.where(df[column] == entry, 1, 0))
+
+      #match df2 index to df, note df2 empty when df[column] was all nan so access index differently
+      if len(list(df2)) != 0:
+        df2.index = df.index
+      else:
+        df2 = pd.DataFrame(df[column])
+        del df2[column]
+        
+    #current configuration is scenario 0
+    if scenario == 1:
+      
+      df2 = pd.DataFrame()
+      for activation in activations_list:
+        df2[activation] = np.where(df[column] == activation, 1, 0)
 
       #match df2 index to df, note df2 empty when df[column] was all nan so access index differently
       if len(list(df2)) != 0:
@@ -32779,6 +32889,9 @@ class AutoMunge:
 
     #transformdict is user passed data structure to add entries to transform_dict
     if bool(transformdict) is not False:
+      
+      #deepcopy so as not to edit exterior object
+      transformdict = deepcopy(transformdict)
 
       #validates format of transformdict
       check_transformdict000_result1, check_transformdict000_result2 = \
@@ -32832,6 +32945,9 @@ class AutoMunge:
 
     #processdict is user passed data strucure to add entries to process_dict
     if bool(processdict) is not False:
+      
+      #deepcopy so as not to edit exterior object
+      processdict = deepcopy(processdict)
       
       #this function checks if any category entries in user passed processdict 
       #have a functionpointer entry
@@ -34233,7 +34349,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.64'
+    automungeversion = '6.65'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35821,6 +35937,16 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+#       textcolumns = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']      
+      labels_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
+      consolidated_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
+      labels_train_before_consolidation = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_before_consolidation']
+      labels_train_after_consolidation = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
       
       tempcolumn = column + '_' + suffix + '_'
 
@@ -35847,20 +35973,13 @@ class AutoMunge:
       else:
         mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
 
-      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-      textcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']
-      
-      labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
-
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
 
       #we'll get the category names from the textcolumns array by stripping the \
       #prefixes of column name + '_'
 #       prefixlength = len(column)+1
-      labels_train = textcolumns[:]
+      labels_train = labels_train_before_consolidation
 #       for textcolumn in labels_train:
 #         textcolumn = textcolumn[prefixlength :]
       #labels_train.sort(axis=0)
@@ -35870,30 +35989,42 @@ class AutoMunge:
       labels_test = sorted(labels_test, key=str)
       labels_test = list(labels_test)
 
-      #pandas one hot encoding doesn't sort integers and strings properly so using my own
-      df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
-      for entry in labels_train:
-        df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
-      del df_test_cat[tempcolumn]
+      #one hot encoding support function
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
+      
+      #now apply any activation consolidations
+      if consolidated_activations is not False:
 
-      #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_train
+        for consolidation_list in consolidated_activations:
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+          
+          if returned_consolidation not in df_test_cat:
+            df_test_cat[returned_consolidation] = 0
+
+          for consolidation_target in consolidation_list:
+            if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
+              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              del df_test_cat[consolidation_target]
+
+      # #convert sparse array to pandas dataframe with column labels
+      # df_test_cat.columns = labels_train
 
       #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( labels_test )
+#       missing_cols = set( labels_train_after_consolidation ) - set( labels_test )
 
       del mdf_test[tempcolumn]
       
       #concatinate the sparse set with the rest of our training data
       mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
-      #delete support NArw2 column
-      columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in mdf_test.columns:
-        del mdf_test[columnNAr2]
+      # #delete support NArw2 column
+      # columnNAr2 = column + '_zzzinfill'
+      # if columnNAr2 in mdf_test.columns:
+      #   del mdf_test[columnNAr2]
 
       #change data types to 8-bit (1 byte) integers for memory savings
-      for textcolumn in textcolumns:
+      for textcolumn in labels_train_after_consolidation:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
         
@@ -35943,10 +36074,16 @@ class AutoMunge:
 
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-    
-      tempsuffix = str(mdf_test[column].unique()[0])
-
-      tempcolumn = column + '_' + tempsuffix
+      labels_train = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
+      consolidated_activations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
+      labels_train_orig_afterparams = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_orig_afterparams']
+      labels_train_after_consolidation = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
+      
+      tempcolumn = normkey
 
       #create copy of original column for later retrieval
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -35969,56 +36106,34 @@ class AutoMunge:
       #mdf_train[column] = mdf_train[column].astype(str)
       mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
 
-      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-      textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-
-      #we'll get the category names from the textcolumns array by stripping the \
-      #prefixes of column name + '_'
-      prefixlength = len(column)+1
-      labels_train = textcolumns[:]
-      for textcolumn in labels_train:
-        textcolumn = textcolumn[prefixlength :]
-      #labels_train.sort(axis=0)
-      labels_train.sort()
-      labels_test = mdf_test[tempcolumn].unique()
-      labels_test.sort(axis=0)
-      labels_test = list(labels_test)
-
       #apply onehotencoding
-      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train_orig_afterparams)
 
-      #append column header name to each category listing
-      labels_test = [column + '_' + entry for entry in labels_test]
+      #now apply any activation consolidations
+      if consolidated_activations is not False:
+
+        for consolidation_list in consolidated_activations:
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+          
+          if returned_consolidation not in df_test_cat:
+            df_test_cat[returned_consolidation] = 0
+
+          for consolidation_target in consolidation_list:
+            if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
+              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              del df_test_cat[consolidation_target]
 
       #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_test
-
-      #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-      #Add a missing column in test set with default value equal to 0
-      for c in missing_cols:
-          df_test_cat[c] = 0
-
-      #Ensure the order of column in the test set is in the same order than in train set
-      #Note this also removes categories in test set that aren't present in training set
-      df_test_cat = df_test_cat[textcolumns]
+      df_test_cat.columns = labels_train
 
       del mdf_test[tempcolumn]
       
       #concatinate the sparse set with the rest of our training data
       mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
-      #delete support NArw2 column
-      columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in mdf_test.columns:
-        del mdf_test[columnNAr2]
-
       #change data types to 8-bit (1 byte) integers for memory savings
-      for textcolumn in textcolumns:
+      for textcolumn in labels_train:
 
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
 
