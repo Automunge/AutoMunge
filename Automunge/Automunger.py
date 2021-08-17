@@ -10632,6 +10632,8 @@ class AutoMunge:
 
     if all_activations is not False:
       labels_train = sorted(all_activations, key=str)
+      if null_activation is True and 'zzzinfill' not in labels_train:
+        labels_train.append('zzzinfill')
 
     if add_activations is not False:
       labels_train = list(set(labels_train) | set(add_activations))
@@ -10857,6 +10859,8 @@ class AutoMunge:
       
     if all_activations is not False:
       labels_train = sorted(all_activations, key=str)
+      if null_activation is True and 'zzzinfill' not in labels_train:
+        labels_train.append('zzzinfill')
       
     if add_activations is not False:
       labels_train = list(set(labels_train) | set(add_activations))
