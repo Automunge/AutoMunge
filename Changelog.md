@@ -3925,3 +3925,19 @@ leakage_dict = {feature1 : {feature2}}
 - consolidated_activations defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
 - the returned activation reported as the first entry in each consolidation list
 - also found and fixed edge case with pickle download operation to save a populated postprocess_dict associated with internal processdict manipulations editing exterior object (appeared to manifest when passing the same processdict to multiple automunge(.) calls without reinitializing)
+
+6.67
+- new validation test performed for categoric encodings with reserved string 'zzzinfill' 
+- where string is reserved with respect to usage among entries of recieved column for a few categoric transforms
+- note that this does not cause error, entries are simply treated consistent with NaN for the transform
+- now when string found present a printout is returned and a validation result logged as
+zzzinfill_valresult = {i : {'column' : column,
+                            'traintest' : traintest}}
+- where i is an integer incremented with each occurance
+- traintest is one of {'train', 'test'} indicating where entry was found i.e. df_train vs df_test (singleprocess functions log both as 'train')
+- recorded in postprocess_dict['temp_miscparameters_results']['zzzinfill_valresult']
+- or for postmunge recorded in postreports_dict['pm_miscparameters_results']['zzzinfill_valresult']
+- this validation test perfomed in relevant transforms text/onht/smth/strn/ordl/ord3/ucct/1010
+- note that to support added a temporary entry to postprocess_dict in posmtunge to log support function validation results as 'temp_pm_miscparameters_results' which is subsequently consolidated with the returned validation results in postreports_dict and the temporary entry struck
+- found and fixed a small defaultinfill process flow snafu in strn
+- added inplace support for 1010
