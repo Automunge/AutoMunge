@@ -5382,7 +5382,7 @@ class AutoMunge:
                                    'postprocess' : self._postprocess_1010,
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
-                                   'inplace_option' : False,
+                                   'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
@@ -5392,7 +5392,7 @@ class AutoMunge:
                                    'postprocess' : self._postprocess_1010,
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
-                                   'inplace_option' : False,
+                                   'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
@@ -5402,7 +5402,7 @@ class AutoMunge:
                                    'postprocess' : self._postprocess_1010,
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
-                                   'inplace_option' : False,
+                                   'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
@@ -5412,7 +5412,7 @@ class AutoMunge:
                                    'postprocess' : self._postprocess_1010,
                                    'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
-                                   'inplace_option' : False,
+                                   'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
@@ -5532,7 +5532,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_1010,
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -7124,7 +7124,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_1010,
                                   'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -10580,6 +10580,10 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -10810,6 +10814,10 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
     
     #store original column for later retrieval
     mdf_train[tempcolumn] = mdf_train[column].copy()
@@ -11009,6 +11017,10 @@ class AutoMunge:
       suffix = treecategory
     
     tempcolumn = column + '_' + suffix + '_'
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
@@ -14837,15 +14849,21 @@ class AutoMunge:
 
                 overlap_dict.update({unique : np.nan})
     
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(df, column, postprocess_dict, traintest='train')
+
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
+    df[suffixcolumn] = df[column].copy()
+
     #apply defaultinfill based on processdict entry
     #(this will default to naninfill)
     df, defaultinfill_dict = \
     self._apply_defaultinfill(df, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
 
-    df[suffixcolumn] = df[column].astype(str)
+    df[suffixcolumn] = df[suffixcolumn].astype(str)
     df[suffixcolumn] = df[suffixcolumn].replace(overlap_dict)
 
     #replace missing data with training set mean as default infill
@@ -15397,6 +15415,10 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
     suffixcolumn = column + '_' + suffix
     
@@ -15661,6 +15683,10 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
     suffixcolumn = column + '_' + suffix
     
@@ -16119,6 +16145,10 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
     suffixcolumn = column + '_' + suffix
     
@@ -16281,6 +16311,11 @@ class AutoMunge:
     '''
     
     suffixoverlap_results = {}
+
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -16292,14 +16327,28 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
-      
+
+    #run a validation for reserved string 'zzzinfill' among entries
+    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
+    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+    
     suffixcolumn = column + '_' + suffix
+
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[suffixcolumn] = mdf_test[column].copy()
     
-    #create new column for trasnformation
-    mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-    
-    mdf_test[suffixcolumn] = mdf_test[column].copy()
+    else:
+      
+      suffixoverlap_results = \
+      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
+      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert column to category
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
@@ -16524,7 +16573,8 @@ class AutoMunge:
                                   '_1010_activations_dict' : _1010_activations_dict, \
                                   'suffix' : suffix, \
                                   'defaultinfill_dict' : defaultinfill_dict,
-                                  'str_convert' : str_convert}}
+                                  'str_convert' : str_convert,
+                                  'inplace' : inplace}}
     
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -29961,6 +30011,96 @@ class AutoMunge:
     
     return numeric_data_result, all_valid_entries_result
 
+  def _check_for_zzzinfill(self, df, column, postprocess_dict, traintest='train'):
+    """
+    A few of the transforms have requirement of a reserved string "zzzinfill" 
+    With respect to usage in entries of an input column to a transorm
+    which is used in a few places as substitute marker for missing data, replacing NaN
+    
+    There are a few reasons,
+    In one hot encoding, the text transform has convention of using entries as string suffix appenders
+    And we expected 'zzzinfill' would be a less comon string than 'nan' which is a string converted NaN representation
+    In other categoric encodings like ordl, ord3, and 1010
+    We use a pandas.replace operation using a conversion dictionary as {entry : replacement}
+    Pandas.replace doesn't support multiple data types in common operation
+    So we also convert to string for this use, again representing NaN as 'zzzinfill'
+    
+    This validation function is for use in transforms with the reserved string requirement
+    And serves to check the target column for presence of any 'zzzinfill' entries
+    when identified, the entries are left intact
+    A printout is generated 
+    And a validation result is logged in postprocess_dict['temp_miscparameters_results']['zzzinfill_valresult']
+    (or for postmunge in postprocess_dict['temp_pm_miscparameters_results']['zzzinfill_valresult'])
+    
+    Where 'zzzinfill_valresult' will record a dictionary as 
+    zzzinfill_valresult = {i : {'column' : column,
+                                'traintest' : traintest}}
+                                  
+    Where i is an integer incremented with each occurance
+    traintest is one of {'train', 'test'} indicating where entry was found (in df_train or df_test)
+    
+    Receives parameters of df (either a train or test set as received by the transformation function)
+    column, treecategory, category, postprocess_dict consistent with their 
+    traintest accepts one of {'train', 'test'} to distringuish between df_train and df_test
+    """
+
+    #when calling this function we need to distinguish whether taking place in automunge or postmunge
+    #so we'll know where to store the results
+    #a quirk of postmunge is that it has a postprocess_dict entry present for 'temp_pm_miscparameters_results'
+    if 'temp_pm_miscparameters_results' in postprocess_dict:
+      ampm = 'pm'
+    else:
+      ampm = 'am'
+
+    #initialize a msciparameters_results entry for 'zzzinfill_valresult' if not present
+    #(note that temp_miscparameters_results is later consolidated with and returned as miscparameters_results)
+    
+    temp_miscparameters_results = 'temp_miscparameters_results'
+    #results are logged in seperate location in postmunge
+    if ampm == 'pm':
+      temp_miscparameters_results = 'temp_pm_miscparameters_results'
+    
+    if 'zzzinfill_valresult' not in postprocess_dict[temp_miscparameters_results]:
+      postprocess_dict[temp_miscparameters_results].update({'zzzinfill_valresult' : {}})
+    
+    #if 'zzzinfill' is an entry in the column:
+    if bool((df[column].isin(['zzzinfill'])==False).all()) is False:
+
+      #return printout
+      if postprocess_dict['printstatus'] != 'silent':
+        
+        print("_____")
+        print("Warning of reserved string 'zzzinfill' identified as entry in column")
+        print("Identified for column ", column)
+        print("Note that all identified occurances are logged in postprocess_dict['miscparameters_results']['zzzinfill_valresult']")
+        print("This does not cause an error, just be aware that the recieved 'zzzinfill' entries") 
+        print("will be treated as consistent with NaN for purposes of this transform.")
+        print()
+        
+      #validation results reported with key of an integer incremented with each occurance
+      #get value of current max entry 
+      #(here using pandas as a hack since python doesn't have clean max item in list, works bacause are numeric)
+      max_valkey_i = pd.DataFrame({'temp' : list(postprocess_dict[temp_miscparameters_results]['zzzinfill_valresult'])}).max()
+
+      #this returns max_valkey_i as a series with one integer entry, with entry as NaN when no entries present
+      if (max_valkey_i != max_valkey_i).iat[0]:
+        max_valkey_i = -1
+      else:
+        max_valkey_i = int(max_valkey_i)
+
+      #initialize our valitation result reporting, which notes the tree category with identied reserved string
+      #as well as the root category in whose generations this tree category was found
+      #and the associated inputcolumn to the transform
+      zzzinfill_valresult = {max_valkey_i+1 : {'column' : column,
+                                               'traintest' : traintest}}
+
+      #populate the validation results in postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult']
+      postprocess_dict[temp_miscparameters_results]['zzzinfill_valresult'].update(
+        zzzinfill_valresult
+        )
+    
+    return postprocess_dict
+
   def _check_assigncat(self, assigncat, printstatus):
     """
     #Here we'll do a quick check for any redundant column assignments in the
@@ -31950,6 +32090,7 @@ class AutoMunge:
       df_train, df_test, Binary_column_dict_list = \
       self._process_1010(df_train, df_test, 'Binary', 'Binary', '1010', \
                          { 'process_dict': postprocess_dict['process_dict'],
+                           'temp_miscparameters_results' : {},
                            'printstatus' : postprocess_dict['printstatus']}, {})
       
     if Binary in {'ordinal', 'ordinalretain'}:
@@ -31958,6 +32099,7 @@ class AutoMunge:
       df_train, df_test, Binary_column_dict_list = \
       self._process_ord3(df_train, df_test, 'Binary', 'Binary', 'ord3', \
                          { 'process_dict': postprocess_dict['process_dict'],
+                           'temp_miscparameters_results' : {},
                            'printstatus' : postprocess_dict['printstatus']}, {})
     
     Binary_dict = {'column_dict' : {}}
@@ -31973,6 +32115,8 @@ class AutoMunge:
     Binary_dict['column_dict'].update({'Binary':{'suffixoverlap_results':Binary_present}})
       
     Binary_dict.update({'bool_column_list' : bool_column_list})
+
+    Binary_dict.update({'temp_pm_miscparameters_results' : {}})
     
     del df_train['Binary']
     del df_test['Binary']
@@ -34353,7 +34497,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.65'
+    automungeversion = '6.67'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35951,6 +36095,9 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_before_consolidation']
       labels_train_after_consolidation = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
+
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
       tempcolumn = column + '_' + suffix + '_'
 
@@ -36089,6 +36236,9 @@ class AutoMunge:
       
       tempcolumn = normkey
 
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+
       #create copy of original column for later retrieval
       mdf_test[tempcolumn] = mdf_test[column].copy()
 
@@ -36185,6 +36335,9 @@ class AutoMunge:
 
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
       tempcolumn = column + '_' + suffix + '_'
 
@@ -38259,6 +38412,9 @@ class AutoMunge:
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+
       suffixcolumn = column + '_' + suffix
       
       if inplace is not True:
@@ -38381,6 +38537,9 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
 
       suffixcolumn = column + '_' + suffix
       
@@ -38570,6 +38729,9 @@ class AutoMunge:
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+
       suffixcolumn = column + '_' + suffix
       
       #create new column for trasnformation
@@ -38654,6 +38816,8 @@ class AutoMunge:
     if normkey is not False:
       
       #grab normalization parameters from postprocess_dict
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       binary_encoding_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
       overlap_replace = \
@@ -38667,10 +38831,16 @@ class AutoMunge:
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
+      #run a validation for reserved string 'zzzinfill' among entries
+      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+
       suffixcolumn = column + '_' + suffix
 
-      #create new column for trasnformation
-      mdf_test[suffixcolumn] = mdf_test[column].copy()    
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[suffixcolumn] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
 
       #convert column to category
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
@@ -42514,6 +42684,7 @@ class AutoMunge:
     # #The only edits made to postproces_dict in postmunge are:
     # #- to track infill status 
     # #- setting traindata setting based on traindata parameter
+    # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #which are both reset after use
 
     #traindata only matters when transforms apply different methods for train vs test
@@ -42522,6 +42693,9 @@ class AutoMunge:
       postprocess_dict['traindata'] = True
     else:
       postprocess_dict['traindata'] = False
+
+    #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
+    postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
 
     indexcolumn = postprocess_dict['indexcolumn']
     testID_column_orig = testID_column
@@ -42668,6 +42842,11 @@ class AutoMunge:
     #_______
     #here is where inversion is performed if selected
     if inversion is not False:
+
+      #reset traindata entry in postprocess_dict to avoid overwrite of external
+      postprocess_dict['traindata'] = False
+      #strike temporary log from postprocess_dict
+      del postprocess_dict['temp_pm_miscparameters_results']
 
       df_test = self._inversion_numpy_support(df_test, postprocess_dict, inversion)
 
@@ -43338,6 +43517,10 @@ class AutoMunge:
 
     #reset traindata entry in postprocess_dict to avoid overwrite of external
     postprocess_dict['traindata'] = False
+
+    #consolide validation results and strike temporary log from postprocess_dict
+    postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_pm_miscparameters_results'])
+    del postprocess_dict['temp_pm_miscparameters_results']
 
     #printout display progress
     if printstatus is True:
