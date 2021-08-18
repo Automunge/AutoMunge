@@ -2179,7 +2179,7 @@ postmunge(.) function returns three sets: a recovered set, a list of recovered c
 a dictionary logging results of the path selection process. Please note that the general 
 convention in library is that entries not successfully recovered from inversion may be recorded 
 corresponding to the imputation value from the forward pass, NaN, or the reserved string 
-'zzzinfill' (for when column is returned with pandas object dtype).
+'zzzinfill'.
 
 Here is an example of a postmunge call with inversion.
 ```
@@ -4430,7 +4430,7 @@ present in dataframe and return results in final printouts and postprocess_dict[
 
  ___ 
 ### Other Reserved Strings
-- 'zzzinfill': a reserved string entry to data sets that is used in many places as an infill values such as for categorical encodings.
+- 'zzzinfill': a reserved string entry to data sets that is used in many places as a NaN substitute for categoric encodings (identified entries with reserved string are logged in postprocess_dict['temp_miscparameters_results']['zzzinfill_valresult'] or in postmunge postreports_dict['pm_miscparameters_results']['zzzinfill_valresult']).
 - 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
 - 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
