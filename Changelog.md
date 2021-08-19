@@ -3941,3 +3941,15 @@ zzzinfill_valresult = {i : {'column' : column,
 - note that to support added a temporary entry to postprocess_dict in posmtunge to log support function validation results as 'temp_pm_miscparameters_results' which is subsequently consolidated with the returned validation results in postreports_dict and the temporary entry struck
 - found and fixed a small defaultinfill process flow snafu in strn
 - added inplace support for 1010
+
+6.68
+- added activation parameter support to ordinal and binarization categoric encodings via ordl and 1010
+- specifically referring to some of activaiton parameters rolled out for one-hot in 6.65: 'all_activations', 'add_activations', 'less_activations', and 'consolidated_activations'
+- all_activations defaults to False, user can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
+- add_activations defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
+- less_activations defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+- consolidated_activations defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
+- note that 'null_activation' not supported because ordinal and 1010 by definition require a distinct enocding for missing data (in one hot encoding the missing data has option of being represented by no activation)
+- note that for ordinal encoding activation parameter support limited to ordl transform (as opposed to other ordinal transform ord3)
+- reason is that ord3 bases integer sorting on a different method from frequency of entries and would make this a little more complex, saving that for when I have a spare weekend, I don't consider it high priority since we have ordl supported for an ordinal option with activation parameter support
+- note that this effort has helped us to identify possibly another opportunity for improved latency associated with these categoric encodings, is a little complex but this is an intended direction to further refine going forward
