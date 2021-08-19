@@ -3953,3 +3953,14 @@ zzzinfill_valresult = {i : {'column' : column,
 - note that for ordinal encoding activation parameter support limited to ordl transform (as opposed to other ordinal transform ord3)
 - reason is that ord3 bases integer sorting on a different method from frequency of entries and would make this a little more complex, saving that for when I have a spare weekend, I don't consider it high priority since we have ordl supported for an ordinal option with activation parameter support
 - note that this effort has helped us to identify possibly another opportunity for improved latency associated with these categoric encodings, is a little complex but this is an intended direction to further refine going forward
+
+6.69
+- ok just realized committed a non-trivial error in both 6.65 and 6.68
+- with respect to the new parameter support in text/onht/ordl/1010
+- specifically, the new configuration interfered with backward compatibility
+- in scenario where a user populated a postprocess_dict in earlier version
+- and tried to use with postmunge in new version
+- tbh had just forgotten about this error channel
+- going to give it some thought how to formalize this scenario in testing to avoid the risk going forward
+- additionally, new policy to help mitigate this risk
+- new policy: significant transformation function deviations are now by policy conducted by defining new transfomation function to eliminate this backward compatibility scenario
