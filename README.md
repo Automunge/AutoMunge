@@ -3189,7 +3189,7 @@ of regression.
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
 efficient than one-hot encoding)
   - useful for: our default categoric encoding for sets with number of entries below numbercategoryheustic (defaulting to 255)
-  - default infill: plug value 'zzzinfill'
+  - default infill: naninfill, with returned distinct activation set of all 0's
   - default NArowtype: justNaN
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted:
