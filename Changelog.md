@@ -3964,3 +3964,25 @@ zzzinfill_valresult = {i : {'column' : column,
 - going to give it some thought how to formalize this scenario in testing to avoid the risk going forward
 - additionally, new policy to help mitigate this risk
 - new policy: significant transformation function deviations are now by policy conducted by defining new transfomation function to eliminate this backward compatibility scenario
+
+6.70
+- rewrite of 1010 binarization transform, which is the default categoric encoding under automation
+- ported to the custom_train convention
+- with new functions _custom_train_1010 / _custom_test_1010 / _custom_inversion_1010
+- resulting in much cleaner code presentation, easier to understand
+- while retaining consistent functionality and accepted parameters
+- the primary updated convention is that now the missing data representation prior to ML infill defaults to all 0's
+- as opposed to prior where missing data may have had different activation sets per application
+- in the process trimmed a little fat
+- such as removed the 'zzzinfill' reserved string requirement
+- as well as eliminated what we refered to as an overlap replace operation
+- (which was there to accomodate an assumed edge case with pd.replace which I now am unable to duplicate)
+- expecting this revision will benefit latency for this transform
+- which since is the default under automation we thought was a worthy goal
+- in the process I think identified the edge case that was original rationale for the 'zzzinfill' convention
+- which turns out can be accomodated in a much simpler fashion by simply resetting dtype to 'object'
+- note the prior defined 1010 functions are retained in library for backward compatibility purposes
+- which are also used for Binary dimensionality reduction
+- also small tweak to the wrapper function for custom_train
+- now the recorded categorylist is guaranteed as consistent order of entries as found in returned data
+- intend going forward to continuing porting a few more foundational transforms to custom_train convention and lift reserved string requirements where possible
