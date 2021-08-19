@@ -3116,7 +3116,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
 (consistently encodings numbers and numerical string equivalents due to column labeling convention, e.g. 12 == '12')
   - useful for: one hot encoding, returns distinct column activation per unique entry
-  - default infill: all entries zero
+  - default infill: no activation in row
   - default NArowtype: justNaN
   - suffix appender: 
     - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in received column)
@@ -3132,7 +3132,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
 (like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents)
   - useful for: similar to text transform preceding but with numbered column header convention
-  - default infill: all entries zero
+  - default infill: no activation in row
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
