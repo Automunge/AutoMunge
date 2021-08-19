@@ -34772,7 +34772,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.68'
+    automungeversion = '6.69'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36364,12 +36364,25 @@ class AutoMunge:
 #       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']      
       labels_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
-      consolidated_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
-      labels_train_before_consolidation = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_before_consolidation']
-      labels_train_after_consolidation = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
+
+      #for backward compatibility
+      if 'consolidated_activations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        consolidated_activations = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
+      else:
+        consolidated_activations = False
+
+      if 'labels_train_before_consolidation' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        labels_train_before_consolidation = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_before_consolidation']
+      else:
+        labels_train_before_consolidation = list(labels_dict)
+
+      if 'labels_train_after_consolidation' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        labels_train_after_consolidation = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
+      else:
+        labels_train_after_consolidation = list(labels_dict)
 
       #run a validation for reserved string 'zzzinfill' among entries
       postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
@@ -36503,12 +36516,19 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
       labels_train = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
-      consolidated_activations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
-      labels_train_orig_afterparams = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_orig_afterparams']
-      labels_train_after_consolidation = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
+
+      #for backward compatibility
+      if 'consolidated_activations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        consolidated_activations = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
+      else:
+        consolidated_activations = False
+
+      if 'labels_train_orig_afterparams' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        labels_train_orig_afterparams = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_orig_afterparams']
+      else:
+        labels_train_orig_afterparams = labels_train
       
       tempcolumn = normkey
 
@@ -38688,10 +38708,13 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-      # consolidated_activations = \
-      # postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
-      consolidation_translations = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidation_translations']
+      
+      #for backward compatibility
+      if 'consolidation_translations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        consolidation_translations = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidation_translations']
+      else:
+        consolidation_translations = {}
 
       #run a validation for reserved string 'zzzinfill' among entries
       postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
@@ -39112,8 +39135,13 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-      inverse_consolidation_translate_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_consolidation_translate_dict']
+
+      #for backward compatibility
+      if 'inverse_consolidation_translate_dict' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        inverse_consolidation_translate_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_consolidation_translate_dict']
+      else:
+        inverse_consolidation_translate_dict = {}
 
       #run a validation for reserved string 'zzzinfill' among entries
       postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
