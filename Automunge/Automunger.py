@@ -10660,20 +10660,21 @@ class AutoMunge:
         if not isinstance(consolidated_activations[0], list):
           consolidated_activations = [consolidated_activations]
       for consolidation_list in consolidated_activations:
-        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-        returned_consolidation = consolidation_list[0]
-        returned_consolidations.append(returned_consolidation)
-        if returned_consolidation not in df_train_cat:
-          labels_train_after_consolidation.append(returned_consolidation)
-          df_train_cat[returned_consolidation] = 0
-          df_test_cat[returned_consolidation] = 0
-        for consolidation_target in consolidation_list:
-          if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
-            labels_train_after_consolidation.remove(consolidation_target)
-            df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
-            df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
-            del df_train_cat[consolidation_target]
-            del df_test_cat[consolidation_target]
+        if len(consolidation_list) > 0:
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+          returned_consolidations.append(returned_consolidation)
+          if returned_consolidation not in df_train_cat:
+            labels_train_after_consolidation.append(returned_consolidation)
+            df_train_cat[returned_consolidation] = 0
+            df_test_cat[returned_consolidation] = 0
+          for consolidation_target in consolidation_list:
+            if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
+              labels_train_after_consolidation.remove(consolidation_target)
+              df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
+              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              del df_train_cat[consolidation_target]
+              del df_test_cat[consolidation_target]
 
     labels_dict = {}
     i = 0
@@ -10896,20 +10897,21 @@ class AutoMunge:
         if not isinstance(consolidated_activations[0], list):
           consolidated_activations = [consolidated_activations]
       for consolidation_list in consolidated_activations:
-        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-        returned_consolidation = consolidation_list[0]
-        returned_consolidations.append(returned_consolidation)
-        if returned_consolidation not in df_train_cat:
-          labels_train_after_consolidation.append(returned_consolidation)
-          df_train_cat[returned_consolidation] = 0
-          df_test_cat[returned_consolidation] = 0
-        for consolidation_target in consolidation_list:
-          if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
-            labels_train_after_consolidation.remove(consolidation_target)
-            df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
-            df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
-            del df_train_cat[consolidation_target]
-            del df_test_cat[consolidation_target]
+        if len(consolidation_list) > 0:
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+          returned_consolidations.append(returned_consolidation)
+          if returned_consolidation not in df_train_cat:
+            labels_train_after_consolidation.append(returned_consolidation)
+            df_train_cat[returned_consolidation] = 0
+            df_test_cat[returned_consolidation] = 0
+          for consolidation_target in consolidation_list:
+            if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
+              labels_train_after_consolidation.remove(consolidation_target)
+              df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
+              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              del df_train_cat[consolidation_target]
+              del df_test_cat[consolidation_target]
 
     #append column header name to each category listing (can now discard labels_test since df_test_cat has headers per labels_train)
     labels_train = [column + '_' + entry for entry in labels_train_after_consolidation]
@@ -15378,7 +15380,7 @@ class AutoMunge:
       column_dict_list.append(column_dict)
       
     return mdf_train, mdf_test, column_dict_list
-  
+
   def _process_ordl(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
@@ -15404,6 +15406,34 @@ class AutoMunge:
       ordered_overide = params['ordered_overide']
     else:
       ordered_overide = True
+
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in params:
+      #accepts False or a list of activation targets
+      all_activations = params['all_activations']
+    else:
+      all_activations = False
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in params:
+      #accepts False or a list of added activation targets
+      add_activations = params['add_activations']
+    else:
+      add_activations = False
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in params:
+      #accepts False or a list of removed activation targets
+      less_activations = params['less_activations']
+    else:
+      less_activations = False
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in params:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = params['consolidated_activations']
+    else:
+      consolidated_activations = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -15493,6 +15523,26 @@ class AutoMunge:
       labels_test = list(mdf_test[suffixcolumn].unique())
       labels_test = sorted(labels_test, key=str)
 
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+
+    if all_activations is not False:
+      ordered = False
+      labels_train = sorted(all_activations, key=str)
+      #ordinal encodings require a missing data encoding, if prefer NaN representation can assign naninfill in assigninfill
+      if 'zzzinfill' not in labels_train:
+        labels_train.append('zzzinfill')
+
+    if add_activations is not False:
+      ordered = False
+      labels_train = list(set(labels_train) | set(add_activations))
+      labels_train = sorted(labels_train, key=str)
+
+    if less_activations is not False:
+      ordered = False
+      labels_train = list(set(labels_train) - set(less_activations))
+      labels_train = sorted(labels_train, key=str)
+
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
@@ -15500,12 +15550,28 @@ class AutoMunge:
     if 'zzzinfill' not in labels_test:
       labels_test = labels_test + ['zzzinfill']
 #       labels_test.sort()
-    
-    listlength = len(labels_train)
+
+    labels_train_before_consolidated_activations_entries_added = labels_train.copy()
+
+    #if consolidated_activations is not False we'll add those values to include in overlap_replace
+    if consolidated_activations is not False:
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+
+      for consolidation_list in consolidated_activations:
+        if str_convert is True:
+          labels_train = list(set(labels_train) | set([str(x) for x in consolidation_list]))
+        else:
+          labels_train = list(set(labels_train) | set(consolidation_list))
+        labels_train = sorted(labels_train, key=str)
     
     #____
     #quick check if there are any overlaps between binary encodings and prior unique values in the column
     #as would interfere with the replacement operation
+
+    listlength = len(labels_train)
     
     overlap_list = []
     overlap_replace = {}
@@ -15554,21 +15620,103 @@ class AutoMunge:
     del overlap_list
     
     #____
+
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
+
+    #as part of this implementation, we'll want to derive
+    #a version of consolidated_activations including the overlap substitutions (consolidated_activations_overlap_replace)
+    #a version of labels_train excluding consolidations (labels_train_after_consolidation)
+    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+    #we can then derive an alternate version of ordinal_dict after having struck the consolidations in labels_train_after_consolidation
+    #and populate a seperate similar dict as consolidated entries as keys with values matching the integer encoding of associated returned_consolidation (consolidation_translations)
+
+    labels_train_after_consolidation = labels_train.copy()
+    # returned_consolidations = []
+    if consolidated_activations is not False:
+
+      #a version of consolidated_activations including the overlap substitutions (consolidated_activations_overlap_replace)
+      #note that earlier in this function we already added any entries to labels_train for consolidation targets not foundin set
+      #which was done so that overlap_replace already accounts for them
+      consolidated_activations_overlap_replace = []
+      for consolidation_list in consolidated_activations:
+        if str_convert is True:
+          consolidation_list = [str(x) for x in consolidation_list]
+
+        #here we replace any consolidation_list entries with identified encoding overlaps from overlap_replace
+        consolidation_list_overlaps_replacements = []
+        consolidation_list_overlaps = set(consolidation_list) & set(overlap_replace.keys())
+        for consolidation_list_overlap in consolidation_list_overlaps:
+          consolidation_list_overlaps_replacements.append(overlap_replace[consolidation_list_overlap])
+        consolidation_list = list((set(consolidation_list) - set(consolidation_list_overlaps)) |  set(consolidation_list_overlaps_replacements))
+
+        #now the translated consolidation_list is aggregated in consolidated_activations_overlap_replace
+        consolidated_activations_overlap_replace.append(consolidation_list)
+
+      #a version of labels_train excluding consolidations (labels_train_after_consolidation)
+      for consolidation_list in consolidated_activations_overlap_replace:
+
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+        # returned_consolidations.append(returned_consolidation)
+
+        # if returned_consolidation not in labels_train_after_consolidation:
+        #   labels_train_after_consolidation.append(returned_consolidation)
+
+        for consolidation_target in consolidation_list:
+          if consolidation_target != returned_consolidation:# and consolidation_target in labels_train_after_consolidation:
+            labels_train_after_consolidation.remove(consolidation_target)
+
+      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+      consolidation_translate_dict = {}
+      for consolidation_list in consolidated_activations_overlap_replace:
+        if len(consolidation_list) > 1:
+          returned_consolidation = consolidation_list[0]
+          consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+      
+      #we can then derive an alternate version of ordinal_dict after having struck the consolidations in labels_train_after_consolidation
+      listlength = len(labels_train_after_consolidation)
+      #sort alphabetically consistent with the ordl convention (as noted above activation parameters overide order_overide=True)
+      labels_train_after_consolidation = sorted(labels_train_after_consolidation, key=str)
+      ordinal_dict = dict(zip(labels_train_after_consolidation, range(listlength)))
+
+      #and populate a seperate similar dict as consolidated entries as keys with values matching the integer encoding of associated returned_consolidation (consolidation_translations)
+      consolidation_translations = {}
+      for returned_consolidation in consolidation_translate_dict:
+        #this populates key/value pairs for 
+        #consolidated entries as keys with values matching the integer encoding of associated returned_consolidation
+        consolidation_translations.update(dict(zip(
+          consolidation_translate_dict[returned_consolidation], 
+          [ordinal_dict[returned_consolidation]] * len(consolidation_translate_dict[returned_consolidation])
+          )))
+
+    #____
     
-    #get length of the list, then zip a dictionary from list and range(length)
-    #the range values will be our ordinal points to replace the categories
-    listlength = len(labels_train)
-    ordinal_dict = dict(zip(labels_train, range(listlength)))
+    elif consolidated_activations is False:
+
+      #get length of the list, then zip a dictionary from list and range(length)
+      #the range values will be our ordinal points to replace the categories
+      listlength = len(labels_train)
+      ordinal_dict = dict(zip(labels_train, range(listlength)))
+      consolidation_translations = {}
     
     #dtype operation is to address edge case if object type drifted to numeric which impacts replace
     if mdf_train[suffixcolumn].dtype.name != 'object':
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
     
+    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+    #just like we do for test set entries not in our range of legal entries below
+    if all_activations is not False or less_activations is not False:
+      extra_entries = list(set(mdf_train[suffixcolumn].unique())-set(ordinal_dict.keys()) - set(consolidation_translations.keys()))
+      plug_dict = dict(zip(extra_entries, ['zzzinfill'] * len(extra_entries)))
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(plug_dict)
+
     #replace the cateogries in train set via ordinal trasnformation
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(consolidation_translations)
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
+    #note labels_train as used here includes any entries added from consolidated_activations
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
@@ -15581,6 +15729,7 @@ class AutoMunge:
     if mdf_test[suffixcolumn].dtype.name != 'object':
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(consolidation_translations)
     
     #just want to make sure these arent' being saved as floats for memory considerations
     max_encoding = len(ordinal_dict) - 1
@@ -15627,6 +15776,11 @@ class AutoMunge:
                                   'ordered_overide' : ordered_overide, \
                                   'ordered' : ordered, \
                                   'str_convert' : str_convert, \
+                                  'all_activations' : all_activations,
+                                  'add_activations' : add_activations,
+                                  'less_activations' : less_activations,
+                                  'consolidated_activations' : consolidated_activations,
+                                  'consolidation_translations' : consolidation_translations, \
                                   'suffix' : suffix, \
                                   'defaultinfill_dict' : defaultinfill_dict,
                                   'inplace' : inplace}}
@@ -16298,7 +16452,7 @@ class AutoMunge:
       column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
-  
+
   def _process_1010(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
@@ -16316,6 +16470,34 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in params:
+      #accepts False or a list of activation targets
+      all_activations = params['all_activations']
+    else:
+      all_activations = False
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in params:
+      #accepts False or a list of added activation targets
+      add_activations = params['add_activations']
+    else:
+      add_activations = False
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in params:
+      #accepts False or a list of removed activation targets
+      less_activations = params['less_activations']
+    else:
+      less_activations = False
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in params:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = params['consolidated_activations']
+    else:
+      consolidated_activations = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     if 'str_convert' in params:
@@ -16388,6 +16570,23 @@ class AutoMunge:
 #     labels_test.sort()
     labels_test = sorted(labels_test, key=str)
 
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+
+    if all_activations is not False:
+      ordered = False
+      labels_train = sorted(all_activations, key=str)
+
+    if add_activations is not False:
+      ordered = False
+      labels_train = list(set(labels_train) | set(add_activations))
+      labels_train = sorted(labels_train, key=str)
+
+    if less_activations is not False:
+      ordered = False
+      labels_train = list(set(labels_train) - set(less_activations))
+      labels_train = sorted(labels_train, key=str)
+
     #if infill not present in train set, insert
     if 'zzzinfill' not in labels_train:
       labels_train = labels_train + ['zzzinfill']
@@ -16397,6 +16596,77 @@ class AutoMunge:
       labels_test = labels_test + ['zzzinfill']
       labels_test = sorted(labels_test, key=str)
 #       labels_test.sort()
+
+    #____
+
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
+
+    #first we'll add any consolidation targets that weren't present in labels_train
+    labels_train_before_consolidated_activations_entries_added = labels_train.copy()
+
+    if consolidated_activations is not False:
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+
+      #here is where we add any consolidation targets that weren't present in labels_train
+      for consolidation_list in consolidated_activations:
+        if str_convert is True:
+          labels_train = list(set(labels_train) | set([str(x) for x in consolidation_list]))
+        else:
+          labels_train = list(set(labels_train) | set(consolidation_list))
+        labels_train = sorted(labels_train, key=str)
+
+    #as part of this implementation, we next want to derive
+    #a version of labels_train excluding consolidations (labels_train_after_consolidation)
+    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+    #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+    #which we'll then apply with a replace operation
+
+    labels_train_before_consolidation = labels_train.copy()
+    inverse_consolidation_translate_dict = {}
+    # returned_consolidations = []
+    if consolidated_activations is not False:
+
+      #a version of labels_train excluding consolidations (labels_train_after_consolidation)
+      for consolidation_list in consolidated_activations:
+
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+        # returned_consolidations.append(returned_consolidation)
+
+        # if returned_consolidation not in labels_train:
+        #   labels_train.append(returned_consolidation)
+
+        for consolidation_target in consolidation_list:
+          if consolidation_target != returned_consolidation:# and consolidation_target in labels_train:
+            labels_train.remove(consolidation_target)
+
+      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+      consolidation_translate_dict = {}
+      for consolidation_list in consolidated_activations:
+        if len(consolidation_list) > 1:
+          returned_consolidation = consolidation_list[0]
+          consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+
+      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+      for key,value in consolidation_translate_dict.items():
+        for consolidation_list_entry in value:
+          inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
+
+      #we can then apply a replace to convert consolidated items to their targeted activations
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(inverse_consolidation_translate_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(inverse_consolidation_translate_dict)
+
+    #____
+
+    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+    #just like we do for test set entries not in our range of legal entries below
+    if all_activations is not False or less_activations is not False:
+      extra_entries = list(set(mdf_train[suffixcolumn].unique())-set(labels_train))
+      plug_dict = dict(zip(extra_entries, ['zzzinfill'] * len(extra_entries)))
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(plug_dict)
     
     #get length of the list
     listlength = len(labels_train)
@@ -16573,6 +16843,11 @@ class AutoMunge:
                                   '_1010_activations_dict' : _1010_activations_dict, \
                                   'suffix' : suffix, \
                                   'defaultinfill_dict' : defaultinfill_dict,
+                                  'all_activations' : all_activations,
+                                  'add_activations' : add_activations,
+                                  'less_activations' : less_activations,
+                                  'consolidated_activations' : consolidated_activations,
+                                  'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict, \
                                   'str_convert' : str_convert,
                                   'inplace' : inplace}}
     
@@ -34497,7 +34772,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.67'
+    automungeversion = '6.68'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36147,16 +36422,17 @@ class AutoMunge:
       if consolidated_activations is not False:
 
         for consolidation_list in consolidated_activations:
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
-          
-          if returned_consolidation not in df_test_cat:
-            df_test_cat[returned_consolidation] = 0
+          if len(consolidation_list) > 0:
+            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+            returned_consolidation = consolidation_list[0]
+            
+            if returned_consolidation not in df_test_cat:
+              df_test_cat[returned_consolidation] = 0
 
-          for consolidation_target in consolidation_list:
-            if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
-              del df_test_cat[consolidation_target]
+            for consolidation_target in consolidation_list:
+              if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
+                df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+                del df_test_cat[consolidation_target]
 
       # #convert sparse array to pandas dataframe with column labels
       # df_test_cat.columns = labels_train
@@ -36267,16 +36543,17 @@ class AutoMunge:
       if consolidated_activations is not False:
 
         for consolidation_list in consolidated_activations:
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
-          
-          if returned_consolidation not in df_test_cat:
-            df_test_cat[returned_consolidation] = 0
+          if len(consolidation_list) > 0:
+            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+            returned_consolidation = consolidation_list[0]
+            
+            if returned_consolidation not in df_test_cat:
+              df_test_cat[returned_consolidation] = 0
 
-          for consolidation_target in consolidation_list:
-            if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
-              del df_test_cat[consolidation_target]
+            for consolidation_target in consolidation_list:
+              if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
+                df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+                del df_test_cat[consolidation_target]
 
       #convert sparse array to pandas dataframe with column labels
       df_test_cat.columns = labels_train
@@ -38379,7 +38656,7 @@ class AutoMunge:
         del mdf_test[column]
     
     return mdf_test
-  
+
   def _postprocess_ordl(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_ordl(mdf_test, column, postprocess_dict, columnkey)
@@ -38411,6 +38688,10 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+      # consolidated_activations = \
+      # postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
+      consolidation_translations = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidation_translations']
 
       #run a validation for reserved string 'zzzinfill' among entries
       postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
@@ -38446,28 +38727,28 @@ class AutoMunge:
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      labels_train = list(ordinal_dict.keys())
-      labels_train = sorted(labels_train, key=str)
+      # labels_train = list(ordinal_dict.keys())
+      # labels_train = sorted(labels_train, key=str)
       labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test = sorted(labels_test, key=str)
+      # labels_test = sorted(labels_test, key=str)
       
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-        labels_train = sorted(labels_train, key=str)
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test = sorted(labels_test, key=str)
+      # #if infill not present in train set, insert
+      # if 'zzzinfill' not in labels_train:
+      #   labels_train = labels_train + ['zzzinfill']
+      #   labels_train = sorted(labels_train, key=str)
+      # if 'zzzinfill' not in labels_test:
+      #   labels_test = labels_test + ['zzzinfill']
+      #   labels_test = sorted(labels_test, key=str)
         
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
       
-      #in test set, we'll need to strike any categories that weren't present in train
+      #in test set, we'll need to strike any categories that weren't present in train or consolidation targets
       #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
+      testspecificcategories = list(set(labels_test)-set(ordinal_dict.keys())-set(consolidation_translations.keys()))
       
-      #edge case, replace operation do0esn't work when column dtype is int
+      #edge case, replace operation doesn't work when column dtype is int
       if mdf_test[suffixcolumn].dtype.name != 'object':
         mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
 
@@ -38481,6 +38762,7 @@ class AutoMunge:
 
       #now we'll apply the ordinal transformation to the test set
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(consolidation_translations)
       
       #just want to make sure these arent' being saved as floats for memory considerations
       max_encoding = len(ordinal_dict) - 1
@@ -38796,7 +39078,7 @@ class AutoMunge:
         del mdf_test[column]
     
     return mdf_test
-  
+
   def _postprocess_1010(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_1010(mdf_test, column, postprocess_dict, columnkey)
@@ -38830,6 +39112,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
+      inverse_consolidation_translate_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_consolidation_translate_dict']
 
       #run a validation for reserved string 'zzzinfill' among entries
       postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
@@ -38880,6 +39164,9 @@ class AutoMunge:
         labels_test = labels_test + ['zzzinfill']
 #         labels_test.sort()
         labels_test = sorted(labels_test, key=str)
+
+      #we can then apply a replace to convert consolidated items to their targeted activations
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(inverse_consolidation_translate_dict)
 
       #here we replace the overlaps with version with jibberish suffix
       if len(overlap_replace) > 0:
