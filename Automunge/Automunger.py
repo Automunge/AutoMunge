@@ -5377,36 +5377,40 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'or11' : {'custom_train' : self._custom_train_1010,
-                                   'custom_test' : self._custom_test_1010,
-                                   'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'or11' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or12' : {'custom_train' : self._custom_train_1010,
-                                   'custom_test' : self._custom_test_1010,
-                                   'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'or12' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or13' : {'custom_train' : self._custom_train_1010,
-                                   'custom_test' : self._custom_test_1010,
-                                   'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'or13' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or14' : {'custom_train' : self._custom_train_1010,
-                                   'custom_test' : self._custom_test_1010,
-                                   'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'or14' : {'dualprocess' : self._process_1010,
+                                   'singleprocess' : None,
+                                   'postprocess' : self._postprocess_1010,
+                                   'inverseprocess' : self._inverseprocess_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5523,9 +5527,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'1010' : {'custom_train' : self._custom_train_1010,
-                                  'custom_test' : self._custom_test_1010,
-                                  'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'1010' : {'dualprocess' : self._process_1010,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_1010,
+                                  'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7114,9 +7119,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'101d' : {'custom_train' : self._custom_train_1010,
-                                  'custom_test' : self._custom_test_1010,
-                                  'custom_inversion' : self._custom_inversion_1010,
+    process_dict.update({'101d' : {'dualprocess' : self._process_1010,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_1010,
+                                  'inverseprocess' : self._inverseprocess_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -16464,6 +16470,8 @@ class AutoMunge:
 
     #Note this transform has been ported to the custom_train convention for cleaner code and reduced latency
     #available as _custom_train_1010
+    #however the custom_train porting still has a few edge cases to clean up
+    #so for now this is the working version
     #Also note that this original function is still used in Binary dimensionality reduction
     '''
     
@@ -27283,7 +27291,11 @@ class AutoMunge:
 
     FS_assignparam = deepcopy(assignparam)
 
-    totalvalidation = valpercent
+    totalvalidation = 0
+    if isinstance(valpercent, float):
+      totalvalidation = valpercent
+    elif isinstance(valpercent, tuple):
+      totalvalidation = valpercent[1] - valpercent[0]
 
     if totalvalidation == 0:
       totalvalidation = 0.2
@@ -29894,11 +29906,25 @@ class AutoMunge:
           print("Error: invalid entry passed for valpercent")
           print("Acceptable values are numbers in range 0 <= valpercent < 1.")
           print()
+    elif isinstance(valpercent, tuple):
+      if len(valpercent) != 2 \
+      or len(valpercent)==2 and not isinstance(valpercent[0], (int, float)) \
+      or len(valpercent)==2 and not isinstance(valpercent[1], (int, float)) \
+      or len(valpercent)==2 and isinstance(valpercent[0], (int, float)) and valpercent[0]<0 \
+      or len(valpercent)==2 and isinstance(valpercent[0], (int, float)) and valpercent[0]>=1 \
+      or len(valpercent)==2 and isinstance(valpercent[1], (int, float)) and valpercent[1]<=0 \
+      or len(valpercent)==2 and isinstance(valpercent[1], (int, float)) and valpercent[1]>1 \
+      or len(valpercent)==2 and isinstance(valpercent[0], (int, float)) and isinstance(valpercent[1], (int, float)) and valpercent[0] > valpercent[1]:
+        valpercent_valresult = True
+        if printstatus != 'silent':
+          print("Error: invalid entry passed for valpercent")
+          print("acceptable tuple format is two entries of floats in range 0-1")
+          print("with first entry < second entry")
     else:
       valpercent_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for valpercent")
-        print("Acceptable values are numbers in range 0 <= valpercent < 1.")
+        print("Acceptable values are numbers in range 0 <= valpercent < 1 or tuple of two numbers in that range.")
         print()
       
     miscparameters_results.update({'valpercent_valresult' : valpercent_valresult})
@@ -33064,7 +33090,7 @@ class AutoMunge:
     #with the validation set df2 returned shuffled
     #and the train set df1 not shuffled, just removed rows present in df2
     #(if run on two df's with same number of rows, will return consistent partitioning)
-    #returns two dataframes df1 and df2
+    #returns two dataframes df and df2, where df is training data and df2 is validaiton set
     """
 
     if ratio > 0 and ratio < 1:
@@ -33074,8 +33100,8 @@ class AutoMunge:
         start = int(df.shape[0] * (1-ratio))
         end = df.shape[0]
         
-        df1 = df[0:start]
         df2 = df[start:end]
+        df = df[0:start]
 
       elif shuffle_param is True:
         
@@ -33083,14 +33109,69 @@ class AutoMunge:
         df2 = df.sample(frac=ratio, random_state=randomseed)
         
         #these rows won't be shuffled, this will just remove rows present in df2
-        df1 = df.drop(df2.index)
+        df = df.drop(df2.index)
 
     else:
 
-      df1 = df
+      #df = df
       df2 = pd.DataFrame()
 
-    return df1, df2
+    return df, df2
+
+  def _df_split_specified(self, df, ratio_tuple, shuffle_param, randomseed):
+    """
+    #performs a split of passed dataframe df
+    #inspired by the _df_split for split based on ratio
+    #this funciton differs in that it is based on specified partitions
+    #as may be designated by user passing ratio as a tuple of (start, end)
+    #where start is a float between 0-1
+    #and end is a float between 0-1
+    #and start < end
+    #and each float is used to specify a boundary of the split by translating to integers
+    #i.e.
+    #start = int(df.shape[0] * (start))
+    #end = int(df.shape[0] * (end))
+    #such that the returned dataframe will have training data in rows 0:start and end:df.shape[0]
+    #and the returned validation set will have rows of start:end
+    #note that if shuffle_param is activated the rows of the validation set will be shuffled
+    
+    #df1 is training data
+    #df2 is validation data
+    
+    #based on proportions of ratio where 0<ratio<1
+    #bool shuffle_param False means rows taken from bottom of set sequentially
+    #bool shuffle_param True means randomly sampled rows 
+    #per seeding of randomseed
+    #with the validation set df2 returned shuffled
+    #and the train set df1 not shuffled, just removed rows present in df2
+    #(if run on two df's with same number of rows, will return consistent partitioning)
+    #returns two dataframes df1 and df2
+    """
+    
+    if ratio_tuple[0] >= 0 and ratio_tuple[0] < 1 \
+    and ratio_tuple[1] > ratio_tuple[0] and ratio_tuple[1] <= 1:
+    
+      start = ratio_tuple[0]
+      start = int(df.shape[0] * (start))
+      
+      end = ratio_tuple[1]
+      end = int(df.shape[0] * (end))
+        
+      df2 = df[start:end]
+      df = df.drop(df2.index)
+        
+      #if shuffleparam is activated, we'll shuffle rows in df2 (df1 shuffled later in automunge)
+      if shuffle_param is True:
+        
+        #these rows will be shuffled
+        df2 = df2.sample(frac=1, random_state=randomseed)
+        
+    else:
+      
+      #df = df
+      df2 = pd.DataFrame()
+
+    return df, df2
   
   def _df_shuffle(self, df, randomseed):
     """
@@ -34038,7 +34119,7 @@ class AutoMunge:
     #an additional shuffle operation may be conducted later in the workflow for df_train and/or df_test based on shuffletrain
     totalvalidationratio = valpercent
 
-    if totalvalidationratio > 0.0:
+    if isinstance(totalvalidationratio, float) and totalvalidationratio > 0.0:
       
       if shuffletrain in {True, 'traintest'}:
         shuffle_param=True
@@ -34061,6 +34142,27 @@ class AutoMunge:
       # df_validation1 = df_validation1.reset_index(drop=True)
       # df_trainID = df_trainID.reset_index(drop=True)
       # df_validationID1 = df_validationID1.reset_index(drop=True)
+      
+    elif isinstance(totalvalidationratio, tuple) and len(totalvalidationratio) == 2:
+      
+      totalvalidationratio = valpercent[1] - valpercent[0]
+      
+      if shuffletrain in {True, 'traintest'}:
+        shuffle_param=True
+      else:
+        shuffle_param=False
+        
+      #we'll wait to split out the validation labels
+      df_train, df_validation1 = \
+      self._df_split_specified(df_train, valpercent, shuffle_param, randomseed)
+
+      if trainID_column is not False:
+        df_trainID, df_validationID1 = \
+        self._df_split_specified(df_trainID, valpercent, shuffle_param, randomseed)
+
+      else:
+        df_trainID = pd.DataFrame()
+        df_validationID1 = pd.DataFrame()
 
     #else if total validation was <= 0.0
     else:
@@ -35034,7 +35136,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.70'
+    automungeversion = '6.71'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
