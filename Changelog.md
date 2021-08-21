@@ -4006,3 +4006,17 @@ zzzinfill_valresult = {i : {'column' : column,
 - the purpose of this new valpercent tuple option is to support integration into a cross validation operation
 - also revised the prior function for partitioning validation sets which should result in reduced memory overhead
 - also, further validation identified a scenario where the new porting of 1010 to custom_train (from 6.70) had an edge case. It’s a very remote edge case, but an edge case nonetheless. Going to revert 1010 to the prior transform convention until get this resolved. (Edge case only manifested when 1010 was performed downstream of a string operation on a particular testing feature, why it was missed in testing with last rollout, we didn’t think to validate application of 1010 as a downstream transform. Lesson learned to adhere to comprehensive validations with each rollout.)
+
+6.72
+- reintroduced the custom_train convention for 1010 (default categoric encoding under automation)
+- identified the source of the edge case for ported 1010 to the custom_train convention noted in 6.71
+- it was associated with our removal of the 'zzzinfill' reserved string for NaN missing data representation
+- found that NaN had potential to interfere witih operations in a few edge cases related to both set operations and pandas column dtype drift
+- for set operations, NaN demonstrated at times inconsistent behavior, for example with 'in' detection or use of '|' 
+- also in some cases set operations resulted in duplicate inclusions of a NaN entry to a set
+- additionally, NaN inclusions in replace operations had potential to result in pandas column dtype drift
+- which could in edge case replace our string representations of binarization sets to integers, stripping the leading zeros
+- settled on a convention that every pandas.replace operation is now applied along with a .astype('object'), which helps mitigate dtype drift
+- also for set management surrounding NaN inclusions, we've applied a different method to remove NaN entry, now relying on a set comprehension taking account for NaN != NaN
+- we still like using set operations to manage the unique entries and encodings as much more efficient than list methods, now that we can accomodate these further identified NaN entry edge cases we can lift the 'zzzinfill' reserved string requirement
+- as noted in 6.70 intent going forward is to continuing porting a few more foundational transforms to custom_train convention and lift reserved string requirements where possible
