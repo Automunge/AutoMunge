@@ -667,6 +667,11 @@ shuffletrain parameter is activated (which is default for train sets) validation
 sets will contain random rows.  If shuffletrain parameter is set to False then any 
 validation set will be pulled from the bottom sequential rows of the df_train dataframe.
 
+Please note that valpercent can also be passed as a two entry tuple in the form valpercent=(start, end),
+where start is a float in the range 0<=start<1, end is a float in the range 0<end<=1, and start < end.
+For example, if specified as valpercent=(0.2, 0.4), the returned training data would consist of the first 20% of rows and the last 60% of rows, while the validation set would consist of the remaining rows, and
+where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation.
+
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
 usage and floating point precision, smaller for smaller footprint.) 
