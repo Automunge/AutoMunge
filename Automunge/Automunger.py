@@ -5377,40 +5377,36 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'or11' : {'dualprocess' : self._process_1010,
-                                   'singleprocess' : None,
-                                   'postprocess' : self._postprocess_1010,
-                                   'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'or11' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or12' : {'dualprocess' : self._process_1010,
-                                   'singleprocess' : None,
-                                   'postprocess' : self._postprocess_1010,
-                                   'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'or12' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or13' : {'dualprocess' : self._process_1010,
-                                   'singleprocess' : None,
-                                   'postprocess' : self._postprocess_1010,
-                                   'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'or13' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or14' : {'dualprocess' : self._process_1010,
-                                   'singleprocess' : None,
-                                   'postprocess' : self._postprocess_1010,
-                                   'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'or14' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5527,10 +5523,9 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'1010' : {'dualprocess' : self._process_1010,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_1010,
-                                  'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'1010' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7119,10 +7114,9 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'101d' : {'dualprocess' : self._process_1010,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_1010,
-                                  'inverseprocess' : self._inverseprocess_1010,
+    process_dict.update({'101d' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -16938,7 +16932,9 @@ class AutoMunge:
       
     #______
     
-    missing_marker = np.nan
+    #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
+    #which helps accomodate a few peculiarities related to python sets with NaN inclusion
+    missing_marker = float("NaN")
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -16946,6 +16942,7 @@ class AutoMunge:
     #pandas category dtype may have already specified a set of valid entries
     if df[column].dtype.name == 'category':
       labels_train = set(df[column].cat.categories)
+      labels_train = {x for x in labels_train if x==x}
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -16953,18 +16950,15 @@ class AutoMunge:
     #if str_convert elected (for common encoding between e.g. 2=='2')
     if str_convert is True:
       df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
-      #if we already had accessed from category dtype convert those to string (except missing_marker)
+      #if we already had accessed from category dtype convert those to string 
       if labels_train != set():
-        labels_train = labels_train - {missing_marker}
         labels_train = set([str(x) for x in list(labels_train)])
         
     #extract categories for column labels if we didn't already for category dtype
     #note that .unique() extracts the labels as a numpy array which we convert to set
     if labels_train == set():
       labels_train = set(df[column].unique())
-      
-    #now add missing marker if not already present
-    labels_train = labels_train | {missing_marker}
+      labels_train = {x for x in labels_train if x==x}
     
     #______
     
@@ -16976,18 +16970,16 @@ class AutoMunge:
       labels_train_orig = labels_train.copy()
     
     if all_activations is not False:
-      labels_train = set(all_activations)
+      all_activations = {x for x in set(all_activations) if x==x}
+      labels_train = all_activations
 
     if add_activations is not False:
-      labels_train = labels_train | set(add_activations)
+      add_activations = {x for x in set(add_activations) if x==x}
+      labels_train = labels_train | add_activations
 
     if less_activations is not False:
-      labels_train = labels_train - set(less_activations)
-    
-    #if infill marker not present in train set, insert
-    #(binarization applies a distinct encoding for missing data)
-    if missing_marker not in labels_train:
-      labels_train = labels_train | {missing_marker}
+      less_activations = {x for x in set(less_activations) if x==x}
+      labels_train = labels_train - less_activations
     
     #______
     
@@ -17011,15 +17003,20 @@ class AutoMunge:
           consolidated_activations = [consolidated_activations]
           normalization_dict.update({'consolidated_activations' : consolidated_activations})
           
-      #here is where we add any consolidation targets that weren't present in labels_train
+      
       for consolidation_list in consolidated_activations:
+
+        #here is where we add any consolidation targets that weren't present in labels_train
         if str_convert is True:
-          labels_train = labels_train | set([str(x) for x in consolidation_list])
+          consolidation_list = [str(x) for x in consolidation_list]
+          labels_train = labels_train | set(consolidation_list)
         else:
+          #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+          #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
+          consolidation_list = [x for x in consolidation_list if x==x]
           labels_train = labels_train | set(consolidation_list)
       
-      #a version of labels_train excluding consolidations (labels_train_after_consolidation)
-      for consolidation_list in consolidated_activations:
+        #no prepare a version of labels_train excluding consolidations (labels_train_after_consolidation)
 
         #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
         returned_consolidation = consolidation_list[0]
@@ -17043,7 +17040,7 @@ class AutoMunge:
           inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
       
       #we can then apply a replace to convert consolidated items to their targeted activations
-      df[column] = df[column].replace(inverse_consolidation_translate_dict)
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
       
     del consolidation_translate_dict
     normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
@@ -17053,10 +17050,11 @@ class AutoMunge:
     
     #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
     if all_activations is not False or less_activations is not False:
-      extra_entries = list(labels_train_orig - labels_train)
+      extra_entries = labels_train_orig - labels_train
+      extra_entries = list({x for x in extra_entries if x==x})
       if len(extra_entries) > 0:
         plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-        df[column] = df[column].replace(plug_dict)
+        df[column] = df[column].astype('object').replace(plug_dict)
 
       del labels_train_orig
     
@@ -17065,10 +17063,9 @@ class AutoMunge:
     #now prepare our binarization
     
     #convert labels_train to list 
-    #and move the missing data marker to first position which will result in all zero representation
+    #and add the missing data marker to first position which will result in all zero binarized representation
     labels_train = list(labels_train)
     labels_train = sorted(labels_train, key=str)
-    labels_train.remove(missing_marker)
     labels_train = [missing_marker] + labels_train
     
     #get length of the list of activation targets
@@ -17112,8 +17109,7 @@ class AutoMunge:
     
     #now replace the entries in column with their binarization representation
     #note this representation is a string of 0's and 1's that will next be seperated into seperate columns
-    df[column] = df[column].astype('object')
-    df[column] = df[column].replace(binary_encoding_dict)
+    df[column] = df[column].astype('object').replace(binary_encoding_dict)
     
     #now let's create a list of columns to store each entry of the binary encoding
     #note suffix overlap detection will take place later in the wrapper function
@@ -17127,10 +17123,12 @@ class AutoMunge:
     #now let's store the encoding
     i=0
     for _1010_column in _1010_columnlist:
-      
-      df[_1010_column] = df[column].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
+
+      if len(_1010_columnlist) > 1:
+        df[_1010_column] = df[column].str.slice(i,i+1).astype(np.int8)
+        i+=1
+      else:
+        df[_1010_column] = df[column].astype(np.int8)
       
     #now delete the support column
     del df[column]
@@ -35136,7 +35134,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.71'
+    automungeversion = '6.72'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39622,7 +39620,7 @@ class AutoMunge:
     binary_encoding_dict = normalization_dict['binary_encoding_dict']
     _1010_columnlist = normalization_dict['_1010_columnlist']
     
-    missing_marker = np.nan
+    missing_marker = float("NaN")
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -39634,26 +39632,28 @@ class AutoMunge:
     #if a consolidated_activations parameter was performed, we'll consolidated here
     if inverse_consolidation_translate_dict != {}:
       #apply a replace to convert consolidated items to their targeted activations
-      df[column] = df[column].replace(inverse_consolidation_translate_dict)
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
       
     #if the test set has entries without encodings, we'll replace with missing data marker
-    extra_entries = list(set(df[column].unique()) - set(binary_encoding_dict))
+    extra_entries = set(df[column].unique()) - set(binary_encoding_dict)
+    extra_entries = list({x for x in extra_entries if x==x})
     if len(extra_entries) > 0:
       plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-      df[column] = df[column].replace(plug_dict)
+      df[column] = df[column].astype('object').replace(plug_dict)
     
     #now replace the entries in column with their binarization representation
     #note this representation is a string of 0's and 1's that will next be seperated into seperate columns
-    df[column] = df[column].astype('object')
-    df[column] = df[column].replace(binary_encoding_dict)
-    
+    df[column] = df[column].astype('object').replace(binary_encoding_dict)
+
     #now let's store the encoding
     i=0
     for _1010_column in _1010_columnlist:
       
-      df[_1010_column] = df[column].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
+      if len(_1010_columnlist) > 1:
+        df[_1010_column] = df[column].str.slice(i,i+1).astype(np.int8)
+        i+=1
+      else:
+        df[_1010_column] = df[column].astype(np.int8)
       
     #now delete the support column
     del df[column]
