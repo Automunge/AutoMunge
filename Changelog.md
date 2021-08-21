@@ -3986,3 +3986,23 @@ zzzinfill_valresult = {i : {'column' : column,
 - also small tweak to the wrapper function for custom_train
 - now the recorded categorylist is guaranteed as consistent order of entries as found in returned data
 - intend going forward to continuing porting a few more foundational transforms to custom_train convention and lift reserved string requirements where possible
+
+6.71
+- new form of input accepted for automunge(.) valpercent parameter
+- previously valpercent was accepted as float in range 0-1
+- used to specify the ratio of the validation split for partitioning from the training data
+- where validation set was either partitioned based on a random sampling of rows when shuffletrain was activated
+- or otherwise partitioned from bottom sequential rows of the training set when shuffletrain was deactivated
+- new convention is that valpercent can optionally be specified as a tuple in the form valpercent=(start, end)
+- where start is a float in the range 0<=start<1
+- and end is a float in the range 0<end<=1
+- and where start < end
+- the tuple option allows user to designate specific portions of the training set for partitioning
+- for example, if specified as valpercent=(0.2, 0.4), the returned training data would consist of the first 20% of rows and the last 60% of rows, while the validation set would consist of the remaining rows
+- note that if shuffletrain activated (as either True or as 'traintest'), the returned train set and validation set rows will subsequent to partitioning be individually shuffled
+- please note that automunge(.) already had support for simultaneous preparations of training and validation data, where validation data was partitioned from the received training data and prepared seperately on the train set basis
+- however in prior configuration user only had options for validation partitioning from random sampled rows or bottom sequential
+- with the new configuration user can now specify specific partitions of the training data to segregate for validation sets
+- the purpose of this new valpercent tuple option is to support integration into a cross validation operation
+- also revised the prior function for partitioning validation sets which should result in reduced memory overhead
+- also, further validation identified a scenario where the new porting of 1010 to custom_train (from 6.70) had an edge case. It’s a very remote edge case, but an edge case nonetheless. Going to revert 1010 to the prior transform convention until get this resolved. (Edge case only manifested when 1010 was performed downstream of a string operation on a particular testing feature, why it was missed in testing with last rollout, we didn’t think to validate application of 1010 as a downstream transform. Lesson learned to adhere to comprehensive validations with each rollout.)
