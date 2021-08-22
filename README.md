@@ -667,10 +667,10 @@ shuffletrain parameter is activated (which is default for train sets) validation
 sets will contain random rows.  If shuffletrain parameter is set to False then any 
 validation set will be pulled from the bottom sequential rows of the df_train dataframe.
 
-Please note that valpercent can also be passed as a two entry tuple in the form valpercent=(start, end),
+valpercent can also be passed as a two entry tuple in the form valpercent=(start, end),
 where start is a float in the range 0<=start<1, end is a float in the range 0<end<=1, and start < end.
 For example, if specified as valpercent=(0.2, 0.4), the returned training data would consist of the first 20% of rows and the last 60% of rows, while the validation set would consist of the remaining rows, and
-where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation.
+where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation, for example for a cross validaiton with k=3, automunge(.) could be called three times with valpercent passed for each as (0,0.33), (0.33,0.66), (0.66,1) respectively. Please note that when using automunge(.) in a cross-validation operation, we recommend using the postprocess_dict['final_assigncat'] entry populated in the first automunge(.) call associated with the first train/validation split as the assigncat entry passed to the automunge(.) assigncat parameter in each subsequent automunge(.) call associated with the remaining train/validation splits, which will speed up the remaining calls by eliminating the automated evaluation of data properties as well as mitigate risk of (remote) edge case when category assignment to a column under automation may differ between different validation set partitionings due to deviations in aggregate data properties associated with a column.
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
