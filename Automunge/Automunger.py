@@ -5237,10 +5237,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ordl' : {'dualprocess' : self._process_ordl,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ordl,
-                                  'inverseprocess' : self._inverseprocess_ordl,
+    process_dict.update({'ordl' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7197,20 +7196,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'lbor' : {'dualprocess' : self._process_ordl,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ordl,
-                                  'inverseprocess' : self._inverseprocess_ordl,
+    process_dict.update({'lbor' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'lbos' : {'dualprocess' : self._process_ordl,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ordl,
-                                  'inverseprocess' : self._inverseprocess_ordl,
+    process_dict.update({'lbos' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -8222,6 +8219,9 @@ class AutoMunge:
     
     for newcolumn in newcolumns_list:
       
+      #note I think this results in normalization_dict sharing memory address between entries for each newcolumn
+      #which should reduce memory overhead (in some scenarios normalization_dict could be large)
+      #and since no external rewrites to normalization_dict desired should be ok
       newcolumn_normalization_dict = {newcolumn : normalization_dict}
       
       column_dict = {newcolumn : {'category' : treecategory, \
@@ -15474,12 +15474,10 @@ class AutoMunge:
           ordered = True
           labels_train = list(mdf_train[suffixcolumn].cat.categories)
           if mdf_test[suffixcolumn].dtype.name == 'category':
-            if mdf_test[suffixcolumn].cat.ordered:
-              labels_test = list(mdf_test[suffixcolumn].cat.categories)
-            else:
-              ordered = False
+            labels_test = list(mdf_test[suffixcolumn].cat.categories)
           else:
-            ordered = False
+            labels_test = list(mdf_test[suffixcolumn].unique())
+            labels_test = sorted(labels_test, key=str)
     
     #convert column to category if it isn't already
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
@@ -15800,6 +15798,247 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
+  def _custom_train_ordl(self, df, column, normalization_dict):
+    """
+    #a rewrite of ordl transform in the custom train convention
+    #this should benefit latency
+    #return comparable form of output
+    #and accept comaprable parameters
+    #primary difference is cleaner code and trimmed a little fat
+    #and returned missing data representation now defaults to 0
+    
+    #doing away with 'zzzinfill' reserved string and use NaN instead
+    #and remove the overlap replace operation 
+    """
+    
+    #ordered_overide is boolean to indicate if order of integer encoding basis will 
+    #defer to cases when a column is a pandas categorical ordered set
+    if 'ordered_overide' in normalization_dict:
+      ordered_overide = normalization_dict['ordered_overide']
+    else:
+      ordered_overide = True
+      normalization_dict.update({'ordered_overide' : ordered_overide})
+
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in normalization_dict:
+      #accepts False or a list of activation targets
+      all_activations = normalization_dict['all_activations']
+    else:
+      all_activations = False
+      normalization_dict.update({'all_activations' : all_activations})
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in normalization_dict:
+      #accepts False or a list of added activation targets
+      add_activations = normalization_dict['add_activations']
+    else:
+      add_activations = False
+      normalization_dict.update({'add_activations' : add_activations})
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in normalization_dict:
+      #accepts False or a list of removed activation targets
+      less_activations = normalization_dict['less_activations']
+    else:
+      less_activations = False
+      normalization_dict.update({'less_activations' : less_activations})
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in normalization_dict:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = normalization_dict['consolidated_activations']
+    else:
+      consolidated_activations = False
+      normalization_dict.update({'consolidated_activations' : consolidated_activations})
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in normalization_dict:
+      str_convert = normalization_dict['str_convert']
+    else:
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
+      
+    #_____
+    
+    #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
+    #which helps accomodate a few peculiarities related to python sets with NaN inclusion
+    missing_marker = float("NaN")
+    
+    #labels_train will be adjusted through derivation and serves as basis for binarization encoding
+    labels_train = set()
+    
+    ordered = False
+    #ordered_overide is not compatible with activation parameters
+    if ordered_overide \
+    and all_activations is False \
+    and add_activations is False \
+    and less_activations is False \
+    and consolidated_activations is False:
+      if df[column].dtype.name == 'category':
+        if df[column].cat.ordered:
+          ordered = True
+          labels_train = list(df[column].cat.categories)
+          if str_convert is True:
+            labels_train = [str(x) for x in labels_train]
+            df[column] = df[column].astype(str)
+          #since this won't be populated below when ordered=True here is a plug default
+          normalization_dict.update({'inverse_consolidation_translate_dict' : {}})
+    
+    #_____
+
+    #if pandas didn't already have an ordered convention for entries, we'll access the entries as a set
+    if ordered is False:
+            
+      if df[column].dtype.name == 'category':
+        labels_train = set(df[column].cat.categories)
+        labels_train = {x for x in labels_train if x==x}
+
+      if labels_train == set():  
+        labels_train = set(df[column].unique())
+        labels_train = {x for x in labels_train if x==x}
+        
+      #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
+      if str_convert is True:
+        #note this set excludes missing_marker
+        labels_train = {str(x) for x in labels_train}
+        #only convert non-NaN entries in target column
+#         df.loc[df[column] == df[column], (column)] = df[column].astype(str)
+        df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+
+      #now we have a few activation set related parameters, applied by adjusting labels_train
+      #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+
+      if all_activations is not False or less_activations is not False:
+        #labels_train_orig is a support record that won't be returned
+        labels_train_orig = labels_train.copy()
+
+      if all_activations is not False:
+        all_activations = {x for x in set(all_activations) if x==x}
+        labels_train = all_activations
+
+      if add_activations is not False:
+        add_activations = {x for x in set(add_activations) if x==x}
+        labels_train = labels_train | add_activations
+
+      if less_activations is not False:
+        less_activations = {x for x in set(less_activations) if x==x}
+        labels_train = labels_train - less_activations
+        
+      #______
+      
+      #now we'll take account for any activation consolidations from consolidated_activations parameter
+      
+      #as part of this implementation, we next want to derive
+      #a version of labels_train excluding consolidations (labels_train)
+      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+      #which we'll then apply with a replace operation
+      
+      labels_train_before_consolidation = labels_train.copy()
+      consolidation_translate_dict = {}
+      inverse_consolidation_translate_dict = {}
+
+      if consolidated_activations is not False:
+
+        #if user passes a single tier list instead of list of lists we'll embed in a list
+        if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+          if not isinstance(consolidated_activations[0], list):
+            consolidated_activations = [consolidated_activations]
+            normalization_dict.update({'consolidated_activations' : consolidated_activations})
+
+        for consolidation_list in consolidated_activations:
+
+          #here is where we add any consolidation targets that weren't present in labels_train
+          if str_convert is True:
+            consolidation_list = [str(x) for x in consolidation_list if x==x]
+            labels_train = labels_train | set(consolidation_list)
+          else:
+            #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+            #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
+            consolidation_list = [x for x in consolidation_list if x==x]
+            labels_train = labels_train | set(consolidation_list)
+
+          #no prepare a version of labels_train excluding consolidations (labels_train)
+
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+
+          #now remove consolidated entries from labels_train
+          #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
+          for consolidation_list in consolidated_activations:
+
+            if len(consolidation_list) > 1:
+
+              #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+              returned_consolidation = consolidation_list[0]
+
+              labels_train = labels_train - set(consolidation_list[1:])
+
+              consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+
+        #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+        for key,value in consolidation_translate_dict.items():
+          for consolidation_list_entry in value:
+            inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
+
+        #we can then apply a replace to convert consolidated items to their targeted activations
+        df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+
+      del consolidation_translate_dict
+      normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
+      del inverse_consolidation_translate_dict
+
+      #____
+      
+      #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+      if all_activations is not False or less_activations is not False:
+        extra_entries = labels_train_orig - labels_train
+        extra_entries = list({x for x in extra_entries if x==x})
+        if len(extra_entries) > 0:
+          plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+          df[column] = df[column].astype('object').replace(plug_dict)
+
+        del labels_train_orig
+
+      #____
+      
+      #now prepare our ordinal encoding
+
+      #convert labels_train to list 
+      #and add the missing data marker to first position which will result in all zero binarized representation
+      labels_train = list(labels_train)
+      labels_train = sorted(labels_train, key=str)
+      
+    #____
+    #now this includes ordered scenario too
+      
+    #add our missing_marker, note adding as first position will result in 0 encoding unless differed position based on ordered
+    if ordered is True:
+      #missing data marker might already be present in ordered scenario
+      if missing_marker not in labels_train:
+        labels_train = [missing_marker] + labels_train
+    else:
+      labels_train = [missing_marker] + labels_train
+      
+    #get length of the list, then zip a dictionary from list and range(length)
+    #the range values will be our ordinal points to replace the categories
+    listlength = len(labels_train)
+    ordinal_dict = dict(zip(labels_train, range(listlength)))
+    normalization_dict.update({'ordinal_dict' : ordinal_dict})
+    
+    #replace the categories in train set via ordinal trasnformation
+    df[column] = df[column].astype('object').replace(ordinal_dict)
+    
+    #driftreport metric ordl_activations_dict
+    ordl_activations_dict = {}
+    for key in ordinal_dict:
+      sumcalc = (df[column] == ordinal_dict[key]).sum() 
+      ratio = sumcalc / df[column].shape[0]
+      ordl_activations_dict.update({key:ratio})
+    normalization_dict.update({'ordl_activations_dict' : ordl_activations_dict})
+    
+    return df, normalization_dict
+
   def _process_ord3(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
@@ -15866,12 +16105,9 @@ class AutoMunge:
           ordered = True
           labels_train = list(mdf_train[suffixcolumn].cat.categories)
           if mdf_test[suffixcolumn].dtype.name == 'category':
-            if mdf_test[suffixcolumn].cat.ordered:
-              labels_test = list(mdf_test[suffixcolumn].cat.categories)
-            else:
-              ordered = False
+            labels_test = list(mdf_test[suffixcolumn].cat.categories)
           else:
-            ordered = False
+            labels_test = list(mdf_test[suffixcolumn].unique())
     
     #convert column to category if it isn't already
     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
@@ -16986,7 +17222,7 @@ class AutoMunge:
     #now we'll take account for any activation consolidations from consolidated_activations parameter
     
     #as part of this implementation, we next want to derive
-    #a version of labels_train excluding consolidations (labels_train_after_consolidation)
+    #a version of labels_train excluding consolidations (labels_train)
     #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
     #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
     #which we'll then apply with a replace operation
@@ -17003,20 +17239,19 @@ class AutoMunge:
           consolidated_activations = [consolidated_activations]
           normalization_dict.update({'consolidated_activations' : consolidated_activations})
           
-      
       for consolidation_list in consolidated_activations:
 
         #here is where we add any consolidation targets that weren't present in labels_train
+        #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+        #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
         if str_convert is True:
-          consolidation_list = [str(x) for x in consolidation_list]
+          consolidation_list = [str(x) for x in consolidation_list if x==x]
           labels_train = labels_train | set(consolidation_list)
         else:
-          #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
-          #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
           consolidation_list = [x for x in consolidation_list if x==x]
           labels_train = labels_train | set(consolidation_list)
       
-        #no prepare a version of labels_train excluding consolidations (labels_train_after_consolidation)
+        #no prepare a version of labels_train excluding consolidations (labels_train)
 
         #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
         returned_consolidation = consolidation_list[0]
@@ -28088,7 +28323,7 @@ class AutoMunge:
                   self._train_medianinfillfunction(df_train, column, postprocess_dict, \
                                                   masterNArows_train)
 
-                  postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
+                  postprocess_dict['column_dict'][column].update({'assigninfill_infillvalue':infillvalue})
 
                   df_test = \
                   self._test_medianinfillfunction(df_test, column, postprocess_dict, \
@@ -28122,7 +28357,7 @@ class AutoMunge:
                   self._train_meaninfillfunction(df_train, column, postprocess_dict, \
                                                 masterNArows_train)
 
-                  postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
+                  postprocess_dict['column_dict'][column].update({'assigninfill_infillvalue':infillvalue})
 
                   df_test = \
                   self._test_meaninfillfunction(df_test, column, postprocess_dict, \
@@ -28151,7 +28386,7 @@ class AutoMunge:
                   self._train_modeinfillfunction(df_train, column, postprocess_dict, \
                                                 masterNArows_train)
 
-                  postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
+                  postprocess_dict['column_dict'][column].update({'assigninfill_infillvalue':infillvalue})
 
                   df_test = \
                   self._test_modeinfillfunction(df_test, column, postprocess_dict, \
@@ -28180,7 +28415,7 @@ class AutoMunge:
                   self._train_lcinfillfunction(df_train, column, postprocess_dict, \
                                                 masterNArows_train)
 
-                  postprocess_dict['column_dict'][column]['normalization_dict'][column].update({'infillvalue':infillvalue})
+                  postprocess_dict['column_dict'][column].update({'assigninfill_infillvalue':infillvalue})
 
                   #repurpose modeinfillfunction for test, only difference is the passed infillvalue
                   df_test = \
@@ -28592,7 +28827,11 @@ class AutoMunge:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
-                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+                  if 'assigninfill_infillvalue' in postprocess_dict['column_dict'][column]:
+                    infillvalue = postprocess_dict['column_dict'][column]['assigninfill_infillvalue']
+                  else:
+                    #this is for backward compatibility for postprocess_dict populated in versions preceding 6.73
+                    infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
                   df_test = \
                   self._test_medianinfillfunction(df_test, column, postprocess_dict, \
@@ -28622,7 +28861,11 @@ class AutoMunge:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
-                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+                  if 'assigninfill_infillvalue' in postprocess_dict['column_dict'][column]:
+                    infillvalue = postprocess_dict['column_dict'][column]['assigninfill_infillvalue']
+                  else:
+                    #this is for backward compatibility for postprocess_dict populated in versions preceding 6.73
+                    infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
                   df_test = \
                   self._test_meaninfillfunction(df_test, column, postprocess_dict, \
@@ -28646,7 +28889,11 @@ class AutoMunge:
 
                 if boolcolumn is False:
 
-                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+                  if 'assigninfill_infillvalue' in postprocess_dict['column_dict'][column]:
+                    infillvalue = postprocess_dict['column_dict'][column]['assigninfill_infillvalue']
+                  else:
+                    #this is for backward compatibility for postprocess_dict populated in versions preceding 6.73
+                    infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
                   df_test = \
                   self._test_modeinfillfunction(df_test, column, postprocess_dict, \
@@ -28673,7 +28920,11 @@ class AutoMunge:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
-                  infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
+                  if 'assigninfill_infillvalue' in postprocess_dict['column_dict'][column]:
+                    infillvalue = postprocess_dict['column_dict'][column]['assigninfill_infillvalue']
+                  else:
+                    #this is for backward compatibility for postprocess_dict populated in versions preceding 6.73
+                    infillvalue = postprocess_dict['column_dict'][column]['normalization_dict'][column]['infillvalue']
 
                   #repurpose modeinfillfunction for test, only difference is the passed infillvalue
                   df_test = \
@@ -32642,8 +32893,8 @@ class AutoMunge:
   
     for column in bool_column_list:
   
-      df_train['Binary'] = df_train['Binary'] + df_train[column].astype(str)
-      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
+      df_train['Binary'] = df_train['Binary'] + df_train[column].astype(int).astype(str)
+      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(int).astype(str)
     
     if Binary in {True, 'retain'}:
 
@@ -32690,7 +32941,7 @@ class AutoMunge:
 
         del df_train[column]
         del df_test[column]
-    
+
     return df_train, df_test, Binary_dict
   
   def _postBinary_convert(self, df_test, Binary_dict, Binary):
@@ -32719,7 +32970,7 @@ class AutoMunge:
     
     for column in bool_column_list:
   
-      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(str)
+      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(int).astype(str)
 
     if Binary in {True, 'retain'}:
 
@@ -35134,7 +35385,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.72'
+    automungeversion = '6.73'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39172,6 +39423,43 @@ class AutoMunge:
         del mdf_test[column]
     
     return mdf_test
+
+  def _custom_test_ordl(self, df, column, normalization_dict):
+    """
+    #rewrite of the ordl trasnform
+    #corresponding to _custom_train_ordl
+    """
+    
+    #access the train set properties from normalization_dict
+    str_convert = normalization_dict['str_convert']
+    inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
+    ordinal_dict = normalization_dict['ordinal_dict']
+    
+    missing_marker = float("NaN")
+    
+    #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
+    df[column] = df[column].astype('object')
+    
+    #if str_convert elected (for common encoding between e.g. 2=='2')
+    if str_convert is True:
+      df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+    
+    #if a consolidated_activations parameter was performed, we'll consolidated here
+    if inverse_consolidation_translate_dict != {}:
+      #apply a replace to convert consolidated items to their targeted activations
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+      
+    #if the test set has entries without encodings, we'll replace with missing data marker
+    extra_entries = set(df[column].unique()) - set(ordinal_dict)
+    extra_entries = list({x for x in extra_entries if x==x})
+    if len(extra_entries) > 0:
+      plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+      df[column] = df[column].astype('object').replace(plug_dict)
+    
+    #now replace the entries in column with their ordinal representation
+    df[column] = df[column].astype('object').replace(ordinal_dict)
+    
+    return df
   
   def _postprocess_ord3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -46006,6 +46294,24 @@ class AutoMunge:
     df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
     
     return df, inputcolumn
+
+  def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+    """
+    #rewrite of the ordl inverison
+    #corresponding to _custom_train_ordl
+    """
+    
+    #First let's access the values we'll need from the normalization_dict
+    ordinal_dict = normalization_dict['ordinal_dict']
+    
+    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    
+    returnedcolumn = returnedcolumn_list[0]
+    
+    #now perform the inversion
+    df[inputcolumn] = df[returnedcolumn].astype('object').replace(inverse_ordinal_dict)
+
+    return df
   
   def _inverseprocess_ord3(self, df, categorylist, postprocess_dict):
     """
