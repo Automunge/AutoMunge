@@ -4020,3 +4020,20 @@ zzzinfill_valresult = {i : {'column' : column,
 - also for set management surrounding NaN inclusions, we've applied a different method to remove NaN entry, now relying on a set comprehension taking account for NaN != NaN
 - we still like using set operations to manage the unique entries and encodings as much more efficient than list methods, now that we can accomodate these further identified NaN entry edge cases we can lift the 'zzzinfill' reserved string requirement
 - as noted in 6.70 intent going forward is to continuing porting a few more foundational transforms to custom_train convention and lift reserved string requirements where possible
+
+6.73
+- some clarifications provided to README valpercent parameter writeup associated with use of automunge(.) in context of a cross-validation operation
+- a few small code comment cleanups and a small tweak associated with activation parameters to _custom_train_1010
+- ported the ordl transform for ordinal encoding to the custom_train convention
+- similar to 1010, we believe this will benefit latency
+- new form has consistent functionality and parameter support
+- lifted 'zzzinfill' reserved string requirement
+- primary deviations from user standpoint is that missing data prior to ML infill now by default is encoded as integer 0
+- also trimmed a few stored entries carrying redundant information in the normalization_dict saved in postprocess_dict['column_dict'] to reduce memory overhead, as there are scenarios where ordl sets may have a large number of unique entries
+- parallel small update to the ordered_overide parameter convention for ordinal encodings ordl and ord3 as implemented in dualprocess convention, now ordered treatment is based only on train set instead of both train and test (consistent with the custom_train version)
+- found an assigninfill scenario where we were piggy backing off of normalization_dict populated in trasnformation functions to store 'infillvalue' as a derived infill value (associated with mean, median, mode, and lc infill from assigninfill)
+- realized this was in effect resulting in a reserved string for normalization_dict populated in user defined transformation functions
+- so simple simple solution, moved the infill value to first tier of column_dict associated with the column instead of populating in normalization_dict, and renamed to 'assigninfill_infillvalue'
+- which in the process also resolved an issue I think originating from saved normalization_dict's accross columns in a categorylist sharing same address in memory, so when we were saving infill to one column's normalization_dict was overwriting entry in other columns from categorylist
+- small tweak to Binary dimensionality reduction, now when aggregating activations from boolean integer columns, the activations are recast as integers, which addresses an edge case when negzeroinfill is applied with assigninfill to a boolean integer column resulting in dtype drift to float
+- as a note, with pending various portings of transformation functions to custom_train convention, it will result in some bloat to lines of code, intent is sometime (not too far down the road) to consolidate any redundancies to just the custom_train form, which will impact backwards compatibility, so saving this step for once have a bulk of consolidations ready so can roll out in one fell swoop, like ripping a bandaid off
