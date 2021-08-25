@@ -4037,3 +4037,26 @@ zzzinfill_valresult = {i : {'column' : column,
 - which in the process also resolved an issue I think originating from saved normalization_dict's accross columns in a categorylist sharing same address in memory, so when we were saving infill to one column's normalization_dict was overwriting entry in other columns from categorylist
 - small tweak to Binary dimensionality reduction, now when aggregating activations from boolean integer columns, the activations are recast as integers, which addresses an edge case when negzeroinfill is applied with assigninfill to a boolean integer column resulting in dtype drift to float
 - as a note, with pending various portings of transformation functions to custom_train convention, it will result in some bloat to lines of code, intent is sometime (not too far down the road) to consolidate any redundancies to just the custom_train form, which will impact backwards compatibility, so saving this step for once have a bulk of consolidations ready so can roll out in one fell swoop, like ripping a bandaid off
+
+6.74
+- rewrite of onht transform for one hot encoding, ported to the custom_train convention
+- similar simplifications as with 6.73, should benefit latency
+- added ordered_overide parameter support, similar to use with ordl, for setting order of activation columns when a column is received as pandas ordered categoric, accepts boolean to deactivate
+- onht missing data by default returned with no activation, new convention when null_activation parameter activated missing data now encoded in final column in onht set (as opposed to based on alphabetic sorting)
+- struck some troubleshooting printouts had missed with last update
+- rewrote the evaluations performed for powertransform == 'infill', including fixed a few derivation edge cases and consolidated to pandas operations
+- identified an edge case for np.where, which we were using extensively
+- edge case was associated with dtype drift
+- for example, if target column starts with a uniform dtype, including NaN, int, float, when np.where inserts a string it converts all other dtypes to str, although does not do so when target column starts with mixed dtypes
+- so created an alternative to np.where as "autowhere", which is built on top of pandas.loc
+- it is kind of a compromise between np.where and pd.where with a few distinctions verses each
+- global replacement of np.where throughout codebase with autowhere 
+- a small udpate to the onehot support function in how we access index
+- found and fixed a bug with None entry conversion to NaN
+- decided to make stochastic_impute_categoric and stochastic_impute_numeric on by default
+- this is a nontrivial update, the justification is comments from conference review on potential for deterministic imputations to contribute to bias
+- hope to perform some form of validation down the road, will take some creativity for experiment design
+- stochastic impute for ML infill can be deactivated in ML_cmnd if desired, i.e.
+ML_cmnd = {'stochastic_impute_numeric': False,
+           'stochastic_impute_categoric':False},
+- found and fixed an edge case for postmunge drift report associated with excl suffix convention
