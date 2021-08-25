@@ -773,7 +773,7 @@ accross rows, documented further below with ML_cmnd parameter. This operation
 can be deactivated by passing ML_cmnd['leakage_tolerance'] = False.
 
 Please note that for incorporating stochastic injections into the derived imputations, an
-option is available as further documented below in the ML_cmnd entries for 'stochastic_impute_categoric'
+option is on by default which is further documented below in the ML_cmnd entries for 'stochastic_impute_categoric'
 and 'stochastic_impute_numeric'. Please note that by default the random seed passed to model
 training is stochastic between applications, as further documented below in the ML_cmnd entry for
 'stochastic_training_seed'.
@@ -1050,9 +1050,9 @@ Please note that model training by default incorporates a random random seed wit
 as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
 automunge(.) randomseed parameter. 
 
-Please note that there is an option to inject stochastic noise into derived imputations that
-can be activated for numeric features by passing ML_cmnd['stochastic_impute_numeric'] = True
-and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = True. 
+Please note that there is a defaulted option to inject stochastic noise into derived imputations that
+can be deactivated for numeric features by passing ML_cmnd['stochastic_impute_numeric'] = False
+and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = False. 
 
 Numeric noise injections sample from either a default normal distribution or optionally a laplace
 distribution. Default noise profile is mu=0, sigma=0.03, and flip_prob=0.06 (where flip_prob is ratio 
@@ -3144,18 +3144,19 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
     - 'suffix': to change suffix appender (leading underscore added internally)
-    - 'null_activation': defaults to False, when True missing data is returned with distinct activation
+    - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
+    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - returned datatype: int8
   - inversion available: yes with full recovery
 * ordl/ord2/ord5: converts categoric sets to ordinal integer encoded set, encodings sorted alphabetically
   - useful for: categoric sets with high cardinality where one-hot or binarization may result in high dimensionality. Also default for categoric labels.
-  - default infill: plug value 'zzzinfill'
+  - default infill: naninfill, with returned distinct activation of integer 0
   - default NArowtype: justNaN
   - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
