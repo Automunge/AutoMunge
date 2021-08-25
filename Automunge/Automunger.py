@@ -4322,10 +4322,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnr2'}})
-    process_dict.update({'onht' : {'dualprocess' : self._process_onht,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_onht,
-                                  'inverseprocess' : self._inverseprocess_onht,
+    process_dict.update({'onht' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -8027,8 +8026,8 @@ class AutoMunge:
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #non integers are subject to infill
-      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), mdf_train[suffixcolumn], np.nan)
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+      mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
+      mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
     
     elif NArowtype in {'positivenumeric'}:
       
@@ -8872,8 +8871,8 @@ class AutoMunge:
 
     #replace any negative zero floats with positive zero. Negative zero is reserved for default infill
     if abs_zero is True:
-      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == 0, 0, mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == 0, 0, mdf_test[suffixcolumn])
+      mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == 0, 0, specified='replacement')
+      mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == 0, 0, specified='replacement')
 
     #apply defaultinfill based on processdict entry
     #this will default to negzeroinfill
@@ -10422,10 +10421,9 @@ class AutoMunge:
       #this only comes up when caluclating driftreport in postmunge
       if len(valuecounts) > 2:
         for value in extravalues:
-          mdf_train[suffixcolumn] = \
-          np.where(mdf_train[suffixcolumn] == value, binary_missing_plug, mdf_train[suffixcolumn])
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == value, binary_missing_plug, mdf_test[suffixcolumn])
+
+          mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == value, binary_missing_plug, specified='replacement')
+          mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == value, binary_missing_plug, specified='replacement')
 
       #apply defaultinfill based on processdict entry
       #(this will default to naninfill in which casee the next line will dictate)
@@ -10448,12 +10446,12 @@ class AutoMunge:
       uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
+
+          mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == unique, binary_missing_plug, specified='replacement')
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == onevalue, 1, 0)
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
+      mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == onevalue, 1, 0)
+      mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
       bnrycolumns = [suffixcolumn]
@@ -10670,8 +10668,8 @@ class AutoMunge:
           for consolidation_target in consolidation_list:
             if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
               labels_train_after_consolidation.remove(consolidation_target)
-              df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
-              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              df_train_cat = self._autowhere(df_train_cat, returned_consolidation, df_train_cat[consolidation_target] == 1, 1, specified='replacement')
+              df_test_cat = self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
               del df_train_cat[consolidation_target]
               del df_test_cat[consolidation_target]
 
@@ -10749,6 +10747,261 @@ class AutoMunge:
       column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
+
+  def _custom_train_onht(self, df, column, normalization_dict):
+    """
+    #a rewrite of onht transform in the custom train convention
+    #this should benefit latency
+    #return comparable form of output
+    #and accept comaprable parameters
+    #primary difference is cleaner code and trimmed a little fat
+    
+    #doing away with 'zzzinfill' reserved string and use NaN instead
+    #and remove the overlap replace operation 
+    """
+    
+    #ordered_overide is boolean to indicate if order of integer encoding basis will 
+    #defer to cases when a column is a pandas categorical ordered set
+    if 'ordered_overide' in normalization_dict:
+      ordered_overide = normalization_dict['ordered_overide']
+    else:
+      ordered_overide = True
+      normalization_dict.update({'ordered_overide' : ordered_overide})
+
+    #all_activations is to base the full set of activations on user specification instead of training set
+    if 'all_activations' in normalization_dict:
+      #accepts False or a list of activation targets
+      all_activations = normalization_dict['all_activations']
+    else:
+      all_activations = False
+      normalization_dict.update({'all_activations' : all_activations})
+
+    #add_activations is to include additional columns for entry activations even when not found in train set
+    if 'add_activations' in normalization_dict:
+      #accepts False or a list of added activation targets
+      add_activations = normalization_dict['add_activations']
+    else:
+      add_activations = False
+      normalization_dict.update({'add_activations' : add_activations})
+
+    #less_activations is to remove entry activaiton columns even when entry found in train set
+    if 'less_activations' in normalization_dict:
+      #accepts False or a list of removed activation targets
+      less_activations = normalization_dict['less_activations']
+    else:
+      less_activations = False
+      normalization_dict.update({'less_activations' : less_activations})
+
+    #consolidated_activations is to consolidate entries to a single common activation
+    if 'consolidated_activations' in normalization_dict:
+      #accepts False or a list of consolidated activation targets or a list of lists
+      consolidated_activations = normalization_dict['consolidated_activations']
+    else:
+      consolidated_activations = False
+      normalization_dict.update({'consolidated_activations' : consolidated_activations})
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in normalization_dict:
+      str_convert = normalization_dict['str_convert']
+    else:
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
+      
+    #null_activation is to have a distinct column for missing data
+    #note that when activated, entries in test set not found in train set will still be returned without activation
+    if 'null_activation' in normalization_dict:
+      null_activation = normalization_dict['null_activation']
+    else:
+      null_activation = False
+      normalization_dict.update({'null_activation' : null_activation})
+      
+    #_____
+    
+    #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
+    #which helps accomodate a few peculiarities related to python sets with NaN inclusion
+    missing_marker = float("NaN")
+    # missing_marker = np.nan
+    
+    #labels_train will be adjusted through derivation and serves as basis for binarization encoding
+    labels_train = set()
+    
+    ordered = False
+    #ordered_overide is not compatible with activation parameters
+    if ordered_overide \
+    and all_activations is False \
+    and add_activations is False \
+    and less_activations is False \
+    and consolidated_activations is False:
+      if df[column].dtype.name == 'category':
+        if df[column].cat.ordered:
+          ordered = True
+          labels_train = list(df[column].cat.categories)
+          if str_convert is True:
+            labels_train = [str(x) for x in labels_train]
+            df[column] = df[column].astype(str)
+          #since this won't be populated below when ordered=True here is a plug default
+          normalization_dict.update({'inverse_consolidation_translate_dict' : {}})
+    
+    #_____
+
+    #if pandas didn't already have an ordered convention for entries, we'll access the entries as a set
+    if ordered is False:
+            
+      if df[column].dtype.name == 'category':
+        labels_train = set(df[column].cat.categories)
+        labels_train = {x for x in labels_train if x==x}
+
+      if labels_train == set():  
+        labels_train = set(df[column].unique())
+        labels_train = {x for x in labels_train if x==x}
+        
+      #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
+      if str_convert is True:
+        #note this set excludes missing_marker
+        labels_train = {str(x) for x in labels_train}
+        #only convert non-NaN entries in target column
+        df = self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
+
+      #now we have a few activation set related parameters, applied by adjusting labels_train
+      #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+
+      if all_activations is not False or less_activations is not False:
+        #labels_train_orig is a support record that won't be returned
+        labels_train_orig = labels_train.copy()
+
+      if all_activations is not False:
+        all_activations = {x for x in set(all_activations) if x==x}
+        labels_train = all_activations
+
+      if add_activations is not False:
+        add_activations = {x for x in set(add_activations) if x==x}
+        labels_train = labels_train | add_activations
+
+      if less_activations is not False:
+        less_activations = {x for x in set(less_activations) if x==x}
+        labels_train = labels_train - less_activations
+        
+      #______
+      
+      #now we'll take account for any activation consolidations from consolidated_activations parameter
+      
+      #as part of this implementation, we next want to derive
+      #a version of labels_train excluding consolidations (labels_train)
+      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+      #which we'll then apply with a replace operation
+      
+      labels_train_before_consolidation = labels_train.copy()
+      consolidation_translate_dict = {}
+      inverse_consolidation_translate_dict = {}
+
+      if consolidated_activations is not False:
+
+        #if user passes a single tier list instead of list of lists we'll embed in a list
+        if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+          if not isinstance(consolidated_activations[0], list):
+            consolidated_activations = [consolidated_activations]
+            normalization_dict.update({'consolidated_activations' : consolidated_activations})
+
+        for consolidation_list in consolidated_activations:
+
+          #here is where we add any consolidation targets that weren't present in labels_train
+          if str_convert is True:
+            consolidation_list = [str(x) for x in consolidation_list if x==x]
+            labels_train = labels_train | set(consolidation_list)
+          else:
+            #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+            #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
+            consolidation_list = [x for x in consolidation_list if x==x]
+            labels_train = labels_train | set(consolidation_list)
+
+          #no prepare a version of labels_train excluding consolidations (labels_train)
+
+          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+          returned_consolidation = consolidation_list[0]
+
+          #now remove consolidated entries from labels_train
+          #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
+          for consolidation_list in consolidated_activations:
+
+            if len(consolidation_list) > 1:
+
+              #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+              returned_consolidation = consolidation_list[0]
+
+              labels_train = labels_train - set(consolidation_list[1:])
+
+              consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+
+        #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+        for key,value in consolidation_translate_dict.items():
+          for consolidation_list_entry in value:
+            inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
+
+        #we can then apply a replace to convert consolidated items to their targeted activations
+        df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+
+      del consolidation_translate_dict
+      normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
+      del inverse_consolidation_translate_dict
+
+      #____
+      
+      #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+      if all_activations is not False or less_activations is not False:
+        extra_entries = labels_train_orig - labels_train
+        extra_entries = list({x for x in extra_entries if x==x})
+        if len(extra_entries) > 0:
+          plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+          df[column] = df[column].astype('object').replace(plug_dict)
+
+        del labels_train_orig
+
+      #____
+      
+      #now prepare our onehot encoding
+
+      #convert labels_train to list 
+      #and add the missing data marker to first position which will result in all zero binarized representation
+      labels_train = list(labels_train)
+      labels_train = sorted(labels_train, key=str)
+      
+    #____
+    #now this includes ordered scenario too
+      
+    #add our missing_marker, note adding as last position will result in last column unless differed position based on ordered
+    if null_activation is True:
+      if ordered is True:
+        #missing data marker might already be present in ordered scenario
+        if missing_marker not in labels_train:
+          labels_train = labels_train + [missing_marker]
+      else:
+        labels_train = labels_train + [missing_marker]
+
+    #one hot encoding support function
+    df_cat = self._onehot_support(df, column, scenario=1, activations_list=labels_train)
+    
+    #change data types to int8 for memory savings
+    for activation_column in labels_train:
+      df_cat[activation_column] = df_cat[activation_column].astype(np.int8)
+    
+    labels_dict = {}
+    i = 0
+    for entry in labels_train:
+      labels_dict.update({entry : column + '_' + str(i)})
+      i += 1
+      
+    normalization_dict.update({'labels_dict' : labels_dict})
+      
+    #concatinate the sparse set with the rest of our training data
+    df = pd.concat([df, df_cat], axis=1)
+    
+    del df[column]
+    
+    #now convert coloumn headers from text convention to onht convention
+    df = df.rename(columns=labels_dict)
+    
+    return df, normalization_dict
 
   def _process_text(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
@@ -10907,8 +11160,8 @@ class AutoMunge:
           for consolidation_target in consolidation_list:
             if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
               labels_train_after_consolidation.remove(consolidation_target)
-              df_train_cat[returned_consolidation] = np.where(df_train_cat[consolidation_target] == 1, 1, df_train_cat[returned_consolidation])
-              df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+              df_train_cat = self._autowhere(df_train_cat, returned_consolidation, df_train_cat[consolidation_target] == 1, 1, specified='replacement')
+              df_test_cat = self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
               del df_train_cat[consolidation_target]
               del df_test_cat[consolidation_target]
 
@@ -11074,8 +11327,8 @@ class AutoMunge:
     df_train_cat = pd.DataFrame(mdf_train[tempcolumn])
     df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
     for entry in labels_train:
-      df_train_cat[entry] = np.where(mdf_train[tempcolumn] == entry, 1, 0)
-      df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+      df_train_cat = self._autowhere(df_train_cat, entry, mdf_train[tempcolumn] == entry, 1, specified='replacement')
+      df_test_cat = self._autowhere(df_test_cat, entry, mdf_test[tempcolumn] == entry, 1, specified='replacement')
     del df_train_cat[tempcolumn]
     del df_test_cat[tempcolumn]
     
@@ -11367,12 +11620,9 @@ class AutoMunge:
     
     #convert to uppercase string based on activate parameter
     if activate is True:
-      #convert column to string except for nan infill points
-      df[suffixcolumn] = \
-      np.where(df[suffixcolumn] == df[suffixcolumn], df[suffixcolumn].astype(str), df[suffixcolumn])
-      #convert to uppercase
-      df[suffixcolumn] = \
-      np.where(df[suffixcolumn] == df[suffixcolumn], df[suffixcolumn].str.upper(), df[suffixcolumn])
+      #convert column to uppercase string except for nan infill points
+      df = \
+      self._autowhere(df, suffixcolumn, df[suffixcolumn] == df[suffixcolumn], df[suffixcolumn].astype(str).str.upper(), specified='replacement')
 
     #create list of columns
     UPCScolumns = [suffixcolumn]
@@ -13817,12 +14067,12 @@ class AutoMunge:
     for newcolumn in search_dict:
       suffixoverlap_results = \
       self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-      mdf_train[newcolumn] = \
-      np.where(mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
-      
-      mdf_test[newcolumn] = \
-      np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+
+      mdf_train = \
+      self._autowhere(mdf_train, newcolumn, mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
+
+      mdf_test = \
+      self._autowhere(mdf_test, newcolumn, mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
     
     newcolumns = list(search_dict)
     
@@ -13842,11 +14092,11 @@ class AutoMunge:
         
         for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
           target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-          
-          mdf_train[aggregated_dict_key_column] = \
-          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
-          mdf_test[aggregated_dict_key_column] = \
-          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+          mdf_train = \
+          self._autowhere(mdf_train, aggregated_dict_key_column, mdf_train[target_for_aggregation_column] == 1, 1, specified='replacement')
+          mdf_test = \
+          self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
           
           del mdf_train[target_for_aggregation_column]
           del mdf_test[target_for_aggregation_column]
@@ -13971,16 +14221,11 @@ class AutoMunge:
     
     #convert to uppercase string when case sensitivity not desired based on case parameter
     if case is False:
-      #convert column to string except for nan infill points
-      mdf_train[suffixcolumn] = \
-      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str), mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
-      #convert to uppercase
-      mdf_train[suffixcolumn] = \
-      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].str.upper(), mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
+      #convert column to uppercase string except for nan infill points
+      mdf_train = \
+      self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str).str.upper(), specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str).str.upper(), specified='replacement')
     
     #first we find overlaps from mdf_train
     
@@ -14121,11 +14366,11 @@ class AutoMunge:
         
         for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
           target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-          
-          mdf_train[aggregated_dict_key_column] = \
-          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
-          mdf_test[aggregated_dict_key_column] = \
-          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+          mdf_train = \
+          self._autowhere(mdf_train, aggregated_dict_key_column, mdf_train[target_for_aggregation_column] == 1, 1, specified='replacement')
+          mdf_test = \
+          self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
           
           del mdf_train[target_for_aggregation_column]
           del mdf_test[target_for_aggregation_column]
@@ -14254,16 +14499,11 @@ class AutoMunge:
     
     #convert to uppercase string when case sensitivity not desired based on case parameter
     if case is False:
-      #convert column to string except for nan infill points
-      mdf_train[suffixcolumn] = \
-      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str), mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
-      #convert to uppercase
-      mdf_train[suffixcolumn] = \
-      np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].str.upper(), mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
+      #convert column to uppercase string except for nan infill points
+      mdf_train = \
+      self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str).str.upper(), specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str).str.upper(), specified='replacement')
     
     #first we find overlaps from mdf_train
     
@@ -14404,11 +14644,11 @@ class AutoMunge:
         
         for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
           target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
-          
-          mdf_train[aggregated_dict_key_column] = \
-          np.where(mdf_train[target_for_aggregation_column] == 1, 1, mdf_train[aggregated_dict_key_column])
-          mdf_test[aggregated_dict_key_column] = \
-          np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+
+          mdf_train = \
+          self._autowhere(mdf_train, aggregated_dict_key_column, mdf_train[target_for_aggregation_column] == 1, 1, specified='replacement')
+          mdf_test = \
+          self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
           
           del mdf_train[target_for_aggregation_column]
           del mdf_test[target_for_aggregation_column]
@@ -14562,12 +14802,12 @@ class AutoMunge:
     for newcolumn in search_dict:
       suffixoverlap_results = \
       self._df_check_suffixoverlap(mdf_train, newcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-      mdf_train[newcolumn] = \
-      np.where(mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
-      
-      mdf_test[newcolumn] = \
-      np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+
+      mdf_train = \
+      self._autowhere(mdf_train, newcolumn, mdf_train[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
+
+      mdf_test = \
+      self._autowhere(mdf_test, newcolumn, mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
     
     newcolumns = list(search_dict)
 
@@ -14591,11 +14831,12 @@ class AutoMunge:
     mdf_test[suffixcolumn] = 0
     
     for newcolumn in newcolumns:
+
+      mdf_train = \
+      self._autowhere(mdf_train, suffixcolumn, mdf_train[newcolumn] == 1, ordl_dict2[newcolumn],  specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[newcolumn] == 1, ordl_dict2[newcolumn],  specified='replacement')
       
-      mdf_train[suffixcolumn] = \
-      np.where(mdf_train[newcolumn] == 1, ordl_dict2[newcolumn], mdf_train[suffixcolumn])
-      mdf_test[suffixcolumn] = \
-      np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[suffixcolumn])
       del mdf_train[newcolumn]
       del mdf_test[newcolumn]
       
@@ -14617,11 +14858,11 @@ class AutoMunge:
         for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
           target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
           target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
-          
-          mdf_train[suffixcolumn] = \
-          np.where(mdf_train[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_train[suffixcolumn])
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
+
+          mdf_train = \
+          self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, specified='replacement')
+          mdf_test = \
+          self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, specified='replacement')
 
     #we'll base the integer type on number of ordinal entries
     max_encoding = len(ordl_dict1)
@@ -14717,7 +14958,8 @@ class AutoMunge:
 
         for i in range(length_sublist-1):
 
-          df[suffixcolumn] = np.where(df[suffixcolumn] == sublist[i], sublist[-1], df[suffixcolumn])
+          df = \
+          self._autowhere(df, suffixcolumn, df[suffixcolumn] == sublist[i], sublist[-1], specified='replacement')
           
         break
       
@@ -14727,7 +14969,8 @@ class AutoMunge:
 
         for i in range(length_sublist-1):
 
-          df[suffixcolumn] = np.where(df[suffixcolumn] == sublist[i], sublist[-1], df[suffixcolumn])
+          df = \
+          self._autowhere(df, suffixcolumn, df[suffixcolumn] == sublist[i], sublist[-1], specified='replacement')
 
     normalization_dict = {suffixcolumn : {'aggregate' : aggregate, 'suffix' : suffix, 'defaultinfill_dict' : defaultinfill_dict}}
     
@@ -15903,7 +16146,8 @@ class AutoMunge:
         labels_train = {str(x) for x in labels_train}
         #only convert non-NaN entries in target column
 #         df.loc[df[column] == df[column], (column)] = df[column].astype(str)
-        df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+        df = \
+        self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
 
       #now we have a few activation set related parameters, applied by adjusting labels_train
       #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
@@ -16374,8 +16618,10 @@ class AutoMunge:
     mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #non integers are subject to infill
-    mdf_train[suffixcolumn] = np.where(mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), mdf_train[suffixcolumn], np.nan)
-    mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+    mdf_train = \
+    self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative = float("NaN"), specified='alternative')
+    mdf_test = \
+    self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative = float("NaN"), specified='alternative')
     
     #apply defaultinfill based on processdict entry
     #(this will default to adjinfill)
@@ -16395,11 +16641,11 @@ class AutoMunge:
       if maxactivation > maxbincount:
         
         bincount_maxactivation = maxbincount
-        
-        mdf_train[suffixcolumn] = \
-        np.where(mdf_train[suffixcolumn] < bincount_maxactivation, mdf_train[suffixcolumn], bincount_maxactivation)
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] < bincount_maxactivation, mdf_test[suffixcolumn], bincount_maxactivation)
+
+        mdf_train = \
+        self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] < bincount_maxactivation, alternative = bincount_maxactivation, specified='alternative')
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] < bincount_maxactivation, alternative = bincount_maxactivation, specified='alternative')
     
     #then inspect minentrycount
     count_maxactivation = maxactivation
@@ -16421,11 +16667,11 @@ class AutoMunge:
             break
             
         if count_maxactivation < maxactivation:
-            
-          mdf_train[suffixcolumn] = \
-          np.where(mdf_train[suffixcolumn] < count_maxactivation, mdf_train[suffixcolumn], count_maxactivation)
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] < count_maxactivation, mdf_test[suffixcolumn], count_maxactivation)
+
+          mdf_train = \
+          self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] < count_maxactivation, alternative = count_maxactivation, specified='alternative')
+          mdf_test = \
+          self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] < count_maxactivation, alternative = count_maxactivation, specified='alternative')
       
     #else if minentrycount passed as a ratio
     ratio_maxactivation = maxactivation
@@ -16450,10 +16696,10 @@ class AutoMunge:
 
         if ratio_maxactivation < maxactivation:
 
-          mdf_train[suffixcolumn] = \
-          np.where(mdf_train[suffixcolumn] < ratio_maxactivation, mdf_train[suffixcolumn], ratio_maxactivation)
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] < ratio_maxactivation, mdf_test[suffixcolumn], ratio_maxactivation)
+          mdf_train = \
+          self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] < ratio_maxactivation, alternative = ratio_maxactivation, specified='alternative')
+          mdf_test = \
+          self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] < ratio_maxactivation, alternative = ratio_maxactivation, specified='alternative')
 
     #create list of columns
     nmbrcolumns = [suffixcolumn]
@@ -17185,7 +17431,9 @@ class AutoMunge:
     
     #if str_convert elected (for common encoding between e.g. 2=='2')
     if str_convert is True:
-      df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+      df = \
+      self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
+
       #if we already had accessed from category dtype convert those to string 
       if labels_train != set():
         labels_train = set([str(x) for x in list(labels_train)])
@@ -18048,19 +18296,18 @@ class AutoMunge:
       
       mdf_train[tempcolumn1] = mdf_train[tempcolumn1].dt.month
       mdf_train[tempcolumn2] = mdf_train[tempcolumn2].dt.is_leap_year
+
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn2, mdf_train[tempcolumn2], 29, 28)
+
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn1, mdf_train[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, specified='replacement')
       
-      mdf_train[tempcolumn2] = \
-      np.where(mdf_train[tempcolumn2], 29, 28)
-      
-      mdf_train[tempcolumn1] = \
-      np.where(mdf_train[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_train[tempcolumn1])
-      
-      mdf_train[tempcolumn1] = \
-      np.where(mdf_train[tempcolumn1].isin([4,6,9,11]), 30, mdf_train[tempcolumn1])
-      
-      mdf_train[tempcolumn1] = \
-      np.where(mdf_train[tempcolumn1].isin([2]), mdf_train[tempcolumn2], \
-      mdf_train[tempcolumn1])
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn1, mdf_train[tempcolumn1].isin([4,6,9,11]), 30, specified='replacement')
+
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn1, mdf_train[tempcolumn1].isin([2]), mdf_train[tempcolumn2], specified='replacement')
       
       #do same for test set
       mdf_test[tempcolumn1] = mdf_test[time_column].copy()
@@ -18068,19 +18315,18 @@ class AutoMunge:
       
       mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
       mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
-      
-      mdf_test[tempcolumn2] = \
-      np.where(mdf_test[tempcolumn2], 29, 28)
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
-      
-      mdf_test[tempcolumn1] = \
-      np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-      mdf_test[tempcolumn1])
+
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn2, mdf_test[tempcolumn2], 29, 28)
+
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, specified='replacement')
+
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([4,6,9,11]), 30, specified='replacement')
+
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], specified='replacement')
       
       #combine month and day, scale for trigonomic transform, periodicity by year
       mdf_train[time_column] = (mdf_train[time_column].dt.month + mdf_train[time_column].dt.day / \
@@ -19579,27 +19825,26 @@ class AutoMunge:
     mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
     
     #convert all values in negtempcolumn >= 0 to Nan
-    mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn])
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
+    mdf_train = \
+    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    mdf_test = \
+    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
     
     #convert all values <= 0 to Nan
-    mdf_train[tempcolumn] = \
-    np.where(mdf_train[tempcolumn] <= 0, np.nan, mdf_train[tempcolumn])
-    mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn])
+    mdf_train = \
+    self._autowhere(mdf_train, tempcolumn, mdf_train[tempcolumn] <= 0, float("NaN"), specified='replacement')
+    mdf_test = \
+    self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, float("NaN"), specified='replacement')
     
     #log transform column
     
     #take abs value of negtempcolumn
     mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
     mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
-    
-    mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn])
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
+
+    #now log trasnform positive values in column column 
+    mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
+    mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
     
     train_neg_dict = {}
     newunique_list = []
@@ -19636,11 +19881,8 @@ class AutoMunge:
     mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
     
     #now log trasnform positive values in column column 
-
-    mdf_train[tempcolumn] = \
-    np.where(mdf_train[tempcolumn] != np.nan, np.floor(np.log10(mdf_train[tempcolumn])), mdf_train[tempcolumn])
-    mdf_test[tempcolumn] = \
-    np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn])
+    mdf_train[tempcolumn] = np.floor(np.log10(mdf_train[tempcolumn].astype(float)))
+    mdf_test[tempcolumn] = np.floor(np.log10(mdf_test[tempcolumn].astype(float)))
 
     train_pos_dict = {}
     newposunique_list = []
@@ -19816,31 +20058,27 @@ class AutoMunge:
     mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
     #convert all values >= 0 to Nan
-    mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] >= 0, np.nan, mdf_train[negtempcolumn])
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
+    mdf_train = \
+    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    mdf_test = \
+    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
     
     #take abs value of negtempcolumn
     mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
     mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
     
     #convert all values <= 0 in column to Nan
-    mdf_train[pworcolumn] = \
-    np.where(mdf_train[pworcolumn] <= 0, np.nan, mdf_train[pworcolumn])
-    mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
+    mdf_train = \
+    self._autowhere(mdf_train, pworcolumn, mdf_train[pworcolumn] <= 0, float("NaN"), specified='replacement')
+    mdf_test = \
+    self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, float("NaN"), specified='replacement')
 
-    mdf_train[pworcolumn] = \
-    np.where(mdf_train[pworcolumn] != np.nan, np.floor(np.log10(mdf_train[pworcolumn])), mdf_train[pworcolumn])
-    mdf_test[pworcolumn] = \
-    np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
+    mdf_train[pworcolumn] = np.floor(np.log10(mdf_train[pworcolumn].astype(float)))
+    mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
     
     #do same for negtempcolumn
-    mdf_train[negtempcolumn] = \
-    np.where(mdf_train[negtempcolumn] != np.nan, np.floor(np.log10(mdf_train[negtempcolumn])), mdf_train[negtempcolumn])
-    mdf_test[negtempcolumn] = \
-    np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
+    mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
+    mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
 
     train_neg_dict = {}
     newunique_list = []
@@ -21203,34 +21441,31 @@ class AutoMunge:
           tlbn_column = binscolumn + '_' + str(i)
 
           if i == 0:
-            
-            mdf_train[tlbn_column] = \
-            np.where(mdf_train[tlbn_column] == 1, \
-                    (bins_cuts[i+1] - mdf_train[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
 
-            mdf_test[tlbn_column] = \
-            np.where(mdf_test[tlbn_column] == 1, \
-                    (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
+            mdf_train = \
+            self._autowhere(mdf_train, tlbn_column, mdf_train[tlbn_column] == 1, 
+                            (bins_cuts[i+1] - mdf_train[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
+            mdf_test = \
+            self._autowhere(mdf_test, tlbn_column, mdf_test[tlbn_column] == 1, 
+                            (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
 
           elif i == bincount - 1:
 
-            mdf_train[tlbn_column] = \
-            np.where(mdf_train[tlbn_column] == 1, \
-                    (mdf_train[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), -1)
-
-            mdf_test[tlbn_column] = \
-            np.where(mdf_test[tlbn_column] == 1, \
-                    (mdf_test[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), -1)
+            mdf_train = \
+            self._autowhere(mdf_train, tlbn_column, mdf_train[tlbn_column] == 1, 
+                            (mdf_train[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), -1)
+            mdf_test = \
+            self._autowhere(mdf_test, tlbn_column, mdf_test[tlbn_column] == 1, 
+                            (mdf_test[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), -1)
 
           else:
 
-            mdf_train[tlbn_column] = \
-            np.where(mdf_train[tlbn_column] == 1, \
-                    (mdf_train[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), -1)
-
-            mdf_test[tlbn_column] = \
-            np.where(mdf_test[tlbn_column] == 1, \
-                    (mdf_test[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), -1)
+            mdf_train = \
+            self._autowhere(mdf_train, tlbn_column, mdf_train[tlbn_column] == 1, 
+                            (mdf_train[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), -1)
+            mdf_test = \
+            self._autowhere(mdf_test, tlbn_column, mdf_test[tlbn_column] == 1, 
+                            (mdf_test[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), -1)
 
 #       #change data type for memory savings
 #       for textcolumn in textcolumns:
@@ -22127,30 +22362,38 @@ class AutoMunge:
       df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
       #cap outliers
-      df[DPmm_column] = np.where(df[DPmm_column] < -0.5, -0.5, df[DPmm_column])
-      df[DPmm_column] = np.where(df[DPmm_column] > 0.5, 0.5, df[DPmm_column])
+      df = \
+      self._autowhere(df, DPmm_column, df[DPmm_column] < -0.5, -0.5, specified='replacement')
+      df = \
+      self._autowhere(df, DPmm_column, df[DPmm_column] > 0.5, 0.5, specified='replacement')
 
       #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
       df[DPmm_column] = df[DPmm_column].fillna(method='ffill')
       df[DPmm_column] = df[DPmm_column].fillna(method='bfill')
 
       #support column to signal sign of noise, 0 is neg, 1 is pos
-      df[DPmm_column_temp1] = 0
-      df[DPmm_column_temp1] = np.where(df[DPmm_column] >= 0., 1, df[DPmm_column_temp1])
+      df = \
+      self._autowhere(df, DPmm_column_temp1, df[DPmm_column] >= 0., 1, specified='replacement')
 
       #now inject noise, with scaled noise to maintain range 0-1
       #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-      df[DPmm_column] = np.where(df[column] < 0.5, \
-                                  df[column] + \
-                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
-                                  (df[DPmm_column_temp1]) * (df[DPmm_column]), \
-                                  df[DPmm_column])
+      df = \
+      self._autowhere(df, 
+                      DPmm_column, 
+                      df[column] < 0.5, 
+                      df[column] + \
+                      (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
+                      (df[DPmm_column_temp1]) * (df[DPmm_column]), 
+                      specified='replacement')
 
-      df[DPmm_column] = np.where(df[column] >= 0.5, \
-                                  df[column] + \
-                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
-                                  (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
-                                  df[DPmm_column])
+      df = \
+      self._autowhere(df, 
+                      DPmm_column, 
+                      df[column] >= 0.5, 
+                      df[column] + \
+                      (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
+                      (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
+                      specified='replacement')
 
       #remove support column
       del df[DPmm_column_temp1]
@@ -22447,12 +22690,14 @@ class AutoMunge:
       df[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
       #cap outliers
-      df[DPrt_column_temp2] = np.where(df[DPrt_column_temp2] < -0.5, -0.5, df[DPrt_column_temp2])
-      df[DPrt_column_temp2] = np.where(df[DPrt_column_temp2] > 0.5, 0.5, df[DPrt_column_temp2])
+      df = \
+      self._autowhere(df, DPrt_column_temp2, df[DPrt_column_temp2] < -0.5, -0.5, specified='replacement')
+      df = \
+      self._autowhere(df, DPrt_column_temp2, df[DPrt_column_temp2] > 0.5, 0.5, specified='replacement')
 
       #support column to signal sign of noise, 0 is neg, 1 is pos
-      df[DPrt_column_temp1] = 0
-      df[DPrt_column_temp1] = np.where(df[DPrt_column_temp2] >= 0., 1, df[DPrt_column_temp1])
+      df = \
+      self._autowhere(df, DPrt_column_temp1, df[DPrt_column_temp2] >= 0., 1, specified='replacement')
 
       #for noise injection we'll first move data into range 0-1 and then revert after injection
       if scalingapproach == 'retn':
@@ -22462,20 +22707,25 @@ class AutoMunge:
       elif scalingapproach == 'mxmn':
         df[DPrt_column] = (df[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
 
-
       #now inject noise, with scaled noise to maintain range 0-1
       #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-      df[DPrt_column] = np.where(df[DPrt_column] < 0.5, \
-                                  df[DPrt_column] + \
-                                  (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * df[DPrt_column] / 0.5) + \
-                                  (df[DPrt_column_temp1]) * (df[DPrt_column_temp2]), \
-                                  df[DPrt_column])
+      df = \
+      self._autowhere(df, 
+                      DPrt_column, 
+                      df[DPrt_column] < 0.5, 
+                      df[DPrt_column] + \
+                      (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * df[DPrt_column] / 0.5) + \
+                      (df[DPrt_column_temp1]) * (df[DPrt_column_temp2]), \
+                      specified='replacement')
 
-      df[DPrt_column] = np.where(df[DPrt_column] >= 0.5, \
-                                  df[DPrt_column] + \
-                                  (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2]) + \
-                                  (df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * (1 - df[DPrt_column]) / 0.5), \
-                                  df[DPrt_column])
+      df = \
+      self._autowhere(df, 
+                      DPrt_column, 
+                      df[DPrt_column] >= 0.5, 
+                      df[DPrt_column] + \
+                      (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2]) + \
+                      (df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * (1 - df[DPrt_column]) / 0.5), \
+                      specified='replacement')
 
       #remove support columns
       del df[DPrt_column_temp1]
@@ -22824,7 +23074,8 @@ class AutoMunge:
 
     #we'll have convention that all floats of negative zero converted to zero prior to infill
     if abs_zero is True:
-      df[qbt1_column] = np.where(df[qbt1_column] == 0, 0, df[qbt1_column])
+      df = \
+      self._autowhere(df, qbt1_column, df[qbt1_column] == 0, 0, specified='replacement')
     
     #default infill is 0, kind of arbitrary, there's no perfect solution
     #recomend supplementing with NArw if a marker needed
@@ -22840,12 +23091,15 @@ class AutoMunge:
       overflow += 2**(-(i+1))
       
     #now replace overflow
-    df[qbt1_column] = np.where(df[qbt1_column] > overflow, overflow, df[qbt1_column])
+    df = \
+    self._autowhere(df, qbt1_column, df[qbt1_column] > overflow, overflow, specified='replacement')
     
     if sign_bit is True:
-      df[qbt1_column] = np.where(df[qbt1_column] < -overflow, -overflow, df[qbt1_column])
+      df = \
+      self._autowhere(df, qbt1_column, df[qbt1_column] < -overflow, -overflow, specified='replacement')
     else:
-      df[qbt1_column] = np.where(df[qbt1_column] < 0, 0, df[qbt1_column])
+      df = \
+      self._autowhere(df, qbt1_column, df[qbt1_column] < 0, 0, specified='replacement')
       
     #list of sign columns
     if sign_bit is True:
@@ -22873,10 +23127,12 @@ class AutoMunge:
 
       #this returns sign column as -1 for negative entries (including negative zero) else 1
       df[sign_columns[0]] = 1
+
       df[sign_columns[0]] = np.copysign(df[sign_columns[0]], df[qbt1_column])
 
       #then convert so sign column is 1 for negative else 0
-      df[sign_columns[0]] = np.where(df[sign_columns[0]] == -1, 1, 0)
+      df = \
+      self._autowhere(df, sign_columns[0], df[sign_columns[0]] == -1, 1, 0)
       
       #set data type
       df[sign_columns[0]] = df[sign_columns[0]].astype(np.int8)
@@ -23242,8 +23498,10 @@ class AutoMunge:
     mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
     
     #non integers are subject to infill
-    mdf_train[exclcolumn] = np.where(mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), mdf_train[exclcolumn], np.nan)
-    mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
+    mdf_train = \
+    self._autowhere(mdf_train, exclcolumn, mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
+    mdf_test = \
+    self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
 
     #apply defaultinfill based on processdict entry
     #(this will default to adjinfill)
@@ -23512,20 +23770,24 @@ class AutoMunge:
       #take a random sample of rows for evaluation based on eval_ratio heuristic
       df = pd.DataFrame(df_source[column]).sample(frac=eval_ratio, random_state=randomseed)
 
-      floatcount = np.where(pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round(), 1, 0).sum()
-      floatset = np.where(pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round(), 0, 1)
-      stringset = np.where(df[column].astype(str) == df[column], 1, 0)
-      floatstringcount = ((floatset == 1) & (stringset == 1)).sum()
-      nancount = np.where(df[column] != df[column], 1, 0).sum()
-      integercount = np.where(pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round(), 1, 0).sum()
-      integerset = np.where(pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round(), 1, 0)
-      # stringset = np.where(df[column].astype(str) == df[column], 1, 0)
-      integerstringcount = ((integerset == 1) & (stringset == 1)).sum()
-      actualfloatcount = floatcount - floatstringcount - nancount
+      #nonintegercount = (pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round()).astype(int).sum()
+      nonintegerset = pd.to_numeric(df[column], errors='coerce') != pd.to_numeric(df[column], errors='coerce').round()
+      numericset = pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce')
+      numericcount = numericset.sum()
+      stringset = df[column].astype(str) == df[column]
+      #stringcount = stringset.sum()
+      numericstringcount = ((stringset == True) & (numericset == True)).sum()
+      nancount = (df[column] != df[column]).sum()
+      integercount = (pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round()).sum()
+      integerset = (pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round())
+      integerstring = (integerset == True) & (stringset == True)
+      integerstringcount = integerstring.sum()
+      floatstringcount = ((nonintegerset == True) & ((stringset == True) & (numericset == True))).sum()
+      actualfloatcount = numericcount - integercount - floatstringcount
       actualintegercount = integercount - integerstringcount
       uniquecount = df[column].nunique()
       rowcount = df[column].shape[0]
-      setminimum = df[column].min()
+      setminimum = pd.to_numeric(df[column], errors='coerce').min()
       actualfloatratio = actualfloatcount / rowcount
       actualintegerratio = actualintegercount / rowcount
       uniqueratio = uniquecount / rowcount
@@ -23880,7 +24142,8 @@ class AutoMunge:
       df2[column] = pd.to_numeric(df2[column], errors='coerce')
       
       #non integers are subject to infill
-      df2[column] = np.where(df2[column] == df2[column].round(), df2[column], np.nan)
+      df2 = \
+      self._autowhere(df2, column, df2[column] == df2[column].round(), alternative=float("NaN"), specified='alternative')
       
       if driftassess is True:
         
@@ -24728,8 +24991,10 @@ class AutoMunge:
       # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
       # #as concurrent_nmbr is intended as a resource for more than just tlbn
       # if MLinfilltype == 'concurrent_nmbr':
-      #   df_traininfill['infill'] = np.where(df_traininfill['infill'] < 0, -1, df_traininfill['infill'])
-      #   df_testinfill['infill'] = np.where(df_testinfill['infill'] < 0, -1, df_testinfill['infill'])
+        # df_traininfill = \
+        # self._autowhere(df_traininfill, 'infill', df_traininfill['infill'] < 0, -1, specified='replacement')
+        # df_testinfill = \
+        # self._autowhere(df_testinfill, 'infill', df_testinfill['infill'] < 0, -1, specified='replacement')
 
       if MLinfilltype == 'integer':
 
@@ -25070,7 +25335,8 @@ class AutoMunge:
           NArows['tempindex1'] = infill
 
         #now carry that infill over to the target column for rows where NArows is True
-        df[column] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[column])
+        df = \
+        self._autowhere(df, column, NArows[NArowcolumn], NArows['tempindex1'], specified='replacement')
 
       #else if categorylist wasn't single value
       else:
@@ -25093,7 +25359,8 @@ class AutoMunge:
             NArows['tempindex1'] = infill[textcolumnname]
 
           #now carry that infill over to the target column for rows where NArows is True
-          df[textcolumnname] = np.where(NArows[NArowcolumn], NArows['tempindex1'], df[textcolumnname])
+          df = \
+          self._autowhere(df, textcolumnname, NArows[NArowcolumn], NArows['tempindex1'], specified='replacement')
 
     if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
       pass
@@ -25173,7 +25440,7 @@ class AutoMunge:
               #checking for ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > tolerance
               temp_df = pd.DataFrame(masterNArows_train[targetcolumn_NArow].astype(int) + masterNArows_train[othercolumn_NArow].astype(int))
 
-              numerator = temp_df[temp_df[0] == 2].shape[0]
+              numerator = temp_df[temp_df[list(temp_df)[0]] == 2].shape[0]
               denominator = masterNArows_train[masterNArows_train[targetcolumn_NArow] == True].shape[0]
 
               if denominator > 0:
@@ -25604,10 +25871,10 @@ class AutoMunge:
       #now consolidate redundant rows in df_unique before saving to stochastic_imputation_dict
       
       #first we derive a mask based on presence of duplicate rows
-      mask = pd.Series(df_unique.duplicated())
+      mask = pd.DataFrame(df_unique.duplicated())
 
       #this operation inverts True and False in the mask for next operation
-      mask = pd.Series(np.where(mask == True, False, True))
+      mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
 
       #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
       #which will likely be much fewer rows than received df_unique 
@@ -25677,7 +25944,8 @@ class AutoMunge:
       for column in df_unique2:
 
         #setting to dataframe for single column case
-        df[column] = pd.DataFrame(np.where(df[DPod_tempcolumn1] == 1, df_unique2[column], df[column]))
+        df = \
+        self._autowhere(df, column, df[DPod_tempcolumn1] == 1, df_unique2[column], specified='replacement')
 
       #delete support columns
       del df[DPod_tempcolumn1]
@@ -25834,12 +26102,14 @@ class AutoMunge:
       df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
       #cap outliers to ensure consistent returned range
-      df[DPmm_column] = np.where(df[DPmm_column] < -0.5, -0.5, df[DPmm_column])
-      df[DPmm_column] = np.where(df[DPmm_column] > 0.5, 0.5, df[DPmm_column])
+      df = \
+      self._autowhere(df, DPmm_column, df[DPmm_column] < -0.5, -0.5, specified='replacement')
+      df = \
+      self._autowhere(df, DPmm_column, df[DPmm_column] > 0.5, 0.5, specified='replacement')
 
       #support column to signal sign of noise, 0 is neg, 1 is pos
-      df[DPmm_column_temp1] = 0
-      df[DPmm_column_temp1] = np.where(df[DPmm_column] >= 0., 1, df[DPmm_column_temp1])
+      df = \
+      self._autowhere(df, DPmm_column_temp1, df[DPmm_column] >= 0., 1, specified='replacement')
 
       #now inject noise, with scaled noise to maintain range 0-1
       #basically we're taking the input df[column] and adding a noise value which may be scaled based on where df[column] falls
@@ -25847,17 +26117,23 @@ class AutoMunge:
       #and the (df[DPmm_column_temp1]) multiplication is to turn on for positive noise
       #(so if df[column] <0.5, and neg noise, we scale noise to ensure can't result in returned value out of range, similarly for >0.5 and positive noise)
       #this formula is a little counterintuitive, it works because df[column] is in mnmx representation with a range 0-1 and noise is capped at +/- 0.5
-      df[DPmm_column] = np.where(df[column] < 0.5, \
-                                  df[column] + \
-                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
-                                  (df[DPmm_column_temp1]) * (df[DPmm_column]), \
-                                  df[DPmm_column])
+      df = \
+      self._autowhere(df, 
+                      DPmm_column, 
+                      df[column] < 0.5, 
+                      df[column] + \
+                      (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
+                      (df[DPmm_column_temp1]) * (df[DPmm_column]), \
+                      specified='replacement')
 
-      df[DPmm_column] = np.where(df[column] >= 0.5, \
-                                  df[column] + \
-                                  (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
-                                  (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
-                                  df[DPmm_column])
+      df = \
+      self._autowhere(df, 
+                      DPmm_column, 
+                      df[column] >= 0.5, 
+                      df[column] + \
+                      (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
+                      (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
+                      specified='replacement')
 
       #remove support columns
       del df[column]
@@ -26783,7 +27059,8 @@ class AutoMunge:
     
     for column in df:
       if column != -1:
-        df[-1] = np.where(df[column]==1, column, df[-1])
+        df = \
+        self._autowhere(df, -1, df[column]==1, column, specified='replacement')
       
     df2 = pd.DataFrame(df[-1].copy())
     df2 = df2.rename(columns = {-1:'labels'})
@@ -26818,7 +27095,9 @@ class AutoMunge:
     del df2
     
     for entry in list(range(len(columnslist))):
-      df[entry] = np.where(df['labels'] == entry, 1, 0)
+
+      df = \
+      self._autowhere(df, entry, df['labels'] == entry, 1, specified = 'replacement')
       
     del df['labels']
 
@@ -26893,8 +27172,8 @@ class AutoMunge:
 
         df_array[column].replace(1, column, inplace=True)
 
-        df_array['1010'] = \
-        np.where(df_array[column] != 0, df_array[column], df_array['1010'])
+        df_array = \
+        self._autowhere(df_array, '1010', df_array[column] != 0, df_array[column], specified='replacement')
 
         del df_array[column]
 
@@ -26910,7 +27189,9 @@ class AutoMunge:
     #replace zeros with infill partition (a string of zeros of lenth nmbrcolumns)
     #note this corresponds to the default infill encoding for '1010'
     infill_plug = '0' * nbrcolumns
-    df_array['1010'] = np.where(df_array.eq(0).all(1), infill_plug, df_array['1010'])
+
+    df_array = \
+    self._autowhere(df_array, '1010', df_array.eq(0).all(1), infill_plug, specified='replacement')
 
     _1010_columns = []
     for i in range(nbrcolumns):
@@ -26996,33 +27277,26 @@ class AutoMunge:
 
       #then apply the one-hot encoding
       #initalize df2
-      df2 = pd.DataFrame()
+      df2 = pd.DataFrame(index=df.index)
       for entry in unique_list:
         #omit nan
         if entry == entry:
           #populate column of activations in df2
-          df2[entry] = pd.Series(np.where(df[column] == entry, 1, 0))
-
-      #match df2 index to df, note df2 empty when df[column] was all nan so access index differently
-      if len(list(df2)) != 0:
-        df2.index = df.index
-      else:
-        df2 = pd.DataFrame(df[column])
-        del df2[column]
+          df2 = \
+          self._autowhere(df2, entry, df[column] == entry, 1, specified='replacement')
         
     #current configuration is scenario 0
     if scenario == 1:
       
-      df2 = pd.DataFrame()
-      for activation in activations_list:
-        df2[activation] = np.where(df[column] == activation, 1, 0)
+      df2 = pd.DataFrame(index=df.index)
 
-      #match df2 index to df, note df2 empty when df[column] was all nan so access index differently
-      if len(list(df2)) != 0:
-        df2.index = df.index
-      else:
-        df2 = pd.DataFrame(df[column])
-        del df2[column]
+      for activation in activations_list:
+        if activation == activation:
+          df2 = \
+          self._autowhere(df2, activation, df[column] == activation, 1, specified='replacement')
+        else:
+          df2 = \
+          self._autowhere(df2, activation, df[column].isna(), 1, specified='replacement')
     
     return df2
 
@@ -29021,7 +29295,7 @@ class AutoMunge:
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
 
-    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #create infill dataframe of all neg zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
     NArw_columnname = \
     postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
@@ -29030,7 +29304,8 @@ class AutoMunge:
 
     infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
     
-    infill = pd.DataFrame(np.where(infill[column] == 1, -0., infill[column]))
+    infill = \
+    self._autowhere(infill, column, infill[column] == 1, -0., specified='replacement')
     
     category = postprocess_dict['column_dict'][column]['category']
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -29065,7 +29340,8 @@ class AutoMunge:
 
     infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
     
-    infill = pd.DataFrame(np.where(infill[column] == 1, np.nan, infill[column]))
+    infill = \
+    self._autowhere(infill, column, infill[column] == 1, float("NaN"), specified='replacement')
     
     category = postprocess_dict['column_dict'][column]['category']
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -31719,7 +31995,7 @@ class AutoMunge:
                               'stochastic_impute_numeric', 
                               printstatus,  
                               check_ML_cmnd_result,
-                              default=False, 
+                              default=True, 
                               valid_entries={True, False},
                               valid_type=bool)
     
@@ -31764,7 +32040,7 @@ class AutoMunge:
                               'stochastic_impute_categoric', 
                               printstatus,  
                               check_ML_cmnd_result,
-                              default=False, 
+                              default=True, 
                               valid_entries={True, False},
                               valid_type=bool)
     
@@ -32670,13 +32946,13 @@ class AutoMunge:
               
               Smoothing_K = LS_dict[column2][column1]
 
-              df[column1] = \
-              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1])
+              df = \
+              self._autowhere(df, column1, df[column2] == 1, (1 - epsilon) * Smoothing_K, specified='replacement')
 
         for column1 in label_categorylist:
 
-          df[column1] = \
-          np.where(df[column1]==1, df[column1] * (epsilon), df[column1])
+          df = \
+          self._autowhere(df, column1, df[column1]==1, df[column1] * (epsilon), specified='replacement')
 
           categorycomplete_dict[column1] = True
     
@@ -32820,13 +33096,13 @@ class AutoMunge:
               
               Smoothing_K = LS_dict[column2][column1]
 
-              df[column1] = \
-              np.where(df[column2] == 1, (1 - epsilon) * Smoothing_K, df[column1])
+              df = \
+              self._autowhere(df, column1, df[column2] == 1, (1 - epsilon) * Smoothing_K, specified='replacement')
 
         for column1 in label_categorylist:
 
-          df[column1] = \
-          np.where(df[column1]==1, df[column1] * (epsilon), df[column1])
+          df = \
+          self._autowhere(df, column1, df[column1]==1, df[column1] * (epsilon), specified='replacement')
 
           categorycomplete_dict[column1] = True
     
@@ -33111,9 +33387,12 @@ class AutoMunge:
     if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
 
       for entry in convert_to_nan_list:
+        
+        if entry == None:
+          df.loc[df[column].isna(), column] = np.nan
+        else:
+          df.loc[df[column] == entry, column] = np.nan
 
-        df.loc[df[column] == entry, column] = np.nan
-    
     return df
 
   def _assignnan_convert(self, df, column, category, assignnan, postprocess_dict):
@@ -33251,12 +33530,19 @@ class AutoMunge:
                   rangemax = range_list[-1]
                   #we'll create a support dataframe to populate masks
                   df_mask = pd.DataFrame()
-                  df_mask['lessthan'] = np.where(df[columnkey]<=rangemax, 1, 0)
-                  df_mask['greaterthan'] = np.where(df[columnkey]>=rangemin, 1, 0)
+
+                  df_mask = \
+                  self._autowhere(df_mask, 'lessthan', df[columnkey]<=rangemax, 1, specified='replacement')
+                  
+                  df_mask = \
+                  self._autowhere(df_mask, 'greaterthan', df[columnkey]>=rangemin, 1, specified='replacement')
+                  
                   #this populates mask with 1's for candidates for injection, 0's elsewhere
                   df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
                   #this populates mask with nan for injection candidates and 1 elsewhere
-                  df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
+                  df_mask = \
+                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, float("NaN"), 1)
+
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
                     index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False).to_numpy().ravel())
@@ -33292,12 +33578,19 @@ class AutoMunge:
                   #the rest is comparable to unscaled range option
                   #we'll create a support dataframe to populate masks
                   df_mask = pd.DataFrame()
-                  df_mask['lessthan'] = np.where(df[columnkey]<=rangemax, 1, 0)
-                  df_mask['greaterthan'] = np.where(df[columnkey]>=rangemin, 1, 0)
+
+                  df_mask = \
+                  self._autowhere(df_mask, 'lessthan', df[columnkey]<=rangemax, 1, specified='replacement')
+
+                  df_mask = \
+                  self._autowhere(df_mask, 'greaterthan', df[columnkey]>=rangemin, 1, specified='replacement')
+
                   #this populates mask with 1's for candidates for injection, 0's elsewhere
                   df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
                   #this populates mask with nan for injection candidates and 1 elsewhere
-                  df_mask['mask'] = np.where(df_mask['mask'] == 1, np.nan, 1)
+                  df_mask = \
+                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, float("NaN"), 1)
+
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
                     index = list(pd.DataFrame(df_mask[df_mask['mask'] != df_mask['mask']].index).sample(frac=ratio, replace=False).to_numpy().ravel())
@@ -33310,7 +33603,8 @@ class AutoMunge:
             elif actionkey == 'entries':
               #entries are full replacement of specific entries to a categoric set
               for targetentry in assignnan['injections'][columnkey][actionkey]:
-                df[columnkey] = np.where(df[columnkey] == targetentry, np.nan, df[columnkey])
+                df = \
+                self._autowhere(df, columnkey, df[columnkey] == targetentry, float("NaN"), specified='replacement')
                 
             elif actionkey == 'entry_ratio':
               #entry_ratio are partial injection to specific entries to a categoric set, 
@@ -33319,13 +33613,16 @@ class AutoMunge:
                 ratio = 1 - assignnan['injections'][columnkey][actionkey][targetentry]
                 df_mask = pd.DataFrame()
                 #here we'll use convention that 1 is a target for injection 0 remains static
-                df_mask['mask'] = np.where(df[columnkey] == targetentry, 1, 0)
+                df = \
+                self._autowhere(df, 'mask', df[columnkey] == targetentry, 1, specified='replacement')
+
                 if ratio > 0:
                   #this get's index list of mask 1 entries for use with .loc
                   index = list(pd.DataFrame(df_mask[df_mask['mask'] == 1].index).sample(frac=ratio, replace=False).to_numpy().ravel())
                   #this reverts some of the 1's if ratio was passed as <1
                   df_mask.loc[index, 'mask'] = 0
-                df[columnkey] = np.where(df_mask['mask'] == 1, np.nan, df[columnkey])
+                df = \
+                self._autowhere(df, columnkey, df_mask['mask'] == 1, float("NaN"), specified='replacement')
                 
     return df
 
@@ -33631,8 +33928,8 @@ class AutoMunge:
     #in other words if duplicate rows present only returns one of duplicates
     """
     
-    mask = pd.Series(df.duplicated())
-    mask = pd.Series(np.where(mask == True, False, True))
+    mask = pd.DataFrame(df.duplicated())
+    mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
 
     if df_consol_id.shape[0] == df.shape[0]:
       df_consol_id = df_consol_id.iloc[mask.to_numpy()]
@@ -33746,6 +34043,73 @@ class AutoMunge:
       if target_for_substitution in targetlist:
         targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
     return
+
+  def _autowhere(self, df, column, condition, replacement=True, alternative=False, specified='replacementalternative'):
+    """
+    Intended to serve as a compromise between np.where and pd.where
+    Which solves issue of np overriding dtypes
+    
+    For example, if target column starts with a uniform dtype, including NaN, int, float
+    When np.where inserts a string it converts all other dtypes to str
+    Although does not appear to do so when target column starts with mixed dtypes
+    
+    This version is built on top of pd.loc which should avoid this numpy edge case
+    We like the np.where conventions of in single operation specifying both replacement and alternative
+    while pd.where only allows specifying one of the two at a time
+    
+    So we are aggregating as follows
+    
+    We previously used np.where in the form
+    df[column] = np.where(condition, replacement, alternative)
+    
+    So new convention is we'll conduct as
+    df = self._autowhere(df, column, condition, replacement, alternative)
+    
+    Or may optionally be applied with an alternate specified parameter
+    Which may be passed as one of {'replacementalternative', 'replacement', 'alternative'}
+    designating that the operation will inspect only the replacement, alternative, or the default of both
+    When applying only the replacement or alternative if column not previously initialized unspecified will return as integer 0
+    
+    Where df is the target dataframe (if an empty dataframe one will be initialized with rowcount per condition)
+    column is the target column for insertion, 
+    which in some cases may be a new column created by this function
+    condition is a column of booleans of same number of rows as df
+    when condition == True, df[column] = replacement
+    when condition == False, df[column] = alternative
+    
+    replacement/alternative may be a single value (such as number or string)
+    or may be a series/dataframe with same number of rows as df
+    """
+
+    #if df is empty dataframe, populate as column of zeros per shape of condition
+    if type(df) == type(pd.DataFrame()) and df.empty:
+      df = pd.DataFrame({column : [0] * condition.shape[0]}, index=pd.DataFrame(condition).index)
+
+    #elif column not in df, populate as a new column of all zeros
+    elif column not in df:
+      #initialize with arbitrary plug value
+      df[column] = 0
+      
+    if df[column].dtype.name == 'category':
+      if isinstance(replacement, (type(pd.DataFrame({0:[1]})), type(pd.Series({0:[1]})), type(np.array([])))):
+        if len(set(pd.DataFrame(replacement).iloc[:,0].unique()) - set(df[column].cat.categories)) > 0:
+          df[column] = df[column].astype('object')
+      elif len({replacement} - set(df[column].cat.categories)) > 0:
+        df[column] = df[column].astype('object')
+
+    #replacement transforms just for condition == True
+    #alternative transforms just for condition == False
+    #replacementalternative transforms for both conditions True and False
+
+    #transform for condition == True
+    if specified in {'replacement', 'replacementalternative'}:
+      df.loc[condition, column] = replacement
+      
+    #transform for condition == False
+    if specified in {'alternative', 'replacementalternative'}:
+      df.loc[condition == False, column] = alternative
+      
+    return df
 
   def _column_convert_support(self, mixedcolumns_list, postprocess_dict, convert_to='returned'):
     """
@@ -34628,6 +34992,7 @@ class AutoMunge:
       #we also have convention that infinity values are by default subjected to infill
       #based on understanding that ML libraries in general do not accept thesae kind of values
       #as well as the python None value
+
       convert_to_nan_list = [np.inf, -np.inf, None]
       df_train = self._convert_to_nan(df_train, column, category, postprocess_dict, convert_to_nan_list)
       df_test = self._convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
@@ -35385,7 +35750,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.73'
+    automungeversion = '6.74'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36112,7 +36477,8 @@ class AutoMunge:
         mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
 
         #non integers are subject to infill
-        mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
 
       elif NArowtype in {'positivenumeric'}:
 
@@ -36318,8 +36684,8 @@ class AutoMunge:
 
       #convert any negative zero to zero (negative zero reserved for default infill)
       if abs_zero is True:
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == 0, 0., mdf_test[suffixcolumn])
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == 0, 0., specified='replacement')
 
       #apply defaultinfill based on processdict entry
       mdf_test, _1 = \
@@ -36928,11 +37294,12 @@ class AutoMunge:
       uniqueintest = mdf_test[suffixcolumn].unique()
       for unique in uniqueintest:
         if unique not in {onevalue, zerovalue}:
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[suffixcolumn] == unique, binary_missing_plug, mdf_test[suffixcolumn])
+          mdf_test = \
+          self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == unique, binary_missing_plug, specified='replacement')
       
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == onevalue, 1, 0)
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
 
       #create list of columns
       bnrycolumns = [suffixcolumn]
@@ -37057,7 +37424,8 @@ class AutoMunge:
 
             for consolidation_target in consolidation_list:
               if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-                df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+                df_test_cat = \
+                self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
                 del df_test_cat[consolidation_target]
 
       # #convert sparse array to pandas dataframe with column labels
@@ -37095,6 +37463,56 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
+
+  def _custom_test_onht(self, df, column, normalization_dict):
+    """
+    #rewrite of the onht trasnform
+    #corresponding to _custom_train_onht
+    """
+    
+    #access the train set properties from normalization_dict
+    str_convert = normalization_dict['str_convert']
+    inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
+    labels_dict = normalization_dict['labels_dict']
+    
+    missing_marker = float("NaN")
+    
+    #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
+    df[column] = df[column].astype('object')
+    
+    #if str_convert elected (for common encoding between e.g. 2=='2')
+    if str_convert is True:
+      df = \
+      self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
+    
+    #if a consolidated_activations parameter was performed, we'll consolidated here
+    if inverse_consolidation_translate_dict != {}:
+      #apply a replace to convert consolidated items to their targeted activations
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+      
+    #if the test set has entries without encodings, we'll replace with missing data marker
+    extra_entries = set(df[column].unique()) - set(labels_dict)
+    extra_entries = list({x for x in extra_entries if x==x})
+    if len(extra_entries) > 0:
+      plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+      df[column] = df[column].astype('object').replace(plug_dict)
+      
+    #one hot encoding support function
+    df_cat = self._onehot_support(df, column, scenario=1, activations_list=list(labels_dict))
+    
+    #change data types to int8 for memory savings
+    for activation_column in labels_dict:
+      df_cat[activation_column] = df_cat[activation_column].astype(np.int8)
+      
+    #concatinate the sparse set with the rest of our training data
+    df = pd.concat([df, df_cat], axis=1)
+    
+    del df[column]
+    
+    #now convert coloumn headers from text convention to onht convention
+    df = df.rename(columns=labels_dict)
+    
+    return df
   
   def _postprocess_text(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -37185,7 +37603,8 @@ class AutoMunge:
 
             for consolidation_target in consolidation_list:
               if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-                df_test_cat[returned_consolidation] = np.where(df_test_cat[consolidation_target] == 1, 1, df_test_cat[returned_consolidation])
+                df_test_cat = \
+                self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
                 del df_test_cat[consolidation_target]
 
       #convert sparse array to pandas dataframe with column labels
@@ -37303,7 +37722,8 @@ class AutoMunge:
       #pandas one hot encoding doesn't sort integers and strings properly so using my own
       df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
       for entry in labels_train:
-        df_test_cat[entry] = np.where(mdf_test[tempcolumn] == entry, 1, 0)
+        df_test_cat = \
+        self._autowhere(df_test_cat, entry, mdf_test[tempcolumn] == entry, 1, specified='replacement')
       del df_test_cat[tempcolumn]
 
       #convert sparse array to pandas dataframe with column labels
@@ -38634,8 +39054,8 @@ class AutoMunge:
       
       for newcolumn in search_dict:
 
-        mdf_test[newcolumn] = \
-        np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+        mdf_test = \
+        self._autowhere(mdf_test, newcolumn, mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
         
       #now we consolidate activations
       #note that this only runs when aggregated_dict was populated with an embedded list of search terms
@@ -38646,8 +39066,8 @@ class AutoMunge:
           for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
             target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
 
-            mdf_test[aggregated_dict_key_column] = \
-            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+            mdf_test = \
+            self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
 
             del mdf_test[target_for_aggregation_column]
 
@@ -38740,12 +39160,9 @@ class AutoMunge:
       
       #convert to uppercase string when case sensitivity not desired based on case parameter
       if case is False:
-        #convert column to string except for nan infill points
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
-        #convert to uppercase
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
+        #convert column to uppercase string except for nan infill points
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str).str.upper(), specified='replacement')
       
 #       #now for mdf_test
 
@@ -38809,8 +39226,8 @@ class AutoMunge:
           for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
             target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
 
-            mdf_test[aggregated_dict_key_column] = \
-            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+            mdf_test = \
+            self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
 
             del mdf_test[target_for_aggregation_column]
 
@@ -38910,12 +39327,9 @@ class AutoMunge:
       
       #convert to uppercase string when case sensitivity not desired based on case parameter
       if case is False:
-        #convert column to string except for nan infill points
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), mdf_test[suffixcolumn])
-        #convert to uppercase
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].str.upper(), mdf_test[suffixcolumn])
+        #convert column to uppercase string except for nan infill points
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str).str.upper(), specified='replacement')
       
       #now for mdf_test
 
@@ -38982,8 +39396,8 @@ class AutoMunge:
           for target_for_aggregation in aggregated_dict[aggregated_dict_key]:
             target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
 
-            mdf_test[aggregated_dict_key_column] = \
-            np.where(mdf_test[target_for_aggregation_column] == 1, 1, mdf_test[aggregated_dict_key_column])
+            mdf_test = \
+            self._autowhere(mdf_test, aggregated_dict_key_column, mdf_test[target_for_aggregation_column] == 1, 1, specified='replacement')
 
             del mdf_test[target_for_aggregation_column]
 
@@ -39095,8 +39509,8 @@ class AutoMunge:
 
         for newcolumn in search_dict:
 
-          mdf_test[newcolumn] = \
-          np.where(mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, 0)
+          mdf_test = \
+          self._autowhere(mdf_test, newcolumn, mdf_test[suffixcolumn].astype(str).str.contains(search_dict[newcolumn], case=case, regex=False), 1, specified='replacement')
 
     #     for newcolumn in newcolumns:
 
@@ -39105,8 +39519,8 @@ class AutoMunge:
         mdf_test[suffixcolumn] = 0
 
         for newcolumn in newcolumns:
-          mdf_test[suffixcolumn] = \
-          np.where(mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], mdf_test[suffixcolumn])
+          mdf_test = \
+          self._autowhere(mdf_test, suffixcolumn, mdf_test[newcolumn] == 1, ordl_dict2[newcolumn], specified='replacement')
           del mdf_test[newcolumn]
           
         #now we consolidate activations
@@ -39120,8 +39534,8 @@ class AutoMunge:
               target_for_aggregation_column = inverse_search_dict[target_for_aggregation]
               target_for_aggregation_encoding = ordl_dict2[target_for_aggregation_column]
 
-              mdf_test[suffixcolumn] = \
-              np.where(mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, mdf_test[suffixcolumn])
+              mdf_test = \
+              self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == target_for_aggregation_encoding, aggregated_dict_key_encoding, specified='replacement')
 
         #we'll base the integer type on number of ordinal entries
         max_encoding = len(ordl_dict1)
@@ -39442,7 +39856,8 @@ class AutoMunge:
     
     #if str_convert elected (for common encoding between e.g. 2=='2')
     if str_convert is True:
-      df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+      df = \
+      self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
     
     #if a consolidated_activations parameter was performed, we'll consolidated here
     if inverse_consolidation_translate_dict != {}:
@@ -39621,7 +40036,8 @@ class AutoMunge:
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #non integers are subject to infill
-      mdf_test[suffixcolumn] = np.where(mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), mdf_test[suffixcolumn], np.nan)
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
       
       #apply defaultinfill based on processdict entry
       mdf_test, _1 = \
@@ -39632,8 +40048,8 @@ class AutoMunge:
       
       if new_maxactivation < maxactivation:
         
-        mdf_test[suffixcolumn] = \
-        np.where(mdf_test[suffixcolumn] < new_maxactivation, mdf_test[suffixcolumn], new_maxactivation)
+        mdf_test = \
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] < new_maxactivation, alternative=new_maxactivation, specified='alternative')
         
       #set integer type based on encoding depth
       if new_maxactivation <= 255:
@@ -39915,7 +40331,8 @@ class AutoMunge:
     
     #if str_convert elected (for common encoding between e.g. 2=='2')
     if str_convert is True:
-      df[column] = np.where(df[column] == df[column], df[column].astype(str), df[column])
+      df = \
+      self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
       
     #if a consolidated_activations parameter was performed, we'll consolidated here
     if inverse_consolidation_translate_dict != {}:
@@ -40047,18 +40464,17 @@ class AutoMunge:
           mdf_test[tempcolumn1] = mdf_test[tempcolumn1].dt.month
           mdf_test[tempcolumn2] = mdf_test[tempcolumn2].dt.is_leap_year
 
-          mdf_test[tempcolumn2] = \
-          np.where(mdf_test[tempcolumn2], 29, 28)
+          mdf_test = \
+          self._autowhere(mdf_test, tempcolumn2, mdf_test[tempcolumn2], 29, 28)
 
-          mdf_test[tempcolumn1] = \
-          np.where(mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, mdf_test[tempcolumn1])
+          mdf_test = \
+          self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([1,3,5,7,8,10,12]), 31, specified='replacement')
 
-          mdf_test[tempcolumn1] = \
-          np.where(mdf_test[tempcolumn1].isin([4,6,9,11]), 30, mdf_test[tempcolumn1])
+          mdf_test = \
+          self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([4,6,9,11]), 30, specified='replacement')
 
-          mdf_test[tempcolumn1] = \
-          np.where(mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], \
-          mdf_test[tempcolumn1])
+          mdf_test = \
+          self._autowhere(mdf_test, tempcolumn1, mdf_test[tempcolumn1].isin([2]), mdf_test[tempcolumn2], specified='replacement')
 
           #combine month and day, scale for trigonomic transform, periodicity by year
           mdf_test[time_column] = (mdf_test[time_column].dt.month + mdf_test[time_column].dt.day / \
@@ -40921,20 +41337,20 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
 
       #convert all values in negtempcolumn >= 0 to Nan
-      mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
+      mdf_test = \
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
 
       #convert all values <= 0 to Nan
-      mdf_test[tempcolumn] = \
-      np.where(mdf_test[tempcolumn] <= 0, np.nan, mdf_test[tempcolumn])
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, float("NaN"), specified='replacement')
 
       #log transform column
 
       #take abs value of negtempcolumn
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
 
-      mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
+      #now log trasnform positive values in column column
+      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
 
       test_neg_dict = {}
       negunique = mdf_test[negtempcolumn].unique()
@@ -40955,8 +41371,7 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
 
       #now log trasnform positive values in column column 
-      mdf_test[tempcolumn] = \
-      np.where(mdf_test[tempcolumn] != np.nan, np.floor(np.log10(mdf_test[tempcolumn])), mdf_test[tempcolumn])
+      mdf_test[tempcolumn] = np.floor(np.log10(mdf_test[tempcolumn].astype(float)))
 
       test_pos_dict = {}
       posunique = mdf_test[tempcolumn].unique()
@@ -41064,22 +41479,20 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
       
       #convert all values >= 0 to Nan
-      mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] >= 0, np.nan, mdf_test[negtempcolumn])
+      mdf_test = \
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
       
       #take abs value of negtempcolumn
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
       
       #convert all values <= 0 in column to Nan
-      mdf_test[pworcolumn] = \
-      np.where(mdf_test[pworcolumn] <= 0, np.nan, mdf_test[pworcolumn])
+      mdf_test = \
+      self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, float("NaN"), specified='replacement')
 
-      mdf_test[pworcolumn] = \
-      np.where(mdf_test[pworcolumn] != np.nan, np.floor(np.log10(mdf_test[pworcolumn])), mdf_test[pworcolumn])
+      mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
       
       #do same for negtempcolumn
-      mdf_test[negtempcolumn] = \
-      np.where(mdf_test[negtempcolumn] != np.nan, np.floor(np.log10(mdf_test[negtempcolumn])), mdf_test[negtempcolumn])
+      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
 
       newunique_list = list(train_replace_dict)
         
@@ -41714,22 +42127,30 @@ class AutoMunge:
 
             if i == 0:
 
-              mdf_test[tlbn_column] = \
-              np.where(mdf_test[tlbn_column] == 1, \
-                      (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
+              mdf_test = \
+              self._autowhere(mdf_test, 
+                              tlbn_column, 
+                              mdf_test[tlbn_column] == 1, 
+                              (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), 
+                              -1)
 
             elif i == bincount - 1:
 
-              mdf_test[tlbn_column] = \
-              np.where(mdf_test[tlbn_column] == 1, \
-                      (mdf_test[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), -1)
+              mdf_test = \
+              self._autowhere(mdf_test, 
+                              tlbn_column, 
+                              mdf_test[tlbn_column] == 1, 
+                              (mdf_test[binscolumn] - bins_cuts[i]) / (bn_max - bins_cuts[i]), 
+                              -1)
 
             else:
 
-              mdf_test[tlbn_column] = \
-              np.where(mdf_test[tlbn_column] == 1, \
-                      (mdf_test[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), -1)
-
+              mdf_test = \
+              self._autowhere(mdf_test, 
+                              tlbn_column, 
+                              mdf_test[tlbn_column] == 1, 
+                              (mdf_test[binscolumn] - bins_cuts[i]) / (bins_cuts[i+1] - bins_cuts[i]), 
+                              -1)
 
 #         #change data type for memory savings
 #         for textcolumn in textcolumns:
@@ -42188,30 +42609,38 @@ class AutoMunge:
         mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
 
         #cap outliers
-        mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] < -0.5, -0.5, mdf_test[DPmm_column])
-        mdf_test[DPmm_column] = np.where(mdf_test[DPmm_column] > 0.5, 0.5, mdf_test[DPmm_column])
+        mdf_test = \
+        self._autowhere(mdf_test, DPmm_column, mdf_test[DPmm_column] < -0.5, -0.5, specified='replacement')
+        mdf_test = \
+        self._autowhere(mdf_test, DPmm_column, mdf_test[DPmm_column] > 0.5, 0.5, specified='replacement')
 
         #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
         mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
         mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
 
         #support column to signal sign of noise, 0 is neg, 1 is pos
-        mdf_test[DPmm_column_temp1] = 0
-        mdf_test[DPmm_column_temp1] = np.where(mdf_test[DPmm_column] >= 0., 1, mdf_test[DPmm_column_temp1])
+        mdf_test = \
+        self._autowhere(mdf_test, DPmm_column_temp1, mdf_test[DPmm_column] >= 0., 1, specified='replacement')
         
         #now inject noise, with scaled noise to maintain range 0-1
         #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-        mdf_test[DPmm_column] = np.where(mdf_test[column] < 0.5, \
-                                          mdf_test[column] + \
-                                          (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * mdf_test[column] / 0.5) + \
-                                          (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]), \
-                                          mdf_test[DPmm_column])
+        mdf_test = \
+        self._autowhere(mdf_test, 
+                        DPmm_column, 
+                        mdf_test[column] < 0.5, 
+                        mdf_test[column] + \
+                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * mdf_test[column] / 0.5) + \
+                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]), \
+                        specified='replacement')
 
-        mdf_test[DPmm_column] = np.where(mdf_test[column] >= 0.5, \
-                                          mdf_test[column] + \
-                                          (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
-                                          (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
-                                          mdf_test[DPmm_column])
+        mdf_test = \
+        self._autowhere(mdf_test, 
+                        DPmm_column, 
+                        mdf_test[column] >= 0.5, 
+                        mdf_test[column] + \
+                        (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
+                        (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
+                        specified='replacement')
 
         #remove support column
         del mdf_test[DPmm_column_temp1]
@@ -42372,12 +42801,15 @@ class AutoMunge:
         mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
         
         #cap outliers
-        mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] < -0.5, -0.5, mdf_test[DPrt_column_temp2])
-        mdf_test[DPrt_column_temp2] = np.where(mdf_test[DPrt_column] > 0.5, 0.5, mdf_test[DPrt_column_temp2])
+        mdf_test = \
+        self._autowhere(mdf_test, DPrt_column_temp2, mdf_test[DPrt_column] < -0.5, -0.5, specified='replacement')
+
+        mdf_test = \
+        self._autowhere(mdf_test, DPrt_column_temp2, mdf_test[DPrt_column] > 0.5, 0.5, specified='replacement')
         
         #support column to signal sign of noise, 0 is neg, 1 is pos
-        mdf_test[DPrt_column_temp1] = 0
-        mdf_test[DPrt_column_temp1] = np.where(mdf_test[DPrt_column_temp2] >= 0., 1, mdf_test[DPrt_column_temp1])
+        mdf_test = \
+        self._autowhere(mdf_test, DPrt_column_temp1, mdf_test[DPrt_column_temp2] >= 0., 1, specified='replacement')
         
         #for noise injection we'll first move data into range 0-1 and then revert after injection
         if scalingapproach == 'retn':
@@ -42389,17 +42821,23 @@ class AutoMunge:
         
         #now inject noise, with scaled noise to maintain range 0-1
         #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
-        mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] < 0.5, \
-                                          mdf_test[DPrt_column] + \
-                                          (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * mdf_test[DPrt_column] / 0.5) + \
-                                          (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]), \
-                                          mdf_test[DPrt_column])
+        mdf_test = \
+        self._autowhere(mdf_test, 
+                        DPrt_column, 
+                        mdf_test[DPrt_column] < 0.5,
+                        mdf_test[DPrt_column] + \
+                        (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * mdf_test[DPrt_column] / 0.5) + \
+                        (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]), \
+                        specified='replacement')
 
-        mdf_test[DPrt_column] = np.where(mdf_test[DPrt_column] >= 0.5, \
-                                          mdf_test[DPrt_column] + \
-                                          (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]) + \
-                                          (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * (1 - mdf_test[DPrt_column]) / 0.5), \
-                                          mdf_test[DPrt_column])
+        mdf_test = \
+        self._autowhere(mdf_test, 
+                        DPrt_column, 
+                        mdf_test[DPrt_column] >= 0.5,
+                        mdf_test[DPrt_column] + \
+                        (1 - mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2]) + \
+                        (mdf_test[DPrt_column_temp1]) * (mdf_test[DPrt_column_temp2] * (1 - mdf_test[DPrt_column]) / 0.5), \
+                        specified='replacement')
         
         #remove support columns
         del mdf_test[DPrt_column_temp1]
@@ -42660,7 +43098,8 @@ class AutoMunge:
       mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
       
       #non integers are subject to infill
-      mdf_test[exclcolumn] = np.where(mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), mdf_test[exclcolumn], np.nan)
+      mdf_test = \
+      self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
       
       #fillvalue = mdf_train[exclcolumn].mode()[0]
       
@@ -42811,7 +43250,8 @@ class AutoMunge:
         # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
         # #as concurrent_nmbr is intended as a resource for more than just tlbn
         # if MLinfilltype == 'concurrent_nmbr':
-        #   df_testinfill['infill'] = np.where(df_testinfill['infill'] < 0, -1, df_testinfill['infill'])
+        #   df_testinfill = \
+        #   self._autowhere(df_testinfill, 'infill', df_testinfill['infill'] < 0, -1, specified='replacement')
 
         if MLinfilltype == 'integer':
           df_testinfill = df_testinfill.round()
@@ -43522,6 +43962,10 @@ class AutoMunge:
     for drift_column in df_test:
       
       returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
+
+      #this accomodates any suffix edge case associated with excl trasnform
+      self._list_replace(returnedcolumns, postprocess_dict['excl_suffix_conversion_dict'])
+
       returnedcolumns.sort()
       
       if printstatus is True:
@@ -44214,7 +44658,7 @@ class AutoMunge:
     #access infill assignments derived in automunge(.) call
     postprocess_assigninfill_dict = \
     postprocess_dict['postprocess_assigninfill_dict']
-    
+
     df_test, infill_validations = \
     self._apply_pm_infill(df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, printstatus, list(df_test), \
@@ -45013,7 +45457,8 @@ class AutoMunge:
       
       for categorylist_entry in categorylist:
         
-        df[categorylist_entry] = np.where(df[categorylist_entry] == LabelSmoothing, 1, 0)
+        df = \
+        self._autowhere(df, categorylist_entry, df[categorylist_entry] == LabelSmoothing, 1, specified='replacement')
         
         df[categorylist_entry] = df[categorylist_entry].astype(np.int8)
         
@@ -45380,8 +45825,8 @@ class AutoMunge:
       
       if sign_column in df.columns:
         
-        df[inputcolumn] = \
-        np.where(df[sign_column]==1, (-1) * df[inputcolumn], df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[sign_column]==1, (-1) * df[inputcolumn], specified='replacement')
     
     return df, inputcolumn
   
@@ -45581,13 +46026,15 @@ class AutoMunge:
       
         power = int(column.replace(inputcolumn + '_' + suffix + '_10^', ''))
       
-        df[inputcolumn] = np.where(df[column] == 1, 10 ** power, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, 10 ** power, specified='replacement')
         
       if column[len(inputcolumn) + 2 + len(suffix)] == '-':
         
         power = int(column.replace(inputcolumn + '_' + suffix + '_-10^', ''))
         
-        df[inputcolumn] = np.where(df[column] == 1, -(10 ** power), df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, -(10 ** power), specified='replacement')
         
     return df, inputcolumn
   
@@ -45623,13 +46070,15 @@ class AutoMunge:
 
           power = int(column.replace(inputcolumn + '_10^', ''))
 
-          df[inputcolumn] = np.where(df[normkey] == train_replace_dict[column], 10 ** power, df[inputcolumn])
+          df = \
+          self._autowhere(df, inputcolumn, df[normkey] == train_replace_dict[column], 10 ** power, specified='replacement')
 
         if column[len(inputcolumn)+1] == '-':
 
           power = int(column.replace(inputcolumn + '_-10^', ''))
 
-          df[inputcolumn] = np.where(df[normkey] == train_replace_dict[column], -(10 ** power), df[inputcolumn])
+          df = \
+          self._autowhere(df, inputcolumn, df[normkey] == train_replace_dict[column], -(10 ** power), specified='replacement')
         
     return df, inputcolumn
 
@@ -45684,7 +46133,8 @@ class AutoMunge:
     
     for column in categorylist:
         
-      df[inputcolumn] = np.where(df[column] == 1, returned_values_dict[column], df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[column] == 1, returned_values_dict[column], specified='replacement')
       
     return df, inputcolumn
 
@@ -45729,7 +46179,8 @@ class AutoMunge:
     
     for bucket in binlabels:
       
-      df[inputcolumn] = np.where(df[normkey] == bucket, (i * binsstd + binsmean), df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[normkey] == bucket, (i * binsstd + binsmean), specified='replacement')
 
       i += 1
 
@@ -45774,7 +46225,8 @@ class AutoMunge:
       
       if column in df.columns:
       
-        df[inputcolumn] = np.where(df[column] == 1, i * bn_width_bnwd + bn_min, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, i * bn_width_bnwd + bn_min, specified='replacement')
     
     return df, inputcolumn
   
@@ -45847,22 +46299,16 @@ class AutoMunge:
         _id = int(bins_id[i])
         
         if i == 0:
-          
           value = bins_cuts[i+1]
           
-          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
-          
         elif i == len(textcolumns)-1:
-          
           value = bins_cuts[i]
           
-          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
-          
         else:
-          
           value = (bins_cuts[i] + bins_cuts[i+1]) / 2
-          
-          df[inputcolumn] = np.where(df[column] == 1, value, df[inputcolumn])
+
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, value, specified='replacement')
     
     return df, inputcolumn
   
@@ -45903,22 +46349,16 @@ class AutoMunge:
         _id = int(bins_id[i])
         
         if i == 0:
-          
           value = bins_cuts[i+1]
           
-          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
-          
         elif i == len(bins_id)-1:
-          
           value = bins_cuts[i]
           
-          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
-          
         else:
-          
           value = (bins_cuts[i] + bins_cuts[i+1]) / 2
-          
-          df[inputcolumn] = np.where(df[normkey] == _id, value, df[inputcolumn])
+
+        df = \
+        self._autowhere(df, inputcolumn, df[normkey] == _id, value, specified='replacement')
     
     return df, inputcolumn
 
@@ -45953,24 +46393,30 @@ class AutoMunge:
         
         if i == 0:
           
-          df[inputcolumn] = \
-          np.where(df[textcolumn] >= 0, \
-                  df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], \
-                  df[inputcolumn])
+          df = \
+          self._autowhere(df, 
+                          inputcolumn, 
+                          df[textcolumn] >= 0, 
+                          df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], 
+                          specified='replacement')
           
         elif i == bincount - 1:
           
-          df[inputcolumn] = \
-          np.where(df[textcolumn] >= 0, \
-                  df[textcolumn] * (bn_max - bins_cuts[i]) + bins_cuts[i], \
-                  df[inputcolumn])
+          df = \
+          self._autowhere(df, 
+                          inputcolumn, 
+                          df[textcolumn] >= 0, 
+                          df[textcolumn] * (bn_max - bins_cuts[i]) + bins_cuts[i], 
+                          specified='replacement')
           
         else:
           
-          df[inputcolumn] = \
-          np.where(df[textcolumn] >= 0, \
-                  df[textcolumn] * (bins_cuts[i+1] - bins_cuts[i]) + bins_cuts[i], \
-                  df[inputcolumn])
+          df = \
+          self._autowhere(df, 
+                          inputcolumn, 
+                          df[textcolumn] >= 0, 
+                          df[textcolumn] * (bins_cuts[i+1] - bins_cuts[i]) + bins_cuts[i], 
+                          specified='replacement')
     
     return df, inputcolumn
   
@@ -46025,7 +46471,8 @@ class AutoMunge:
         
         value = (buckets_bkt1[i-1] + buckets_bkt1[i]) / 2
         
-      df[inputcolumn] = np.where(df[textcolumn] == 1, value, df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[textcolumn] == 1, value, specified='replacement')
     
     return df, inputcolumn
   
@@ -46068,7 +46515,8 @@ class AutoMunge:
       
       value = (bins_cuts[i] + bins_cuts[i+1]) / 2
       
-      df[inputcolumn] = np.where(df[inputcolumn + '_' + suffix + '_' + str(i)]==1, value, df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[inputcolumn + '_' + suffix + '_' + str(i)]==1, value, specified='replacement')
     
     return df, inputcolumn
   
@@ -46106,23 +46554,22 @@ class AutoMunge:
     df[inputcolumn] = 0
 
     #infill recovery
-    df[inputcolumn] = np.where(df[normkey] == infill_activation, np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, float("NaN"), specified='replacement')
     
     for i in bins_id:
       
       if i == 0:
-        
         value = bins_cuts[i+1]
         
       elif i == len(bins_id)-1:
-        
         value = bins_cuts[i]
         
       else:
-        
         value = (bins_cuts[i] + bins_cuts[i+1]) / 2
         
-      df[inputcolumn] = np.where(df[normkey] == i, value, df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[normkey] == i, value, specified='replacement')
     
     return df, inputcolumn
   
@@ -46158,13 +46605,15 @@ class AutoMunge:
     df[normkey] = df[normkey].astype(int, errors='ignore')
 
     #infill recovery
-    df[inputcolumn] = np.where(df[normkey] == infill_activation, np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, float("NaN"), specified='replacement')
     
     for i in bins_id:
       
       value = (bins_cuts[i] + bins_cuts[i+1]) / 2
         
-      df[inputcolumn] = np.where(df[normkey] == i, value, df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[normkey] == i, value, specified='replacement')
     
     return df, inputcolumn
   
@@ -46186,14 +46635,35 @@ class AutoMunge:
     df[inputcolumn] = np.nan
     
     for categorylist_entry in categorylist:
-      
-      df[inputcolumn] = \
-      np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
+
+      df = \
+      self._autowhere(df, inputcolumn, df[categorylist_entry], inverse_labels_dict[categorylist_entry], specified='replacement')
 
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
       
     return df, inputcolumn
+
+  def _custom_inversion_onht(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+    """
+    #rewrite of the onht inverison
+    #corresponding to _custom_train_onht
+    """
+    
+    #First let's access the values we'll need from the normalization_dict
+    labels_dict = normalization_dict['labels_dict']
+    
+    inverse_labels_dict = {value:key for key,value in labels_dict.items()}
+    
+    df[inputcolumn] = float("NaN")
+    
+    for categorylist_entry in inverse_labels_dict:
+      
+      df = \
+      self._autowhere(df, inputcolumn, df[categorylist_entry]==1, inverse_labels_dict[categorylist_entry], specified='replacement')
+
+    return df
     
   def _inverseprocess_text(self, df, categorylist, postprocess_dict):
     """
@@ -46214,11 +46684,12 @@ class AutoMunge:
     
     for categorylist_entry in categorylist:
       
-      df[inputcolumn] = \
-      np.where(df[categorylist_entry] == 1, textlabelsdict_text[categorylist_entry], df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[categorylist_entry] == 1, textlabelsdict_text[categorylist_entry], specified='replacement')
 
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
       
     return df, inputcolumn
 
@@ -46253,11 +46724,12 @@ class AutoMunge:
     
     for categorylist_entry in categorylist:
       
-      df[inputcolumn] = \
-      np.where(df[categorylist_entry], inverse_labels_dict[categorylist_entry], df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[categorylist_entry], inverse_labels_dict[categorylist_entry], specified='replacement')
 
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
       
     return df, inputcolumn
   
@@ -46291,7 +46763,8 @@ class AutoMunge:
     df[inputcolumn].replace(inverse_overlap_replace)
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
     
     return df, inputcolumn
 
@@ -46346,7 +46819,8 @@ class AutoMunge:
     df[inputcolumn].replace(inverse_overlap_replace)
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
     
     return df, inputcolumn
 
@@ -46384,11 +46858,11 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = \
-    np.where(df[normkey] == 1, onevalue, 0)
+    df = \
+    self._autowhere(df, inputcolumn, df[normkey] == 1, onevalue, 0)
     
-    df[inputcolumn] = \
-    np.where(df[normkey] == 0, zerovalue, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[normkey] == 0, zerovalue, specified='replacement')
       
     return df, inputcolumn
 
@@ -46430,7 +46904,8 @@ class AutoMunge:
     df[inputcolumn] = df[inputcolumn].replace(inverse_overlap_replace)
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df[inputcolumn] = np.where(df[inputcolumn] == 'zzzinfill', np.nan, df[inputcolumn])
+    df = \
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
       
     return df, inputcolumn
 
@@ -46504,7 +46979,8 @@ class AutoMunge:
 
         overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
 
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, overlap, specified='replacement')
     
     else:
 
@@ -46514,7 +46990,8 @@ class AutoMunge:
         
         overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
         
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])    
+        df = \
+        self._autowhere(df, inputcolumn, df[newcolumn] == 1, overlap, specified='replacement')
 
     return df, inputcolumn
   
@@ -46545,7 +47022,8 @@ class AutoMunge:
     
     if consolidate_nonoverlaps is True:
 
-      df[inputcolumn] = np.where(df[inputcolumn] == '0', 'zzzinfill', df[inputcolumn])
+      df = \
+      self._autowhere(df, inputcolumn, df[inputcolumn] == '0', 'zzzinfill', specified='replacement')
   
     return df, inputcolumn
 
@@ -46622,7 +47100,8 @@ class AutoMunge:
 
         overlap = column.replace(inputcolumn + '_sp15_', '')
 
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, overlap, specified='replacement')
     
     else:
 
@@ -46632,7 +47111,8 @@ class AutoMunge:
         
         overlap = column.replace(inputcolumn + '_sp15_', '')
         
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[newcolumn] == 1, overlap, specified='replacement')
 
     for newcolumn in newcolumns:
       
@@ -46677,7 +47157,8 @@ class AutoMunge:
 
         overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
 
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, overlap, specified='replacement')
     
     else:
       
@@ -46688,7 +47169,8 @@ class AutoMunge:
         
         overlap = column.replace(inputcolumn + '_' + suffix + '_', '')
         
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[newcolumn] == 1, overlap, specified='replacement')
         
         i += 1
     
@@ -46767,7 +47249,8 @@ class AutoMunge:
 
         overlap = column.replace(inputcolumn + '_sbst_', '')
 
-        df[inputcolumn] = np.where(df[column] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, overlap, specified='replacement')
     
     else:
 
@@ -46777,7 +47260,8 @@ class AutoMunge:
         
         overlap = column.replace(inputcolumn + '_sbst_', '')
         
-        df[inputcolumn] = np.where(df[newcolumn] == 1, overlap, df[inputcolumn])
+        df = \
+        self._autowhere(df, inputcolumn, df[newcolumn] == 1, overlap, specified='replacement')
 
     for newcolumn in newcolumns:
       
@@ -46818,7 +47302,12 @@ class AutoMunge:
       
       if column in df.columns:
 
-        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), search, df[inputcolumn])
+        df = \
+        self._autowhere(df, 
+                        inputcolumn, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        search, 
+                        specified='replacement')
     
     return df, inputcolumn
   
@@ -46856,7 +47345,12 @@ class AutoMunge:
       
       if column in df.columns:
       
-        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+        df = \
+        self._autowhere(df, 
+                        inputcolumn, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        searchterm, 
+                        specified='replacement')
     
     return df, inputcolumn
   
@@ -46894,7 +47388,12 @@ class AutoMunge:
       
       if column in df.columns:
       
-        df[inputcolumn] = np.where((df[column] == 1) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+        df = \
+        self._autowhere(df, 
+                        inputcolumn, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        searchterm, 
+                        specified='replacement')
     
     return df, inputcolumn
   
@@ -46934,7 +47433,12 @@ class AutoMunge:
       
       searchterm = ordl_dict1[key].replace(inputcolumn + '_' + suffix + '_', '')
       
-      df[inputcolumn] = np.where((df[normkey] == key) & (df[inputcolumn] == 'zzzinfill'), searchterm, df[inputcolumn])
+      df = \
+      self._autowhere(df, 
+                      inputcolumn, 
+                      ((df[normkey] == key).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                      searchterm, 
+                      specified='replacement')
     
     return df, inputcolumn
   
@@ -46965,7 +47469,12 @@ class AutoMunge:
       
       extract = overlap_dict[key]
       
-      df[inputcolumn] = np.where((df[normkey] == extract) & (df[inputcolumn] == 'zzzinfill'), key, df[inputcolumn])
+      df = \
+      self._autowhere(df, 
+                      inputcolumn, 
+                      ((df[normkey] == extract).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                      key, 
+                      specified='replacement')
     
     return df, inputcolumn
 
