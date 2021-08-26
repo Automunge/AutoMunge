@@ -2185,8 +2185,7 @@ pandasoutput, and/or printstatus. Note that in an inversion operation the
 postmunge(.) function returns three sets: a recovered set, a list of recovered columns, and 
 a dictionary logging results of the path selection process. Please note that the general 
 convention in library is that entries not successfully recovered from inversion may be recorded 
-corresponding to the imputation value from the forward pass, NaN, or the reserved string 
-'zzzinfill'.
+corresponding to the imputation value from the forward pass, NaN, or some other transformation function specific convention.
 
 Here is an example of a postmunge call with inversion.
 ```
@@ -2824,6 +2823,7 @@ Other Q Notation root categories:
     - 'negvalues', boolean defaults to False, True bins values <0
       (recommend using pwr2 instead of this parameter since won't update NArowtype)
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - returned datatype: int8
@@ -2836,6 +2836,7 @@ Other Q Notation root categories:
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
       (recommend using pwrs instead of this parameter since won't update NArowtype)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
@@ -2849,6 +2850,7 @@ value fell with respect to powers of 10
   - suffix appender: '_pwor' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to False, True bins values <0
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: meanlog / maxlog / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -2861,6 +2863,7 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - suffix appender: '_por2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -3181,7 +3184,7 @@ Note that text and onht are implemented with the same functions by updates to th
 * ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
 occurrence, second basis for common count entries is alphabetical
   - useful for: similar to ordl preceding but activations are sorted by entry frequency instead of alphabetical
-  - default infill: plug value 'zzzinfill'
+  - default infill: unique activation
   - default NArowtype: justNaN
   - suffix appender: '_ord3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3225,7 +3228,7 @@ efficient than one-hot encoding)
 * maxb / matx / ma10: categoric encodings that allow user to cap the number activations in the set. 
 maxb (ordinal), matx (one hot), and ma10 (binary). 
   - useful for: categoric sets where some outlier entries may not occur with enough frequency for training purposes
-  - default infill: plug value 'zzzinfill'
+  - default infill: plug value unique activation
   - default NArowtype: justNaN
   - suffix appender: '\_maxb' in base configuration or based on the family tree category
   - assignparam parameters accepted:
@@ -3814,6 +3817,9 @@ sets that may include scientific units for instance, as prefixes will not be not
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
 by passing 'minsplit' parameter through assignparam.
+Please note that our family of string parsing functions in some cases use the arbitrary string 'zzzinfill' 
+as a placeholder for missing data, meaning parsed entries containing that string may result in 
+an activation overlapping with missing data.
 * splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings e.g. 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
@@ -4015,7 +4021,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - inversion available: yes with full recovery
 * strn: parses strings and returns any non-number groupings, prioritized by longest length, followed by ord3 ordinal encoding
   - useful for: extracting nonnumeric character subsets of entries
-  - default infill: 'zzzinfill'
+  - default infill: naninfill
   - default NArowtype: justNaN
   - suffix appender: '_strn_ord3'
   - assignparam parameters accepted:
@@ -4455,9 +4461,9 @@ present in dataframe and return results in final printouts and postprocess_dict[
 
  ___ 
 ### Other Reserved Strings
-- 'zzzinfill': a reserved string entry to data sets that is used in many places as a NaN substitute for categoric encodings (identified entries with reserved string are logged in postprocess_dict['temp_miscparameters_results']['zzzinfill_valresult'] or in postmunge postreports_dict['pm_miscparameters_results']['zzzinfill_valresult']).
+- 'zzzinfill': our family of string parsing functions in some cases use the string 'zzzinfill' as a placeholder for missing data, meaning parsed entries containing that string may result in an activation overlapping with missing data
 - 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
-- 'Binary_1010_#': The columns returned from Binary transform have headers per this convention.
+- 'Binary_1010_#' / 'Binary_ord3': The columns returned from Binary transform have headers per one of these conventions.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
 populated with an index matching order of rows from original returned set, note that if this header is already present in the ID sets
