@@ -5279,13 +5279,13 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'ord2' : {'dualprocess' : self._process_ordl,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ordl,
-                                  'inverseprocess' : self._inverseprocess_ordl,
+    process_dict.update({'ord2' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'frequency_sort' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
@@ -5298,13 +5298,13 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ord5' : {'dualprocess' : self._process_ordl,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ordl,
-                                  'inverseprocess' : self._inverseprocess_ordl,
+    process_dict.update({'ord5' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'frequency_sort' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord5'}})
@@ -6510,7 +6510,7 @@ class AutoMunge:
     process_dict.update({'pwor' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_pwor,
-                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'NArowtype' : 'positivenumeric',
@@ -6519,7 +6519,7 @@ class AutoMunge:
     process_dict.update({'por2' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_pwor,
-                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'negvalues' : True},
@@ -6529,7 +6529,7 @@ class AutoMunge:
     process_dict.update({'por3' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_pwor,
-                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'negvalues' : True},
@@ -6633,7 +6633,7 @@ class AutoMunge:
     process_dict.update({'pwbn' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_pwor,
-                                  'inverseprocess' : self._inverseprocess_por2,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'NArowtype' : 'positivenumeric',
@@ -10337,13 +10337,16 @@ class AutoMunge:
           binary_missing_plug = valuecounts[0]
         elif infillconvention == 'zerovalue':
           binary_missing_plug = valuecounts[1]
-      else:
+
+      if len(valuecounts) == 1:
         #making an executive decision here to deviate from standardinfill of most common value
         #for this edge case where a column evaluated as binary has only single value and NaN's
-        binary_missing_plug = 'zzzinfill'
-
+        if valuecounts[0] == valuecounts[0]:
+          binary_missing_plug = np.nan
+        else:
+          binary_missing_plug = 'zzzinfill'
       #test for nan
-      if binary_missing_plug != binary_missing_plug:
+      elif binary_missing_plug != binary_missing_plug:
         if infillconvention == 'onevalue':
           binary_missing_plug = valuecounts[1]
         elif infillconvention == 'zerovalue':
@@ -10380,7 +10383,7 @@ class AutoMunge:
       if len(valuecounts) > 1:
         zerovalue = valuecounts[1]
       else:
-        zerovalue = 'zzzinfill'
+        zerovalue = binary_missing_plug
 
       #special case for when the source column is already encoded as 0/1
 
@@ -10395,7 +10398,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts[1]
               else:
-                onevalue = 'zzzinfill'
+                onevalue = binary_missing_plug
 
         if 1 in valuecounts:
           if 0 not in valuecounts:
@@ -10417,7 +10420,7 @@ class AutoMunge:
               if len(valuecounts) > 1:
                 onevalue = valuecounts2[1]
               else:
-                onevalue = 'zzzinfill'
+                onevalue = binary_missing_plug
 
         if 1 in valuecounts2:
           if 0 not in valuecounts2:
@@ -10426,7 +10429,7 @@ class AutoMunge:
               zerovalue = valuecounts2[0]
 
       #edge case that might come up in drift report
-      if binary_missing_plug not in {onevalue, zerovalue}:
+      if binary_missing_plug not in [onevalue, zerovalue]:
         if infillconvention == 'onevalue':
           binary_missing_plug = onevalue
         elif infillconvention == 'zerovalue':
@@ -10502,15 +10505,15 @@ class AutoMunge:
     
     bnrynormalization_dict = {suffixcolumn : {'missing' : binary_missing_plug, \
                                               'infillconvention' : infillconvention, \
-                                                  1 : onevalue, \
-                                                  0 : zerovalue, \
-                                                  'extravalues' : extravalues, \
-                                                  'oneratio' : oneratio, \
-                                                  'zeroratio' : zeroratio, \
-                                                  'str_convert' : str_convert, \
-                                                  'suffix' : suffix, \
-                                                  'defaultinfill_dict' : defaultinfill_dict,
-                                                  'inplace' : inplace}}
+                                              1 : onevalue, \
+                                              0 : zerovalue, \
+                                              'extravalues' : extravalues, \
+                                              'oneratio' : oneratio, \
+                                              'zeroratio' : zeroratio, \
+                                              'str_convert' : str_convert, \
+                                              'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -10531,236 +10534,6 @@ class AutoMunge:
 
       column_dict_list.append(column_dict)
 
-    return mdf_train, mdf_test, column_dict_list
-  
-  def _process_onht(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
-    '''
-    #process_onht(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
-    #preprocess column with one hot encoding
-    #same as 'text' transform except labels returned column with integer instead of entry appender
-    '''
-    
-    suffixoverlap_results = {}
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
-
-    #null_activation is to have a distinct column for missing data
-    #note that when activated, entries in test set not found in train set will still be returned without activation
-    if 'null_activation' in params:
-      null_activation = params['null_activation']
-    else:
-      null_activation = False
-
-    #all_activations is to base the full set of activations on user specification instead of training set
-    if 'all_activations' in params:
-      #accepts False or a list of activation targets
-      all_activations = params['all_activations']
-    else:
-      all_activations = False
-
-    #add_activations is to include additional columns for entry activations even when not found in train set
-    if 'add_activations' in params:
-      #accepts False or a list of added activation targets
-      add_activations = params['add_activations']
-    else:
-      add_activations = False
-
-    #less_activations is to remove entry activaiton columns even when entry found in train set
-    if 'less_activations' in params:
-      #accepts False or a list of removed activation targets
-      less_activations = params['less_activations']
-    else:
-      less_activations = False
-
-    #consolidated_activations is to consolidate entries to a single common activation
-    if 'consolidated_activations' in params:
-      #accepts False or a list of consolidated activation targets or a list of lists
-      consolidated_activations = params['consolidated_activations']
-    else:
-      consolidated_activations = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = treecategory
-    
-    tempcolumn = column + '_' + suffix + '_'
-    
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-    
-    #store original column for later retrieval
-    mdf_train[tempcolumn] = mdf_train[column].copy()
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-
-    #convert column to category
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    #(this will default to naninfill)
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-
-    #replace NA with a dummy variable
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    if str_convert is True:
-      #replace numerical with string equivalent
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-    else:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
-
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[tempcolumn].unique()
-#     labels_train.sort(axis=0)
-    labels_train = sorted(labels_train, key=str)
-    labels_train = list(labels_train)
-    orig_labels_train = list(labels_train.copy())
-    labels_test = mdf_test[tempcolumn].unique()
-#     labels_test.sort(axis=0)
-    labels_test = sorted(labels_test, key=str)
-    labels_test = list(labels_test)
-
-    #now we have a few activation set related parameters, applied by adjusting labels_train
-    if null_activation is False and 'zzzinfill' in labels_train:
-      labels_train.remove('zzzinfill')
-
-    if all_activations is not False:
-      labels_train = sorted(all_activations, key=str)
-      if null_activation is True and 'zzzinfill' not in labels_train:
-        labels_train.append('zzzinfill')
-
-    if add_activations is not False:
-      labels_train = list(set(labels_train) | set(add_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    if less_activations is not False:
-      labels_train = list(set(labels_train) - set(less_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    #one hot encoding support function
-    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=1, activations_list=labels_train)
-    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
-
-    #now we'll take account for any activation consolidations from consolidated_activations parameter
-    labels_train_after_consolidation = labels_train.copy()
-    returned_consolidations = []
-    if consolidated_activations is not False:
-      #if user passes a single tier list instead of list of lists we'll embed in a list
-      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-        if not isinstance(consolidated_activations[0], list):
-          consolidated_activations = [consolidated_activations]
-      for consolidation_list in consolidated_activations:
-        if len(consolidation_list) > 0:
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
-          returned_consolidations.append(returned_consolidation)
-          if returned_consolidation not in df_train_cat:
-            labels_train_after_consolidation.append(returned_consolidation)
-            df_train_cat[returned_consolidation] = 0
-            df_test_cat[returned_consolidation] = 0
-          for consolidation_target in consolidation_list:
-            if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
-              labels_train_after_consolidation.remove(consolidation_target)
-              df_train_cat = self._autowhere(df_train_cat, returned_consolidation, df_train_cat[consolidation_target] == 1, 1, specified='replacement')
-              df_test_cat = self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
-              del df_train_cat[consolidation_target]
-              del df_test_cat[consolidation_target]
-
-    labels_dict = {}
-    i = 0
-    for entry in labels_train_after_consolidation:
-      labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
-      i += 1
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( df_train_cat.columns ) - set( labels_test )
-    
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
-
-    #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
-    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-    del mdf_train[tempcolumn]
-    del mdf_test[tempcolumn]
-    
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in labels_train_after_consolidation:
-      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
-    #store some values in the text_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    text_equiv_categorylist = labels_train_after_consolidation.copy()
-
-    #now convert coloumn headers from text convention to onht convention
-    mdf_train = mdf_train.rename(columns=labels_dict)
-    mdf_test  = mdf_test.rename(columns=labels_dict)
-    
-    textcolumns = [labels_dict[entry] for entry in labels_train_after_consolidation]
-    
-    inverse_labels_dict = {value:key for key,value in labels_dict.items()}
-
-    for tc in textcolumns:
-    
-      #new parameter collected for driftreport
-      tc_ratio = tc + '_ratio'
-      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
-
-      textnormalization_dict = {tc : {tc_ratio : tcratio, \
-                                      'labels_dict' : labels_dict, \
-                                      'inverse_labels_dict' : inverse_labels_dict, \
-                                      'text_categorylist' : text_equiv_categorylist, \
-                                      'labels_train_before_consolidation' : labels_train, \
-                                      'labels_train_after_consolidation' : labels_train_after_consolidation, \
-                                      'returned_consolidations' : returned_consolidations, \
-                                      'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'null_activation' : null_activation,
-                                      'all_activations' : all_activations,
-                                      'add_activations' : add_activations,
-                                      'less_activations' : less_activations,
-                                      'consolidated_activations' : consolidated_activations, \
-                                      'str_convert' : str_convert}}
-      
-      column_dict = {tc : {'category' : treecategory, \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : textcolumns, \
-                           'categorylist' : textcolumns, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict)
-    
     return mdf_train, mdf_test, column_dict_list
 
   def _custom_train_onht(self, df, column, normalization_dict):
@@ -11047,235 +10820,6 @@ class AutoMunge:
     df = df.rename(columns=labels_dict)
     
     return df, normalization_dict
-
-  def _process_text(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
-    '''
-    #process_text(mdf_train, mdf_test, column, category)
-    #preprocess column with text categories
-    #takes as arguement two pandas dataframe containing training and test data respectively 
-    #(mdf_train, mdf_test), and the name of the column string ('column')
-    #and the name of the category from parent column (category)
-    #note this trains both training and test data simultaneously due to unique treatment if any category
-    #missing from training set but not from test set to ensure consistent formatting 
-    #doesn't delete the original column from master dataframe but
-    #creates onehot encodings
-    #with columns named after column_ + text categories
-    #any categories missing from the training set removed from test set
-    #any category present in training but missing from test set given a column of zeros for consistent formatting
-    #ensures order of all new columns consistent between both sets
-    #returns two transformed dataframe (mdf_train, mdf_test) \
-    #and a list of the new column names (textcolumns)
-    
-    #if only have training but not test data handy, use same training data for both dataframe inputs
-    '''
-    
-    suffixoverlap_results = {}
-    
-    #null_activation is to have a distinct column for missing data
-    #note that when activated, entries in test set not found in train set will still be returned without activation
-    if 'null_activation' in params:
-      null_activation = params['null_activation']
-    else:
-      null_activation = False
-      
-    #all_activations is to base the full set of activations on user specification instead of training set
-    if 'all_activations' in params:
-      #accepts False or a list of activation targets
-      all_activations = params['all_activations']
-    else:
-      all_activations = False
-
-    #add_activations is to include additional columns for entry activations even when not found in train set
-    if 'add_activations' in params:
-      #accepts False or a list of added activation targets
-      add_activations = params['add_activations']
-    else:
-      add_activations = False
-
-    #less_activations is to remove entry activaiton columns even when entry found in train set
-    if 'less_activations' in params:
-      #accepts False or a list of removed activation targets
-      less_activations = params['less_activations']
-    else:
-      less_activations = False
-
-    #consolidated_activations is to consolidate entries to a single common activation
-    if 'consolidated_activations' in params:
-      #accepts False or a list of consolidated activation targets or a list of lists
-      consolidated_activations = params['consolidated_activations']
-    else:
-      consolidated_activations = False
-    
-    tempsuffix = str(mdf_train[column].unique()[0])
-    
-    tempcolumn = column + '_' + tempsuffix
-    
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-    
-    #store original column for later retrieval
-    mdf_train[tempcolumn] = mdf_train[column].copy()
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-
-    #convert column to category
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-      
-    #replace NA with a dummy variable
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[tempcolumn].unique()
-    labels_train = sorted(labels_train, key=str)
-    labels_train = list(labels_train)
-    orig_labels_train = list(labels_train.copy())
-    labels_test = mdf_test[tempcolumn].unique()
-    labels_test = sorted(labels_test, key=str)
-    labels_test = list(labels_test)
-    
-    #this is to save activations before converting to column header convention
-    labels_train_orig = labels_train.copy()
-    labels_test_orig = labels_test.copy()
-    
-    #now we have a few activation set related parameters, applied by adjusting labels_train
-    if null_activation is False and 'zzzinfill' in labels_train:
-      labels_train.remove('zzzinfill')
-      
-    if all_activations is not False:
-      labels_train = sorted(all_activations, key=str)
-      if null_activation is True and 'zzzinfill' not in labels_train:
-        labels_train.append('zzzinfill')
-      
-    if add_activations is not False:
-      labels_train = list(set(labels_train) | set(add_activations))
-      labels_train = sorted(labels_train, key=str)
-      
-    if less_activations is not False:
-      labels_train = list(set(labels_train) - set(less_activations))
-      labels_train = sorted(labels_train, key=str)
-      
-    #labels_train may have some edits based on parameters
-    labels_train_orig_afterparams = labels_train.copy()
-    labels_test_orig_afterparams = labels_test.copy()
-
-    #one hot encoding support function
-    #note that since entries are all string we can just rely on sorting having already taken place so using scenario 1
-    df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=1, activations_list=labels_train)
-    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
-    
-    #now we'll take account for any activation consolidations from consolidated_activations parameter
-    labels_train_after_consolidation = labels_train.copy()
-    returned_consolidations = []
-    if consolidated_activations is not False:
-      #if user passes a single tier list instead of list of lists we'll embed in a list
-      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-        if not isinstance(consolidated_activations[0], list):
-          consolidated_activations = [consolidated_activations]
-      for consolidation_list in consolidated_activations:
-        if len(consolidation_list) > 0:
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
-          returned_consolidations.append(returned_consolidation)
-          if returned_consolidation not in df_train_cat:
-            labels_train_after_consolidation.append(returned_consolidation)
-            df_train_cat[returned_consolidation] = 0
-            df_test_cat[returned_consolidation] = 0
-          for consolidation_target in consolidation_list:
-            if consolidation_target != returned_consolidation and consolidation_target in df_train_cat:
-              labels_train_after_consolidation.remove(consolidation_target)
-              df_train_cat = self._autowhere(df_train_cat, returned_consolidation, df_train_cat[consolidation_target] == 1, 1, specified='replacement')
-              df_test_cat = self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
-              del df_train_cat[consolidation_target]
-              del df_test_cat[consolidation_target]
-
-    #append column header name to each category listing (can now discard labels_test since df_test_cat has headers per labels_train)
-    labels_train = [column + '_' + entry for entry in labels_train_after_consolidation]
-    
-    #in the returned dataframe df_train_cat, columns headers will match labels_train_orig_afterparams
-    #convert to column headers with returned header convention (column + _ + entry)
-    df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_train
-
-    del mdf_train[tempcolumn]    
-    del mdf_test[tempcolumn]
-    
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, labels_train, suffixoverlap_results, postprocess_dict['printstatus'])
-    
-    #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
-    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-    
-    #note that at this point
-    #labels_train is the set of returned columns in the returned header convention
-    #textlabelsdict_text is used to support inversion
-    textlabelsdict_text = dict(zip(labels_train, labels_train_after_consolidation))
-
-    #change data types to 8-bit (1 byte) integers for memory savings
-    for textcolumn in labels_train:
-      mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
-      mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
-    #store some values in the text_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    for tc in labels_train:
-    
-      #new parameter collected for driftreport
-      tc_ratio = tc + '_ratio'
-      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
-      
-
-      textnormalization_dict = {tc : {'textlabelsdict_text' : textlabelsdict_text,
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'labels_train' : labels_train,
-                                      'labels_train_orig' : labels_train_orig,
-                                      'labels_train_orig_afterparams' : labels_train_orig_afterparams,
-                                      'labels_train_after_consolidation' : labels_train_after_consolidation,
-                                      'null_activation' : null_activation,
-                                      'all_activations' : all_activations,
-                                      'add_activations' : add_activations,
-                                      'less_activations' : less_activations,
-                                      'consolidated_activations' : consolidated_activations,
-                                      tc_ratio : tcratio}}
-      
-      column_dict = {tc : {'category' : treecategory, \
-                           'origcategory' : category, \
-                           'normalization_dict' : textnormalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : labels_train, \
-                           'categorylist' : labels_train, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict)
-    
-    return mdf_train, mdf_test, column_dict_list
 
   def _process_smth(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
@@ -14931,7 +14475,8 @@ class AutoMunge:
     #process_strn(df, column, category, postprocess_dict)
     #parses string entries and if any strings present returns longest string
     #i.e. character subsets excluding numerical entries
-    #entries without strings present subject to infill
+    #note that since this transform doesn't return numerically enocded data
+    #we are leaving infill in place as np.nan
     """
     
     suffixoverlap_results = {}
@@ -15021,10 +14566,6 @@ class AutoMunge:
               if in_dict is False:
 
                 overlap_dict.update({unique : np.nan})
-    
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(df, column, postprocess_dict, traintest='train')
 
     suffixoverlap_results = \
     self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
@@ -15038,9 +14579,6 @@ class AutoMunge:
 
     df[suffixcolumn] = df[suffixcolumn].astype(str)
     df[suffixcolumn] = df[suffixcolumn].replace(overlap_dict)
-
-    #replace missing data with training set mean as default infill
-    df[suffixcolumn] = df[suffixcolumn].fillna('zzzinfill')
     
 #     #a few more metrics collected for driftreport
 #     #get maximum value of training column
@@ -15054,9 +14592,6 @@ class AutoMunge:
     nmbrnormalization_dict = {suffixcolumn : {'overlap_dict' : overlap_dict, \
                                               'defaultinfill_dict' : defaultinfill_dict,
                                               'suffix' : suffix}}
-#                                                   'mean' : mean, \
-#                                                   'maximum' : maximum, \
-#                                                   'minimum' : minimum }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -15552,424 +15087,6 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def _process_ordl(self, mdf_train, mdf_test, column, category, \
-                         treecategory, postprocess_dict, params = {}):
-    '''
-    #process_ordl(mdf_train, mdf_test, column, category)
-    #preprocess column with categories into ordinal (sequentuial integer) sets
-    #corresponding to (sorted) categories
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories presetn in test set not present in train set use this 'zzz' category
-    #as implemented this function seperately encodes numbers and string equivalent (eg 2 != '2')
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-      
-    #ordered_overide is boolean to indicate if order of integer encoding basis will 
-    #defer to cases when a column is a pandas categorical ordered set
-    if 'ordered_overide' in params:
-      ordered_overide = params['ordered_overide']
-    else:
-      ordered_overide = True
-
-    #all_activations is to base the full set of activations on user specification instead of training set
-    if 'all_activations' in params:
-      #accepts False or a list of activation targets
-      all_activations = params['all_activations']
-    else:
-      all_activations = False
-
-    #add_activations is to include additional columns for entry activations even when not found in train set
-    if 'add_activations' in params:
-      #accepts False or a list of added activation targets
-      add_activations = params['add_activations']
-    else:
-      add_activations = False
-
-    #less_activations is to remove entry activaiton columns even when entry found in train set
-    if 'less_activations' in params:
-      #accepts False or a list of removed activation targets
-      less_activations = params['less_activations']
-    else:
-      less_activations = False
-
-    #consolidated_activations is to consolidate entries to a single common activation
-    if 'consolidated_activations' in params:
-      #accepts False or a list of consolidated activation targets or a list of lists
-      consolidated_activations = params['consolidated_activations']
-    else:
-      consolidated_activations = False
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = treecategory
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-      
-    suffixcolumn = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
-      mdf_test[suffixcolumn] = mdf_test[column].copy()
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
-      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-      
-    ordered = False
-    if ordered_overide:
-      if mdf_train[suffixcolumn].dtype.name == 'category':
-        if mdf_train[suffixcolumn].cat.ordered:
-          ordered = True
-          labels_train = list(mdf_train[suffixcolumn].cat.categories)
-          if mdf_test[suffixcolumn].dtype.name == 'category':
-            labels_test = list(mdf_test[suffixcolumn].cat.categories)
-          else:
-            labels_test = list(mdf_test[suffixcolumn].unique())
-            labels_test = sorted(labels_test, key=str)
-    
-    #convert column to category if it isn't already
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    #(this will default to naninfill)
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-
-    #replace NA with a dummy variable
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    if str_convert is True:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-      if ordered is True:
-        labels_train = [str(x) for x in labels_train]
-        labels_test = [str(x) for x in labels_test]
-    else:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-            
-    if ordered is False:
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[suffixcolumn].unique())
-      labels_train = sorted(labels_train, key=str)
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test = sorted(labels_test, key=str)
-
-    #now we have a few activation set related parameters, applied by adjusting labels_train
-    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
-
-    if all_activations is not False:
-      ordered = False
-      labels_train = sorted(all_activations, key=str)
-      #ordinal encodings require a missing data encoding, if prefer NaN representation can assign naninfill in assigninfill
-      if 'zzzinfill' not in labels_train:
-        labels_train.append('zzzinfill')
-
-    if add_activations is not False:
-      ordered = False
-      labels_train = list(set(labels_train) | set(add_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    if less_activations is not False:
-      ordered = False
-      labels_train = list(set(labels_train) - set(less_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-#       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
-#       labels_test.sort()
-
-    labels_train_before_consolidated_activations_entries_added = labels_train.copy()
-
-    #if consolidated_activations is not False we'll add those values to include in overlap_replace
-    if consolidated_activations is not False:
-      #if user passes a single tier list instead of list of lists we'll embed in a list
-      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-        if not isinstance(consolidated_activations[0], list):
-          consolidated_activations = [consolidated_activations]
-
-      for consolidation_list in consolidated_activations:
-        if str_convert is True:
-          labels_train = list(set(labels_train) | set([str(x) for x in consolidation_list]))
-        else:
-          labels_train = list(set(labels_train) | set(consolidation_list))
-        labels_train = sorted(labels_train, key=str)
-    
-    #____
-    #quick check if there are any overlaps between binary encodings and prior unique values in the column
-    #as would interfere with the replacement operation
-
-    listlength = len(labels_train)
-    
-    overlap_list = []
-    overlap_replace = {}
-    for value in labels_train:
-      if value in range(listlength):
-        overlap_list.append(value)
-        
-        #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : str(value) + 'encoding_overlap'})
-    
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_list) > 0:
-      
-      #then we'll redo the encodings
-      
-      if ordered is True:
-        #this replaces entries with overlap while retaining order
-        for foundoverlap in overlap_replace:
-          labels_train = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_train]
-          labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
-          
-        #then replace encoding overlap entries in the returned column
-
-        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-
-      if ordered is False:
-
-        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-
-        #extract categories for column labels
-        #note that .unique() extracts the labels as a numpy array
-        labels_train = list(mdf_train[suffixcolumn].unique())
-        labels_train = sorted(labels_train, key=str)
-        labels_test = list(mdf_test[suffixcolumn].unique())
-        labels_test = sorted(labels_test, key=str)
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-      
-    #clear up memory
-    del overlap_list
-    
-    #____
-
-    #now we'll take account for any activation consolidations from consolidated_activations parameter
-
-    #as part of this implementation, we'll want to derive
-    #a version of consolidated_activations including the overlap substitutions (consolidated_activations_overlap_replace)
-    #a version of labels_train excluding consolidations (labels_train_after_consolidation)
-    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-    #we can then derive an alternate version of ordinal_dict after having struck the consolidations in labels_train_after_consolidation
-    #and populate a seperate similar dict as consolidated entries as keys with values matching the integer encoding of associated returned_consolidation (consolidation_translations)
-
-    labels_train_after_consolidation = labels_train.copy()
-    # returned_consolidations = []
-    if consolidated_activations is not False:
-
-      #a version of consolidated_activations including the overlap substitutions (consolidated_activations_overlap_replace)
-      #note that earlier in this function we already added any entries to labels_train for consolidation targets not foundin set
-      #which was done so that overlap_replace already accounts for them
-      consolidated_activations_overlap_replace = []
-      for consolidation_list in consolidated_activations:
-        if str_convert is True:
-          consolidation_list = [str(x) for x in consolidation_list]
-
-        #here we replace any consolidation_list entries with identified encoding overlaps from overlap_replace
-        consolidation_list_overlaps_replacements = []
-        consolidation_list_overlaps = set(consolidation_list) & set(overlap_replace.keys())
-        for consolidation_list_overlap in consolidation_list_overlaps:
-          consolidation_list_overlaps_replacements.append(overlap_replace[consolidation_list_overlap])
-        consolidation_list = list((set(consolidation_list) - set(consolidation_list_overlaps)) |  set(consolidation_list_overlaps_replacements))
-
-        #now the translated consolidation_list is aggregated in consolidated_activations_overlap_replace
-        consolidated_activations_overlap_replace.append(consolidation_list)
-
-      #a version of labels_train excluding consolidations (labels_train_after_consolidation)
-      for consolidation_list in consolidated_activations_overlap_replace:
-
-        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-        returned_consolidation = consolidation_list[0]
-        # returned_consolidations.append(returned_consolidation)
-
-        # if returned_consolidation not in labels_train_after_consolidation:
-        #   labels_train_after_consolidation.append(returned_consolidation)
-
-        for consolidation_target in consolidation_list:
-          if consolidation_target != returned_consolidation:# and consolidation_target in labels_train_after_consolidation:
-            labels_train_after_consolidation.remove(consolidation_target)
-
-      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-      consolidation_translate_dict = {}
-      for consolidation_list in consolidated_activations_overlap_replace:
-        if len(consolidation_list) > 1:
-          returned_consolidation = consolidation_list[0]
-          consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
-      
-      #we can then derive an alternate version of ordinal_dict after having struck the consolidations in labels_train_after_consolidation
-      listlength = len(labels_train_after_consolidation)
-      #sort alphabetically consistent with the ordl convention (as noted above activation parameters overide order_overide=True)
-      labels_train_after_consolidation = sorted(labels_train_after_consolidation, key=str)
-      ordinal_dict = dict(zip(labels_train_after_consolidation, range(listlength)))
-
-      #and populate a seperate similar dict as consolidated entries as keys with values matching the integer encoding of associated returned_consolidation (consolidation_translations)
-      consolidation_translations = {}
-      for returned_consolidation in consolidation_translate_dict:
-        #this populates key/value pairs for 
-        #consolidated entries as keys with values matching the integer encoding of associated returned_consolidation
-        consolidation_translations.update(dict(zip(
-          consolidation_translate_dict[returned_consolidation], 
-          [ordinal_dict[returned_consolidation]] * len(consolidation_translate_dict[returned_consolidation])
-          )))
-
-    #____
-    
-    elif consolidated_activations is False:
-
-      #get length of the list, then zip a dictionary from list and range(length)
-      #the range values will be our ordinal points to replace the categories
-      listlength = len(labels_train)
-      ordinal_dict = dict(zip(labels_train, range(listlength)))
-      consolidation_translations = {}
-    
-    #dtype operation is to address edge case if object type drifted to numeric which impacts replace
-    if mdf_train[suffixcolumn].dtype.name != 'object':
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-    
-    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
-    #just like we do for test set entries not in our range of legal entries below
-    if all_activations is not False or less_activations is not False:
-      extra_entries = list(set(mdf_train[suffixcolumn].unique())-set(ordinal_dict.keys()) - set(consolidation_translations.keys()))
-      plug_dict = dict(zip(extra_entries, ['zzzinfill'] * len(extra_entries)))
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(plug_dict)
-
-    #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(consolidation_translations)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    #note labels_train as used here includes any entries added from consolidated_activations
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
-    
-    #now we'll apply the ordinal transformation to the test set
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(consolidation_translations)
-    
-    #just want to make sure these arent' being saved as floats for memory considerations
-    max_encoding = len(ordinal_dict) - 1
-
-    if max_encoding <= 255:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif max_encoding <= 65535:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
-    else:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
-    
-#     #convert column to category
-#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-#     #change data type for memory savings
-#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int32)
-#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int32)
-
-    #new driftreport metric ordl_activations_dict
-    ordl_activations_dict = {}
-    for key in ordinal_dict:
-      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
-      ordl_activations_dict.update({key:ratio})
-
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
-    activations_list = list(inverse_ordinal_dict)
-    
-    categorylist = [suffixcolumn]  
-        
-    column_dict_list = []
-    
-    for tc in categorylist:
-        
-      normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
-                                  'inverse_ordinal_dict' : inverse_ordinal_dict, \
-                                  'activations_list' : activations_list, \
-                                  'ordinal_overlap_replace' : overlap_replace, \
-                                  'ordl_activations_dict' : ordl_activations_dict, \
-                                  'ordered_overide' : ordered_overide, \
-                                  'ordered' : ordered, \
-                                  'str_convert' : str_convert, \
-                                  'all_activations' : all_activations,
-                                  'add_activations' : add_activations,
-                                  'less_activations' : less_activations,
-                                  'consolidated_activations' : consolidated_activations,
-                                  'consolidation_translations' : consolidation_translations, \
-                                  'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'inplace' : inplace}}
-    
-      column_dict = {tc : {'category' : treecategory, \
-                           'origcategory' : category, \
-                           'normalization_dict' : normalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : categorylist, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict)
-    
-    return mdf_train, mdf_test, column_dict_list
-
   def _custom_train_ordl(self, df, column, normalization_dict):
     """
     #a rewrite of ordl transform in the custom train convention
@@ -15981,6 +15098,9 @@ class AutoMunge:
     
     #doing away with 'zzzinfill' reserved string and use NaN instead
     #and remove the overlap replace operation 
+
+    #please note that due to its use in Binary dimensionality reduction,
+    #the ordl normalization_dict has a few reserved strings
     """
     
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
@@ -16221,270 +15341,6 @@ class AutoMunge:
     
     return df, normalization_dict
 
-  def _process_ord3(self, mdf_train, mdf_test, column, category, \
-                         treecategory, postprocess_dict, params = {}):
-    '''
-    #process_ord3(mdf_train, mdf_test, column, category)
-    #preprocess column with categories into ordinal (sequentuial integer) sets
-    #corresponding to categories sorted by frequency of occurance
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories presetn in test set not present in train set use this 'zzz' category
-    #as implemented this function seperately encodes numbers and string equivalent (eg 2 != '2')
-    '''
-    
-    suffixoverlap_results = {}
-    
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-      
-    #ordered_overide is boolean to indicate if order of integer encoding basis will 
-    #defer to cases when a column is a pandas categorical ordered set
-    if 'ordered_overide' in params:
-      ordered_overide = params['ordered_overide']
-    else:
-      ordered_overide = True
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = treecategory
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-      
-    suffixcolumn = column + '_' + suffix
-    
-    if inplace is not True:
-      
-      #copy source column into new column
-      mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
-      mdf_test[suffixcolumn] = mdf_test[column].copy()
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
-      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-    
-    ordered = False
-    if ordered_overide:
-      if mdf_train[suffixcolumn].dtype.name == 'category':
-        if mdf_train[suffixcolumn].cat.ordered:
-          ordered = True
-          labels_train = list(mdf_train[suffixcolumn].cat.categories)
-          if mdf_test[suffixcolumn].dtype.name == 'category':
-            labels_test = list(mdf_test[suffixcolumn].cat.categories)
-          else:
-            labels_test = list(mdf_test[suffixcolumn].unique())
-    
-    #convert column to category if it isn't already
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    #(this will default to naninfill)
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-
-    #replace NA with a dummy variable
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-    
-    if str_convert is True:
-      #replace numerical with string equivalent (this operation changes dtype from category to object)
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-      if ordered is True:
-        labels_train = [str(x) for x in labels_train]
-        labels_test = [str(x) for x in labels_test]
-    else:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-            
-    if ordered is False:
-      
-      #extract categories for column labels
-      #with values sorted by frequency of occurance from most to least
-      labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-      labels_train = list(labels_train.index)
-      
-      labels_test = list(mdf_test[suffixcolumn].unique())
-
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
-    
-    listlength = len(labels_train)
-    
-    #____
-    #quick check if there are any overlaps between binary encodings and prior unique values in the column
-    #as would interfere with the replacement operation
-    
-    overlap_list = []
-    overlap_replace = {}
-    for value in labels_train:
-      if value in range(listlength):
-        overlap_list.append(value)
-        
-        #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : str(value) + 'encoding_overlap'})
-    
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_list) > 0:
-      
-      if ordered is True:
-        #this replaces entries with overlap while retaining order
-        for foundoverlap in overlap_replace:
-          labels_train = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_train]
-          labels_test = [overlap_replace[foundoverlap] if x == foundoverlap else x for x in labels_test]
-          
-        #then replace encoding overlap entries in the returned column
-        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-
-      if ordered is False:
-            
-        mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-
-        #then we'll redo the encodings
-
-        #extract categories for column labels
-        #note that .unique() extracts the labels as a numpy array
-        labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-        labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-        labels_train = list(labels_train.index)
-
-        labels_test = list(mdf_test[suffixcolumn].unique())
-        
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-      
-    #clear up memory
-    del overlap_list
-    
-    #____
-    
-    #get length of the list, then zip a dictionary from list and range(length)
-    #the range values will be our ordinal points to replace the categories
-    listlength = len(labels_train)
-    ordinal_dict = dict(zip(labels_train, range(listlength)))
-    
-    #there is an edge case for replace operation is dtyp drifted from object such as to numeric
-    if mdf_train[suffixcolumn].dtype.name != 'object':
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-    
-    #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
-    
-    #now we'll apply the ordinal transformation to the test set
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-    
-    #just want to make sure these arent' being saved as floats for memory considerations
-    max_encoding = len(ordinal_dict) - 1
-
-    if max_encoding <= 255:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint8)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-    elif max_encoding <= 65535:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint16)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
-    else:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.uint32)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
-    
-#     #convert column to category
-#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-#     #change data type for memory savings
-#     mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(np.int32)
-#     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.int32)
-
-    #new driftreport metric ordl_activations_dict
-    ordl_activations_dict = {}
-    for key in ordinal_dict:
-      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
-      ordl_activations_dict.update({key:ratio})
-
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
-    activations_list = list(inverse_ordinal_dict)
-    
-    categorylist = [suffixcolumn]  
-        
-    column_dict_list = []
-    
-    for tc in categorylist:
-        
-      normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
-                                  'inverse_ordinal_dict' : inverse_ordinal_dict, \
-                                  'activations_list' : activations_list, \
-                                  'ordinal_overlap_replace' : overlap_replace, \
-                                  'ordl_activations_dict' : ordl_activations_dict, \
-                                  'ordered_overide' : ordered_overide, \
-                                  'ordered' : ordered, \
-                                  'str_convert' : str_convert, \
-                                  'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'inplace' : inplace}}
-    
-      column_dict = {tc : {'category' : treecategory, \
-                           'origcategory' : category, \
-                           'normalization_dict' : normalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : categorylist, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict)
-    
-    return mdf_train, mdf_test, column_dict_list
-
   def _process_maxb(self, mdf_train, mdf_test, column, category, \
                    treecategory, postprocess_dict, params = {}):
     '''
@@ -16699,7 +15555,7 @@ class AutoMunge:
       column_dict_list.append(column_dict)
         
     return mdf_train, mdf_test, column_dict_list
-  
+
   def _process_ucct(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
@@ -16718,10 +15574,6 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
       
     suffixcolumn = column + '_' + suffix
     
@@ -16731,15 +15583,9 @@ class AutoMunge:
     
     mdf_test[suffixcolumn] = mdf_test[column].copy()
     
-    #convert column to category
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+    #convert column to object
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
 
     #apply defaultinfill based on processdict entry
     #(this will default to naninfill)
@@ -16748,69 +15594,30 @@ class AutoMunge:
     mdf_test, _1 = \
     self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
 
-    #replace NA with a dummy variable
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-
-    #replace numerical with string equivalent
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
+    mdf_train = \
+    self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn], mdf_train[suffixcolumn].astype(str), specified='replacement')
+    mdf_test = \
+    self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), specified='replacement')
     
-    #extract categories for column labels
-    #with values sorted by frequency of occurance from most to least
-    labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-    labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-    labels_train = list(labels_train.index)
+#     #extract categories for column labels
+#     #with values sorted by frequency of occurance from most to least
+#     labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
+#     labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
+#     labels_train = list(labels_train.index)
+    labels_train = set(mdf_train[suffixcolumn].unique())
+    origlen = len(labels_train)
+    nanincluded = False
+    labels_train = {x for x in labels_train if x==x}
+    if len(labels_train) < origlen:
+      nanincluded = True
+#     if mdf_train[mdf_train[suffixcolumn].isna()].shape[0] > 0:
+#       labels_train = labels_train + [np.nan]
     
 #     labels_train = list(mdf_train[suffixcolumn].unique())
 #     labels_train.sort()
-    labels_test = list(mdf_test[suffixcolumn].unique())
-    labels_test.sort()
-
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-#       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
-      labels_test.sort()
-    
-    listlength = len(labels_train)
-    
-    #____
-    #quick check if there are any overlaps between binary encodings and prior unique values in the column
-    #as would interfere with the replacement operation
-    #(I know this is an outlier scenario, just trying to be thorough)
-    
-    overlap_list = []
-    overlap_replace = {}
-    for value in labels_train:
-      if value in range(listlength):
-        overlap_list.append(value)
-        
-        #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : value + 'encoding_overlap'})
-    
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_list) > 0:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-      
-      #then we'll redo the encodings
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-      labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-      labels_train = list(labels_train.index)
-      
-#       labels_train = list(mdf_train[column + '_ord2'].unique())
-#       labels_train.sort()
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test.sort()
-      
-    #clear up memory
-    del overlap_list
+  
+    labels_test = set(mdf_test[suffixcolumn].unique())
+    labels_test = {x for x in labels_test if x==x}
     
     #____
     
@@ -16822,27 +15629,27 @@ class AutoMunge:
     for item in labels_train:
       item_count = mdf_train[mdf_train[suffixcolumn] == item].shape[0]
       ordinal_dict.update({item: item_count / rowcount})
+
+    ordinal_nan_value = 0
+    if nanincluded:
+      item_count = mdf_train[mdf_train[suffixcolumn].isna()].shape[0]
+      ordinal_nan_value = item_count / rowcount
     
     #replace the cateogries in train set via ordinal trasnformation
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object').replace(ordinal_dict)
+    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna(ordinal_nan_value)
     
     #in test set, we'll need to strike any categories that weren't present in train
     #first let'/s identify what applies
     testspecificcategories = list(set(labels_test)-set(labels_train))
     
     #so we'll just replace those items with our plug value
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
+    testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object').replace(testplug_dict)
     
     #now we'll apply the ordinal transformation to the test set
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-
-    #new driftreport metric ordl_activations_dict
-    ordl_activations_dict = {}
-    for key in ordinal_dict:
-      sumcalc = (mdf_train[suffixcolumn] == ordinal_dict[key]).sum() 
-      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
-      ordl_activations_dict.update({key:ratio})
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object').replace(ordinal_dict)
+    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(ordinal_nan_value)
     
     categorylist = [suffixcolumn]  
         
@@ -16851,430 +15658,9 @@ class AutoMunge:
     for tc in categorylist:
         
       normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
-                                  'ordinal_overlap_replace' : overlap_replace, \
+                                  'ordinal_nan_value' : ordinal_nan_value, \
                                   'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'ordl_activations_dict' : ordl_activations_dict}}
-    
-      column_dict = {tc : {'category' : treecategory, \
-                           'origcategory' : category, \
-                           'normalization_dict' : normalization_dict, \
-                           'origcolumn' : column, \
-                           'inputcolumn' : column, \
-                           'columnslist' : categorylist, \
-                           'categorylist' : categorylist, \
-                           'infillmodel' : False, \
-                           'infillcomplete' : False, \
-                           'suffixoverlap_results' : suffixoverlap_results, \
-                           'deletecolumn' : False}}
-
-      column_dict_list.append(column_dict)
-    
-    return mdf_train, mdf_test, column_dict_list
-
-  def _process_1010(self, mdf_train, mdf_test, column, category, \
-                         treecategory, postprocess_dict, params = {}):
-    '''
-    #process_1010(mdf_train, mdf_test, column, category)
-    #preprocess column with categories into binary encoded sets
-    #corresponding to (sorted) categories of >2 values
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories present in test set not present in train set uses this 'zzzinfill' category
-
-    #Note this transform has been ported to the custom_train convention for cleaner code and reduced latency
-    #available as _custom_train_1010
-    #however the custom_train porting still has a few edge cases to clean up
-    #so for now this is the working version
-    #Also note that this original function is still used in Binary dimensionality reduction
-    '''
-    
-    suffixoverlap_results = {}
-
-    if 'inplace' in params:
-      inplace = params['inplace']
-    else:
-      inplace = False
-
-    #all_activations is to base the full set of activations on user specification instead of training set
-    if 'all_activations' in params:
-      #accepts False or a list of activation targets
-      all_activations = params['all_activations']
-    else:
-      all_activations = False
-
-    #add_activations is to include additional columns for entry activations even when not found in train set
-    if 'add_activations' in params:
-      #accepts False or a list of added activation targets
-      add_activations = params['add_activations']
-    else:
-      add_activations = False
-
-    #less_activations is to remove entry activaiton columns even when entry found in train set
-    if 'less_activations' in params:
-      #accepts False or a list of removed activation targets
-      less_activations = params['less_activations']
-    else:
-      less_activations = False
-
-    #consolidated_activations is to consolidate entries to a single common activation
-    if 'consolidated_activations' in params:
-      #accepts False or a list of consolidated activation targets or a list of lists
-      consolidated_activations = params['consolidated_activations']
-    else:
-      consolidated_activations = False
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
-
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = treecategory
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-    
-    suffixcolumn = column + '_' + suffix
-
-    if inplace is not True:
-      
-      #copy source column into new column
-      mdf_train, suffixoverlap_results = \
-      self._df_copy_train(mdf_train, column, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-
-      mdf_test[suffixcolumn] = mdf_test[column].copy()
-    
-    else:
-      
-      suffixoverlap_results = \
-      self._df_check_suffixoverlap(mdf_train, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-      mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
-      mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-    
-    #convert column to category
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('category')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[suffixcolumn].cat.categories:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    #(this will default to naninfill)
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-
-    #replace NA with a dummy variable
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].fillna('zzzinfill')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-
-    if str_convert is True:
-      #replace numerical with string equivalent
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-    else:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = list(mdf_train[suffixcolumn].unique())
-#     labels_train.sort()
-    labels_train = sorted(labels_train, key=str)
-    labels_test = list(mdf_test[suffixcolumn].unique())
-#     labels_test.sort()
-    labels_test = sorted(labels_test, key=str)
-
-    #now we have a few activation set related parameters, applied by adjusting labels_train
-    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
-
-    if all_activations is not False:
-      ordered = False
-      labels_train = sorted(all_activations, key=str)
-
-    if add_activations is not False:
-      ordered = False
-      labels_train = list(set(labels_train) | set(add_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    if less_activations is not False:
-      ordered = False
-      labels_train = list(set(labels_train) - set(less_activations))
-      labels_train = sorted(labels_train, key=str)
-
-    #if infill not present in train set, insert
-    if 'zzzinfill' not in labels_train:
-      labels_train = labels_train + ['zzzinfill']
-      labels_train = sorted(labels_train, key=str)
-#       labels_train.sort()
-    if 'zzzinfill' not in labels_test:
-      labels_test = labels_test + ['zzzinfill']
-      labels_test = sorted(labels_test, key=str)
-#       labels_test.sort()
-
-    #____
-
-    #now we'll take account for any activation consolidations from consolidated_activations parameter
-
-    #first we'll add any consolidation targets that weren't present in labels_train
-    labels_train_before_consolidated_activations_entries_added = labels_train.copy()
-
-    if consolidated_activations is not False:
-      #if user passes a single tier list instead of list of lists we'll embed in a list
-      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-        if not isinstance(consolidated_activations[0], list):
-          consolidated_activations = [consolidated_activations]
-
-      #here is where we add any consolidation targets that weren't present in labels_train
-      for consolidation_list in consolidated_activations:
-        if str_convert is True:
-          labels_train = list(set(labels_train) | set([str(x) for x in consolidation_list]))
-        else:
-          labels_train = list(set(labels_train) | set(consolidation_list))
-        labels_train = sorted(labels_train, key=str)
-
-    #as part of this implementation, we next want to derive
-    #a version of labels_train excluding consolidations (labels_train_after_consolidation)
-    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-    #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-    #which we'll then apply with a replace operation
-
-    labels_train_before_consolidation = labels_train.copy()
-    inverse_consolidation_translate_dict = {}
-    # returned_consolidations = []
-    if consolidated_activations is not False:
-
-      #a version of labels_train excluding consolidations (labels_train_after_consolidation)
-      for consolidation_list in consolidated_activations:
-
-        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-        returned_consolidation = consolidation_list[0]
-        # returned_consolidations.append(returned_consolidation)
-
-        # if returned_consolidation not in labels_train:
-        #   labels_train.append(returned_consolidation)
-
-        for consolidation_target in consolidation_list:
-          if consolidation_target != returned_consolidation:# and consolidation_target in labels_train:
-            labels_train.remove(consolidation_target)
-
-      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-      consolidation_translate_dict = {}
-      for consolidation_list in consolidated_activations:
-        if len(consolidation_list) > 1:
-          returned_consolidation = consolidation_list[0]
-          consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
-
-      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-      for key,value in consolidation_translate_dict.items():
-        for consolidation_list_entry in value:
-          inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
-
-      #we can then apply a replace to convert consolidated items to their targeted activations
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(inverse_consolidation_translate_dict)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(inverse_consolidation_translate_dict)
-
-    #____
-
-    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
-    #just like we do for test set entries not in our range of legal entries below
-    if all_activations is not False or less_activations is not False:
-      extra_entries = list(set(mdf_train[suffixcolumn].unique())-set(labels_train))
-      plug_dict = dict(zip(extra_entries, ['zzzinfill'] * len(extra_entries)))
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(plug_dict)
-    
-    #get length of the list
-    listlength = len(labels_train)
-    
-    #calculate number of columns we'll need
-    #currently using numk;py since already imported, this could also be done with math library
-    binary_column_count = int(np.ceil(np.log2(listlength)))
-    
-    #initialize dictionaryt to store encodings
-    binary_encoding_dict = {}
-    encoding_list = []
-    
-    for i in range(listlength):
-      
-      #this converts the integer i to binary encoding
-      #where f is an f string for inserting the column coount into the string to designate length of encoding
-      #0 is to pad out the encoding with 0's for the length
-      #and b is telling it to convert to binary 
-      #note this returns a string
-      encoding = format(i, f"0{binary_column_count}b")
-      
-      if i < len(labels_train):
-
-        #store the encoding in a dictionary
-        binary_encoding_dict.update({labels_train[i] : encoding})
-
-        #store the encoding in a list for checking in next step
-        encoding_list.append(encoding)
-
-    #____
-    #quick check if there are any overlaps between binary encodings and prior unique values in the column
-    #as would interfere with the replacement operation
-    #(I know this is an outlier scenario, just trying to be thorough)
-    
-    overlap_list = []
-    overlap_replace = {}
-    for value in labels_train:
-      if value in encoding_list:
-        overlap_list.append(value)
-        
-        #since overlapreplace will add suffix to the category overlapped with a binary encoding
-        #let's quickly check if that category plus suffix is already present in the set
-        #if so we'll keep adding digits until a unique entry
-        encoding_overlap_suffix = 'encoding_overlap'
-        for i in range(111):
-          j = random.randint(0,9)
-          if value + encoding_overlap_suffix in labels_train:
-            encoding_overlap_suffix += str(j)
-          else:
-            break
-        
-        #here's what we'll replace with, the string suffix is arbitrary and intended as not likely to be in set
-        overlap_replace.update({value : value + encoding_overlap_suffix})
-
-    #here we replace the overlaps with version with jibberish suffix
-    if len(overlap_list) > 0:
-      
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(overlap_replace)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-      
-      #then we'll redo the encodings
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      labels_train = list(mdf_train[suffixcolumn].unique())
-      labels_train = sorted(labels_train, key=str)
-#       labels_train.sort()
-      
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test = sorted(labels_test, key=str)
-#       labels_test.sort()
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-        labels_train = sorted(labels_train, key=str)
-  #       labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test = sorted(labels_test, key=str)
-  #       labels_test.sort()
-      
-      #initialize dictionaryt to store encodings
-      binary_encoding_dict = {}
-      encoding_list = []
-
-      for i in range(listlength):
-
-        #this converts the integer i to binary encoding
-        #where f is an f string for inserting the column coount into the string to designate length of encoding
-        #0 is to pad out the encoding with 0's for the length
-        #and b is telling it to convert to binary 
-        #note this returns a string
-        encoding = format(i, f"0{binary_column_count}b")
-        
-        if i < len(labels_train):
-
-          #store the encoding in a dictionary
-          binary_encoding_dict.update({labels_train[i] : encoding})
-
-          #store the encoding in a list for checking in next step
-          encoding_list.append(encoding)
-
-    #clear up memory
-    del encoding_list
-    del overlap_list
-    
-    #new driftreport metric _1010_activations_dict
-    _1010_activations_dict = {}
-    for key in binary_encoding_dict:
-      sumcalc = (mdf_train[suffixcolumn] == key).sum() 
-      ratio = sumcalc / mdf_train[suffixcolumn].shape[0]
-      _1010_activations_dict.update({key:ratio})
-    
-    #____
-    
-    #replace the cateogries in train set via ordinal trasnformation
-    
-    if mdf_train[suffixcolumn].dtype.name != 'object':
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
-    
-    mdf_train[suffixcolumn] = mdf_train[suffixcolumn].replace(binary_encoding_dict)      
-    
-    #in test set, we'll need to strike any categories that weren't present in train
-    #first let'/s identify what applies
-    testspecificcategories = list(set(labels_test)-set(labels_train))
-    
-    #so we'll just replace those items with our plug value
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)    
-    
-    #now we'll apply the 1010 transformation to the test set
-    if mdf_test[suffixcolumn].dtype.name != 'object':
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-    mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(binary_encoding_dict)    
-
-    #ok let's create a list of columns to store each entry of the binary encoding
-    _1010_columnlist = []
-    
-    for i in range(binary_column_count):
-      
-      _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
-      
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, _1010_columnlist, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-    #now let's store the encoding
-    i=0
-    for _1010_column in _1010_columnlist:
-      
-      mdf_train[_1010_column] = mdf_train[suffixcolumn].str.slice(i,i+1).astype(np.int8)
-      
-      mdf_test[_1010_column] = mdf_test[suffixcolumn].str.slice(i,i+1).astype(np.int8)
-      
-      i+=1
-  
-    #now delete the support column
-    del mdf_train[suffixcolumn]
-    del mdf_test[suffixcolumn]
-    
-    #now store the column_dict entries
-    
-    categorylist = _1010_columnlist
-        
-    column_dict_list = []
-    
-    for tc in categorylist:
-        
-      normalization_dict = {tc : {'_1010_binary_encoding_dict' : binary_encoding_dict, \
-                                  '_1010_overlap_replace' : overlap_replace, \
-                                  '_1010_binary_column_count' : binary_column_count, \
-                                  '_1010_activations_dict' : _1010_activations_dict, \
-                                  'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'all_activations' : all_activations,
-                                  'add_activations' : add_activations,
-                                  'less_activations' : less_activations,
-                                  'consolidated_activations' : consolidated_activations,
-                                  'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict, \
-                                  'str_convert' : str_convert,
-                                  'inplace' : inplace}}
+                                  'defaultinfill_dict' : defaultinfill_dict}}
     
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -17306,6 +15692,9 @@ class AutoMunge:
     #and use np.nan instead
     #and remove the overlap replace operation 
     #(which was there to accomodate an assumed edge case with pd.replace which I now am unable to duplicate)
+
+    #please note that due to its use in Binary dimensionality reduction, 
+    #the 1010 normalization_dict has a few reserved strings
     """
     
     #_____
@@ -19735,6 +18124,11 @@ class AutoMunge:
       negvalues = params['negvalues']
     else:
       negvalues = False
+      
+    if 'zeroset' in params:
+      zeroset = params['zeroset']
+    else:
+      zeroset = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -19744,79 +18138,24 @@ class AutoMunge:
     suffixcolumn = column + '_' + suffix
     
     tempcolumn = suffixcolumn + '_-10^'
+    tempcolumn_zero = suffixcolumn + '_zero'
+    negtempcolumn = column + '_negtemp'
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
     self._df_copy_train(mdf_train, column, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     mdf_test[tempcolumn] = mdf_test[column].copy()
-
+    
     #convert all values to either numeric or NaN
     mdf_train[tempcolumn] = pd.to_numeric(mdf_train[tempcolumn], errors='coerce')
     mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
-    
-    #create copy with negative values
-    negtempcolumn = column + '_negtemp'
-    mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, tempcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-    
-    mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
-    
-    #convert all values in negtempcolumn >= 0 to Nan
-    mdf_train = \
-    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
-    mdf_test = \
-    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
     
     #convert all values <= 0 to Nan
     mdf_train = \
     self._autowhere(mdf_train, tempcolumn, mdf_train[tempcolumn] <= 0, np.nan, specified='replacement')
     mdf_test = \
     self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, np.nan, specified='replacement')
-    
-    #log transform column
-    
-    #take abs value of negtempcolumn
-    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
-
-    #now log trasnform positive values in column column 
-    mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
-    mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
-    
-    train_neg_dict = {}
-    newunique_list = []
-    negunique = mdf_train[negtempcolumn].unique()
-    for unique in negunique:
-      if unique != unique:
-        newunique = np.nan
-      else:
-        #this is update for difference between pwr2 and pwrs
-        if negvalues:
-          newunique = suffixcolumn + '_-10^' + str(int(unique))
-        else:
-          newunique = np.nan
-      train_neg_dict.update({unique : newunique})
-      newunique_list.append(newunique)
-      
-    test_neg_dict = {}
-    negunique = mdf_test[negtempcolumn].unique()
-    for unique in negunique:
-      if unique != unique:
-        newunique = np.nan
-      else:
-        #this is update for difference between pwr2 and pwrs
-        if negvalues:
-          newunique = suffixcolumn + '_-10^' + str(int(unique))
-        else:
-          newunique = np.nan
-      if newunique in newunique_list and newunique == newunique:
-        test_neg_dict.update({unique : newunique})
-      else:
-        test_neg_dict.update({unique : np.nan})
-        
-    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
     
     #now log trasnform positive values in column column 
     mdf_train[tempcolumn] = np.floor(np.log10(mdf_train[tempcolumn].astype(float)))
@@ -19847,27 +18186,96 @@ class AutoMunge:
     
     mdf_train[tempcolumn] = mdf_train[tempcolumn].replace(train_pos_dict)
     mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)
-    
-    #combine the two columns
-    mdf_train[tempcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[tempcolumn])
-    mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
+      
+    #now if the neg columns included do same      
+    if negvalues is True:
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
-    #one hot encoding support function
+      mdf_test[negtempcolumn] = mdf_test[column].copy()
+      
+      #convert all values to either numeric or NaN
+      mdf_train[negtempcolumn] = pd.to_numeric(mdf_train[negtempcolumn], errors='coerce')
+      mdf_test[negtempcolumn] = pd.to_numeric(mdf_test[negtempcolumn], errors='coerce')
+
+      #convert all values in negtempcolumn >= 0 to Nan
+      mdf_train = \
+      self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
+          
+      #take abs value of negtempcolumn
+      mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+
+      #now log trasnform positive values in column column 
+      mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
+      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
+    
+      #log transform column
+
+      train_neg_dict = {}
+      newunique_list = []
+      negunique = mdf_train[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = suffixcolumn + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        train_neg_dict.update({unique : newunique})
+        newunique_list.append(newunique)
+
+      test_neg_dict = {}
+      negunique = mdf_test[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = suffixcolumn + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        if newunique in newunique_list and newunique == newunique:
+          test_neg_dict.update({unique : newunique})
+        else:
+          test_neg_dict.update({unique : np.nan})
+
+      mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+    
+    #now if the zero column included is a little simpler
+    if zeroset is True:
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, column, tempcolumn_zero, suffixoverlap_results, postprocess_dict['printstatus'])
+      mdf_test[tempcolumn_zero] = mdf_test[column].copy()
+      
+      #convert all values to either numeric or NaN
+      mdf_train[tempcolumn_zero] = pd.to_numeric(mdf_train[tempcolumn_zero], errors='coerce')
+      mdf_test[tempcolumn_zero] = pd.to_numeric(mdf_test[tempcolumn_zero], errors='coerce')
+      
+      #convert to 1 activations for zero and 0 elsewhere
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn_zero, mdf_train[tempcolumn_zero]==0, 1, 0)
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn_zero, mdf_test[tempcolumn_zero]==0, 1, 0)
+
+    #combine the positive and negative columns if applicable
+    if negvalues is True:
+      mdf_train = \
+      self._autowhere(mdf_train, tempcolumn, mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[negtempcolumn], specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, tempcolumn, mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[negtempcolumn], specified='replacement')
+
+    #one hot encoding support function, using scenario zero which will derive column headers based on entries
     df_train_cat = self._onehot_support(mdf_train, tempcolumn, scenario=0)
-    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
+    df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=list(df_train_cat))
     
     labels_train = list(df_train_cat)
-    labels_test = list(df_test_cat)
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( df_train_cat.columns ) - set( df_test_cat.columns )
-    
-    #Add a missing column in test set with default value equal to 0
-    for c in missing_cols:
-        df_test_cat[c] = 0
-    #Ensure the order of column in the test set is in the same order than in train set
-    #Note this also removes categories in test set that aren't present in training set
-    df_test_cat = df_test_cat[df_train_cat.columns]
     
     suffixoverlap_results = \
     self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
@@ -19877,18 +18285,18 @@ class AutoMunge:
     mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
     
     #replace original column from training data
-    
-    del mdf_train[negtempcolumn]    
-    del mdf_test[negtempcolumn]
+    if negvalues is True:
+      del mdf_train[negtempcolumn]    
+      del mdf_test[negtempcolumn]
     
     del mdf_train[tempcolumn]    
     del mdf_test[tempcolumn]
     
     #create output of a list of the created column names
-#     NAcolumn = columnNAr2
     labels_train = list(df_train_cat)
-#     if NAcolumn in labels_train:
-#       labels_train.remove(NAcolumn)
+    if zeroset is True:
+      labels_train = [tempcolumn_zero] + labels_train
+
     powercolumns = labels_train
   
     #change data type for memory savings
@@ -19912,12 +18320,14 @@ class AutoMunge:
       #new parameter collected for driftreport
       tc_ratio = pc + '_ratio'
       tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
-
+      
+      #pos_and_negative_list excludes the zero column
       powernormalization_dict = {pc : {'powerlabelsdict_pwrs' : powerlabelsdict, \
                                        'labels_train' : labels_train, \
-                                       'missing_cols' : missing_cols, \
                                        'negvalues' : negvalues, \
+                                       'zeroset' : zeroset, \
                                        'suffix' : suffix, \
+                                       'pos_and_negative_list' : list(df_train_cat), \
                                        tc_ratio : tcratio}}
     
       column_dict = {pc : {'category' : treecategory, \
@@ -19935,7 +18345,7 @@ class AutoMunge:
       column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
-  
+
   def _process_pwor(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
@@ -19959,6 +18369,11 @@ class AutoMunge:
       negvalues = params['negvalues']
     else:
       negvalues = False
+      
+    if 'zeroset' in params:
+      zeroset = params['zeroset']
+    else:
+      zeroset = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -19988,24 +18403,39 @@ class AutoMunge:
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
     
     #copy set for negative values
-    negtempcolumn = column + '_negtempcolumn'
+    if negvalues is True:
+      negtempcolumn = column + '_negtempcolumn'
+
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
     
-    mdf_train, suffixoverlap_results = \
-    self._df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+      #convert all values >= 0 to Nan
+      mdf_train = \
+      self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
+
+      #take abs value of negtempcolumn
+      mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+      
+    if zeroset is True:
+      zerotempcolumn = column + '_zerotempcolumn'
+      
+      mdf_train, suffixoverlap_results = \
+      self._df_copy_train(mdf_train, pworcolumn, zerotempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[zerotempcolumn] = mdf_test[pworcolumn].copy()
+      
+      #convert all values != 0 to Nan
+      mdf_train = \
+      self._autowhere(mdf_train, zerotempcolumn, mdf_train[zerotempcolumn] != 0, np.nan, column + '_zero')
+      mdf_test = \
+      self._autowhere(mdf_test, zerotempcolumn, mdf_test[zerotempcolumn] != 0, np.nan, column + '_zero')
     
-    mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
-    
-    #convert all values >= 0 to Nan
-    mdf_train = \
-    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
-    mdf_test = \
-    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
-    
-    #take abs value of negtempcolumn
-    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
-    
-    #convert all values <= 0 in column to Nan
+    #convert all values <= 0 in pworcolumn to Nan
     mdf_train = \
     self._autowhere(mdf_train, pworcolumn, mdf_train[pworcolumn] <= 0, np.nan, specified='replacement')
     mdf_test = \
@@ -20013,44 +18443,6 @@ class AutoMunge:
 
     mdf_train[pworcolumn] = np.floor(np.log10(mdf_train[pworcolumn].astype(float)))
     mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
-    
-    #do same for negtempcolumn
-    mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
-    mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
-
-    train_neg_dict = {}
-    newunique_list = []
-    negunique = mdf_train[negtempcolumn].unique()
-    for unique in negunique:
-      if unique != unique:
-        newunique = np.nan
-      else:
-        #this is update for difference between pwr2 and pwrs
-        if negvalues:
-          newunique = column + '_-10^' + str(int(unique))
-        else:
-          newunique = np.nan
-      train_neg_dict.update({unique : newunique})
-      newunique_list.append(newunique)
-      
-    test_neg_dict = {}
-    negunique = mdf_test[negtempcolumn].unique()
-    for unique in negunique:
-      if unique != unique:
-        newunique = np.nan
-      else:
-        #this is update for difference between pwr2 and pwrs
-        if negvalues:
-          newunique = column + '_-10^' + str(int(unique))
-        else:
-          newunique = np.nan
-      if newunique in newunique_list and newunique == newunique:
-        test_neg_dict.update({unique : newunique})
-      else:
-        test_neg_dict.update({unique : np.nan})
-        
-    mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
-    mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
     
     #now do same for column
     train_pos_dict = {}
@@ -20079,10 +18471,58 @@ class AutoMunge:
     mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_pos_dict)
     mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
     
-    #combine the two columns
-    mdf_train[pworcolumn] = mdf_train[negtempcolumn].where(mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[pworcolumn])
-    mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
-    
+    #do same for negtempcolumn
+    if negvalues is True:
+      mdf_train[negtempcolumn] = np.floor(np.log10(mdf_train[negtempcolumn].astype(float)))
+      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
+
+      train_neg_dict = {}
+      newunique_list = []
+      negunique = mdf_train[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = column + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        train_neg_dict.update({unique : newunique})
+        newunique_list.append(newunique)
+
+      test_neg_dict = {}
+      negunique = mdf_test[negtempcolumn].unique()
+      for unique in negunique:
+        if unique != unique:
+          newunique = np.nan
+        else:
+          #this is update for difference between pwr2 and pwrs
+          if negvalues:
+            newunique = column + '_-10^' + str(int(unique))
+          else:
+            newunique = np.nan
+        if newunique in newunique_list and newunique == newunique:
+          test_neg_dict.update({unique : newunique})
+        else:
+          test_neg_dict.update({unique : np.nan})
+
+      mdf_train[negtempcolumn] = mdf_train[negtempcolumn].replace(train_neg_dict)
+      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+
+    #combine the columns
+    if negvalues is True:
+      mdf_train = \
+      self._autowhere(mdf_train, pworcolumn, mdf_train[negtempcolumn] == mdf_train[negtempcolumn], mdf_train[negtempcolumn], specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, pworcolumn, mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[negtempcolumn], specified='replacement')
+      
+    if zeroset is True:
+      mdf_train = \
+      self._autowhere(mdf_train, pworcolumn, mdf_train[zerotempcolumn] == mdf_train[zerotempcolumn], mdf_train[zerotempcolumn], specified='replacement')
+      mdf_test = \
+      self._autowhere(mdf_test, pworcolumn, mdf_test[zerotempcolumn] == mdf_test[zerotempcolumn], mdf_test[zerotempcolumn], specified='replacement')
+
     train_unique = mdf_train[pworcolumn].unique()
     test_unique = mdf_test[pworcolumn].unique()
   
@@ -20117,10 +18557,14 @@ class AutoMunge:
     mdf_train[pworcolumn] = mdf_train[pworcolumn].replace(train_replace_dict)
     mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
     
-    #replace original column from training data
-    del mdf_train[negtempcolumn]    
-    del mdf_test[negtempcolumn]    
-
+    #delete support columns
+    if negvalues is True:
+      del mdf_train[negtempcolumn]    
+      del mdf_test[negtempcolumn]    
+    if zeroset is True:
+      del mdf_train[zerotempcolumn]    
+      del mdf_test[zerotempcolumn] 
+      
     bn_count = len(train_replace_dict)
     inverse_train_replace_dict = {value:key for key,value in train_replace_dict.items()}
     activations_list = list(inverse_train_replace_dict)
@@ -20156,6 +18600,7 @@ class AutoMunge:
                                        'test_replace_dict' : test_replace_dict, \
                                        'ordl_activations_dict' : ordl_activations_dict, \
                                        'negvalues' : negvalues, \
+                                       'zeroset' : zeroset, \
                                        'suffix' : suffix, \
                                        'inplace' : inplace}}
     
@@ -20291,10 +18736,16 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
-      mdf_train = \
-      self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_train_cat = \
+      self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_train_cat
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -20617,10 +19068,16 @@ class AutoMunge:
     self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
-    mdf_train = \
-    self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-    mdf_test = \
-    self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+    df_train_cat = \
+    self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+    df_test_cat = \
+    self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+  
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+    
+    del df_train_cat
+    del df_test_cat
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -20943,10 +19400,16 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
-      mdf_train = \
-      self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_train_cat = \
+      self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_train_cat
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -21359,10 +19822,16 @@ class AutoMunge:
       self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
 
       #process bins as a categorical set
-      mdf_train = \
-      self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_train_cat = \
+      self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_train_cat
+      del df_test_cat
       
       #initialize binscolumn once more
       mdf_train[binscolumn] = mdf_train[column].copy()
@@ -21567,10 +20036,16 @@ class AutoMunge:
     self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
-    mdf_train = \
-    self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-    mdf_test = \
-    self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+    df_train_cat = \
+    self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+    df_test_cat = \
+    self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+  
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+    
+    del df_train_cat
+    del df_test_cat
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -21716,10 +20191,16 @@ class AutoMunge:
     self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #process bins as a categorical set
-    mdf_train = \
-    self._postprocess_textsupport(mdf_train, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
-    mdf_test = \
-    self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+    df_train_cat = \
+    self._onehot_support(mdf_train, binscolumn, scenario=1, activations_list = textcolumns)
+    df_test_cat = \
+    self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+  
+    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
+    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+    
+    del df_train_cat
+    del df_test_cat
     
     #change data type for memory savings
     for textcolumn in textcolumns:
@@ -27074,9 +25555,7 @@ class AutoMunge:
     textcolumns = ['-1_' + str(format(item, f"0{received_column_count}b")) for item in textcolumns]
 
     df_onehot = \
-    self._postprocess_textsupport(df_array, '-1', {}, 'tempkey', {'textcolumns':textcolumns})
-
-    del df_onehot['-1']
+    self._onehot_support(df_array, '-1', scenario=1, activations_list = textcolumns)
 
     return df_onehot
   
@@ -31037,96 +29516,6 @@ class AutoMunge:
     
     return numeric_data_result, all_valid_entries_result
 
-  def _check_for_zzzinfill(self, df, column, postprocess_dict, traintest='train'):
-    """
-    A few of the transforms have requirement of a reserved string "zzzinfill" 
-    With respect to usage in entries of an input column to a transorm
-    which is used in a few places as substitute marker for missing data, replacing NaN
-    
-    There are a few reasons,
-    In one hot encoding, the text transform has convention of using entries as string suffix appenders
-    And we expected 'zzzinfill' would be a less comon string than 'nan' which is a string converted NaN representation
-    In other categoric encodings like ordl, ord3, and 1010
-    We use a pandas.replace operation using a conversion dictionary as {entry : replacement}
-    Pandas.replace doesn't support multiple data types in common operation
-    So we also convert to string for this use, again representing NaN as 'zzzinfill'
-    
-    This validation function is for use in transforms with the reserved string requirement
-    And serves to check the target column for presence of any 'zzzinfill' entries
-    when identified, the entries are left intact
-    A printout is generated 
-    And a validation result is logged in postprocess_dict['temp_miscparameters_results']['zzzinfill_valresult']
-    (or for postmunge in postprocess_dict['temp_pm_miscparameters_results']['zzzinfill_valresult'])
-    
-    Where 'zzzinfill_valresult' will record a dictionary as 
-    zzzinfill_valresult = {i : {'column' : column,
-                                'traintest' : traintest}}
-                                  
-    Where i is an integer incremented with each occurance
-    traintest is one of {'train', 'test'} indicating where entry was found (in df_train or df_test)
-    
-    Receives parameters of df (either a train or test set as received by the transformation function)
-    column, treecategory, category, postprocess_dict consistent with their 
-    traintest accepts one of {'train', 'test'} to distringuish between df_train and df_test
-    """
-
-    #when calling this function we need to distinguish whether taking place in automunge or postmunge
-    #so we'll know where to store the results
-    #a quirk of postmunge is that it has a postprocess_dict entry present for 'temp_pm_miscparameters_results'
-    if 'temp_pm_miscparameters_results' in postprocess_dict:
-      ampm = 'pm'
-    else:
-      ampm = 'am'
-
-    #initialize a msciparameters_results entry for 'zzzinfill_valresult' if not present
-    #(note that temp_miscparameters_results is later consolidated with and returned as miscparameters_results)
-    
-    temp_miscparameters_results = 'temp_miscparameters_results'
-    #results are logged in seperate location in postmunge
-    if ampm == 'pm':
-      temp_miscparameters_results = 'temp_pm_miscparameters_results'
-    
-    if 'zzzinfill_valresult' not in postprocess_dict[temp_miscparameters_results]:
-      postprocess_dict[temp_miscparameters_results].update({'zzzinfill_valresult' : {}})
-    
-    #if 'zzzinfill' is an entry in the column:
-    if bool((df[column].isin(['zzzinfill'])==False).all()) is False:
-
-      #return printout
-      if postprocess_dict['printstatus'] != 'silent':
-        
-        print("_____")
-        print("Warning of reserved string 'zzzinfill' identified as entry in column")
-        print("Identified for column ", column)
-        print("Note that all identified occurances are logged in postprocess_dict['miscparameters_results']['zzzinfill_valresult']")
-        print("This does not cause an error, just be aware that the recieved 'zzzinfill' entries") 
-        print("will be treated as consistent with NaN for purposes of this transform.")
-        print()
-        
-      #validation results reported with key of an integer incremented with each occurance
-      #get value of current max entry 
-      #(here using pandas as a hack since python doesn't have clean max item in list, works bacause are numeric)
-      max_valkey_i = pd.DataFrame({'temp' : list(postprocess_dict[temp_miscparameters_results]['zzzinfill_valresult'])}).max()
-
-      #this returns max_valkey_i as a series with one integer entry, with entry as NaN when no entries present
-      if (max_valkey_i != max_valkey_i).iat[0]:
-        max_valkey_i = -1
-      else:
-        max_valkey_i = int(max_valkey_i)
-
-      #initialize our valitation result reporting, which notes the tree category with identied reserved string
-      #as well as the root category in whose generations this tree category was found
-      #and the associated inputcolumn to the transform
-      zzzinfill_valresult = {max_valkey_i+1 : {'column' : column,
-                                               'traintest' : traintest}}
-
-      #populate the validation results in postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult']
-      postprocess_dict[temp_miscparameters_results]['zzzinfill_valresult'].update(
-        zzzinfill_valresult
-        )
-    
-    return postprocess_dict
-
   def _check_assigncat(self, assigncat, printstatus):
     """
     #Here we'll do a quick check for any redundant column assignments in the
@@ -33077,7 +31466,7 @@ class AutoMunge:
           categorycomplete_dict[column1] = True
   
     return df, categorycomplete_dict
-  
+
   def _Binary_convert(self, df_train, df_test, bool_column_list, Binary, postprocess_dict):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
@@ -33094,58 +31483,62 @@ class AutoMunge:
     #with the list contents incorporated into bool_column_list
     """
     
+    if Binary in {True, 'retain'}:
+      Binary_column = 'Binary_1010'
+    if Binary in {'ordinal', 'ordinalretain'}:
+      Binary_column = 'Binary_ord3'
+    
     #this ensures that the 'Binary' support column header added to dataframe isn't already present
     #(should not be the case since at this point columns have suffix appenders, just here to be consistent)
     Binary_present = \
     self._df_check_suffixoverlap(df_train, 
-                                 'Binary', 
+                                 Binary_column, 
                                  suffixoverlap_results = {}, 
                                  printstatus = postprocess_dict['printstatus'])
     
-    df_train['Binary'] = ''
-    df_test['Binary'] = ''
+    initial_columns = set(df_train)
+    
+    df_train[Binary_column] = ''
+    df_test[Binary_column] = ''
   
     for column in bool_column_list:
   
-      df_train['Binary'] = df_train['Binary'] + df_train[column].astype(int).astype(str)
-      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(int).astype(str)
+      df_train[Binary_column] = df_train[Binary_column] + df_train[column].astype(int).astype(str)
+      df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
     
     if Binary in {True, 'retain'}:
-
-      #now we'll apply process_1010 
-      df_train, df_test, Binary_column_dict_list = \
-      self._process_1010(df_train, df_test, 'Binary', 'Binary', '1010', \
-                         { 'process_dict': postprocess_dict['process_dict'],
-                           'temp_miscparameters_results' : {},
-                           'printstatus' : postprocess_dict['printstatus']}, {})
+      
+      df_train, Binary_dict = \
+      self._custom_train_1010(df_train, Binary_column, {})
+    
+      df_test = \
+      self._custom_test_1010(df_test, Binary_column, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
       
-      #now we'll apply process_1010 
-      df_train, df_test, Binary_column_dict_list = \
-      self._process_ord3(df_train, df_test, 'Binary', 'Binary', 'ord3', \
-                         { 'process_dict': postprocess_dict['process_dict'],
-                           'temp_miscparameters_results' : {},
-                           'printstatus' : postprocess_dict['printstatus']}, {})
+      df_train, Binary_dict = \
+      self._custom_train_ordl(df_train, Binary_column, {})
     
-    Binary_dict = {'column_dict' : {}}
-    
-    for column_dict in Binary_column_dict_list:
+      df_test = \
+      self._custom_test_ordl(df_test, Binary_column, Binary_dict)
       
-      Binary_dict['column_dict'].update(column_dict)
+    returned_columns = set(df_train)
     
-    #add suffix overlap results for 'Binary' initialization
-    #(this is a bit of a hack to carry suffix overlap result for 'Binary' to final report,
-    #a small tradeoff is that methods inspecting Binary_dict['column_dict'] elsewhere
-    #will need to account for fact that 'Binary' was not a column returned from transform.)
-    Binary_dict['column_dict'].update({'Binary':{'suffixoverlap_results':Binary_present}})
+    newcolumns = list(returned_columns - initial_columns)
+    
+    suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
+                                                         newcolumns, \
+                                                         suffixoverlap_results = Binary_present, \
+                                                         printstatus = postprocess_dict['printstatus'])
       
     Binary_dict.update({'bool_column_list' : bool_column_list})
 
     Binary_dict.update({'temp_pm_miscparameters_results' : {}})
     
-    del df_train['Binary']
-    del df_test['Binary']
+    #(this is a bit of a hack to carry suffix overlap result for 'Binary' to final report)
+    Binary_dict.update({'column_dict':{}})
+    for newcolumn in newcolumns:
+      Binary_dict['column_dict'].update({newcolumn:{'suffixoverlap_results':suffixoverlap_results}})
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
@@ -33157,7 +31550,7 @@ class AutoMunge:
         del df_test[column]
 
     return df_train, df_test, Binary_dict
-  
+
   def _postBinary_convert(self, df_test, Binary_dict, Binary):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
@@ -33170,32 +31563,28 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
-    bool_column_list = Binary_dict['bool_column_list']
-
-    if len(bool_column_list) > 0:
-      if Binary in {True, 'retain'}:
-        Binary_columnkey = ['Binary_1010_0']
-      elif Binary in {'ordinal', 'ordinalretain'}:
-        Binary_columnkey = ['Binary_ord3']
-    else:
-      Binary_columnkey = []
+    if Binary in {True, 'retain'}:
+      Binary_column = 'Binary_1010'
+    if Binary in {'ordinal', 'ordinalretain'}:
+      Binary_column = 'Binary_ord3'
     
-    df_test['Binary'] = ''
+    bool_column_list = Binary_dict['bool_column_list']
+    
+    df_test[Binary_column] = ''
     
     for column in bool_column_list:
   
-      df_test['Binary'] = df_test['Binary'] + df_test[column].astype(int).astype(str)
+      df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
 
     if Binary in {True, 'retain'}:
 
-      #now we'll apply postprocess_1010 
-      df_test = self._postprocess_1010(df_test, 'Binary', Binary_dict, Binary_columnkey, {})
+      df_test = \
+      self._custom_test_1010(df_test, Binary_column, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
-      
-      df_test = self._postprocess_ord3(df_test, 'Binary', Binary_dict, Binary_columnkey, {})
-    
-    del df_test['Binary']
+
+      df_test = \
+      self._custom_test_ordl(df_test, Binary_column, Binary_dict)
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
@@ -33206,7 +31595,7 @@ class AutoMunge:
         del df_test[column]
     
     return df_test
-  
+
   def _meta_inverseprocess_Binary(self, df, postprocess_dict):
     """
     #converts string boolean integers returned from inverseprocess_Binary to int
@@ -33214,21 +31603,12 @@ class AutoMunge:
     """
     
     Binary_returned_columns = list(postprocess_dict['Binary_dict']['column_dict'])
-    
-    if 'Binary' in Binary_returned_columns:
-      Binary_returned_columns.remove('Binary')
-    
-    if postprocess_dict['Binary'] in {True, 'retain'}:
-    
-      df, inputcolumn = \
-      self._inverseprocess_Binary(df, Binary_returned_columns, postprocess_dict)
-      
-    if postprocess_dict['Binary'] in {'ordinal', 'ordinalretain'}:
-      
-      df, inputcolumn = \
-      self._inverseprocess_Binary_ordinal(df, Binary_returned_columns, postprocess_dict)
-    
+    Binary_dict = postprocess_dict['Binary_dict']
     Binary_source_columns = postprocess_dict['Binary_dict']['bool_column_list']
+    Binary = postprocess_dict['Binary']
+    
+    df, inputcolumn = \
+    self._inverseprocess_Binary(df, Binary_returned_columns, Binary_dict, Binary)
     
     i=0
     for Binary_source_column in Binary_source_columns:
@@ -33241,76 +31621,24 @@ class AutoMunge:
     #we'll have convention that the Binary columns not returned from inversion
     for Binary_returned_column in Binary_returned_columns:
       del df[Binary_returned_column]
-      
-    if 'Binary' in list(df):
-      del df['Binary']
     
     return df
+  
+  def _inverseprocess_Binary(self, df, Binary_columns, Binary_dict, Binary):
     
-  def _inverseprocess_Binary(self, df, Binary_columns, postprocess_dict):
-    """
-    #inverse transform similar to process_1010 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = Binary_columns[0]
-    
-    _1010_binary_encoding_dict = \
-    postprocess_dict['Binary_dict']['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-    
-    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
-    
-    inputcolumn = 'Binary'
-    
-    for Binary_column in Binary_columns:
-
-      if Binary_column != 'Binary':
-        
-        if Binary_column == Binary_columns[0]:
-          
-          df[inputcolumn] = df[Binary_column].astype(int).astype(str)
-          
-        else:
-          
-          df[inputcolumn] = df[inputcolumn] + df[Binary_column].astype(int).astype(str)
-        
-    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
+    if Binary in {True, 'retain'}:
       
-    return df, inputcolumn
-
-  def _inverseprocess_Binary_ordinal(self, df, Binary_columns, postprocess_dict):
-    """
-    #inverse transform similar to process_ord3
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
+      inputcolumn = inputcolumn = 'Binary_1010'
     
-    normkey = Binary_columns[0]
-    
-    ordinal_dict = \
-    postprocess_dict['Binary_dict']['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    overlap_replace = \
-    postprocess_dict['Binary_dict']['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
-    inverse_overlap_replace = {value:key for key,value in overlap_replace.items()}
-    
-    inputcolumn = 'Binary'
-    
-    #we'll convert the input to integers
-    df[normkey] = df[normkey].astype(int, errors='ignore')
-    
-    df[inputcolumn] = \
-    df[normkey].replace(inverse_ordinal_dict)
-    
-    if df[inputcolumn].dtype.name != 'object':
-      df[inputcolumn] = df[inputcolumn].astype('object')
-    
-    df[inputcolumn] = \
-    df[inputcolumn].replace(inverse_overlap_replace)
+      df= \
+      self._custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
+      
+    if postprocess_dict['Binary'] in {'ordinal', 'ordinalretain'}:
+      
+      inputcolumn = inputcolumn = 'Binary_ord3'
+      
+      df = \
+      self._custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
       
     return df, inputcolumn
   
@@ -35483,12 +33811,11 @@ class AutoMunge:
         print("Consolidating boolean columns:")
         print(bool_column_list)
         print()
-          
+
       if len(bool_column_list) > 0:
         df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary, postprocess_dict)
 
         returned_Binary_columns = list(Binary_dict['column_dict'])
-        returned_Binary_columns.remove('Binary')
 
       else:
         Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
@@ -35739,7 +34066,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.75'
+    automungeversion = '6.76'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37307,151 +35634,6 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
-  
-  def _postprocess_onht(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #process_onht(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
-    #preprocess column with one hot encoding
-    #same as 'text' transform except labels returned column with integer instead of entry appender
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns emtpy set
-    if normkey is not False:
-      
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-#       textcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']      
-      labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
-
-      #for backward compatibility
-      if 'consolidated_activations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        consolidated_activations = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
-      else:
-        consolidated_activations = False
-
-      if 'labels_train_before_consolidation' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        labels_train_before_consolidation = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_before_consolidation']
-      else:
-        labels_train_before_consolidation = list(labels_dict)
-
-      if 'labels_train_after_consolidation' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        labels_train_after_consolidation = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_after_consolidation']
-      else:
-        labels_train_after_consolidation = list(labels_dict)
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-      
-      tempcolumn = column + '_' + suffix + '_'
-
-      #create copy of original column for later retrieval
-      mdf_test[tempcolumn] = mdf_test[column].copy()
-
-      #convert column to category
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-      else:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-
-      #we'll get the category names from the textcolumns array by stripping the \
-      #prefixes of column name + '_'
-#       prefixlength = len(column)+1
-      labels_train = labels_train_before_consolidation
-#       for textcolumn in labels_train:
-#         textcolumn = textcolumn[prefixlength :]
-      #labels_train.sort(axis=0)
-#       labels_train.sort()
-      labels_test = mdf_test[tempcolumn].unique()
-#       labels_test.sort(axis=0)
-      labels_test = sorted(labels_test, key=str)
-      labels_test = list(labels_test)
-
-      #one hot encoding support function
-      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train)
-      
-      #now apply any activation consolidations
-      if consolidated_activations is not False:
-
-        for consolidation_list in consolidated_activations:
-          if len(consolidation_list) > 0:
-            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-            returned_consolidation = consolidation_list[0]
-            
-            if returned_consolidation not in df_test_cat:
-              df_test_cat[returned_consolidation] = 0
-
-            for consolidation_target in consolidation_list:
-              if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-                df_test_cat = \
-                self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
-                del df_test_cat[consolidation_target]
-
-      # #convert sparse array to pandas dataframe with column labels
-      # df_test_cat.columns = labels_train
-
-      #Get missing columns in test set that are present in training set
-#       missing_cols = set( labels_train_after_consolidation ) - set( labels_test )
-
-      del mdf_test[tempcolumn]
-      
-      #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-      # #delete support NArw2 column
-      # columnNAr2 = column + '_zzzinfill'
-      # if columnNAr2 in mdf_test.columns:
-      #   del mdf_test[columnNAr2]
-
-      #change data types to 8-bit (1 byte) integers for memory savings
-      for textcolumn in labels_train_after_consolidation:
-
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-        
-      #now convert coloumn headers from text convention to onht convention
-      mdf_test  = mdf_test.rename(columns=labels_dict)
-    
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-
-    return mdf_test
 
   def _custom_test_onht(self, df, column, normalization_dict):
     """
@@ -37504,124 +35686,6 @@ class AutoMunge:
     df = df.rename(columns=labels_dict)
     
     return df
-  
-  def _postprocess_text(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_text(mdf_test, column, postprocess_dict, columnkey)
-    #process column with text classifications
-    #takes as arguement pandas dataframe containing test data  
-    #(mdf_test), and the name of the column string ('column'), and an array of
-    #the associated transformed column s from the train set (textcolumns)
-    #which is saved in the postprocess_dict
-    #note this aligns formatting of transformed columns to the original train set
-    #fromt he original treatment with automunge
-    #retains the original column from master dataframe and
-    #adds onehot encodings
-    #with columns named after column_ + text classifications
-    #missing data replaced with category label 'missing'+column
-    #any categories missing from the training set removed from test set
-    #any category present in training but missing from test set given a column of zeros for consistent formatting
-    #ensures order of all new columns consistent between both sets
-    #returns two transformed dataframe (mdf_train, mdf_test) \
-    #and a list of the new column names (textcolumns)
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-      labels_train = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
-
-      #for backward compatibility
-      if 'consolidated_activations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        consolidated_activations = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidated_activations']
-      else:
-        consolidated_activations = False
-
-      if 'labels_train_orig_afterparams' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        labels_train_orig_afterparams = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train_orig_afterparams']
-      else:
-        labels_train_orig_afterparams = labels_train
-      
-      tempcolumn = normkey
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-
-      #create copy of original column for later retrieval
-      mdf_test[tempcolumn] = mdf_test[column].copy()
-
-      #convert column to category
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-      
-      #replace NA with a dummy variable
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-      #replace numerical with string equivalent
-      #mdf_train[column] = mdf_train[column].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-
-      #apply onehotencoding
-      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=labels_train_orig_afterparams)
-
-      #now apply any activation consolidations
-      if consolidated_activations is not False:
-
-        for consolidation_list in consolidated_activations:
-          if len(consolidation_list) > 0:
-            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-            returned_consolidation = consolidation_list[0]
-            
-            if returned_consolidation not in df_test_cat:
-              df_test_cat[returned_consolidation] = 0
-
-            for consolidation_target in consolidation_list:
-              if consolidation_target != returned_consolidation and consolidation_target in df_test_cat:
-                df_test_cat = \
-                self._autowhere(df_test_cat, returned_consolidation, df_test_cat[consolidation_target] == 1, 1, specified='replacement')
-                del df_test_cat[consolidation_target]
-
-      #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_train
-
-      del mdf_test[tempcolumn]
-      
-      #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-      #change data types to 8-bit (1 byte) integers for memory savings
-      for textcolumn in labels_train:
-
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-    
-    return mdf_test
 
   def _postprocess_smth(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -37690,105 +35754,6 @@ class AutoMunge:
       if inplace is True:
         del mdf_test[column]
     
-    return mdf_test
-  
-  def _postprocess_textsupport(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #just like the postprocess_text  function but doesn't use columnkey or inspect a normalization_dict. 
-    #This function supports some of the other methods.
-    #For use a temporary params dictionary should be assembled with entry for 'textcolumns'
-    #accepts parameter textcolumns as a list of columns to return 
-    #Note that textcolumns entries need to be in form of column + '_' + uniqueentry
-    #where uniqueentry is a unique entry in the categoric set associated with the activation for that column
-    '''
-    
-    if 'textcolumns' in params:
-      textcolumns = params['textcolumns']
-    else:
-      textcolumns = postprocess_dict['column_dict'][columnkey]['categorylist']
-    
-    if len(textcolumns) > 0:
-      tempcolumn = textcolumns[0]
-    # else:
-    #   tempcolumn = column + '_onht'
-
-    #note that suffix overlap will have already been checked externally based on textcolumns in automunge
-
-    if len(textcolumns) > 0:
-      
-      #create copy of original column for later retrieval
-      mdf_test[tempcolumn] = mdf_test[column].copy()
-
-      #convert column to category
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-  #     #if set is categorical we'll need the plug value for missing values included
-  #     mdf_test[column] = mdf_test[column].cat.add_categories(['NArw'])
-
-  #     #replace NA with a dummy variable
-  #     mdf_test[column] = mdf_test[column].fillna('NArw')
-      
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-      #replace NA with a dummy variable
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-      #replace numerical with string equivalent
-      #mdf_train[column] = mdf_train[column].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-
-      #we'll get the category names from the textcolumns array by stripping the \
-      #prefixes of column name + '_'
-      prefixlength = len(column)+1
-      labels_train = textcolumns[:]
-      for textcolumn in labels_train:
-        textcolumn = textcolumn[prefixlength :]
-      #labels_train.sort(axis=0)
-      labels_train.sort()
-      labels_test = mdf_test[tempcolumn].unique()
-      labels_test.sort(axis=0)
-      labels_test = list(labels_test)
-
-      #apply onehotencoding
-      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
-      
-      #append column header name to each category listing
-      labels_test = [column + '_' + entry for entry in labels_test]
-      
-      #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_test
-
-      #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-      #Add a missing column in test set with default value equal to 0
-      for c in missing_cols:
-          df_test_cat[c] = 0
-
-      #Ensure the order of column in the test set is in the same order than in train set
-      #Note this also removes categories in test set that aren't present in training set
-      df_test_cat = df_test_cat[textcolumns]
-      
-      del mdf_test[tempcolumn]
-
-      #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-      
-      #delete support NArw2 column
-      columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in mdf_test.columns:
-        del mdf_test[columnNAr2]
-
-      #change data types to 8-bit (1 byte) integers for memory savings
-      for textcolumn in textcolumns:
-        
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
     return mdf_test
 
   def _postprocess_splt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -39619,140 +37584,6 @@ class AutoMunge:
     
     return mdf_test
 
-  def _postprocess_ordl(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_ordl(mdf_test, column, postprocess_dict, columnkey)
-    #preprocess column with categories into ordinal (sequentuial integer) sets
-    #corresponding to (sorted) categories
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories presetn in test set not present in train set use this 'zzz' category
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-      
-      #grab normalization parameters from postprocess_dict
-      ordinal_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-      overlap_replace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      inplace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-      
-      #for backward compatibility
-      if 'consolidation_translations' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        consolidation_translations = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['consolidation_translations']
-      else:
-        consolidation_translations = {}
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-
-      suffixcolumn = column + '_' + suffix
-      
-      if inplace is not True:
-        #copy source column into new column
-        mdf_test[suffixcolumn] = mdf_test[column].copy()
-      else:
-        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-      
-      #convert column to category
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-      
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-      
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-      else:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      # labels_train = list(ordinal_dict.keys())
-      # labels_train = sorted(labels_train, key=str)
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      # labels_test = sorted(labels_test, key=str)
-      
-      # #if infill not present in train set, insert
-      # if 'zzzinfill' not in labels_train:
-      #   labels_train = labels_train + ['zzzinfill']
-      #   labels_train = sorted(labels_train, key=str)
-      # if 'zzzinfill' not in labels_test:
-      #   labels_test = labels_test + ['zzzinfill']
-      #   labels_test = sorted(labels_test, key=str)
-        
-      #here we replace the overlaps with version with jibberish suffix
-      if len(overlap_replace) > 0:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-      
-      #in test set, we'll need to strike any categories that weren't present in train or consolidation targets
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(ordinal_dict.keys())-set(consolidation_translations.keys()))
-      
-      #edge case, replace operation doesn't work when column dtype is int
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
-
-      #edge case, replace operation do0esn't work when column dtype is int
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-
-      #now we'll apply the ordinal transformation to the test set
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(consolidation_translations)
-      
-      #just want to make sure these arent' being saved as floats for memory considerations
-      max_encoding = len(ordinal_dict) - 1
-      if max_encoding <= 255:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-      elif max_encoding <= 65535:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
-      else:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
-      
-  #     #convert column to category
-  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-    
-    return mdf_test
-
   def _custom_test_ordl(self, df, column, normalization_dict):
     """
     #rewrite of the ordl trasnform
@@ -39790,129 +37621,6 @@ class AutoMunge:
     df[column] = df[column].astype('object').replace(ordinal_dict)
     
     return df
-  
-  def _postprocess_ord3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_ord3(mdf_test, column, postprocess_dict, columnkey)
-    #preprocess column with categories into ordinal (sequentuial integer) sets
-    #corresponding to categories sorted by frequency of occurance
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories presetn in test set not present in train set use this 'zzz' category
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-      
-      #grab normalization parameters from postprocess_dict
-      ordinal_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-      overlap_replace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      inplace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-
-      suffixcolumn = column + '_' + suffix
-      
-      if inplace is not True:
-        #copy source column into new column
-        mdf_test[suffixcolumn] = mdf_test[column].copy()
-      else:
-        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-      
-      #convert column to category
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-      
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-      
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)  
-      else:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      labels_train = list(ordinal_dict.keys())
-  #     labels_train.sort()
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test = sorted(labels_test, key=str)
-      
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-  #       labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test = sorted(labels_test, key=str)
-        
-      #here we replace the overlaps with version with jibberish suffix
-      if len(overlap_replace) > 0:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-      
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-      
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      #edge case for replace operation if dtype drifted such as to numeric
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
-      
-      #now we'll apply the ordinal transformation to the test set
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-
-      #just want to make sure these arent' being saved as floats for memory considerations
-      max_encoding = len(ordinal_dict) - 1
-      if max_encoding <= 255:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint8)
-      elif max_encoding <= 65535:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint16)
-      else:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(np.uint32)
-
-  #     #convert column to category
-  #     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-    
-    return mdf_test
 
   def _postprocess_maxb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -39985,7 +37693,7 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
-  
+
   def _postprocess_ucct(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_ucct(mdf_train, mdf_test, column, category)
@@ -40008,15 +37716,12 @@ class AutoMunge:
       #grab normalization parameters from postprocess_dict
       ordinal_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-      overlap_replace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
+      ordinal_nan_value = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_nan_value']
 
       suffixcolumn = column + '_' + suffix
       
@@ -40024,196 +37729,34 @@ class AutoMunge:
       mdf_test[suffixcolumn] = mdf_test[column].copy()
       
       #convert column to category
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-      
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
 
       #apply defaultinfill based on processdict entry
       mdf_test, _1 = \
       self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
       
-      #replace numerical with string equivalent
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)    
+      mdf_test = \
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), specified='replacement')
       
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      labels_train = list(ordinal_dict.keys())
+      labels_train = set(ordinal_dict.keys())
   #     labels_train.sort()
-      labels_test = list(mdf_test[suffixcolumn].unique())
-      labels_test.sort()
-      
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-  #       labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
-        
-      #here we replace the overlaps with version with jibberish suffix
-      if len(overlap_replace) > 0:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
+      labels_test = set(mdf_test[suffixcolumn].unique())
+      labels_test = {x for x in labels_test if x==x}
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
+      testspecificcategories = list(labels_test-labels_train)
       
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)
+      testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object').replace(testplug_dict)
       
       #now we'll apply the ordinal transformation to the test set
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(ordinal_dict)
-
-    else:
-
-      if 'inplace' in params:
-        inplace = params['inplace']
-      else:
-        inplace = False
-
-      if inplace is True:
-        del mdf_test[column]
-    
-    return mdf_test
-
-  def _postprocess_1010(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-    '''
-    #postprocess_1010(mdf_test, column, postprocess_dict, columnkey)
-    #preprocess column with categories into binary encoded sets
-    #corresponding to (sorted) categories of >2 values
-    #adresses infill with new point which we arbitrarily set as 'zzzinfill'
-    #intended to show up as last point in set alphabetically
-    #for categories presetn in test set not present in train set use this 'zzz' category
-    '''
-    
-    #normkey used to retrieve the normalization dictionary 
-    normkey = False
-    if len(columnkey) > 0:      
-      normkey = columnkey[0]
-          
-    #normkey is False when process function returns empty set
-    if normkey is not False:
-      
-      #grab normalization parameters from postprocess_dict
-      inplace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
-      binary_encoding_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-      overlap_replace = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
-      binary_column_count = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_column_count']
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-
-      #for backward compatibility
-      if 'inverse_consolidation_translate_dict' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
-        inverse_consolidation_translate_dict = \
-        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_consolidation_translate_dict']
-      else:
-        inverse_consolidation_translate_dict = {}
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-
-      suffixcolumn = column + '_' + suffix
-
-      if inplace is not True:
-        #copy source column into new column
-        mdf_test[suffixcolumn] = mdf_test[column].copy()
-      else:
-        mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
-
-      #convert column to category
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('category')
-
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[suffixcolumn].cat.categories:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, suffixcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna('zzzinfill')
-
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
-      else:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-      #train categories are in the ordinal_dict we p[ulled from normalization_dict
-      labels_train = list(binary_encoding_dict.keys())
-#       labels_train.sort()
-      labels_test = list(mdf_test[suffixcolumn].unique())
-#       labels_test.sort()
-      labels_test = sorted(labels_test, key=str)
-
-      #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-#         labels_train.sort()
-        labels_train = sorted(labels_train, key=str)
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-#         labels_test.sort()
-        labels_test = sorted(labels_test, key=str)
-
-      #we can then apply a replace to convert consolidated items to their targeted activations
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(inverse_consolidation_translate_dict)
-
-      #here we replace the overlaps with version with jibberish suffix
-      if len(overlap_replace) > 0:
-
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(overlap_replace)
-
-      #in test set, we'll need to strike any categories that weren't present in train
-      #first let'/s identify what applies
-      testspecificcategories = list(set(labels_test)-set(labels_train))
-
-      #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(testplug_dict)    
-
-      #now we'll apply the 1010 transformation to the test set
-      if mdf_test[suffixcolumn].dtype.name != 'object':
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].replace(binary_encoding_dict)   
-
-      #ok let's create a list of columns to store each entry of the binary encoding
-      _1010_columnlist = []
-
-      for i in range(binary_column_count):
-
-        _1010_columnlist.append(column + '_' + suffix + '_' + str(i))
-
-      #now let's store the encoding
-      i=0
-      for _1010_column in _1010_columnlist:
-
-        mdf_test[_1010_column] = mdf_test[suffixcolumn].str.slice(i,i+1).astype(np.int8)
-
-        i+=1
-
-      #now delete the support column
-      del mdf_test[suffixcolumn]
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object').replace(ordinal_dict)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(ordinal_nan_value)
 
     else:
 
@@ -41232,59 +38775,29 @@ class AutoMunge:
       powerlabelsdict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['powerlabelsdict_pwrs']
       labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
       negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
+      zeroset = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zeroset']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
       suffixcolumn = column + '_' + suffix
 
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
+      pos_and_negative_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['pos_and_negative_list']
 
       tempcolumn = suffixcolumn + '_-10^'
-      
+      tempcolumn_zero = suffixcolumn + '_zero'
+      negtempcolumn = column + '_negtemp'
+
       #store original column for later reversion
       mdf_test[tempcolumn] = mdf_test[column].copy()
 
       #convert all values to either numeric or NaN
       mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
-
-      #create copy with negative values
-      negtempcolumn = column + '_negtemp'
-      mdf_test[negtempcolumn] = mdf_test[tempcolumn].copy()
-
-      #convert all values in negtempcolumn >= 0 to Nan
-      mdf_test = \
-      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
-
+      
       #convert all values <= 0 to Nan
       mdf_test = \
       self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, np.nan, specified='replacement')
-
-      #log transform column
-
-      #take abs value of negtempcolumn
-      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
-
-      #now log trasnform positive values in column column
-      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
-
-      test_neg_dict = {}
-      negunique = mdf_test[negtempcolumn].unique()
-      for unique in negunique:
-        if unique != unique:
-          newunique = np.nan
-        else:
-          #this is update for difference between pwr2 and pwrs
-          if negvalues:
-            newunique = suffixcolumn + '_-10^' + str(int(unique))
-          else:
-            newunique = np.nan
-        if newunique in labels_train and newunique == newunique:
-          test_neg_dict.update({unique : newunique})
-        else:
-          test_neg_dict.update({unique : np.nan})
-
-      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
-
+      
       #now log trasnform positive values in column column 
       mdf_test[tempcolumn] = np.floor(np.log10(mdf_test[tempcolumn].astype(float)))
 
@@ -41301,31 +38814,68 @@ class AutoMunge:
           test_pos_dict.update({unique : np.nan})
 
       mdf_test[tempcolumn] = mdf_test[tempcolumn].replace(test_pos_dict)    
+      
+      if negvalues is True:
+        #create copy with negative values
+        mdf_test[negtempcolumn] = mdf_test[column].copy()
+        
+        #convert all values to either numeric or NaN
+        mdf_test[negtempcolumn] = pd.to_numeric(mdf_test[negtempcolumn], errors='coerce')
 
-      #combine the two columns
-      mdf_test[tempcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[tempcolumn])
+        #convert all values in negtempcolumn >= 0 to Nan
+        mdf_test = \
+        self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
+        
+        #take abs value of negtempcolumn
+        mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+        
+        #now log trasnform
+        mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
 
+        test_neg_dict = {}
+        negunique = mdf_test[negtempcolumn].unique()
+        for unique in negunique:
+          if unique != unique:
+            newunique = np.nan
+          else:
+            #this is update for difference between pwr2 and pwrs
+            if negvalues:
+              newunique = suffixcolumn + '_-10^' + str(int(unique))
+            else:
+              newunique = np.nan
+          if newunique in labels_train and newunique == newunique:
+            test_neg_dict.update({unique : newunique})
+          else:
+            test_neg_dict.update({unique : np.nan})
+
+        mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+        
+      #now if the zero column included is a little simpler
+      if zeroset is True:
+        mdf_test[tempcolumn_zero] = mdf_test[column].copy()
+
+        #convert all values to either numeric or NaN
+        mdf_test[tempcolumn_zero] = pd.to_numeric(mdf_test[tempcolumn_zero], errors='coerce')
+
+        #convert to 1 activations for zero and 0 elsewhere
+        mdf_test = \
+        self._autowhere(mdf_test, tempcolumn_zero, mdf_test[tempcolumn_zero]==0, 1, 0)
+        
+      #combine the positive and negative columns if applicable
+      if negvalues is True:
+        mdf_test = \
+        self._autowhere(mdf_test, tempcolumn, mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[negtempcolumn], specified='replacement')
+        
       #apply onehotencoding
-      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=0)
-
-      #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( df_test_cat.columns )
-
-      #Add a missing column in test set with default value equal to 0
-      for c in missing_cols:
-          df_test_cat[c] = 0
-
-      #Ensure the order of column in the test set is in the same order than in train set
-      #Note this also removes categories in test set that aren't present in training set
-      df_test_cat = df_test_cat[textcolumns]
+      df_test_cat = self._onehot_support(mdf_test, tempcolumn, scenario=1, activations_list=pos_and_negative_list)
 
       #concatinate the sparse set with the rest of our training data
       mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
 
-      #replace original column
-      del mdf_test[negtempcolumn]
-
+      #delete support columns
       del mdf_test[tempcolumn]
+      if negvalues is True:
+        del mdf_test[negtempcolumn]
 
       #change data types to 8-bit (1 byte) integers for memory savings
       for textcolumn in textcolumns:
@@ -41343,7 +38893,7 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
-  
+
   def _postprocess_pwor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
@@ -41377,6 +38927,8 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       inverse_train_replace_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_train_replace_dict']
+      zeroset = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zeroset']
       
       pworcolumn = column + '_' + suffix
 
@@ -41388,48 +38940,56 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
       
-      #copy set for negative values
-      negtempcolumn = column + '_negtempcolumn'
-      
-      mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
-      
-      #convert all values >= 0 to Nan
-      mdf_test = \
-      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
-      
-      #take abs value of negtempcolumn
-      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+      if negvalues is True:
+        #copy set for negative values
+        negtempcolumn = column + '_negtempcolumn'
+
+        mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
+        
+        #convert all values >= 0 to Nan
+        mdf_test = \
+        self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
+        
+        #take abs value of negtempcolumn
+        mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
+        
+        mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
+
+        newunique_list = list(train_replace_dict)
+
+        test_neg_dict = {}
+        negunique = mdf_test[negtempcolumn].unique()
+        for unique in negunique:
+          if unique != unique:
+            newunique = np.nan
+          else:
+            #this is update for difference between pwr2 and pwrs
+            if negvalues:
+              newunique = column + '_-10^' + str(int(unique))
+            else:
+              newunique = np.nan
+          if newunique in newunique_list and newunique == newunique:
+            test_neg_dict.update({unique : newunique})
+          else:
+            test_neg_dict.update({unique : np.nan})
+
+        mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
+        
+      if zeroset is True:
+        #copy set for negative values
+        zerotempcolumn = column + '_zerotempcolumn'
+
+        mdf_test[zerotempcolumn] = mdf_test[pworcolumn].copy()
+        
+        #convert all values != 0 to Nan
+        mdf_test = \
+        self._autowhere(mdf_test, zerotempcolumn, mdf_test[zerotempcolumn] != 0, np.nan, column + '_zero')
       
       #convert all values <= 0 in column to Nan
       mdf_test = \
       self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, np.nan, specified='replacement')
 
       mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
-      
-      #do same for negtempcolumn
-      mdf_test[negtempcolumn] = np.floor(np.log10(mdf_test[negtempcolumn].astype(float)))
-
-      newunique_list = list(train_replace_dict)
-        
-      test_neg_dict = {}
-      negunique = mdf_test[negtempcolumn].unique()
-      for unique in negunique:
-        if unique != unique:
-          newunique = np.nan
-        else:
-          #this is update for difference between pwr2 and pwrs
-          if negvalues:
-            newunique = column + '_-10^' + str(int(unique))
-          else:
-            newunique = np.nan
-        if newunique in newunique_list and newunique == newunique:
-          test_neg_dict.update({unique : newunique})
-        else:
-          test_neg_dict.update({unique : np.nan})
-          
-      mdf_test[negtempcolumn] = mdf_test[negtempcolumn].replace(test_neg_dict)
-      
-      #now do same for column
   
       test_pos_dict = {}
       posunique = mdf_test[pworcolumn].unique()
@@ -41445,8 +39005,14 @@ class AutoMunge:
       
       mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_pos_dict)
       
-      #combine the two columns
-      mdf_test[pworcolumn] = mdf_test[negtempcolumn].where(mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[pworcolumn])
+      #combine the columns
+      if negvalues is True:
+        mdf_test = \
+        self._autowhere(mdf_test, pworcolumn, mdf_test[negtempcolumn] == mdf_test[negtempcolumn], mdf_test[negtempcolumn], specified='replacement')
+
+      if zeroset is True:
+        mdf_test = \
+        self._autowhere(mdf_test, pworcolumn, mdf_test[zerotempcolumn] == mdf_test[zerotempcolumn], mdf_test[zerotempcolumn], specified='replacement')
       
       test_unique = mdf_test[pworcolumn].unique()
     
@@ -41467,8 +39033,11 @@ class AutoMunge:
       
       mdf_test[pworcolumn] = mdf_test[pworcolumn].replace(test_replace_dict)
 
-      #replace original column from training data
-      del mdf_test[negtempcolumn]
+      #delete support columns
+      if negvalues is True:
+        del mdf_test[negtempcolumn]    
+      if zeroset is True:
+        del mdf_test[zerotempcolumn]
 
       #returned data type is conditional on the size of encoding space
       max_encoding = max(list(inverse_train_replace_dict))
@@ -41549,8 +39118,12 @@ class AutoMunge:
              labels = binlabels, precision=4)
 
       #process bins as a categorical set
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -41714,8 +39287,12 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(bn_count)))
 
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -41863,8 +39440,12 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        mdf_test = \
-        self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+        df_test_cat = \
+        self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+      
+        mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+        
+        del df_test_cat
 
         #change data type for memory savings
         for textcolumn in textcolumns:
@@ -42025,8 +39606,12 @@ class AutoMunge:
         pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
                labels = bins_id, precision=len(str(bn_count)), duplicates='drop')
 
-        mdf_test = \
-        self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+        df_test_cat = \
+        self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+      
+        mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+        
+        del df_test_cat
                 
         #initialize binscolumn once more
         mdf_test[binscolumn] = mdf_test[column].copy()        
@@ -42139,8 +39724,12 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(len(bins_id))))
 
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -42205,8 +39794,12 @@ class AutoMunge:
       pd.cut(mdf_test[binscolumn], bins = bins_cuts,  \
              labels = bins_id, precision=len(str(len(bins_id))))
 
-      mdf_test = \
-      self._postprocess_textsupport(mdf_test, binscolumn, {}, 'tempkey', {'textcolumns':textcolumns})
+      df_test_cat = \
+      self._onehot_support(mdf_test, binscolumn, scenario=1, activations_list = textcolumns)
+    
+      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
+      
+      del df_test_cat
 
       #change data type for memory savings
       for textcolumn in textcolumns:
@@ -45906,7 +43499,7 @@ class AutoMunge:
     df[inputcolumn] = df[normkey]
     
     return df, inputcolumn
-  
+
   def _inverseprocess_pwr2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_pwr2 
@@ -45951,9 +43544,14 @@ class AutoMunge:
         df = \
         self._autowhere(df, inputcolumn, df[column] == 1, -(10 ** power), specified='replacement')
         
+      if column[len(inputcolumn) + 2 + len(suffix)] == 'z':
+        
+        df = \
+        self._autowhere(df, inputcolumn, df[column] == 1, 0, specified='replacement')
+        
     return df, inputcolumn
   
-  def _inverseprocess_por2(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_pwor(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_por2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45994,7 +43592,12 @@ class AutoMunge:
 
           df = \
           self._autowhere(df, inputcolumn, df[normkey] == train_replace_dict[column], -(10 ** power), specified='replacement')
-        
+
+      #note if zerosets selected they are already zero at this point
+      else:
+        df = \
+        self._autowhere(df, inputcolumn, df[normkey] == train_replace_dict[column], np.nan, specified='replacement')
+
     return df, inputcolumn
 
   def _inverseprocess_bins(self, df, categorylist, postprocess_dict):
@@ -46531,34 +44134,6 @@ class AutoMunge:
       self._autowhere(df, inputcolumn, df[normkey] == i, value, specified='replacement')
     
     return df, inputcolumn
-  
-  def _inverseprocess_onht(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_text 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = categorylist[0]
-    
-    inverse_labels_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_labels_dict']
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = np.nan
-    
-    for categorylist_entry in categorylist:
-
-      df = \
-      self._autowhere(df, inputcolumn, df[categorylist_entry], inverse_labels_dict[categorylist_entry], specified='replacement')
-
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
-      
-    return df, inputcolumn
 
   def _custom_inversion_onht(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
@@ -46579,34 +44154,6 @@ class AutoMunge:
       self._autowhere(df, inputcolumn, df[categorylist_entry]==1, inverse_labels_dict[categorylist_entry], specified='replacement')
 
     return df
-    
-  def _inverseprocess_text(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_text 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = categorylist[0]
-    
-    textlabelsdict_text = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict_text']
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = 'zzzinfill'
-    
-    for categorylist_entry in categorylist:
-      
-      df = \
-      self._autowhere(df, inputcolumn, df[categorylist_entry] == 1, textlabelsdict_text[categorylist_entry], specified='replacement')
-
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
-      
-    return df, inputcolumn
 
   def _inverseprocess_smth(self, df, categorylist, postprocess_dict):
     """
@@ -46649,41 +44196,6 @@ class AutoMunge:
     
     #this returns an arbitrary one of the input columns which is fine
     return df, inputcolumn
-  
-  def _inverseprocess_ordl(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_ordl 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = categorylist[0]
-    
-    ordinal_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
-    inverse_overlap_replace = {value:key for key,value in overlap_replace.items()}
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    df[inputcolumn] = \
-    df[normkey].replace(inverse_ordinal_dict)
-
-    if df[inputcolumn].dtype.name != 'object':
-      df[inputcolumn] = df[inputcolumn].astype('object')
-    
-    df[inputcolumn] = \
-    df[inputcolumn].replace(inverse_overlap_replace)
-    
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
-    
-    return df, inputcolumn
 
   def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
@@ -46702,44 +44214,6 @@ class AutoMunge:
     df[inputcolumn] = df[returnedcolumn].astype('object').replace(inverse_ordinal_dict)
 
     return df
-  
-  def _inverseprocess_ord3(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_ord3 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = categorylist[0]
-    
-    ordinal_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_dict']
-    overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ordinal_overlap_replace']
-    
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
-    inverse_overlap_replace = {value:key for key,value in overlap_replace.items()}
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-
-    #we'll convert the input to integers
-    df[normkey] = df[normkey].astype(int, errors='ignore')
-    
-    df[inputcolumn] = \
-    df[normkey].replace(inverse_ordinal_dict)
-
-    if df[inputcolumn].dtype.name != 'object':
-      df[inputcolumn] = df[inputcolumn].astype('object')
-    
-    df[inputcolumn] = \
-    df[inputcolumn].replace(inverse_overlap_replace)
-    
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
-    
-    return df, inputcolumn
 
   def _inverseprocess_strg(self, df, categorylist, postprocess_dict):
     """
@@ -46780,49 +44254,6 @@ class AutoMunge:
     
     df = \
     self._autowhere(df, inputcolumn, df[normkey] == 0, zerovalue, specified='replacement')
-      
-    return df, inputcolumn
-
-  def _inverseprocess_1010(self, df, categorylist, postprocess_dict):
-    """
-    #inverse transform corresponding to process_1010 
-    #assumes any relevant parameters were saved in normalization_dict
-    #does not perform infill, assumes clean data
-    #note that this will return numeric entries as str
-    """
-    
-    normkey = categorylist[0]
-    
-    _1010_binary_encoding_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_binary_encoding_dict']
-    _1010_overlap_replace = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['_1010_overlap_replace']
-    
-    inverse_binary_encoding_dict = {value:key for key,value in _1010_binary_encoding_dict.items()}
-    inverse_overlap_replace = {value:key for key,value in _1010_overlap_replace.items()}
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    
-    for categorylist_entry in categorylist:
-      
-      if categorylist_entry == categorylist[0]:
-        
-        df[inputcolumn] = df[categorylist_entry].astype(int).astype(str)
-        
-      else:
-        
-        df[inputcolumn] = df[inputcolumn] + df[categorylist_entry].astype(int).astype(str)
-        
-    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
-
-    if df[inputcolumn].dtype.name != 'object':
-      df[inputcolumn] = df[inputcolumn].astype('object')
-
-    df[inputcolumn] = df[inputcolumn].replace(inverse_overlap_replace)
-    
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
       
     return df, inputcolumn
 
@@ -47697,6 +45128,8 @@ class AutoMunge:
           if printstatus is True:
             print("Inversion path selected based on returned column ", best_path)
             print("Inversion not available due to incomplete set of categorylist entries.")
+            print("Please note that if entries are missing due to a Binary dimensionality reduction,")
+            print("The column may still be recovered by applying a full test set inverison (inversion='test').")
           best_path = False
           
       if printstatus is True:
