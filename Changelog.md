@@ -4060,3 +4060,36 @@ zzzinfill_valresult = {i : {'column' : column,
 ML_cmnd = {'stochastic_impute_numeric': False,
            'stochastic_impute_categoric':False},
 - found and fixed an edge case for postmunge drift report associated with excl suffix convention
+
+6.75
+- consolidated to a single NaN representation making use of np.nan to be consistent with other data types
+- (we had used float("NaN") in a few places, turns out there are some scenarios where the two forms aren't equivalent)
+- now all received NaN values in df_train and df_test are consolidated to the form of np.nan
+- streamlined suffix convention for custom_train transforms, the optional suffix parameters are no longer accepted, suffix is always cast as the tree category (if you need a different suffix can define a new processdict entry)
+- thus transforms ported to custom_train in recent updates (1010, ordl, and now onht) no longer have suffix parameter support
+- added a clarification to custom_train_template in read me that "(automunge(.) may externally consider normalization_dict keys of 'inplace' or 'newcolumns_list')"
+- consolidated one-hot encoding transforms text and onht into a single transform now distinguishable by parameter
+- using same function just rolled out for onht in custom_train convention as the basis
+- by adding to onht trasnform parameter suffix_convention as one of {'text', 'onht'}, defaulting to text, which distinguishes between suffix conventions
+- note that when suffix_convention cast as text, str_convert is reset to True and null_activation is reset to False
+- resulted in a few improvements to text, now with support for ordered_override parameter, lifted reserved string, 
+- new parameter accepted to one hot encodings onht and text as frequency_sort, boolean defaults to True
+- when True the order of returned columns is sorted by the frequency of entries as found in the train set, False is for alphabetic sorting
+- note that when ordered_override is activated if received as a pandas ordered categoric set that order takes precedence over frequency_sort
+- also added support for ordered encodings in conjunction with the activation parameters (all_activations / add_activations / less_activations / consolidated_activations)
+- similar updates to ordinal encodings
+- now our two primary variants (ordl, ord3) are consolidated into a single function differentiated by parameter frequency_sort
+- where frequency_sort is boolean defaulting to True indicating that the order of integer encodings will be based on the entries sorted by frequency as found in the training set (consistent with ord3)
+- and frequency_sort=False is integer encodings sorted by an alphabetic sort of entries, which is default for ordl, lbor, lbos
+- (noting that lbor is our default categoric label set encoding under automation)
+- and other similar conventions updated as just discussed for onht/text, including support for ordered encodings in conjunction with the activation parameters 
+- rewrite of the label smoothing trasnform smth
+- split the operation into seperate trasnformation categtories, now smth is applied downstream of a seperate one-hot encoding
+- variants available with root categories smth/smt0/fsmh/fsm0/lbsm/lbfs
+- please consider this implementation a demonstration of the long existing funcitonality for specifying family trees with transforms applied downstream of transforms that return multicolumn sets
+- this new configuration enables full parameter support for the upstream one-hot encoding consistent with onht
+- and also means label smoothing and fitted label smoothing can be applied downstream of any multirt ML infilltype trasnform by specifying a family tree
+- this update impacts backward compatibility for label smoothing trasnforms
+- please note we intend for our next update to have several additional impacts to backward compatibility, as we intend to consolidate our full range of categoric encodings to the custom_train convention in order to mitigate some recent bloat in lines of code from porting transforms to custom_train
+- and after this next update we intend to be much more intentional about future impacts to backward compatibility
+- we have a new validation test rolled which we are comfortable will help us identify future backward compatibility impacts prior to rollout
