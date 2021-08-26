@@ -634,22 +634,40 @@ class AutoMunge:
                                      'coworkers'     : ['text'],
                                      'friends'       : []}})
 
-    transform_dict.update({'smth' : {'parents'       : [],
+    transform_dict.update({'smth' : {'parents'       : ['smt0'],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['smth'],
-                                     'cousins'       : [NArw],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : [],
+                                     'coworkers'     : ['smth'],
                                      'friends'       : []}})
   
-    transform_dict.update({'fsmh' : {'parents'       : [],
+    transform_dict.update({'smt0' : {'parents'       : ['smt0'],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['fsmh'],
+                                     'auntsuncles'   : [],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : [],
+                                     'coworkers'     : ['smth'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'fsmh' : {'parents'       : ['fsm0'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['fsmh'],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'fsm0' : {'parents'       : ['fsm0'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['fsmh'],
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : ['lngt'],
@@ -3433,22 +3451,22 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'lbsm' : {'parents'       : [],
+    transform_dict.update({'lbsm' : {'parents'       : ['smt0'],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['lbsm'],
+                                     'auntsuncles'   : [],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : [],
+                                     'coworkers'     : ['lbsm'],
                                      'friends'       : []}})
   
-    transform_dict.update({'lbfs' : {'parents'       : [],
+    transform_dict.update({'lbfs' : {'parents'       : ['fsm0'],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['lbfs'],
+                                     'auntsuncles'   : [],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : [],
+                                     'coworkers'     : ['lbfs'],
                                      'friends'       : []}})
     
     transform_dict.update({'lbda' : {'parents'       : [],
@@ -4326,27 +4344,26 @@ class AutoMunge:
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'suffix_convention' : 'onht'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'text' : {'dualprocess' : self._process_text,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_text,
-                                  'inverseprocess' : self._inverseprocess_text,
+    process_dict.update({'text' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'txt2' : {'dualprocess' : self._process_text,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_text,
-                                  'inverseprocess' : self._inverseprocess_text,
+    process_dict.update({'txt2' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -4361,23 +4378,39 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
+    process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
+                                  'labelctgy' : 'smth'}})
     process_dict.update({'smth' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_smth,
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'defaultinfill' : 'naninfill',
+                                  'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
+    process_dict.update({'fsm0' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
+                                  'labelctgy' : 'fsmh'}})
     process_dict.update({'fsmh' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_smth,
                                   'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'defaultinfill' : 'naninfill',
+                                  'inplace_option' : True,
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
@@ -5242,6 +5275,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'frequency_sort' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -5255,10 +5289,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ord3' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ord3' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5285,10 +5318,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
-    process_dict.update({'or3b' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'or3b' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5305,10 +5337,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'or3c' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'or3c' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5325,10 +5356,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'or3d' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'or3d' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5343,10 +5373,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'ucct'}})
-    process_dict.update({'ord4' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ord4' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5365,10 +5394,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'or10' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'or10' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5501,20 +5529,18 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'exclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'om10' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'om10' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mmor' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'mmor' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -6055,30 +6081,27 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
-    process_dict.update({'ntgr' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ntgr' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg2' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ntg2' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg3' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ntg3' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -6734,10 +6757,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPo4' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'DPo4' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -6753,10 +6775,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPo5' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'DPo5' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -6790,10 +6811,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPo6' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'DPo6' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7121,22 +7141,20 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'ordd' : {'dualprocess' : self._process_ord3,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_ord3,
-                                  'inverseprocess' : self._inverseprocess_ord3,
+    process_dict.update({'ordd' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'texd' : {'dualprocess' : self._process_text,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_text,
-                                  'inverseprocess' : self._inverseprocess_text,
+    process_dict.update({'texd' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -7185,12 +7203,11 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'lb10' : {'dualprocess' : self._process_text,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_text,
-                                  'inverseprocess' : self._inverseprocess_text,
+    process_dict.update({'lb10' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -7201,6 +7218,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'frequency_sort' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -7210,15 +7228,15 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'frequency_sort' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
-    process_dict.update({'lbte' : {'dualprocess' : self._process_text,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_text,
-                                  'inverseprocess' : self._inverseprocess_text,
+    process_dict.update({'lbte' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
@@ -7977,10 +7995,7 @@ class AutoMunge:
     else:
       inplace = False
 
-    if 'suffix' in params:
-      suffix = params['suffix']
-    else:
-      suffix = treecategory
+    suffix = treecategory
       
     #note this suffixcolumn convention won't work with the two suffix edge cases of text and excl transform
     #which is fine since this is only for transforms passed through custom_train / custom_test
@@ -8026,8 +8041,8 @@ class AutoMunge:
       mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
       
       #non integers are subject to infill
-      mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
-      mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
+      mdf_train = self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative=np.nan, specified='alternative')
+      mdf_test = self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=np.nan, specified='alternative')
     
     elif NArowtype in {'positivenumeric'}:
       
@@ -10751,6 +10766,7 @@ class AutoMunge:
   def _custom_train_onht(self, df, column, normalization_dict):
     """
     #a rewrite of onht transform in the custom train convention
+    #note that this version combines text vs onht suffix conentions, now distinguishable by parameter
     #this should benefit latency
     #return comparable form of output
     #and accept comaprable parameters
@@ -10759,6 +10775,29 @@ class AutoMunge:
     #doing away with 'zzzinfill' reserved string and use NaN instead
     #and remove the overlap replace operation 
     """
+    
+    #suffix_convention is to distinguish between text and onht suffixes
+    #eg text: column + _str(entry) vs onht: column + _str(int)
+    #(originally text followed conention column(minus suffix) + _entry)
+    #suffix_convention accepts one of {'text', 'onht'}, and defaults to text
+    if 'suffix_convention' in normalization_dict:
+      suffix_convention = normalization_dict['suffix_convention']
+    else:
+      suffix_convention = 'text'
+      normalization_dict.update({'suffix_convention' : suffix_convention})
+    
+    #note that when suffix_convention passed as text, 
+    #str_convert hard resets to True, and null_activation hard resets to False
+    if suffix_convention == 'text':
+      normalization_dict.update({'str_convert' : True})
+      normalization_dict.update({'null_activation' : False})
+      
+    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    if 'str_convert' in normalization_dict:
+      str_convert = normalization_dict['str_convert']
+    else:
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
     
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
     #defer to cases when a column is a pandas categorical ordered set
@@ -10800,13 +10839,6 @@ class AutoMunge:
       consolidated_activations = False
       normalization_dict.update({'consolidated_activations' : consolidated_activations})
       
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in normalization_dict:
-      str_convert = normalization_dict['str_convert']
-    else:
-      str_convert = False
-      normalization_dict.update({'str_convert' : str_convert})
-      
     #null_activation is to have a distinct column for missing data
     #note that when activated, entries in test set not found in train set will still be returned without activation
     if 'null_activation' in normalization_dict:
@@ -10815,168 +10847,176 @@ class AutoMunge:
       null_activation = False
       normalization_dict.update({'null_activation' : null_activation})
       
+    #frequency_sort changes the sorting of encodings from alphabetical to frequency of entries in train set
+    if 'frequency_sort' in normalization_dict:
+      frequency_sort = normalization_dict['frequency_sort']
+    else:
+      frequency_sort = True
+      normalization_dict.update({'frequency_sort' : frequency_sort})
+      
     #_____
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     # missing_marker = np.nan
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
     
     ordered = False
+    
     #ordered_overide is not compatible with activation parameters
-    if ordered_overide \
-    and all_activations is False \
-    and add_activations is False \
-    and less_activations is False \
-    and consolidated_activations is False:
-      if df[column].dtype.name == 'category':
-        if df[column].cat.ordered:
-          ordered = True
-          labels_train = list(df[column].cat.categories)
-          if str_convert is True:
-            labels_train = [str(x) for x in labels_train]
-            df[column] = df[column].astype(str)
-          #since this won't be populated below when ordered=True here is a plug default
-          normalization_dict.update({'inverse_consolidation_translate_dict' : {}})
+    if ordered_overide:
+      if df[column].dtype.name == 'category' and df[column].cat.ordered:
+        ordered = True
+        labels_train_ordered = list(df[column].cat.categories)
+        #by convention NaN is reserved for use with missing data
+        labels_train_ordered = [x for x in labels_train_ordered if x==x]
+        if str_convert is True:
+          labels_train_ordered = [str(x) for x in labels_train_ordered]
+        
+    #frequency_sort derives a sorting order based on frequency of entries found in set
+    if ordered is False and frequency_sort is True:
+      ordered = True
+      labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      labels_train_ordered = labels_train_ordered.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      labels_train_ordered = list(labels_train_ordered.index)
+      #by convention NaN is reserved for use with missing data
+      labels_train_ordered = [x for x in labels_train_ordered if x==x]
+      if str_convert is True:
+        labels_train_ordered = [str(x) for x in labels_train_ordered]
     
     #_____
-
-    #if pandas didn't already have an ordered convention for entries, we'll access the entries as a set
-    if ordered is False:
             
-      if df[column].dtype.name == 'category':
-        labels_train = set(df[column].cat.categories)
-        labels_train = {x for x in labels_train if x==x}
+    if df[column].dtype.name == 'category':
+      labels_train = set(df[column].cat.categories)
+      labels_train = {x for x in labels_train if x==x}
 
-      if labels_train == set():  
-        labels_train = set(df[column].unique())
-        labels_train = {x for x in labels_train if x==x}
-        
-      #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
-      if str_convert is True:
-        #note this set excludes missing_marker
-        labels_train = {str(x) for x in labels_train}
-        #only convert non-NaN entries in target column
-        df = self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
+    if labels_train == set():  
+      labels_train = set(df[column].unique())
+      labels_train = {x for x in labels_train if x==x}
 
-      #now we have a few activation set related parameters, applied by adjusting labels_train
-      #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+    #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
+    if str_convert is True:
+      #note this set excludes missing_marker
+      labels_train = {str(x) for x in labels_train}
+      #only convert non-NaN entries in target column
+      df = self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
 
-      if all_activations is not False or less_activations is not False:
-        #labels_train_orig is a support record that won't be returned
-        labels_train_orig = labels_train.copy()
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
 
-      if all_activations is not False:
-        all_activations = {x for x in set(all_activations) if x==x}
-        labels_train = all_activations
+    if all_activations is not False or less_activations is not False:
+      #labels_train_orig is a support record that won't be returned
+      labels_train_orig = labels_train.copy()
 
-      if add_activations is not False:
-        add_activations = {x for x in set(add_activations) if x==x}
-        labels_train = labels_train | add_activations
+    if all_activations is not False:
+      all_activations = {x for x in set(all_activations) if x==x}
+      labels_train = all_activations
 
-      if less_activations is not False:
-        less_activations = {x for x in set(less_activations) if x==x}
-        labels_train = labels_train - less_activations
-        
-      #______
-      
-      #now we'll take account for any activation consolidations from consolidated_activations parameter
-      
-      #as part of this implementation, we next want to derive
-      #a version of labels_train excluding consolidations (labels_train)
-      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-      #which we'll then apply with a replace operation
-      
-      labels_train_before_consolidation = labels_train.copy()
-      consolidation_translate_dict = {}
-      inverse_consolidation_translate_dict = {}
+    if add_activations is not False:
+      add_activations = {x for x in set(add_activations) if x==x}
+      labels_train = labels_train | add_activations
 
-      if consolidated_activations is not False:
+    if less_activations is not False:
+      less_activations = {x for x in set(less_activations) if x==x}
+      labels_train = labels_train - less_activations
 
-        #if user passes a single tier list instead of list of lists we'll embed in a list
-        if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-          if not isinstance(consolidated_activations[0], list):
-            consolidated_activations = [consolidated_activations]
-            normalization_dict.update({'consolidated_activations' : consolidated_activations})
+    #______
 
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
+
+    #as part of this implementation, we next want to derive
+    #a version of labels_train excluding consolidations (labels_train)
+    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+    #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+    #which we'll then apply with a replace operation
+
+    labels_train_before_consolidation = labels_train.copy()
+    consolidation_translate_dict = {}
+    inverse_consolidation_translate_dict = {}
+
+    if consolidated_activations is not False:
+
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+          normalization_dict.update({'consolidated_activations' : consolidated_activations})
+
+      for consolidation_list in consolidated_activations:
+
+        #here is where we add any consolidation targets that weren't present in labels_train
+        if str_convert is True:
+          consolidation_list = [str(x) for x in consolidation_list if x==x]
+          labels_train = labels_train | set(consolidation_list)
+        else:
+          #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+          #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
+          consolidation_list = [x for x in consolidation_list if x==x]
+          labels_train = labels_train | set(consolidation_list)
+
+        #no prepare a version of labels_train excluding consolidations (labels_train)
+
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+
+        #now remove consolidated entries from labels_train
+        #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
         for consolidation_list in consolidated_activations:
 
-          #here is where we add any consolidation targets that weren't present in labels_train
-          if str_convert is True:
-            consolidation_list = [str(x) for x in consolidation_list if x==x]
-            labels_train = labels_train | set(consolidation_list)
-          else:
-            #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
-            #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
-            consolidation_list = [x for x in consolidation_list if x==x]
-            labels_train = labels_train | set(consolidation_list)
+          if len(consolidation_list) > 1:
 
-          #no prepare a version of labels_train excluding consolidations (labels_train)
+            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+            returned_consolidation = consolidation_list[0]
 
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
+            labels_train = labels_train - set(consolidation_list[1:])
 
-          #now remove consolidated entries from labels_train
-          #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
-          for consolidation_list in consolidated_activations:
+            consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
 
-            if len(consolidation_list) > 1:
+      #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+      for key,value in consolidation_translate_dict.items():
+        for consolidation_list_entry in value:
+          inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
 
-              #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-              returned_consolidation = consolidation_list[0]
+      #we can then apply a replace to convert consolidated items to their targeted activations
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
 
-              labels_train = labels_train - set(consolidation_list[1:])
+    del consolidation_translate_dict
+    normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
+    del inverse_consolidation_translate_dict
 
-              consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+    #____
 
-        #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-        for key,value in consolidation_translate_dict.items():
-          for consolidation_list_entry in value:
-            inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
+    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+    if all_activations is not False or less_activations is not False:
+      extra_entries = labels_train_orig - labels_train
+      extra_entries = list({x for x in extra_entries if x==x})
+      if len(extra_entries) > 0:
+        plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+        df[column] = df[column].astype('object').replace(plug_dict)
 
-        #we can then apply a replace to convert consolidated items to their targeted activations
-        df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+      del labels_train_orig
 
-      del consolidation_translate_dict
-      normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
-      del inverse_consolidation_translate_dict
+    #____
 
-      #____
-      
-      #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
-      if all_activations is not False or less_activations is not False:
-        extra_entries = labels_train_orig - labels_train
-        extra_entries = list({x for x in extra_entries if x==x})
-        if len(extra_entries) > 0:
-          plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-          df[column] = df[column].astype('object').replace(plug_dict)
-
-        del labels_train_orig
-
-      #____
-      
-      #now prepare our onehot encoding
-
+    #now prepare our onehot encoding
+    
+    #if there is a particular order to encodings we'll sort labels_train on basis of labels_train_ordered
+    if ordered is True:
+      #this converts labels_train to a sorted list
+      labels_train = self._list_sorting(labels_train_ordered, labels_train)
+    
+    elif ordered is False:
       #convert labels_train to list 
       #and add the missing data marker to first position which will result in all zero binarized representation
       labels_train = list(labels_train)
       labels_train = sorted(labels_train, key=str)
       
-    #____
-    #now this includes ordered scenario too
-      
-    #add our missing_marker, note adding as last position will result in last column unless differed position based on ordered
+    #add our missing_marker, note adding as last position will result in last column even in ordered scenario
     if null_activation is True:
-      if ordered is True:
-        #missing data marker might already be present in ordered scenario
-        if missing_marker not in labels_train:
-          labels_train = labels_train + [missing_marker]
-      else:
-        labels_train = labels_train + [missing_marker]
+      labels_train = labels_train + [missing_marker]
 
     #one hot encoding support function
     df_cat = self._onehot_support(df, column, scenario=1, activations_list=labels_train)
@@ -10986,10 +11026,15 @@ class AutoMunge:
       df_cat[activation_column] = df_cat[activation_column].astype(np.int8)
     
     labels_dict = {}
-    i = 0
-    for entry in labels_train:
-      labels_dict.update({entry : column + '_' + str(i)})
-      i += 1
+    if suffix_convention == 'onht':
+      i = 0
+      for entry in labels_train:
+        labels_dict.update({entry : column + '_' + str(i)})
+        i += 1
+    elif suffix_convention == 'text':
+      for entry in labels_train:
+        #str conversion is to accomodate missing data marker which will return as column + '_nan'
+        labels_dict.update({entry : column + '_' + entry})
       
     normalization_dict.update({'labels_dict' : labels_dict})
       
@@ -11235,20 +11280,15 @@ class AutoMunge:
   def _process_smth(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_smth(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
-    #preprocess column with one hot encoding
-    #followed by application of label smoothing
+    #intended for applicant downstream of a multirt MLinfilltype encoding (e.g. one hot encoding)
+    #since this is specifically intended as a downstream trasnform, we'll assume infill already applied
+    #applies label smoothing
     #accepts parameters for activation value (float 0.5-1), 
     #LSfit parameter to activate fitted smoothing
     #testsmooth parameter to activate consistently smoothing test data
     '''
     
     suffixoverlap_results = {}
-      
-    #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
-    if 'str_convert' in params:
-      str_convert = params['str_convert']
-    else:
-      str_convert = False
       
     if 'activation' in params:
       activation = params['activation']
@@ -11269,147 +11309,43 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
-    
-    tempcolumn = column + '_' + suffix + '_'
-
-    #run a validation for reserved string 'zzzinfill' among entries
-    postprocess_dict = self._check_for_zzzinfill(mdf_train, column, postprocess_dict, traintest='train')
-    postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-    
-    suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, tempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
-    
-    #store original column for later retrieval
-    mdf_train[tempcolumn] = mdf_train[column].copy()
-    mdf_test[tempcolumn] = mdf_test[column].copy()
-
-    #convert column to category
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('category')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-    #if set is categorical we'll need the plug value for missing values included
-    if 'zzzinfill' not in mdf_train[tempcolumn].cat.categories:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].cat.add_categories(['zzzinfill'])
-    if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-    #apply defaultinfill based on processdict entry
-    mdf_train, defaultinfill_dict = \
-    self._apply_defaultinfill(mdf_train, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
-    mdf_test, _1 = \
-    self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-
-    #replace NA with a dummy variable
-    mdf_train[tempcolumn] = mdf_train[tempcolumn].fillna('zzzinfill')
-    mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-    if str_convert is True:
-      #replace numerical with string equivalent
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype(str)
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
     else:
-      mdf_train[tempcolumn] = mdf_train[tempcolumn].astype('object')
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
-
-    #extract categories for column labels
-    #note that .unique() extracts the labels as a numpy array
-    labels_train = mdf_train[tempcolumn].unique()
-#     labels_train.sort(axis=0)
-    labels_train = sorted(labels_train, key=str)
-    labels_train = list(labels_train)
-    orig_labels_train = list(labels_train.copy())
-    labels_test = mdf_test[tempcolumn].unique()
-#     labels_test.sort(axis=0)
-    labels_test = sorted(labels_test, key=str)
-    labels_test = list(labels_test)
-
-    #pandas one hot encoding doesn't sort integers and strings properly so using my own
-    df_train_cat = pd.DataFrame(mdf_train[tempcolumn])
-    df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
-    for entry in labels_train:
-      df_train_cat = self._autowhere(df_train_cat, entry, mdf_train[tempcolumn] == entry, 1, specified='replacement')
-      df_test_cat = self._autowhere(df_test_cat, entry, mdf_test[tempcolumn] == entry, 1, specified='replacement')
-    del df_train_cat[tempcolumn]
-    del df_test_cat[tempcolumn]
+      inplace = False
+      
+    #this function is intended to be applied donstream of a multirt encoding
+    #meaning there may be multiple columns serving as target
+    #we'll access the upstream categorylist stored in postprocess_dict
+    inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
     
-    labels_dict = {}
-    i = 0
-    for entry in labels_train:
-      labels_dict.update({entry : column + '_' + suffix + '_' + str(i)})
-      i += 1
+    #the returned columns will each have consistent suffix appending
+    textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
     
-    #convert sparse array to pandas dataframe with column labels
-    df_train_cat.columns = labels_train
-    df_test_cat.columns = labels_train
-
-    #Get missing columns in test set that are present in training set
-    missing_cols = set( df_train_cat.columns ) - set( labels_test )
+    #this maps between received and returned columns
+    textlabelsdict = dict(zip(inputtextcolumns, textcolumns))
     
+    #inplace convention is a little different in that we are inspecting suffixoverlap before copying
     suffixoverlap_results = \
-    self._df_check_suffixoverlap(mdf_train, list(df_train_cat), suffixoverlap_results, postprocess_dict['printstatus'])
-
-    #concatinate the sparse set with the rest of our training data
-    mdf_train = pd.concat([mdf_train, df_train_cat], axis=1)
-    mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-    del mdf_train[tempcolumn]    
-    del mdf_test[tempcolumn]
+    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
-    #delete _NArw column, this will be processed seperately in the processfamily function
-    #delete support NArw2 column
-#     columnNArw = column + '_NArw'
-    columnNAr2 = column + '_zzzinfill'
-    if columnNAr2 in mdf_train.columns:
-      del mdf_train[columnNAr2]
-    if columnNAr2 in mdf_test.columns:
-      del mdf_test[columnNAr2]
-    if 'zzzinfill' in orig_labels_train:
-      orig_labels_train.remove('zzzinfill')
-
-#     del mdf_train[column + '_NAr2']    
-#     del mdf_test[column + '_NAr2']
+    if inplace is not True:
+      
+      for inputtextcolumn in inputtextcolumns:
+        
+        mdf_train[textlabelsdict[inputtextcolumn]] = mdf_train[inputtextcolumn].copy()
+        mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
     
-    #create output of a list of the created column names
-    NAcolumn = columnNAr2
-    labels_train = list(df_train_cat)
-    if NAcolumn in labels_train:
-      labels_train.remove(NAcolumn)
-    textcolumns = labels_train
+    else:
+      
+      mdf_train.rename(columns = textlabelsdict, inplace = True)
+      mdf_test.rename(columns = textlabelsdict, inplace = True)
     
-    #now we'll creaate a dicitonary of the columns : categories for later reference
-    #reminder here is list of. unque values from original column
-    #labels_train
-    
-    normalizationdictvalues = labels_train
-    normalizationdictkeys = textcolumns
-    
-    normalizationdictkeys = sorted(normalizationdictkeys, key=str)
-    normalizationdictvalues = sorted(normalizationdictvalues, key=str)
-    
-    #textlabelsdict = dict(zip(normalizationdictkeys, normalizationdictvalues))
-    textlabelsdict = dict(zip(normalizationdictvalues, orig_labels_train))
-    
-#     #change data types to 8-bit (1 byte) integers for memory savings
-#     for textcolumn in textcolumns:
-#       mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.int8)
-#       mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-
-    #store some values in the text_dict{} for use later in ML infill methods
-    column_dict_list = []
-
-    categorylist = textcolumns.copy()
-#     categorylist.remove(columnNArw)
-
-    #now convert coloumn headers from text convention to onht convention
-    mdf_train = mdf_train.rename(columns=labels_dict)
-    mdf_test  = mdf_test.rename(columns=labels_dict)
-    
-    textcolumns = [labels_dict[entry] for entry in textcolumns]
-    
-    inverse_labels_dict = {value:key for key,value in labels_dict.items()}
+    #___
     
     #now apply label smoothing
-    category = 'smth'
+#     category = 'smth'
     LSfitparams_dict = {}
 
     categorycomplete_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
@@ -11444,25 +11380,18 @@ class AutoMunge:
                                         categorycomplete_test_dict, 
                                         LSfitparams_dict)
     
+    column_dict_list = []
     for tc in textcolumns:
-    
-      #new parameter collected for driftreport
-      tc_ratio = tc + '_ratio'
-      tcratio = mdf_train[tc].sum() / mdf_train[tc].shape[0]
       
-      textnormalization_dict = {tc : {'textlabelsdict_smth' : textlabelsdict, \
-                                      tc_ratio : tcratio, \
-                                      'labels_dict' : labels_dict, \
-                                      'inverse_labels_dict' : inverse_labels_dict, \
-                                      'text_categorylist' : categorylist, \
-                                      'str_convert' : str_convert, \
+      textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict, \
+                                      'textcolumns' : textcolumns, \
+                                      'inputtextcolumns' : inputtextcolumns, \
                                       'LSfitparams_dict' : LSfitparams_dict, \
                                       'activation' : activation, \
                                       'LSfit' : LSfit, \
                                       'testsmooth' : testsmooth, \
                                       'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'categorylist' : textcolumns}}
+                                      'inplace' : inplace}}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16061,6 +15990,14 @@ class AutoMunge:
     else:
       ordered_overide = True
       normalization_dict.update({'ordered_overide' : ordered_overide})
+      
+    #frequency_sort changes the sorting of encodings from alphabetical to frequency of entries in train set
+    #note that frequency_sort=True is default for ord3 and frequency_sort=False is default for ordl
+    if 'frequency_sort' in normalization_dict:
+      frequency_sort = normalization_dict['frequency_sort']
+    else:
+      frequency_sort = True
+      normalization_dict.update({'frequency_sort' : frequency_sort})
 
     #all_activations is to base the full set of activations on user specification instead of training set
     if 'all_activations' in normalization_dict:
@@ -16105,164 +16042,165 @@ class AutoMunge:
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
     
     ordered = False
+
     #ordered_overide is not compatible with activation parameters
-    if ordered_overide \
-    and all_activations is False \
-    and add_activations is False \
-    and less_activations is False \
-    and consolidated_activations is False:
-      if df[column].dtype.name == 'category':
-        if df[column].cat.ordered:
-          ordered = True
-          labels_train = list(df[column].cat.categories)
-          if str_convert is True:
-            labels_train = [str(x) for x in labels_train]
-            df[column] = df[column].astype(str)
-          #since this won't be populated below when ordered=True here is a plug default
-          normalization_dict.update({'inverse_consolidation_translate_dict' : {}})
+    if ordered_overide:
+      if df[column].dtype.name == 'category' and df[column].cat.ordered:
+        ordered = True
+        labels_train_ordered = list(df[column].cat.categories)
+        #by convention NaN is reserved for use with missing data
+        labels_train_ordered = [x for x in labels_train_ordered if x==x]
+        if str_convert is True:
+          labels_train_ordered = [str(x) for x in labels_train_ordered]
+        
+    #frequency_sort derives a sorting order based on frequency of entries found in set
+    if ordered is False and frequency_sort is True:
+      ordered = True
+      labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      labels_train_ordered = labels_train_ordered.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      labels_train_ordered = list(labels_train_ordered.index)
+      #by convention NaN is reserved for use with missing data
+      labels_train_ordered = [x for x in labels_train_ordered if x==x]
+      if str_convert is True:
+        labels_train_ordered = [str(x) for x in labels_train_ordered]
     
     #_____
-
-    #if pandas didn't already have an ordered convention for entries, we'll access the entries as a set
-    if ordered is False:
             
-      if df[column].dtype.name == 'category':
-        labels_train = set(df[column].cat.categories)
-        labels_train = {x for x in labels_train if x==x}
+    if df[column].dtype.name == 'category':
+      labels_train = set(df[column].cat.categories)
+      labels_train = {x for x in labels_train if x==x}
 
-      if labels_train == set():  
-        labels_train = set(df[column].unique())
-        labels_train = {x for x in labels_train if x==x}
-        
-      #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
-      if str_convert is True:
-        #note this set excludes missing_marker
-        labels_train = {str(x) for x in labels_train}
-        #only convert non-NaN entries in target column
+    if labels_train == set():  
+      labels_train = set(df[column].unique())
+      labels_train = {x for x in labels_train if x==x}
+
+    #if str_convert parameter activated replace numerical with string equivalent (for common encoding between e.g. 2=='2')
+    if str_convert is True:
+      #note this set excludes missing_marker
+      labels_train = {str(x) for x in labels_train}
+      #only convert non-NaN entries in target column
 #         df.loc[df[column] == df[column], (column)] = df[column].astype(str)
-        df = \
-        self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
+      df = \
+      self._autowhere(df, column, df[column] == df[column], df[column].astype(str), specified='replacement')
 
-      #now we have a few activation set related parameters, applied by adjusting labels_train
-      #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
+    #now we have a few activation set related parameters, applied by adjusting labels_train
+    #we'll have convention that in cases where activation parameters are assigned, will overide ordered_overide (for alphabetic sorting)
 
-      if all_activations is not False or less_activations is not False:
-        #labels_train_orig is a support record that won't be returned
-        labels_train_orig = labels_train.copy()
+    if all_activations is not False or less_activations is not False:
+      #labels_train_orig is a support record that won't be returned
+      labels_train_orig = labels_train.copy()
 
-      if all_activations is not False:
-        all_activations = {x for x in set(all_activations) if x==x}
-        labels_train = all_activations
+    if all_activations is not False:
+      all_activations = {x for x in set(all_activations) if x==x}
+      labels_train = all_activations
 
-      if add_activations is not False:
-        add_activations = {x for x in set(add_activations) if x==x}
-        labels_train = labels_train | add_activations
+    if add_activations is not False:
+      add_activations = {x for x in set(add_activations) if x==x}
+      labels_train = labels_train | add_activations
 
-      if less_activations is not False:
-        less_activations = {x for x in set(less_activations) if x==x}
-        labels_train = labels_train - less_activations
-        
-      #______
-      
-      #now we'll take account for any activation consolidations from consolidated_activations parameter
-      
-      #as part of this implementation, we next want to derive
-      #a version of labels_train excluding consolidations (labels_train)
-      #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
-      #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-      #which we'll then apply with a replace operation
-      
-      labels_train_before_consolidation = labels_train.copy()
-      consolidation_translate_dict = {}
-      inverse_consolidation_translate_dict = {}
+    if less_activations is not False:
+      less_activations = {x for x in set(less_activations) if x==x}
+      labels_train = labels_train - less_activations
 
-      if consolidated_activations is not False:
+    #______
 
-        #if user passes a single tier list instead of list of lists we'll embed in a list
-        if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
-          if not isinstance(consolidated_activations[0], list):
-            consolidated_activations = [consolidated_activations]
-            normalization_dict.update({'consolidated_activations' : consolidated_activations})
+    #now we'll take account for any activation consolidations from consolidated_activations parameter
 
+    #as part of this implementation, we next want to derive
+    #a version of labels_train excluding consolidations (labels_train)
+    #a list of consolidations associated with each returned_consolidation mapped to the returned_consolidation (consolidation_translate_dict)
+    #and an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+    #which we'll then apply with a replace operation
+
+    labels_train_before_consolidation = labels_train.copy()
+    consolidation_translate_dict = {}
+    inverse_consolidation_translate_dict = {}
+
+    if consolidated_activations is not False:
+
+      #if user passes a single tier list instead of list of lists we'll embed in a list
+      if isinstance(consolidated_activations, list) and len(consolidated_activations) > 0:
+        if not isinstance(consolidated_activations[0], list):
+          consolidated_activations = [consolidated_activations]
+          normalization_dict.update({'consolidated_activations' : consolidated_activations})
+
+      for consolidation_list in consolidated_activations:
+
+        #here is where we add any consolidation targets that weren't present in labels_train
+        if str_convert is True:
+          consolidation_list = [str(x) for x in consolidation_list if x==x]
+          labels_train = labels_train | set(consolidation_list)
+        else:
+          #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
+          #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
+          consolidation_list = [x for x in consolidation_list if x==x]
+          labels_train = labels_train | set(consolidation_list)
+
+        #no prepare a version of labels_train excluding consolidations (labels_train)
+
+        #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+        returned_consolidation = consolidation_list[0]
+
+        #now remove consolidated entries from labels_train
+        #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
         for consolidation_list in consolidated_activations:
 
-          #here is where we add any consolidation targets that weren't present in labels_train
-          if str_convert is True:
-            consolidation_list = [str(x) for x in consolidation_list if x==x]
-            labels_train = labels_train | set(consolidation_list)
-          else:
-            #by convention missing data marker not elligible for inclusion in consolidation_list due to NaN/set peculiarities
-            #consolidations with NaN can be accomodated by assignnan to treat desired entries as missing data
-            consolidation_list = [x for x in consolidation_list if x==x]
-            labels_train = labels_train | set(consolidation_list)
+          if len(consolidation_list) > 1:
 
-          #no prepare a version of labels_train excluding consolidations (labels_train)
+            #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
+            returned_consolidation = consolidation_list[0]
 
-          #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-          returned_consolidation = consolidation_list[0]
+            labels_train = labels_train - set(consolidation_list[1:])
 
-          #now remove consolidated entries from labels_train
-          #and map a list of consolidations associated with each returned_consolidation to the returned_consolidation (consolidation_translate_dict)
-          for consolidation_list in consolidated_activations:
+            consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
 
-            if len(consolidation_list) > 1:
+      #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
+      for key,value in consolidation_translate_dict.items():
+        for consolidation_list_entry in value:
+          inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
 
-              #we'll take the first entry in list as the returned activation (relevant to normalization_dict)
-              returned_consolidation = consolidation_list[0]
+      #we can then apply a replace to convert consolidated items to their targeted activations
+      df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
 
-              labels_train = labels_train - set(consolidation_list[1:])
+    del consolidation_translate_dict
+    normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
+    del inverse_consolidation_translate_dict
 
-              consolidation_translate_dict.update({returned_consolidation : consolidation_list[1:]})
+    #____
 
-        #now populate an inverse_consolidation_translate_dict mapping consolidated entries to their activations
-        for key,value in consolidation_translate_dict.items():
-          for consolidation_list_entry in value:
-            inverse_consolidation_translate_dict.update({consolidation_list_entry : key})
+    #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
+    if all_activations is not False or less_activations is not False:
+      extra_entries = labels_train_orig - labels_train
+      extra_entries = list({x for x in extra_entries if x==x})
+      if len(extra_entries) > 0:
+        plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+        df[column] = df[column].astype('object').replace(plug_dict)
 
-        #we can then apply a replace to convert consolidated items to their targeted activations
-        df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
+      del labels_train_orig
 
-      del consolidation_translate_dict
-      normalization_dict.update({'inverse_consolidation_translate_dict' : inverse_consolidation_translate_dict})
-      del inverse_consolidation_translate_dict
+    #____
 
-      #____
-      
-      #there are a few activation parameter scenarios where we may want to replace train set entries with missing data marker
-      if all_activations is not False or less_activations is not False:
-        extra_entries = labels_train_orig - labels_train
-        extra_entries = list({x for x in extra_entries if x==x})
-        if len(extra_entries) > 0:
-          plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-          df[column] = df[column].astype('object').replace(plug_dict)
-
-        del labels_train_orig
-
-      #____
-      
-      #now prepare our ordinal encoding
-
+    #now prepare our ordinal encoding
+    
+    #if there is a particular order to encodings we'll sort labels_train on basis of labels_train_ordered
+    if ordered is True:
+      #this converts labels_train to a sorted list
+      labels_train = self._list_sorting(labels_train_ordered, labels_train)
+    
+    elif ordered is False:
       #convert labels_train to list 
       #and add the missing data marker to first position which will result in all zero binarized representation
       labels_train = list(labels_train)
       labels_train = sorted(labels_train, key=str)
       
-    #____
-    #now this includes ordered scenario too
-      
-    #add our missing_marker, note adding as first position will result in 0 encoding unless differed position based on ordered
-    if ordered is True:
-      #missing data marker might already be present in ordered scenario
-      if missing_marker not in labels_train:
-        labels_train = [missing_marker] + labels_train
-    else:
-      labels_train = [missing_marker] + labels_train
+    #add our missing_marker, note adding as first position will result in 0 representation even in ordered scenario
+    labels_train = [missing_marker] + labels_train
       
     #get length of the list, then zip a dictionary from list and range(length)
     #the range values will be our ordinal points to replace the categories
@@ -16619,9 +16557,9 @@ class AutoMunge:
     
     #non integers are subject to infill
     mdf_train = \
-    self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative = float("NaN"), specified='alternative')
+    self._autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == mdf_train[suffixcolumn].round(), alternative = np.nan, specified='alternative')
     mdf_test = \
-    self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative = float("NaN"), specified='alternative')
+    self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative = np.nan, specified='alternative')
     
     #apply defaultinfill based on processdict entry
     #(this will default to adjinfill)
@@ -17416,7 +17354,7 @@ class AutoMunge:
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -19826,15 +19764,15 @@ class AutoMunge:
     
     #convert all values in negtempcolumn >= 0 to Nan
     mdf_train = \
-    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
     mdf_test = \
-    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
     
     #convert all values <= 0 to Nan
     mdf_train = \
-    self._autowhere(mdf_train, tempcolumn, mdf_train[tempcolumn] <= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_train, tempcolumn, mdf_train[tempcolumn] <= 0, np.nan, specified='replacement')
     mdf_test = \
-    self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, np.nan, specified='replacement')
     
     #log transform column
     
@@ -20059,9 +19997,9 @@ class AutoMunge:
     
     #convert all values >= 0 to Nan
     mdf_train = \
-    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_train, negtempcolumn, mdf_train[negtempcolumn] >= 0, np.nan, specified='replacement')
     mdf_test = \
-    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
     
     #take abs value of negtempcolumn
     mdf_train[negtempcolumn] = mdf_train[negtempcolumn].abs()
@@ -20069,9 +20007,9 @@ class AutoMunge:
     
     #convert all values <= 0 in column to Nan
     mdf_train = \
-    self._autowhere(mdf_train, pworcolumn, mdf_train[pworcolumn] <= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_train, pworcolumn, mdf_train[pworcolumn] <= 0, np.nan, specified='replacement')
     mdf_test = \
-    self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, float("NaN"), specified='replacement')
+    self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, np.nan, specified='replacement')
 
     mdf_train[pworcolumn] = np.floor(np.log10(mdf_train[pworcolumn].astype(float)))
     mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
@@ -23499,9 +23437,9 @@ class AutoMunge:
     
     #non integers are subject to infill
     mdf_train = \
-    self._autowhere(mdf_train, exclcolumn, mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
+    self._autowhere(mdf_train, exclcolumn, mdf_train[exclcolumn] == mdf_train[exclcolumn].round(), alternative=np.nan, specified='alternative')
     mdf_test = \
-    self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
+    self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=np.nan, specified='alternative')
 
     #apply defaultinfill based on processdict entry
     #(this will default to adjinfill)
@@ -24143,7 +24081,7 @@ class AutoMunge:
       
       #non integers are subject to infill
       df2 = \
-      self._autowhere(df2, column, df2[column] == df2[column].round(), alternative=float("NaN"), specified='alternative')
+      self._autowhere(df2, column, df2[column] == df2[column].round(), alternative=np.nan, specified='alternative')
       
       if driftassess is True:
         
@@ -29341,7 +29279,7 @@ class AutoMunge:
     infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
     
     infill = \
-    self._autowhere(infill, column, infill[column] == 1, float("NaN"), specified='replacement')
+    self._autowhere(infill, column, infill[column] == 1, np.nan, specified='replacement')
     
     category = postprocess_dict['column_dict'][column]['category']
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -32849,7 +32787,7 @@ class AutoMunge:
     #distribution of the set is is a function of the activation column and target column
     
     #we'll follow convention that in both cases label smoothing applied to all columns in categorylist
-    #and return a diciotnary indicating which columns have recieved
+    #and return a dictionary indicating which columns have recieved
     #(dictionary categorycomplete_dict initialized external to function)
     
     #we'll also return a dictionary containing any dervied parameters for LSfit such as for
@@ -32857,7 +32795,7 @@ class AutoMunge:
     
     #Note that categorylist is the list of columns originating from same transformation
     #and we currently exlcude '1010' binary encoded sets from the method
-    #a future extension will address 1010 for MLinfill by smoothing after conversion to one-hot encoding 
+    #a future extension may address 1010 for MLinfill by smoothing after conversion to one-hot encoding 
     #such as for MLinfill
     """
     
@@ -33385,11 +33323,16 @@ class AutoMunge:
     
     #don't apply to totalexclude MLinfilltype
     if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
+      
+      isna_already_performed = False
 
       for entry in convert_to_nan_list:
         
-        if entry == None:
+        if (entry == None or entry != entry) and isna_already_performed is False:
+          #this also consolidates any diverse nan representations to common form (e.g. float("NaN") vs np.nan)
           df.loc[df[column].isna(), column] = np.nan
+          isna_already_performed = True
+
         else:
           df.loc[df[column] == entry, column] = np.nan
 
@@ -33541,7 +33484,7 @@ class AutoMunge:
                   df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
                   #this populates mask with nan for injection candidates and 1 elsewhere
                   df_mask = \
-                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, float("NaN"), 1)
+                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, np.nan, 1)
 
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
@@ -33589,7 +33532,7 @@ class AutoMunge:
                   df_mask['mask'] = df_mask['lessthan'] * df_mask['greaterthan']
                   #this populates mask with nan for injection candidates and 1 elsewhere
                   df_mask = \
-                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, float("NaN"), 1)
+                  self._autowhere(df_mask, 'mask', df_mask['mask'] == 1, np.nan, 1)
 
                   if ratio > 0:
                     #this get's index list of mask nan entries for use with .loc
@@ -33604,7 +33547,7 @@ class AutoMunge:
               #entries are full replacement of specific entries to a categoric set
               for targetentry in assignnan['injections'][columnkey][actionkey]:
                 df = \
-                self._autowhere(df, columnkey, df[columnkey] == targetentry, float("NaN"), specified='replacement')
+                self._autowhere(df, columnkey, df[columnkey] == targetentry, np.nan, specified='replacement')
                 
             elif actionkey == 'entry_ratio':
               #entry_ratio are partial injection to specific entries to a categoric set, 
@@ -33622,7 +33565,7 @@ class AutoMunge:
                   #this reverts some of the 1's if ratio was passed as <1
                   df_mask.loc[index, 'mask'] = 0
                 df = \
-                self._autowhere(df, columnkey, df_mask['mask'] == 1, float("NaN"), specified='replacement')
+                self._autowhere(df, columnkey, df_mask['mask'] == 1, np.nan, specified='replacement')
                 
     return df
 
@@ -34044,6 +33987,52 @@ class AutoMunge:
         targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
     return
 
+  def _list_sorting(self, ordered_list, mixed_set, placeholder=float("NaN")):
+    """
+    Function to sort the order of entries in a mixed set
+    Based on the order of entries as are found in a corresponding ordered list
+    Where the mixed set may have extra or fewer entries than are found in the ordered list
+    And where extra entries from the mixed set
+    Are sorted alphabetically and appended as final entries to the returned list
+    
+    accepts parameters ordered_list and mixed_set
+    and returns sorted_list
+
+    note that this relies on placeholder NaN entry, so if NaN is present in mixed_set it is not returned
+    which is acceptable in context of our use for categoric encodings
+    an alternate placeholder entry may be specified with reserved parameter if desired
+    """
+    
+    #this populates a dicitonary mapping ordered_list entries to their index number
+    order_key_dict = {}
+    i=0
+    for entry in ordered_list:
+      order_key_dict.update({entry : i})
+      i+=1
+      
+    #initalize the returned list as all nan's
+    sorted_list = [placeholder] * len(ordered_list)
+    
+    #populate ordered_list entries that are present in mixed_set
+    for entry in mixed_set:
+      if entry in order_key_dict:
+        sorted_list[order_key_dict[entry]] = entry
+      
+    #now remove any nan placeholders
+    if placeholder != placeholder:
+      sorted_list = [x for x in sorted_list if x==x]
+    else:
+      sorted_list = [x for x in sorted_list if x!=placeholder]
+    
+    #identify any extra entries that were present in mixed_set and not in ordered_list
+    #and convert to an ordered list
+    extras_list = sorted(mixed_set - set(ordered_list), key=str)
+    
+    #now append the extra entries
+    sorted_list = sorted_list + extras_list
+    
+    return sorted_list
+
   def _autowhere(self, df, column, condition, replacement=True, alternative=False, specified='replacementalternative'):
     """
     Intended to serve as a compromise between np.where and pd.where
@@ -34091,7 +34080,7 @@ class AutoMunge:
       df[column] = 0
       
     if df[column].dtype.name == 'category':
-      if isinstance(replacement, (type(pd.DataFrame({0:[1]})), type(pd.Series({0:[1]})), type(np.array([])))):
+      if isinstance(replacement, (type(pd.DataFrame({0:[1]})), type(pd.Series([1])), type(np.array([])))):
         if len(set(pd.DataFrame(replacement).iloc[:,0].unique()) - set(df[column].cat.categories)) > 0:
           df[column] = df[column].astype('object')
       elif len({replacement} - set(df[column].cat.categories)) > 0:
@@ -34508,7 +34497,7 @@ class AutoMunge:
     #received pandas Series (a pandas type for single column sets) are converted to dataframe
     checkseries_train_result = False
     checkseries_test_result = False
-    checkseries = pd.Series({'a':[1]})
+    checkseries = pd.Series([1])
     if isinstance(checkseries, type(df_train)):
       checkseries_train_result = True
       df_train = pd.DataFrame(df_train)
@@ -34993,7 +34982,7 @@ class AutoMunge:
       #based on understanding that ML libraries in general do not accept thesae kind of values
       #as well as the python None value
 
-      convert_to_nan_list = [np.inf, -np.inf, None]
+      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
       df_train = self._convert_to_nan(df_train, column, category, postprocess_dict, convert_to_nan_list)
       df_test = self._convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
 
@@ -35750,7 +35739,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.74'
+    automungeversion = '6.75'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36478,7 +36467,7 @@ class AutoMunge:
 
         #non integers are subject to infill
         mdf_test = \
-        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
+        self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=np.nan, specified='alternative')
 
       elif NArowtype in {'positivenumeric'}:
 
@@ -37474,8 +37463,9 @@ class AutoMunge:
     str_convert = normalization_dict['str_convert']
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
     labels_dict = normalization_dict['labels_dict']
+    null_activation = normalization_dict['null_activation']
     
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -37490,12 +37480,13 @@ class AutoMunge:
       #apply a replace to convert consolidated items to their targeted activations
       df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
       
-    #if the test set has entries without encodings, we'll replace with missing data marker
-    extra_entries = set(df[column].unique()) - set(labels_dict)
-    extra_entries = list({x for x in extra_entries if x==x})
-    if len(extra_entries) > 0:
-      plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-      df[column] = df[column].astype('object').replace(plug_dict)
+    if null_activation is True:
+      #if the test set has entries without encodings, we'll replace with missing data marker
+      extra_entries = set(df[column].unique()) - set(labels_dict)
+      extra_entries = list({x for x in extra_entries if x==x})
+      if len(extra_entries) > 0:
+        plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+        df[column] = df[column].astype('object').replace(plug_dict)
       
     #one hot encoding support function
     df_cat = self._onehot_support(df, column, scenario=1, activations_list=list(labels_dict))
@@ -37647,115 +37638,39 @@ class AutoMunge:
     #normkey is False when process function returns empty set
     if normkey is not False:
       
-      str_convert = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['str_convert']
-      
+      textlabelsdict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
+      textcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      inputtextcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
       LSfitparams_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['LSfitparams_dict']
-      
+      activation = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activation']
+      LSfit = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['LSfit']
       testsmooth = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testsmooth']
-
-      categorylist = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
-
-      suffix = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-
-      defaultinfill_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
-
-      #run a validation for reserved string 'zzzinfill' among entries
-      postprocess_dict = self._check_for_zzzinfill(mdf_test, column, postprocess_dict, traintest='test')
-      
-      tempcolumn = column + '_' + suffix + '_'
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
 
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if inplace is not True:
+        for inputtextcolumn in inputtextcolumns:
+          mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
 
-      #create copy of original column for later retrieval
-      mdf_test[tempcolumn] = mdf_test[column].copy()
-
-      #convert column to category
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('category')
-
-      #if set is categorical we'll need the plug value for missing values included
-      if 'zzzinfill' not in mdf_test[tempcolumn].cat.categories:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].cat.add_categories(['zzzinfill'])
-
-      #apply defaultinfill based on processdict entry
-      mdf_test, _1 = \
-      self._apply_defaultinfill(mdf_test, tempcolumn, postprocess_dict, treecategory=False, defaultinfill_dict=defaultinfill_dict)
-
-      #replace NA with a dummy variable
-      mdf_test[tempcolumn] = mdf_test[tempcolumn].fillna('zzzinfill')
-
-      if str_convert is True:
-        #replace numerical with string equivalent
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype(str)
       else:
-        mdf_test[tempcolumn] = mdf_test[tempcolumn].astype('object')
-
-      #textcolumns = postprocess_dict['column_dict'][columnkey]['columnslist']
-      textcolumns = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['text_categorylist']
-      
-      labels_dict = \
-      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_dict']
-
-      #extract categories for column labels
-      #note that .unique() extracts the labels as a numpy array
-
-      #we'll get the category names from the textcolumns array by stripping the \
-      #prefixes of column name + '_'
-#       prefixlength = len(column)+1
-      labels_train = textcolumns[:]
-#       for textcolumn in labels_train:
-#         textcolumn = textcolumn[prefixlength :]
-      #labels_train.sort(axis=0)
-#       labels_train.sort()
-      labels_test = mdf_test[tempcolumn].unique()
-#       labels_test.sort(axis=0)
-      labels_test = sorted(labels_test, key=str)
-      labels_test = list(labels_test)
-
-      #pandas one hot encoding doesn't sort integers and strings properly so using my own
-      df_test_cat = pd.DataFrame(mdf_test[tempcolumn])
-      for entry in labels_train:
-        df_test_cat = \
-        self._autowhere(df_test_cat, entry, mdf_test[tempcolumn] == entry, 1, specified='replacement')
-      del df_test_cat[tempcolumn]
-
-      #convert sparse array to pandas dataframe with column labels
-      df_test_cat.columns = labels_train
-
-      #Get missing columns in test set that are present in training set
-      missing_cols = set( textcolumns ) - set( labels_test )
-
-      del mdf_test[tempcolumn]
-      
-      #concatinate the sparse set with the rest of our training data
-      mdf_test = pd.concat([mdf_test, df_test_cat], axis=1)
-
-      #delete support NArw2 column
-      columnNAr2 = column + '_zzzinfill'
-      if columnNAr2 in mdf_test.columns:
-        del mdf_test[columnNAr2]
-
-      # #change data types to 8-bit (1 byte) integers for memory savings
-      # for textcolumn in textcolumns:
-
-      #   mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.int8)
-        
-      #now convert coloumn headers from text convention to onht convention
-      mdf_test = mdf_test.rename(columns=labels_dict)
+        mdf_test.rename(columns = textlabelsdict, inplace = True)
 
       #label smoothing only applied if traindata postmunge(.) parameter is True
       if traindata is True or testsmooth is True:
 
-        categorycomplete_test_dict = dict(zip(categorylist, [False]*len(categorylist)))
+        categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
 
-        for labelsmoothingcolumn in categorylist:
+        for labelsmoothingcolumn in textcolumns:
 
           if categorycomplete_test_dict[labelsmoothingcolumn] is False:
 
@@ -39849,7 +39764,7 @@ class AutoMunge:
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
     ordinal_dict = normalization_dict['ordinal_dict']
     
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -40037,7 +39952,7 @@ class AutoMunge:
       
       #non integers are subject to infill
       mdf_test = \
-      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=float("NaN"), specified='alternative')
+      self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn].round(), alternative=np.nan, specified='alternative')
       
       #apply defaultinfill based on processdict entry
       mdf_test, _1 = \
@@ -40324,7 +40239,7 @@ class AutoMunge:
     binary_encoding_dict = normalization_dict['binary_encoding_dict']
     _1010_columnlist = normalization_dict['_1010_columnlist']
     
-    missing_marker = float("NaN")
+    missing_marker = np.nan
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -41338,11 +41253,11 @@ class AutoMunge:
 
       #convert all values in negtempcolumn >= 0 to Nan
       mdf_test = \
-      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
 
       #convert all values <= 0 to Nan
       mdf_test = \
-      self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, float("NaN"), specified='replacement')
+      self._autowhere(mdf_test, tempcolumn, mdf_test[tempcolumn] <= 0, np.nan, specified='replacement')
 
       #log transform column
 
@@ -41480,14 +41395,14 @@ class AutoMunge:
       
       #convert all values >= 0 to Nan
       mdf_test = \
-      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, float("NaN"), specified='replacement')
+      self._autowhere(mdf_test, negtempcolumn, mdf_test[negtempcolumn] >= 0, np.nan, specified='replacement')
       
       #take abs value of negtempcolumn
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
       
       #convert all values <= 0 in column to Nan
       mdf_test = \
-      self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, float("NaN"), specified='replacement')
+      self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, np.nan, specified='replacement')
 
       mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
       
@@ -43099,7 +43014,7 @@ class AutoMunge:
       
       #non integers are subject to infill
       mdf_test = \
-      self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=float("NaN"), specified='alternative')
+      self._autowhere(mdf_test, exclcolumn, mdf_test[exclcolumn] == mdf_test[exclcolumn].round(), alternative=np.nan, specified='alternative')
       
       #fillvalue = mdf_train[exclcolumn].mode()[0]
       
@@ -44261,7 +44176,7 @@ class AutoMunge:
           df_test.columns = origcolumns_all_excluding_label
 
     #if series convert to dataframe
-    checkseries = pd.Series({'a':[1]})
+    checkseries = pd.Series([1])
     if isinstance(checkseries, type(df_test)):
       checkseries_test_result = True
       df_test = pd.DataFrame(df_test)
@@ -44567,7 +44482,7 @@ class AutoMunge:
       df_test = self._assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
 
       #we also have convention that infinity and None values are by default subjected to infill
-      convert_to_nan_list = [np.inf, -np.inf, None]
+      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
       df_test = self._convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
 
       #create NArows (column of True/False where True coresponds to missing data)
@@ -46555,7 +46470,7 @@ class AutoMunge:
 
     #infill recovery
     df = \
-    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, np.nan, specified='replacement')
     
     for i in bins_id:
       
@@ -46606,7 +46521,7 @@ class AutoMunge:
 
     #infill recovery
     df = \
-    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[normkey] == infill_activation, np.nan, specified='replacement')
     
     for i in bins_id:
       
@@ -46641,7 +46556,7 @@ class AutoMunge:
 
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
     df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
       
     return df, inputcolumn
 
@@ -46656,7 +46571,7 @@ class AutoMunge:
     
     inverse_labels_dict = {value:key for key,value in labels_dict.items()}
     
-    df[inputcolumn] = float("NaN")
+    df[inputcolumn] = np.nan
     
     for categorylist_entry in inverse_labels_dict:
       
@@ -46689,7 +46604,7 @@ class AutoMunge:
 
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
     df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
       
     return df, inputcolumn
 
@@ -46703,34 +46618,36 @@ class AutoMunge:
     
     normkey = categorylist[0]
     
-    inverse_labels_dict = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_labels_dict']
+    textlabelsdict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
     activation = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['activation']
-    categorylist = \
-    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['categorylist']
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
     
+    #inverse_labels_dict maps {returnedcolumn : inputcolumn}
+    inverse_labels_dict = {value:key for key,value in textlabelsdict.items()}
+    
+    #note this is just one of the columns in the upstream multicolumn set
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = np.nan
-    
     #only apply label smoothing inversion if this was a traindata set with smoothing applied
-    unique_set = set(pd.unique(df[categorylist[0]]))
-    if (unique_set != {0,1} \
-    and unique_set != {0} \
-    and unique_set != {1}):
-
-      df = self._LS_invert(activation, df, categorylist, postprocess_dict)
+    smoothing_applied = False
+    for returnedcolumn in inverse_labels_dict:
+      unique_set = set(pd.unique(df[returnedcolumn]))
+      if (unique_set != {0,1} \
+      and unique_set != {0} \
+      and unique_set != {1}):
+        smoothing_applied = True
+        
+    #initialize input columns
+    df[list(textlabelsdict)] = df[list(inverse_labels_dict)].copy()
+        
+    if smoothing_applied is True:
+      
+      df = self._LS_invert(activation, df, textcolumns, postprocess_dict)
     
-    for categorylist_entry in categorylist:
-      
-      df = \
-      self._autowhere(df, inputcolumn, df[categorylist_entry], inverse_labels_dict[categorylist_entry], specified='replacement')
-
-    #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
-    df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
-      
+    #this returns an arbitrary one of the input columns which is fine
     return df, inputcolumn
   
   def _inverseprocess_ordl(self, df, categorylist, postprocess_dict):
@@ -46764,7 +46681,7 @@ class AutoMunge:
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
     df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
     
     return df, inputcolumn
 
@@ -46820,7 +46737,7 @@ class AutoMunge:
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
     df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
     
     return df, inputcolumn
 
@@ -46905,7 +46822,7 @@ class AutoMunge:
     
     #special case, 'zzzinfill' was a reserved string used for imputation in forward pass for esoteric reasons
     df = \
-    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', float("NaN"), specified='replacement')
+    self._autowhere(df, inputcolumn, df[inputcolumn] == 'zzzinfill', np.nan, specified='replacement')
       
     return df, inputcolumn
 
