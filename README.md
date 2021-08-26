@@ -868,6 +868,8 @@ am.automunge(df_train, df_test=df_test, inplace=True)
 Note that this "inplace" option is not to be confused with the default inplace conduction of transforms
 that may impact grouping coherence of columns dervied from same feature.
 That other inplace option can be deactivated in assignparam, as may be desired for grouping coherence.
+Note that all custom_train transforms have build in support for optional deactivating of inplace parameter 
+through assignparam which is applied external to function call.
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
@@ -1317,7 +1319,7 @@ assigninfill = {'MLinfill':['column1_bxcx_nmbr'], 'meaninfill':['column1']}
 
 * assignnan: for use to designate data set entries that will be targets for infill, such as 
 may be entries not covered by NArowtype definitions from processdict. For example, we have 
-general convention that NaN is a target for infill, but a data set may be passed with a custom 
+general convention that NaN (as np.nan) is a target for infill, but a data set may be passed with a custom 
 string signal for infill, such as 'unknown'. This assignment operator saves the step of manual 
 munging prior to passing data to functions by allowing user to specify custom targets for infill.
 
@@ -3119,37 +3121,40 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - returned datatype: int8
   - inversion available: yes with full recovery
 * text/txt2: converts categorical sets to one-hot encoded set of boolean identifiers 
-(consistently encodings numbers and numerical string equivalents due to column labeling convention, e.g. 12 == '12')
+(consistently encodings numbers and numerical string equivalents due to column labeling convention, e.g. 12 == '12').
+Note that text and onht are implemented with the same functions by updates to the suffix_convention parameter.
   - useful for: one hot encoding, returns distinct column activation per unique entry
   - default infill: no activation in row
   - default NArowtype: justNaN
   - suffix appender: 
-    - '_(category)' where category is the categoric entry target of column activations (i.e. one of the unique values found in received column)
+    - '_text\_(entry)' where entry is the categoric entry target of column activations (one of the unique values found in received column)
   - assignparam parameters accepted:
-    - 'null_activation': defaults to False, when True missing data is returned with distinct activation
+    - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text'. Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
+    - 'str_convert', applied as True in text suffix_convention for common encodings between numbers and string equivalents e.g. 2 == '2'
+    - 'null_activation': applied as False in text suffix_convention for no activations for missing data
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-  - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
-  - returned datatype: int8
-  - inversion available: yes with full recovery
+    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'frequency_sort': boolean defaults to True, when activated the order of returned columns is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
-(like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents)
+(like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents). Note that text and onht are implemented with the same functions by updates to the suffix_convention parameter.
   - useful for: similar to text transform preceding but with numbered column header convention
   - default infill: no activation in row
   - default NArowtype: justNaN
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
+    - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text' (onht process_dict specification overwrites this to 'onht'). Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'suffix': to change suffix appender (leading underscore added internally)
     - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns
+    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'frequency_sort': boolean defaults to True, when activated the order of returned columns is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
   - returned datatype: int8
@@ -3168,7 +3173,8 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'frequency_sort': boolean defaults to True but set as False for ordl, when activated the order of integer activations is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic.  The 0 activation is reserved for missing data.
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with full recovery
@@ -3183,7 +3189,12 @@ occurrence, second basis for common count entries is alphabetical
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
+    - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
+    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'frequency_sort': boolean defaults to True, when activated the order of integer activations is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic. The 0 activation is reserved for missing data.
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with full recovery
@@ -3205,7 +3216,6 @@ efficient than one-hot encoding)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation. For consolidation with NaN missing data representation user should instead apply an assignnan conversion.
-    - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
@@ -3263,8 +3273,9 @@ and comparable to test set independent of test set row count
   - useful for: label smoothing, speculate there may be benefit for categoric encodings with noisy entries of some error rate
   - default infill: none
   - default NArowtype: justNaN
-  - suffix appender: '\_smth\_#' where # is integer in base configuration or based on the family tree category
+  - suffix appender: '_smt0\_(entry)\_smth\_#' where # is integer in base configuration or based on the family tree category
   - assignparam parameters accepted: 
+    - note that parameters for the upstream onehot encoding can be passed in assignparam to the smt0 category (consistent to text trasnform), and smoothing parameters can be passed to the smth category
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
     - 'LSfit' defaults to False, when True applies fitted label smoothing (consistent with fsmh)
     - 'testsmooth' defaults to False, when True applies smoothing to test data in both automunge and postmunge
@@ -3272,7 +3283,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: comparable to onht
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
-* fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter.
+* fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter. (Note that parameters for the upstream onehot encoding can be passed in assignparam to the fsm0 category (consistent to text trasnform), and smoothing parameters can be passed to the fsmh category
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by hashing, and also based on passed parameter vocab_size.
@@ -4568,6 +4579,7 @@ def custom_train_template(df, column, normalization_dict):
   #that may then be accessed to consistently transform test data
   #note that any desired drift statistics can also be stored in normalization_dict
   #e.g. normalization_dict.update({'property' : property})
+  #(automunge(.) may externally consider normalization_dict keys of 'inplace' or 'newcolumns_list')
 
   #note that prior to this function call 
   #a datatype casting based on the NArowtype processdict entry may have been performed
