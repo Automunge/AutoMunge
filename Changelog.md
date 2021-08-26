@@ -4093,3 +4093,28 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - please note we intend for our next update to have several additional impacts to backward compatibility, as we intend to consolidate our full range of categoric encodings to the custom_train convention in order to mitigate some recent bloat in lines of code from porting transforms to custom_train
 - and after this next update we intend to be much more intentional about future impacts to backward compatibility
 - we have a new validation test rolled which we are comfortable will help us identify future backward compatibility impacts prior to rollout
+
+6.76
+- significant backward compatibility impacting update
+- after this update we intend to be much more intentional about future impacts to backward compatibility
+- we have a new validation test rolled which we are comfortable will help us identify future backward compatibility impacts prior to rollout
+- struck prior dual/single/post convention implementations of suite of categoric encodings
+- including text/onht/ordl/ord3/1010
+- in order to reduce code bloat
+- this impacts backward compatibility for most categoric encodings, as well as Binary option
+- also backward compatibility impacts to power of ten binning via pwrs and pwor
+- tweaked bnry transform resulting in lifted reserved string
+- tweaked ucct trasnform resulting in lifted reserved string
+- tweaked strn transform resulting in lifted reserved string
+- rewrote Binary dimensionality reduction to be based on custom_train versions of 1010 or ordl
+- replaced all use of support function _postprocess_textsupport
+- now consolidated to much cleaner support function _onehot_support
+- struck support function _check_for_zzzinfill
+- a big cleanup to the pwrs transform for power of ten binning
+- added pwrs parameter support 'zeroset' (boolean defaults as False) to include an activation column for received zero entries, returned with the suffix column_suffix_zero
+- similar cleanup to pwor for ordinal power of ten binning, also added zeroset parameter support
+- these updates carry thorugh to other categories built on top of pwrs or pwor transformation functions
+- this update has eliminated all cases of reserved string for entries of an input column to categoric encodings
+- refering to our use of 'zzzinfill' string as a placeholder for infill in categoric encodings
+- we still use the string 'zzzinfill' as a placeholder in a few places for string parsing functions, intent is to audit these instances for possible future update
+- this update results in a 5% macro reduction in lines of code
