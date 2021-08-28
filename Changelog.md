@@ -4118,3 +4118,17 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - refering to our use of 'zzzinfill' string as a placeholder for infill in categoric encodings
 - we still use the string 'zzzinfill' as a placeholder in a few places for string parsing functions, intent is to audit these instances for possible future update
 - this update results in a 5% macro reduction in lines of code
+
+6.77
+- added parameter support to ordl/ord3 
+- now accepting parameter 'null_activation', boolean defaults to True
+- when False, missing data does not receive a distinct activation
+- the purpose of this parameter is to support encoding categoric sets where a missing data representation is not desired, as may be the case when an ordinal encoding is applied to a label set for instance
+- and when missing data is found, it is grouped into the encoding with the 0 bucket
+- which in base configuration (when frequency_sort = True) will be encoding associated with the most frequent entry found in train set
+- or when frequency_sort = False, will fall in first entry in alphabetic sorting
+- note that when ordered_overide parameter is in default True state, if a column is received as pandas ordered category dtype, the first entry will be per that sorting
+- note that when receiving data as pandas category dtype, we have a known range of potential values, and can thus be assured that missing data won't be present at least in the train data
+- (although subsequent test data may not be consistent pandas category dtype, since this parameter is for label sets shouldn't be an issue)
+- null_activation parameter now reset as False for root category lbor, which is our default categoric encoding to label sets under automation
+- lbor also changed sorting basis from alphabetic (like ordl) to frequency (like ord3)
