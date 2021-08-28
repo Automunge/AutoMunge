@@ -2280,7 +2280,7 @@ some cases comparable to those listed above for training data, but differ in tha
 sets will not include a returned 'NArw' (infill marker) even when parameter NArw_marker 
 passed as True.
 - lbnb: for numerical data, a label set is treated with an 'nmbr' z-score normalization.
-- lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+- lbor: for categoric data of >2 unique values, a label set is treated with an ordinal encoding similar to 'ord3' ordinal encoding (frequency sorted order of encodings). lbor differs from ord3 in that missing data does not receive a distinct encoding and is instead grouped into the 0 activation (consistent with the ord3 parameter setting null_activation=False).
 - lbbn: for categoric data of <3 unique values, a label set is treated with an 'bnry' binary encoding (single column binary).
 
 Other label categories are available for assignment in assigncat, described below in the 
@@ -3172,6 +3172,7 @@ Note that text and onht are implemented with the same functions by updates to th
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
@@ -3192,6 +3193,7 @@ occurrence, second basis for common count entries is alphabetical
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
