@@ -3417,7 +3417,7 @@ class AutoMunge:
     
     transform_dict.update({'lbor' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['ordl'],
+                                     'auntsuncles'   : ['lbor'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -7218,7 +7218,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
@@ -15157,6 +15157,15 @@ class AutoMunge:
     else:
       str_convert = False
       normalization_dict.update({'str_convert' : str_convert})
+
+    #null_activation is to have a distinct activation for missing data
+    #which defaults to the 0 integer
+    #note that when deactivated, missing data is grouped into whichever else entry is for the zero bucket
+    if 'null_activation' in normalization_dict:
+      null_activation = normalization_dict['null_activation']
+    else:
+      null_activation = True
+      normalization_dict.update({'null_activation' : null_activation})
       
     #_____
     
@@ -15320,12 +15329,17 @@ class AutoMunge:
       labels_train = sorted(labels_train, key=str)
       
     #add our missing_marker, note adding as first position will result in 0 representation even in ordered scenario
-    labels_train = [missing_marker] + labels_train
+    if null_activation is True:
+      labels_train = [missing_marker] + labels_train
       
     #get length of the list, then zip a dictionary from list and range(length)
     #the range values will be our ordinal points to replace the categories
     listlength = len(labels_train)
     ordinal_dict = dict(zip(labels_train, range(listlength)))
+    
+    if null_activation is False:
+      ordinal_dict.update({np.nan : 0})
+    
     normalization_dict.update({'ordinal_dict' : ordinal_dict})
     
     #replace the categories in train set via ordinal trasnformation
@@ -34066,7 +34080,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.76'
+    automungeversion = '6.77'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44205,8 +44219,16 @@ class AutoMunge:
     
     #First let's access the values we'll need from the normalization_dict
     ordinal_dict = normalization_dict['ordinal_dict']
+    if 'null_activation' in normalization_dict:
+      null_activation = normalization_dict['null_activation']
+    else:
+      #this scenario for backward compatibility
+      null_activation = True
     
-    inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    if null_activation is True:
+      inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
+    elif null_activation is False:
+      inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items() if key==key}
     
     returnedcolumn = returnedcolumn_list[0]
     
