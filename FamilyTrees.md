@@ -3371,7 +3371,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'lbor' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['ordl'],
+                                     'auntsuncles'   : ['lbor'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
