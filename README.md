@@ -3217,6 +3217,7 @@ efficient than one-hot encoding)
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set), note NaN missing data representation will be added
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
