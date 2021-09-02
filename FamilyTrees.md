@@ -4336,6 +4336,16 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
+    process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
     process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
@@ -7176,7 +7186,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
