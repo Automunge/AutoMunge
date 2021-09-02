@@ -4378,16 +4378,16 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'text'}})
-    # process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
-    #                               'singleprocess' : None,
-    #                               'postprocess' : self._postprocess_mlti,
-    #                               'inverseprocess' : self._inverseprocess_mlti,
-    #                               'info_retention' : False,
-    #                               'inplace_option' : True,
-    #                               'defaultinfill' : 'naninfill',
-    #                               'NArowtype' : 'justNaN',
-    #                               'MLinfilltype' : 'concurrent_nmbr',
-    #                               'labelctgy' : 'mlti'}})
+    process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
     process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
@@ -7933,13 +7933,15 @@ class AutoMunge:
       and parent_inplaceperformed is False:
         #here we'll only address downstream generaitons
         if parentcolumn in postprocess_dict['column_dict']:
-          postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = True
+          for parentcolumn_categorylist_entry in postprocess_dict['column_dict'][parentcolumn]['categorylist']:
+            postprocess_dict['column_dict'][parentcolumn_categorylist_entry]['deletecolumn'] = True
         else:
           if parentcolumn not in postprocess_dict['orig_noinplace']:
             postprocess_dict['orig_noinplace'].append(parentcolumn)
       elif parent_inplaceperformed is True:
         if parentcolumn in postprocess_dict['column_dict']:
-          postprocess_dict['column_dict'][parentcolumn]['deletecolumn'] = 'inplace'
+          for parentcolumn_categorylist_entry in postprocess_dict['column_dict'][parentcolumn]['categorylist']:
+            postprocess_dict['column_dict'][parentcolumn_categorylist_entry]['deletecolumn'] = 'inplace'
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
@@ -10963,179 +10965,177 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  # def _process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
-  #   '''
-  #   #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
-  #   #(e.g. downstream of multicolumn continuous numeric sets)
-  #   #since this is specifically intended as a downstream trasnform, we'll assume infill already applied
-  #   #applies normalization to each of the columns in upstream transform returned categorylist
-  #   #the type of normalization applied is based on assignparam parameter norm_category
-  #   #which defaults to nmbr, as in trasnforms are accessed from nmbr process_dict entry
-  #   #parameters to the normalization trasnform can also be passed as dictionary to parameter norm_params, e.g. in the form
-  #   #assignparam = {'mlti' : {'(column)' : {'norm_params' : {'(parameter)' : '(value)'}}}
-  #   #where '(column)' is input column associated with the root category
-  #   #and parameter / value are associated with the norm_category
-  #   #the normalizaiton applied treats the norm_category as a tree category without offspring
-  #   #and the input columns are either retained or replaced based on parameter norm_retain, defaulting ot False for replaced
-  #   #note that if an alternate treatment is desired where to apply a family tree of transforms to each column
-  #   #user should instead structure upstream trasnform as a set of numeric mlinfilltype trasnforms.
-
-  #   #Please note that this transform is still somewhat experimental. We do not yet consider it fully audited.
-  #   '''
+  def _process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    '''
+    #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
+    #(e.g. downstream of multicolumn continuous numeric sets)
+    #since this is specifically intended as a downstream trasnform, we'll assume infill already applied
+    #applies normalization to each of the columns in upstream transform returned categorylist
+    #the type of normalization applied is based on assignparam parameter norm_category
+    #which defaults to nmbr, as in trasnforms are accessed from nmbr process_dict entry
+    #parameters to the normalization trasnform can also be passed as dictionary to parameter norm_params, e.g. in the form
+    #assignparam = {'mlti' : {'(column)' : {'norm_params' : {'(parameter)' : '(value)'}}}
+    #where '(column)' is input column associated with the root category
+    #and parameter / value are associated with the norm_category
+    #the normalizaiton applied treats the norm_category as a tree category without offspring
+    #and the input columns are either retained or replaced based on parameter norm_retain, defaulting ot False for replaced
+    #note that if an alternate treatment is desired where to apply a family tree of transforms to each column
+    #user should instead structure upstream trasnform as a set of numeric mlinfilltype trasnforms.
+    '''
     
-  #   suffixoverlap_results = {}
+    suffixoverlap_results = {}
       
-  #   if 'norm_category' in params:
-  #     norm_category = params['norm_category']
-  #   else:
-  #     norm_category = 'nmbr'
+    if 'norm_category' in params:
+      norm_category = params['norm_category']
+    else:
+      norm_category = 'nmbr'
 
-  #   if 'norm_params' in params:
-  #     norm_params = params['norm_params']
-  #   else:
-  #     norm_params = {}
+    if 'norm_params' in params:
+      norm_params = params['norm_params']
+    else:
+      norm_params = {}
 
-  #   if 'suffix' in params:
-  #     suffix = params['suffix']
-  #   else:
-  #     suffix = treecategory
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
       
-  #   if 'inplace' in params:
-  #     inplace = params['inplace']
-  #   else:
-  #     inplace = False
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
       
-  #   #this function is intended to be applied donstream of a multirt encoding
-  #   #meaning there may be multiple columns serving as target
-  #   #we'll access the upstream categorylist stored in postprocess_dict
-  #   inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    #this function is intended to be applied donstream of a multirt encoding
+    #meaning there may be multiple columns serving as target
+    #we'll access the upstream categorylist stored in postprocess_dict
+    inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
     
-  #   #the returned columns will each have consistent suffix appending
-  #   textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
+    #the returned columns will each have consistent suffix appending
+    textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
 
-  #   #textcolumns are never returned, they just used to applky the intermediate suffix appender associated with this tree category
-  #   #so we'll always pass inplace as True in norm_params and if not accepted based on inplace_option in process_dict delete textcolumns
-  #   norm_params.update({'inplace' : True})
+    #textcolumns are never returned, they just used to applky the intermediate suffix appender associated with this tree category
+    #so we'll always pass inplace as True in norm_params and if not accepted based on inplace_option in process_dict delete textcolumns
+    norm_params.update({'inplace' : True})
     
-  #   #this maps between received and returned columns
-  #   textlabelsdict = dict(zip(inputtextcolumns, textcolumns))
+    #this maps between received and returned columns
+    textlabelsdict = dict(zip(inputtextcolumns, textcolumns))
     
-  #   #inplace convention is a little different in that we are inspecting suffixoverlap before copying
-  #   suffixoverlap_results = \
-  #   self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
+    #inplace convention is a little different in that we are inspecting suffixoverlap before copying
+    suffixoverlap_results = \
+    self._df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
-  #   if inplace is not True:
+    if inplace is not True:
       
-  #     for inputtextcolumn in inputtextcolumns:
+      for inputtextcolumn in inputtextcolumns:
         
-  #       mdf_train[textlabelsdict[inputtextcolumn]] = mdf_train[inputtextcolumn].copy()
-  #       mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
+        mdf_train[textlabelsdict[inputtextcolumn]] = mdf_train[inputtextcolumn].copy()
+        mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
     
-  #   else:
+    else:
       
-  #     mdf_train.rename(columns = textlabelsdict, inplace = True)
-  #     mdf_test.rename(columns = textlabelsdict, inplace = True)
+      mdf_train.rename(columns = textlabelsdict, inplace = True)
+      mdf_test.rename(columns = textlabelsdict, inplace = True)
     
-  #   #now apply one of custom_train / custom_test or dualprocess based on norm_category processdict entry
+    #now apply one of custom_train / custom_test or dualprocess based on norm_category processdict entry
     
-  #   norm_column_dict_list = []
-  #   norm_columnkey_dict = {'columnkey_dict' : {}}
+    norm_column_dict_list = []
+    norm_columnkey_dict = {'columnkey_dict' : {}}
     
-  #   if 'custom_train' in postprocess_dict['process_dict'][norm_category] \
-  #   and postprocess_dict['process_dict'][norm_category]['custom_train'] != None:
+    if 'custom_train' in postprocess_dict['process_dict'][norm_category] \
+    and callable(postprocess_dict['process_dict'][norm_category]['custom_train']):
       
-  #     for inputcolumn in textcolumns:
+      for inputcolumn in textcolumns:
         
-  #       mdf_train, mdf_test, column_dict_list_portion = \
-  #       self._custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
-  #                                    norm_category, postprocess_dict, norm_params)
+        mdf_train, mdf_test, column_dict_list_portion = \
+        self._custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
+                                     norm_category, postprocess_dict, norm_params)
     
-  #       norm_column_dict_list += column_dict_list_portion
+        norm_column_dict_list += column_dict_list_portion
       
-  #       norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
+        norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-  #     if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-  #     or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-  #     and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-  #       del mdf_train[textcolumns]
-  #       del mdf_test[textcolumns]
+      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+        del mdf_train[textcolumns]
+        del mdf_test[textcolumns]
 
-  #   #elif this is a dual process function
-  #   elif 'dualprocess' in postprocess_dict['process_dict'][norm_category] \
-  #   and postprocess_dict['process_dict'][norm_category]['dualprocess'] != None:
+    #elif this is a dual process function
+    elif 'dualprocess' in postprocess_dict['process_dict'][norm_category] \
+    and callable(postprocess_dict['process_dict'][norm_category]['dualprocess']):
       
-  #     for inputcolumn in textcolumns:
+      for inputcolumn in textcolumns:
 
-  #       mdf_train, mdf_test, column_dict_list_portion = \
-  #       postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
-  #                                                                      norm_category, postprocess_dict, norm_params)
+        mdf_train, mdf_test, column_dict_list_portion = \
+        postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
+                                                                       norm_category, postprocess_dict, norm_params)
 
-  #       norm_column_dict_list += column_dict_list_portion
+        norm_column_dict_list += column_dict_list_portion
       
-  #       norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
+        norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-  #     if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-  #     or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-  #     and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-  #       del mdf_train[textcolumns]
-  #       del mdf_test[textcolumns]
+      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+        del mdf_train[textcolumns]
+        del mdf_test[textcolumns]
     
-  #   #else if this is a single process function process train and test seperately
-  #   elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
-  #   and postprocess_dict['process_dict'][norm_category]['singleprocess'] != None:
+    #else if this is a single process function process train and test seperately
+    elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
+    and callable(postprocess_dict['process_dict'][norm_category]['singleprocess']):
       
-  #     for inputcolumn in textcolumns:
+      for inputcolumn in textcolumns:
 
-  #       mdf_train, column_dict_list_portion =  \
-  #       postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_train, inputcolumn, category, \
-  #                                                                        norm_category, postprocess_dict, norm_params)
+        mdf_train, column_dict_list_portion =  \
+        postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_train, inputcolumn, category, \
+                                                                         norm_category, postprocess_dict, norm_params)
 
-  #       mdf_test, _1 = \
-  #       postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, category, \
-  #                                                                        norm_category, postprocess_dict, norm_params)
+        mdf_test, _1 = \
+        postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, category, \
+                                                                         norm_category, postprocess_dict, norm_params)
 
-  #       norm_column_dict_list += column_dict_list_portion
+        norm_column_dict_list += column_dict_list_portion
       
-  #       norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
+        norm_columnkey_dict = self._populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-  #     if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-  #     or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-  #     and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-  #       del mdf_train[textcolumns]
-  #       del mdf_test[textcolumns]
+      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+        del mdf_train[textcolumns]
+        del mdf_test[textcolumns]
     
-  #   final_returned_columns = []
-  #   for norm_column_dict_list_entry in norm_column_dict_list:
-  #     final_returned_columns.append(list(norm_column_dict_list_entry)[0])
+    final_returned_columns = []
+    for norm_column_dict_list_entry in norm_column_dict_list:
+      final_returned_columns.append(list(norm_column_dict_list_entry)[0])
 
-  #   column_dict_list = []
-  #   for tc in final_returned_columns:
+    column_dict_list = []
+    for tc in final_returned_columns:
       
-  #     textnormalization_dict = {tc : {'norm_category' : norm_category, \
-  #                                     'norm_params' : norm_params, \
-  #                                     'textlabelsdict' : textlabelsdict, \
-  #                                     'textcolumns' : textcolumns, \
-  #                                     'inputtextcolumns' : inputtextcolumns, \
-  #                                     'norm_columnkey_dict' : norm_columnkey_dict, \
-  #                                     'norm_column_dict_list' : norm_column_dict_list, \
-  #                                     'suffix' : suffix, \
-  #                                     'inplace' : inplace}}
+      textnormalization_dict = {tc : {'norm_category' : norm_category, \
+                                      'norm_params' : norm_params, \
+                                      'textlabelsdict' : textlabelsdict, \
+                                      'textcolumns' : textcolumns, \
+                                      'inputtextcolumns' : inputtextcolumns, \
+                                      'norm_columnkey_dict' : norm_columnkey_dict, \
+                                      'norm_column_dict_list' : norm_column_dict_list, \
+                                      'suffix' : suffix, \
+                                      'inplace' : inplace}}
       
-  #     column_dict = {tc : {'category' : treecategory, \
-  #                          'origcategory' : category, \
-  #                          'normalization_dict' : textnormalization_dict, \
-  #                          'origcolumn' : column, \
-  #                          'inputcolumn' : column, \
-  #                          'columnslist' : final_returned_columns, \
-  #                          'categorylist' : final_returned_columns, \
-  #                          'infillmodel' : False, \
-  #                          'infillcomplete' : False, \
-  #                          'suffixoverlap_results' : suffixoverlap_results, \
-  #                          'deletecolumn' : False}}
+      column_dict = {tc : {'category' : treecategory, \
+                           'origcategory' : category, \
+                           'normalization_dict' : textnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : final_returned_columns, \
+                           'categorylist' : final_returned_columns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
 
-  #     column_dict_list.append(column_dict)
+      column_dict_list.append(column_dict)
     
-  #   return mdf_train, mdf_test, column_dict_list
+    return mdf_train, mdf_test, column_dict_list
 
   def _process_lngt(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
@@ -20068,7 +20068,8 @@ class AutoMunge:
             self._autowhere(mdf_test, tlbn_column, mdf_test[tlbn_column] == 1, 
                             (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), -1)
 
-          elif i == bincount - 1:
+          # elif i == bincount - 1:
+          elif i == len(textcolumns) - 1:
 
             mdf_train = \
             self._autowhere(mdf_train, tlbn_column, mdf_train[tlbn_column] == 1, 
@@ -34320,7 +34321,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.78'
+    automungeversion = '6.79'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36010,137 +36011,137 @@ class AutoMunge:
     
     return mdf_test
 
-#   def _postprocess_mlti(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
-#     '''
-#     #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
-#     #coresponds to _process_mlti
-#     '''
+  def _postprocess_mlti(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
+    #coresponds to _process_mlti
+    '''
     
-#     #normkey used to retrieve the normalization dictionary 
-#     normkey = False
-#     if len(columnkey) > 0:
-#       normkey = columnkey[0]
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:
+      normkey = columnkey[0]
     
-#     #normkey is False when process function returns empty set
-#     if normkey is not False:
+    #normkey is False when process function returns empty set
+    if normkey is not False:
       
-#       norm_category = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_category']
-#       norm_params = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_params']
-#       textlabelsdict = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
-#       textcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
-#       inputtextcolumns = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
-#       norm_columnkey_dict = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_columnkey_dict']
-#       norm_column_dict_list = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_column_dict_list']
-# #       suffix = \
-# #       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
-#       inplace = \
-#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      norm_category = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_category']
+      norm_params = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_params']
+      textlabelsdict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
+      textcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      inputtextcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+      norm_columnkey_dict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_columnkey_dict']
+      norm_column_dict_list = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_column_dict_list']
+#       suffix = \
+#       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       
-#       if inplace is not True:
-#         for inputtextcolumn in inputtextcolumns:
-#           mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
+      if inplace is not True:
+        for inputtextcolumn in inputtextcolumns:
+          mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
 
-#       else:
-#         mdf_test.rename(columns = textlabelsdict, inplace = True)
+      else:
+        mdf_test.rename(columns = textlabelsdict, inplace = True)
         
-#       #since postprocess_dict won't have normalziation_dict saved in same place, we'll populate a mirror norm_postprocess_dict
-#       norm_postprocess_dict = {'process_dict' : postprocess_dict['process_dict'],
-#                                'column_dict' : {},
-#                                'traindata' : postprocess_dict['traindata'],
-#                                'printstatus' : postprocess_dict['printstatus']}
+      #since postprocess_dict won't have normalziation_dict saved in same place, we'll populate a mirror norm_postprocess_dict
+      norm_postprocess_dict = {'process_dict' : postprocess_dict['process_dict'],
+                               'column_dict' : {},
+                               'traindata' : postprocess_dict['traindata'],
+                               'printstatus' : postprocess_dict['printstatus']}
       
-#       for norm_column_dict in norm_column_dict_list:
-#         norm_postprocess_dict['column_dict'].update(norm_column_dict)
+      for norm_column_dict in norm_column_dict_list:
+        norm_postprocess_dict['column_dict'].update(norm_column_dict)
 
-#       #if this is a custom process function
-#       #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
-#       if 'custom_train' in postprocess_dict['process_dict'][norm_category] \
-#       and postprocess_dict['process_dict'][norm_category]['custom_train'] != None:
+      #if this is a custom process function
+      #(convention is that 'custom_train' is populated in both scenarios for dualprocess or singleprocess)
+      if 'custom_train' in postprocess_dict['process_dict'][norm_category] \
+      and callable(postprocess_dict['process_dict'][norm_category]['custom_train']):
         
-#         for inputcolumn in textcolumns:
+        for inputcolumn in textcolumns:
           
-#           #columnkey_list is a list of columns returned from the transform in automunge(.)
-#           #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
-#           columnkey_list = []
-#           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
-#             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
-#               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+          #columnkey_list is a list of columns returned from the transform in automunge(.)
+          #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
+          columnkey_list = []
+          if inputcolumn in norm_columnkey_dict['columnkey_dict']:
+            if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
+              columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
 
-#           mdf_test = \
-#           self._custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params)
+          mdf_test = \
+          self._custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params)
 
-#         if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-#         or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-#         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-#           del mdf_test[textcolumns]
+        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+          del mdf_test[textcolumns]
         
-#       #elif this is a dual process function
-#       elif 'postprocess' in postprocess_dict['process_dict'][norm_category] \
-#       and postprocess_dict['process_dict'][norm_category]['postprocess'] != None:
+      #elif this is a dual process function
+      elif 'postprocess' in postprocess_dict['process_dict'][norm_category] \
+      and callable(postprocess_dict['process_dict'][norm_category]['postprocess']):
         
-#         for inputcolumn in textcolumns:
+        for inputcolumn in textcolumns:
           
-#           #columnkey_list is a list of columns returned from the transform in automunge(.)
-#           #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
-#           columnkey_list = []
-#           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
-#             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
-#               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+          #columnkey_list is a list of columns returned from the transform in automunge(.)
+          #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
+          columnkey_list = []
+          if inputcolumn in norm_columnkey_dict['columnkey_dict']:
+            if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
+              columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
 
-#           mdf_test = \
-#           postprocess_dict['process_dict'][norm_category]['postprocess'](mdf_test, inputcolumn, norm_postprocess_dict, \
-#                                                                          columnkey_list, norm_params)
+          mdf_test = \
+          postprocess_dict['process_dict'][norm_category]['postprocess'](mdf_test, inputcolumn, norm_postprocess_dict, \
+                                                                         columnkey_list, norm_params)
 
-#         if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-#         or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-#         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-#           del mdf_test[textcolumns]
+        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+          del mdf_test[textcolumns]
           
-#       #else if this is a single process function
-#       elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
-#       and postprocess_dict['process_dict'][norm_category]['singleprocess'] != None:
+      #else if this is a single process function
+      elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
+      and callable(postprocess_dict['process_dict'][norm_category]['singleprocess']):
         
-#         for inputcolumn in textcolumns:
+        for inputcolumn in textcolumns:
           
-#           #columnkey_list is a list of columns returned from the transform in automunge(.)
-#           #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
-#           columnkey_list = []
-#           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
-#             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
-#               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+          #columnkey_list is a list of columns returned from the transform in automunge(.)
+          #which may be used as a key to access the normalization_dict and etc in postmunge(.) transforms
+          columnkey_list = []
+          if inputcolumn in norm_columnkey_dict['columnkey_dict']:
+            if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
+              columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
               
-#           if inputcolumn in postprocess_dict['origcolumn']:
-#             origcategory = postprocess_dict['origcolumn'][inputcolumn]['category']
-#           else:
-#             origcategory = postprocess_dict['column_dict'][inputcolumn]['origcategory']
+          if inputcolumn in postprocess_dict['origcolumn']:
+            origcategory = postprocess_dict['origcolumn'][inputcolumn]['category']
+          else:
+            origcategory = postprocess_dict['column_dict'][inputcolumn]['origcategory']
 
-#           mdf_test, _1 = \
-#           postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, origcategory, \
-#                                                                            norm_category, norm_postprocess_dict, norm_params)
+          mdf_test, _1 = \
+          postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, origcategory, \
+                                                                           norm_category, norm_postprocess_dict, norm_params)
 
-#         if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-#         or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
-#         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-#           del mdf_test[textcolumns]
+        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
+        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
+          del mdf_test[textcolumns]
 
-#     else:
+    else:
 
-#       if 'inplace' in params:
-#         inplace = params['inplace']
-#       else:
-#         inplace = False
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
 
-#       if inplace is True:
-#         del mdf_test[column]
+      if inplace is True:
+        del mdf_test[column]
     
-#     return mdf_test
+    return mdf_test
 
   def _postprocess_splt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -40020,7 +40021,8 @@ class AutoMunge:
                               (bins_cuts[i+1] - mdf_test[binscolumn]) / (bins_cuts[i+1] - bn_min), 
                               -1)
 
-            elif i == bincount - 1:
+            # elif i == bincount - 1:
+            elif i == len(textcolumns) - 1:
 
               mdf_test = \
               self._autowhere(mdf_test, 
@@ -44304,7 +44306,8 @@ class AutoMunge:
                           df[textcolumn] * (-1) * (bins_cuts[i+1] - bn_min) + bins_cuts[i+1], 
                           specified='replacement')
           
-        elif i == bincount - 1:
+        # elif i == bincount - 1:
+        elif i == len(textcolumns) - 1:
           
           df = \
           self._autowhere(df, 
@@ -44583,69 +44586,72 @@ class AutoMunge:
     #this returns an arbitrary one of the input columns which is fine
     return df, inputcolumn
 
-  # def _inverseprocess_mlti(self, df, categorylist, postprocess_dict):
-  #   """
-  #   #inverse transform corresponding to process_mlti
-  #   #assumes any relevant parameters were saved in normalization_dict
-  #   #does not perform infill, assumes clean data
-  #   #note that this will return numeric entries as str
-  #   """
+  def _inverseprocess_mlti(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_mlti
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+    """
     
-  #   normkey = categorylist[0]
+    normkey = categorylist[0]
     
-  #   textlabelsdict = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
-  #   textcolumns = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
-  #   inputtextcolumns = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
-  #   norm_column_dict_list = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_column_dict_list']
-  #   norm_category = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_category']
-  #   norm_params = \
-  #   postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_params']
+    textlabelsdict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    inputtextcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+    norm_column_dict_list = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_column_dict_list']
+    norm_category = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_category']
+    norm_params = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['norm_params']
     
-  #   #since postprocess_dict won't have normalziation_dict saved in same place, we'll populate a mirror norm_postprocess_dict
-  #   norm_postprocess_dict = {'process_dict' : postprocess_dict['process_dict'],
-  #                            'column_dict' : {},
-  #                            'traindata' : postprocess_dict['traindata'],
-  #                            'printstatus' : postprocess_dict['printstatus']}
+    #since postprocess_dict won't have normalziation_dict saved in same place, we'll populate a mirror norm_postprocess_dict
+    norm_postprocess_dict = {'process_dict' : postprocess_dict['process_dict'],
+                             'column_dict' : {},
+                             'traindata' : postprocess_dict['traindata'],
+                             'printstatus' : postprocess_dict['printstatus']}
 
-  #   for norm_column_dict in norm_column_dict_list:
-  #     norm_postprocess_dict['column_dict'].update(norm_column_dict)
+    for norm_column_dict in norm_column_dict_list:
+      norm_postprocess_dict['column_dict'].update(norm_column_dict)
       
-  #   origcolumn = postprocess_dict['column_dict'][categorylist_entry]['origcolumn']
+    origcolumn = postprocess_dict['column_dict'][categorylist[0]]['origcolumn']
     
-  #   for categorylist_entry in categorylist:
+    for categorylist_entry in categorylist:
       
-  #     norm_categorylist = [categorylist_entry]
+      norm_categorylist = [categorylist_entry]
       
-  #     if 'custom_inversion' in postprocess_dict['process_dict'][norm_category]:
+      if 'custom_inversion' in postprocess_dict['process_dict'][norm_category] \
+      and callable(postprocess_dict['process_dict'][norm_category]['custom_inversion']):
 
-  #       if callable(postprocess_dict['process_dict'][norm_category]['custom_inversion']):
-
-  #         df, textcolumn = \
-  #         self._custom_inverseprocess_wrapper(df, norm_categorylist, norm_postprocess_dict)
+        df, textcolumn = \
+        self._custom_inverseprocess_wrapper(df, norm_categorylist, norm_postprocess_dict)
       
-  #     elif 'inverseprocess' in postprocess_dict['process_dict'][norm_category]:
+      elif 'inverseprocess' in postprocess_dict['process_dict'][norm_category] \
+      and callable(postprocess_dict['process_dict'][norm_category]['inverseprocess']):
 
-  #       if callable(postprocess_dict['process_dict'][norm_category]['inverseprocess']):
+        df, textcolumn = \
+        postprocess_dict['process_dict'][norm_category]['inverseprocess'](df, norm_categorylist, norm_postprocess_dict)
 
-  #         df, textcolumn = \
-  #         postprocess_dict['process_dict'][norm_category]['inverseprocess'](df, norm_categorylist, norm_postprocess_dict)
+      #edge case, if inversion not supported in the norm_category just apply a passthrough inversion
+      else:
+
+        df[textcolumns] = df[categorylist]
       
-  #   #this gives us recovered columns in the form of textcolumns, now rename to inputtextcolumns
+    #this gives us recovered columns in the form of textcolumns, now rename to inputtextcolumns
     
-  #   #inverse_textlabelsdict maps {textcolumn : inputtextcolumn}
-  #   inverse_textlabelsdict = {value:key for key,value in textlabelsdict.items()}
+    #inverse_textlabelsdict maps {textcolumn : inputtextcolumn}
+    inverse_textlabelsdict = {value:key for key,value in textlabelsdict.items()}
     
-  #   df.rename(columns = inverse_textlabelsdict, inplace = True)
+    df.rename(columns = inverse_textlabelsdict, inplace = True)
       
-  #   #this returns an arbitrary one of the input columns which is fine
-  #   inputcolumn = list(textlabelsdict)[0]
+    #this returns an arbitrary one of the input columns which is fine
+    inputcolumn = list(textlabelsdict)[0]
     
-  #   return df, inputcolumn
+    return df, inputcolumn
 
   def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
