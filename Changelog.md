@@ -4132,3 +4132,14 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - (although subsequent test data may not be consistent pandas category dtype, since this parameter is for label sets shouldn't be an issue)
 - null_activation parameter now reset as False for root category lbor, which is our default categoric encoding to label sets under automation
 - lbor also changed sorting basis from alphabetic (like ordl) to frequency (like ord3)
+
+6.78
+- added null_activation parameter support to 1010 trasnform
+- null_activation accepts boolean, defaulting to True for a dinstinct missing data encoding of all zeros
+- when passed as False missing data grouped with the otherwise all zero encoding, which will be the first unique entry in an alphabetic sorting
+- found and fixed a bug originating from 6.76 associated with replacing the support function _postprocess_textsupport
+- it turns out the prior convention was not directly equivalent to the new support function, resulting in one-hot aggregations with no activations
+- it appears I did not test this aspect sufficiently prior to rollout
+- easy fix, added a new scenario to the alternative support function _onehot_support
+- this impacted transformation categories bins, bnwd, bnep, tlbn, bkt1, bkt2, and also impacted ML infill to binarized categoric encodings via 1010
+- issue resolved
