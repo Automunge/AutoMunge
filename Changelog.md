@@ -4143,3 +4143,16 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - easy fix, added a new scenario to the alternative support function _onehot_support
 - this impacted transformation categories bins, bnwd, bnep, tlbn, bkt1, bkt2, and also impacted ML infill to binarized categoric encodings via 1010
 - issue resolved
+
+6.79
+- found and fixed implementation snafu with tlbn transform associated with the top bucket in edge case when data does not have enough diversity to populate full range of specified bincount buckets
+- updated some data structure maintenance taking place in processparent that was interfering with ML infill in conjunction with transforms performed downstream of a transform returning a multi-column set
+- new transformation category available for population in family trees as mlti
+- mlti is intended for use to apply normalizations downstream of a concurrent_nmbr MLinfilltype which may have returned a multi-column set of independant continuous numeric sets
+- and thus mlti normalizes each of the received columns on an independant basis
+- mlti defaults to applying z-score normalizaiton by the nmbr trasnform, but alternative normalizations may be specified by passing an alternate trasnformation category to parameter norm_category, such as e.g. assignparam = {'mlti' : {'(targetcolumn)' : {'norm_category' : 'mnmx'}}}
+- where specified transforms are accessed by inspecting that category's process_dict entries
+- where targetcolumn needs to be specified as either the input column received in df_train or the first column in the upstream categorylist with suffix appenders
+- note that parameters may be passed to the normalization trasnform by passing to mlti through parameter norm_params, e.g. assignparam = {'mlti' : {'(targetcolumn)' : {'norm_params' : {(parameter) : (value)}}}}
+- inplace, inversion, and ML infill are all supported
+- note that if an alternate treatment is desired where to apply a family tree of transforms to each column user should instead structure upstream trasnform as a set of numeric mlinfilltype transforms
