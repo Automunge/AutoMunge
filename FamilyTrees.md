@@ -624,6 +624,24 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['fsmh'],
                                      'friends'       : []}})
 
+    transform_dict.update({'GPS1' : {'parents'       : ['GPS1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['GPS2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'lngt' : {'parents'       : ['lngt'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -4396,6 +4414,24 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'fsmh'}})
+    process_dict.update({'GPS1' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS2' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
@@ -6095,6 +6131,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_pwr2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwrs'}})
@@ -6494,6 +6531,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'pwor'}})
