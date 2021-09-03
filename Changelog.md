@@ -4171,3 +4171,29 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - note that for ML infill, each ordinal column is predicted seperately
 - new process_dict entry available as mlto, which is built on top of the mlti transform but has concurrent_ordl MLinfilltype so allows norm_category specification with singlct MLinfilltype categories
 - mlto defaults to a norm_category of ord3 and conditionalinteger dtype
+
+6.81
+- new transformation category available as GPS1
+- GPS1 is for converting sets of GPS coordinates to normalized lattitude and longitude
+- accepts parameter GPS_convention, which currently only supports the base configuration of 'default'
+- which in future extensions may allow selection between alternate GPS reporting conventions
+- 'default' is based on structure of the "$GPGGA message" which was output from an RTK GPS receiver
+- which follows NMEA conventions, and has lattitude in between commas 2-3, and longitude between 4-5
+- reference description available at https://www.gpsworld.com/what-exactly-is-gps-nmea-data/
+- allows for variations in precisions of reported coordinates (i.e. number of significant figures)
+- or variations in degree magnitude, such as between DDMM. or DDDMM.
+- relies on comma seperated inputs
+- accepts parameter comma_addresses as a list of four integers to designate locations for lattitude/direction/longitude/direction
+- which consistent with the demonstration defaults to [2,3,4,5]
+- i.e. lattitude is after comma 2, direction after comma 3, longitude after 4, direction after 5
+- assumes the lattitude will precede the longitude in reporting, which appears to be a general convention
+- also accepts parameter comma_count, defaulting to 14, which is used for inversion to pad out to format convention
+- returns lattitude and longitude coordinates as +/- floats in units of arc minutes
+- in the base root category definition GPS1, this transform is followed by a mlti transform for independent normalization of the lattitude and longitude sets
+- in the alternate root category GPS2, the two columns are returned in units of arc minutes
+- GPS1 returns two columns with suffix as column_GPS1_latt_mlti_nmbr and column_GPS1_long_mlti_nmbr
+- also, moved naninfill application to following ML infill iterations to avoid interference
+- new parameters accepts for power of ten binning transforms such as pwrs/pwr2/pwor/por2 as cap and floor
+- cap and floor default to False, when passed as integer or float they cap or set floor on values in set
+- for example if feature distribution is mostly is in range 0-100, you may not want a dinstinct bin encoding for outlier values over 1000
+- found a flaw in our backward compatibility validation test, working now as intended
