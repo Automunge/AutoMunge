@@ -3597,6 +3597,7 @@ For simplicity just going to copy the code directly from code base where these d
     #              'concurrent_act' for multicolumn sets with boolean integer entries as may have 
     #                               multiple entries in the same row, different from 1010 
     #                               in that columns are independent
+    #              'concurrent_ordl' for multicolumn sets with ordinal encoded entries (nonnegative integer classification)
     #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
     #              'exclude' for columns which will be excluded from infill, 
     #                        returned data might not be numerically encoded
@@ -4346,6 +4347,18 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
+    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'conditionalinteger',
+                                                     'norm_category' : 'ord3'},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_ordl',
+                                  'labelctgy' : 'mlto'}})
     process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
