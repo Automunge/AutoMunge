@@ -4156,3 +4156,18 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - note that parameters may be passed to the normalization trasnform by passing to mlti through parameter norm_params, e.g. assignparam = {'mlti' : {'(targetcolumn)' : {'norm_params' : {(parameter) : (value)}}}}
 - inplace, inversion, and ML infill are all supported
 - note that if an alternate treatment is desired where to apply a family tree of transforms to each column user should instead structure upstream trasnform as a set of numeric mlinfilltype transforms
+
+6.80
+- fixed a variable assignment in evalcategory that was interfering with the hash scenario for all-unique under automation
+- which was the scenario associated with providing multicolumn hashing to unstructured text under automation
+- update to the mlti transform rolled out in 6.79
+- new parameter supported as 'dtype', accepts one of {'float', 'conditionalinteger'}, defaults to float
+- found and fixed an edge case associated with memory sharing in data structure causing an overwrite scenario
+- also now any defaultparam entries stored in process_dict entry for norm_category are taken into account
+- which is more consistent with intent that mlti can apply any transformation category
+- the only caveat is that since mlti is defined as concurrent_nmbr MLinfilltype, norm_category should be based on a process_dict entry with numeric MLinfilltype
+- new MLinfilltype now supported as 'concurrent_ordl'
+- concurrent_ordl is for transforms that return multiple ordinal encoded columns (nonnegative integer classification)
+- note that for ML infill, each ordinal column is predicted seperately
+- new process_dict entry available as mlto, which is built on top of the mlti transform but has concurrent_ordl MLinfilltype so allows norm_category specification with singlct MLinfilltype categories
+- mlto defaults to a norm_category of ord3 and conditionalinteger dtype
