@@ -2825,6 +2825,8 @@ Other Q Notation root categories:
       (recommend using pwr2 instead of this parameter since won't update NArowtype)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
+    - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
+    - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
 	                           <column> + '_ratio' (column specific)
   - returned datatype: int8
@@ -2839,6 +2841,8 @@ Other Q Notation root categories:
       (recommend using pwrs instead of this parameter since won't update NArowtype)
     - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
+    - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
   - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
 			           <column> + '_ratio' (column specific)
   - returned datatype: int8
@@ -2853,6 +2857,8 @@ value fell with respect to powers of 10
     - 'negvalues', boolean defaults to False, True bins values <0
     - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
+    - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
   - driftreport postmunge metrics: meanlog / maxlog / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with partial recovery
@@ -2866,6 +2872,8 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
     - 'negvalues', boolean defaults to True, True bins values <0
     - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
+    - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with partial recovery
@@ -2876,7 +2884,7 @@ high variability
   - default NArowtype: nonzeronumeric
   - suffix appender: '_pwbn_1010_#' (where # is integer for binary encoding activation number) 
   - assignparam parameters accepted:
-    - 'suffix': to change suffix appender (leading underscore added internally)
+    - accepts parameters comparable to pwor
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - returned datatype: int8
   - inversion available: yes with partial recovery
@@ -2887,7 +2895,7 @@ high variability
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por3_1010_#' (where # is integer for binary encoding activation number) 
   - assignparam parameters accepted:
-    - 'suffix': to change suffix appender (leading underscore added internally)
+    - accepts parameters comparable to pwor
   - driftreport postmunge metrics: train_replace_dict / test_replace_dict / ordl_activations_dict
   - returned datatype: int8
   - inversion available: yes with partial recovery
@@ -3781,6 +3789,19 @@ unless an additional transform is applied downstream.)
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
+* GPS1: for converting sets of GPS coordinates to normalized lattitude and longitude, relies on comma seperated inputs, with lattitude/longitude reported as DDMM.... or DDDMM.... and direction as one of 'N'/'S' or 'E'/'W'. Note that with GPS data, depending on the application, there may be benefit to setting the automunge(.) floatprecision parameter to 64 instead of the default 32. If you want to apply ML infill or some other assigninfill on the returned sets, we recommend ensuring missing data is recieved as NaN, otherwise missing entries will receive adjinfill.
+  - useful for: converting GPS coordinates to normalized lattitude and normalized longitude
+  - default infill: adjinfill
+  - default NArowtype: justNaN
+  - suffix appender: _GPS1_latt_mlti_nmbr and _GPS1_long_mlti_nmbr
+  - assignparam parameters accepted:
+    - 'GPS_convention': accept one of {'default'}, currently only supports the base configuration consistent with a NMEA demonstration known as the "$GPGGA message"
+    - 'comma_addresses': accepts as list of 4 integers, defaulting to [2,3,4,5], which corresponds to default where lattitude located after comma 2, lattitude direction after comma 3, longitude after comma 4, longitude direction after comma 5
+    - 'comma_count': an integer, defaulting to 14, used in inversion to pad out commas on the recovered data format
+  - driftreport postmunge metrics: metrics included with the downstream normalization transforms
+  - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - inversion available: yes with partial recovery e.g. for default configuration recovers data in the form ",,DDMM.MMMMMMM,C,DDMM.MMMMMMM,C,,,,,,,,," (where C is the direction)
+* GPS2: comparable to GPS1 but without the downstream normalization, so returns floats in units of arc minutes.
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
