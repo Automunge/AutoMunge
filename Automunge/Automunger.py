@@ -670,6 +670,24 @@ class AutoMunge:
                                      'coworkers'     : ['fsmh'],
                                      'friends'       : []}})
 
+    transform_dict.update({'GPS1' : {'parents'       : ['GPS1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['GPS2'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'lngt' : {'parents'       : ['lngt'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -4438,6 +4456,24 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'fsmh'}})
+    process_dict.update({'GPS1' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS2' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
@@ -6137,6 +6173,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_pwr2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
+                                  'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwrs'}})
@@ -6536,6 +6573,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'pwor'}})
@@ -10999,6 +11037,194 @@ class AutoMunge:
       column_dict_list.append(column_dict)
     
     return mdf_train, mdf_test, column_dict_list
+
+  def _custom_train_GPS1(self, df, column, normalization_dict):
+    """
+    GPS1 is for converting sets of received GPS coordinates into format of two columns of lattitude and longitude
+    accepts input of string GPS coordinates
+    
+    accepts parameter GPS_convention, which currently only supports the base configuration of 'default'
+    which in future extensions may allow selection between alternate GPS reporting conventions
+    'default' is based on structure of the "$GPGGA message" which was output from an RTK GPS receiver
+    which follows NMEA conventions, and has lattitude in between commas 2-3, and longitude between 4-5
+    reference description available at https://www.gpsworld.com/what-exactly-is-gps-nmea-data/
+    allows for variations in precisions of reported coordinates (i.e. number of significant figures)
+    or variations in degree magnitude, such as between DDMM. or DDDMM.
+    relies on comma seperated inputs
+    accepts parameter comma_addresses to designate locations for lattitude/direction/longitude/direction
+    which consistent with the demonstration defaults to [2,3,4,5]
+    i.e. lattitude is after comma 2, direction after comma 3, longitude after 4, direction after 5
+    also accepts parameter comma_count, defaulting to 14, which is used for inversion
+    returns lattitude and longitude coordinates as +/- floats in units of arc minutes
+    
+    we believe there are other conventions for GPS reporting
+    we don't yet have sufficient insight into mainstream practice to formalize alternatives
+    this implementation is intended as a proof of concept
+    
+    note that in cases where comma seperated entries are blank, nonnumeric, or omitted
+    the returned entries may be represented as NaN for missing data
+    in the base root category definition, this transform is followed by a mlti transform 
+    for independent normalization of the lattitude and longitude sets
+    this will return consistent output independent of data properties of two columns 
+    with suffixes _latt and _long to distinguish lattitude and longitude
+    so no corresponding _custom_test function is needed
+
+    note that the NArw aggregation will only recognize received NaN points
+    (e.g. it won't recognize cases where lattitude or longitude weren't recorded)
+    so if ML infill is desired on returned sets, received missing data should be NaN encoded
+    """
+    
+    #GPS_convention is to distinguish between conventions for format of received GPS coordinates
+    #currently only supports default, which is based on structure of the "$GPGGA message"
+    #which was output from an RTK GPS receiver
+    if 'GPS_convention' in normalization_dict:
+      GPS_convention = normalization_dict['GPS_convention']
+    else:
+      GPS_convention = 'default'
+      normalization_dict.update({'GPS_convention' : GPS_convention})
+      
+    if 'comma_addresses' in normalization_dict:
+      comma_addresses = normalization_dict['comma_addresses']
+    else:
+      #this corresponds to default where DDMM.MMMM lattitude after comma 2, lattitude direction after comma 3
+      #DDMM.MMMM longitude after comma 4, longitude direction after comma 5
+      comma_addresses = [2,3,4,5]
+      normalization_dict.update({'comma_addresses' : comma_addresses})
+
+    #comma_count used in inversion to pad out the recovered form with commas
+    if 'comma_count' in normalization_dict:
+      comma_count = normalization_dict['comma_count']
+    else:
+      comma_count = 14
+      normalization_dict.update({'comma_count' : comma_count})
+
+    #_____
+    
+    #currently only have the default scenario defined, user can specify alternate comma addresses with comma_addresses
+    if GPS_convention == 'default':
+    
+      def default_GPS_parse(coordinates, firstcomma, seccondcomma, negdirection):
+        """
+        based on "$GPGGA message"
+        applied to one set of coordinates
+        receives coordinates as a str for parsing
+
+        note that we are applying the full conversion in this function
+        instead of extracting serately support columns for degrees, minutes, and direction
+        and applying pandas operations to convert entries in parallel
+        it is possible doing the latter may be more efficient
+        for now we are following the full conversion in this function approach for cleaner code
+        we speculate some further optimizations for processing efficiency may be possible
+        by conducting portions of the DDMM operations in pandas instead of to each entry seperately with .transform
+        which would require seperate parsing functions to populate each support column
+        but is also possible the benefit would be offset by the redundant parsing
+        """
+
+        comma_counter = 0
+        maxparsed_address = 0
+        str_length = len(coordinates)
+        parsing_complete = False
+        DDMM = np.nan
+        direction = np.nan
+        latt = np.nan
+
+        for address in range(str_length):
+
+          if address > maxparsed_address and parsing_complete is False:
+
+            current_char = coordinates[address]
+            maxparsed_address = address
+
+            if current_char == ',':
+              comma_counter += 1
+
+            else:
+
+              #direction is single character string as one of {'N', 'S'}
+              if comma_counter == seccondcomma:
+
+                for address3 in range(address, str_length):
+                  if comma_counter == seccondcomma:
+                    current_char3 = coordinates[address3]
+
+                    if current_char3 == ',':
+                      comma_counter += 1
+                      maxparsed_address = address3
+                      parsing_complete = True
+
+                      excerpt = coordinates[address : address3]
+
+                      if len(excerpt) > 0 and excerpt in {'N', 'S', 'E', 'W'}:
+
+                        direction = excerpt
+
+              #latitude in the DDMM.MMMMM (variable decimal) populated after second comma
+              if comma_counter == firstcomma:
+
+                for address2 in range(address, str_length):
+                  if comma_counter == firstcomma:
+                    current_char2 = coordinates[address2]
+
+                    if current_char2 == ',':
+                      comma_counter += 1
+                      maxparsed_address = address2
+
+                      excerpt = coordinates[address : address2]
+
+                      if len(excerpt) > 0 and self._is_number(excerpt):
+#                       if len(excerpt) > 0 and _is_number(excerpt):
+                        DDMM = excerpt
+
+        degrees = np.nan
+        minutes = np.nan
+
+        #the potential scenarios we will accomodate for characters preceding the decimal are DDMM. / DDDMM.
+        if DDMM == DDMM:
+          dot_index = np.nan
+          if '.' in list(DDMM):
+            dot_index = list(DDMM).index('.')
+            if dot_index == 4:
+              degrees = int(DDMM[0:2])
+              minutes = float(DDMM[2:])
+            elif dot_index == 5:
+              degrees = int(DDMM[0:3])
+              minutes = float(DDMM[3:])
+          elif len(DDMM) == 4:
+            degrees = int(DDMM[0:2])
+            minutes = float(DDMM[2:])
+          elif len(DDMM) == 5:
+            degrees = int(DDMM[0:3])
+            minutes = float(DDMM[3:])
+
+          latt = degrees*60 + minutes
+
+          if direction == negdirection:
+            latt *= -1
+
+        return latt
+
+      def default_GPS_parse_latt(coordinates1):
+        return default_GPS_parse(coordinates1, comma_addresses[0], comma_addresses[1], 'S')
+
+      def default_GPS_parse_long(coordinates1):
+        return default_GPS_parse(coordinates1, comma_addresses[2], comma_addresses[3], 'W')
+
+      #here are returned column headers
+      latt_column = column + '_latt'
+      long_column = column + '_long'
+
+      normalization_dict.update({'latt_column' : latt_column,
+                                 'long_column' : long_column})
+
+      # df[column] = df[column].astype(str)
+
+      df[latt_column] = pd.Series(df[column].astype(str)).transform(default_GPS_parse_latt)
+
+      df[long_column] = pd.Series(df[column].astype(str)).transform(default_GPS_parse_long)
+      
+      del df[column]
+    
+    return df, normalization_dict
 
   def _process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
@@ -18416,6 +18642,18 @@ class AutoMunge:
       zeroset = params['zeroset']
     else:
       zeroset = False
+      
+    #cap can be passed as a specific value prior to binning, False for no cap
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    #floor can be passed as a specific value prior to binning, False for no floor
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -18437,6 +18675,24 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[tempcolumn] = pd.to_numeric(mdf_train[tempcolumn], errors='coerce')
     mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
+    
+    maximum = mdf_train[tempcolumn].max()
+    minimum = mdf_train[tempcolumn].min()
+    if cap is not False:
+      if cap > maximum:
+        cap = False
+    if floor is not False:
+      if floor < minimum:
+        floor = False
+        
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[tempcolumn] > cap, (tempcolumn)] = cap
+      mdf_test.loc[mdf_test[tempcolumn] > cap, (tempcolumn)] = cap
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[tempcolumn] < floor, (tempcolumn)] = floor
+      mdf_test.loc[mdf_test[tempcolumn] < floor, (tempcolumn)] = floor
     
     #convert all values <= 0 to Nan
     mdf_train = \
@@ -18484,6 +18740,15 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_train[negtempcolumn] = pd.to_numeric(mdf_train[negtempcolumn], errors='coerce')
       mdf_test[negtempcolumn] = pd.to_numeric(mdf_test[negtempcolumn], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_train.loc[mdf_train[negtempcolumn] > cap, (negtempcolumn)] = cap
+        mdf_test.loc[mdf_test[negtempcolumn] > cap, (negtempcolumn)] = cap
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_train.loc[mdf_train[negtempcolumn] < floor, (negtempcolumn)] = floor
+        mdf_test.loc[mdf_test[negtempcolumn] < floor, (negtempcolumn)] = floor
 
       #convert all values in negtempcolumn >= 0 to Nan
       mdf_train = \
@@ -18544,6 +18809,15 @@ class AutoMunge:
       #convert all values to either numeric or NaN
       mdf_train[tempcolumn_zero] = pd.to_numeric(mdf_train[tempcolumn_zero], errors='coerce')
       mdf_test[tempcolumn_zero] = pd.to_numeric(mdf_test[tempcolumn_zero], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_train.loc[mdf_train[tempcolumn_zero] > cap, (tempcolumn_zero)] = cap
+        mdf_test.loc[mdf_test[tempcolumn_zero] > cap, (tempcolumn_zero)] = cap
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_train.loc[mdf_train[tempcolumn_zero] < floor, (tempcolumn_zero)] = floor
+        mdf_test.loc[mdf_test[tempcolumn_zero] < floor, (tempcolumn_zero)] = floor
       
       #convert to 1 activations for zero and 0 elsewhere
       mdf_train = \
@@ -18613,6 +18887,8 @@ class AutoMunge:
                                        'labels_train' : labels_train, \
                                        'negvalues' : negvalues, \
                                        'zeroset' : zeroset, \
+                                       'cap' : cap, \
+                                       'floor' : floor, \
                                        'suffix' : suffix, \
                                        'pos_and_negative_list' : list(df_train_cat), \
                                        tc_ratio : tcratio}}
@@ -18661,6 +18937,18 @@ class AutoMunge:
       zeroset = params['zeroset']
     else:
       zeroset = False
+      
+    #cap can be passed as a specific value prior to binning, False for no cap
+    if 'cap' in params:
+      cap = params['cap']
+    else:
+      cap = False
+      
+    #floor can be passed as a specific value prior to binning, False for no floor
+    if 'floor' in params:
+      floor = params['floor']
+    else:
+      floor = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -18688,6 +18976,24 @@ class AutoMunge:
     #convert all values to either numeric or NaN
     mdf_train[pworcolumn] = pd.to_numeric(mdf_train[pworcolumn], errors='coerce')
     mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
+    
+    maximum = mdf_train[pworcolumn].max()
+    minimum = mdf_train[pworcolumn].min()
+    if cap is not False:
+      if cap > maximum:
+        cap = False
+    if floor is not False:
+      if floor < minimum:
+        floor = False
+        
+    if cap is not False:
+      #replace values in test > cap with cap
+      mdf_train.loc[mdf_train[pworcolumn] > cap, (pworcolumn)] = cap
+      mdf_test.loc[mdf_test[pworcolumn] > cap, (pworcolumn)] = cap
+    if floor is not False:
+      #replace values in test < floor with floor
+      mdf_train.loc[mdf_train[pworcolumn] < floor, (pworcolumn)] = floor
+      mdf_test.loc[mdf_test[pworcolumn] < floor, (pworcolumn)] = floor
     
     #copy set for negative values
     if negvalues is True:
@@ -18888,6 +19194,8 @@ class AutoMunge:
                                        'ordl_activations_dict' : ordl_activations_dict, \
                                        'negvalues' : negvalues, \
                                        'zeroset' : zeroset, \
+                                       'cap' : cap, \
+                                       'floor' : floor, \
                                        'suffix' : suffix, \
                                        'inplace' : inplace}}
     
@@ -27285,25 +27593,6 @@ class AutoMunge:
                 df_test = \
                 self._oneinfillfunction(df_test, column, postprocess_dict, \
                                        masterNArows_test)
-                
-              #naninfill
-              if column in postprocess_assigninfill_dict['naninfill']:
-
-                #printout display progress
-                if printstatus is True:
-                  print("infill to column: ", column)
-                  print("     infill type: naninfill")
-                  print("")
-
-                categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-
-                df_train = \
-                self._naninfillfunction(df_train, column, postprocess_dict, \
-                                       masterNArows_train)
-
-                df_test = \
-                self._naninfillfunction(df_test, column, postprocess_dict, \
-                                       masterNArows_test)
 
               #adjinfill
               if column in postprocess_assigninfill_dict['adjinfill']:
@@ -27510,6 +27799,28 @@ class AutoMunge:
       
       else:
         iteration += 1
+
+    #naninfill is performed after ML infill to avoid interference
+    for column in postprocess_assigninfill_dict['naninfill']:
+        
+      if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
+
+        #printout display progress
+        if printstatus is True:
+          print("infill to column: ", column)
+          print("     infill type: naninfill")
+          print("")
+
+        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
+
+        df_train = \
+        self._naninfillfunction(df_train, column, postprocess_dict, \
+                                masterNArows_train)
+
+        df_test = \
+        self._naninfillfunction(df_test, column, postprocess_dict, \
+                                masterNArows_test)
     
     return df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count
 
@@ -27803,19 +28114,6 @@ class AutoMunge:
                 self._oneinfillfunction(df_test, column, postprocess_dict, \
                                       masterNArows_test)
                 
-              #naninfill
-              if column in postprocess_assigninfill_dict['naninfill']:
-
-                #printout display progress
-                if printstatus is True:
-                  print("infill to column: ", column)
-                  print("     infill type: naninfill")
-                  print("")
-
-                df_test = \
-                self._naninfillfunction(df_test, column, postprocess_dict, \
-                                      masterNArows_test)
-                
               #adjinfill:
               if column in postprocess_assigninfill_dict['adjinfill']:
 
@@ -27974,6 +28272,25 @@ class AutoMunge:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
       
       iteration += 1
+
+    #naninfill is performed after ML infill to avoid interference
+    for column in postprocess_assigninfill_dict['naninfill']:
+      
+      if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
+              
+        #naninfill
+        if column in postprocess_assigninfill_dict['naninfill']:
+
+          #printout display progress
+          if printstatus is True:
+            print("infill to column: ", column)
+            print("     infill type: naninfill")
+            print("")
+
+          df_test = \
+          self._naninfillfunction(df_test, column, postprocess_dict, \
+                                masterNArows_test)
       
     return df_test, infill_validations
 
@@ -34401,7 +34718,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.80'
+    automungeversion = '6.81'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39280,6 +39597,14 @@ class AutoMunge:
       labels_train = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['labels_train']
       negvalues = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['negvalues']
       zeroset = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zeroset']
+      cap = False
+      if 'cap' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        #backward compatibility for preceding 6.81
+        cap = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = False
+      if 'floor' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        #backward compatibility for preceding 6.81
+        floor = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
@@ -39297,6 +39622,13 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       mdf_test[tempcolumn] = pd.to_numeric(mdf_test[tempcolumn], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[tempcolumn] > cap, (tempcolumn)] = cap
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[tempcolumn] < floor, (tempcolumn)] = floor
       
       #convert all values <= 0 to Nan
       mdf_test = \
@@ -39325,6 +39657,13 @@ class AutoMunge:
         
         #convert all values to either numeric or NaN
         mdf_test[negtempcolumn] = pd.to_numeric(mdf_test[negtempcolumn], errors='coerce')
+        
+        if cap is not False:
+          #replace values in test > cap with cap
+          mdf_test.loc[mdf_test[negtempcolumn] > cap, (negtempcolumn)] = cap
+        if floor is not False:
+          #replace values in test < floor with floor
+          mdf_test.loc[mdf_test[negtempcolumn] < floor, (negtempcolumn)] = floor
 
         #convert all values in negtempcolumn >= 0 to Nan
         mdf_test = \
@@ -39360,6 +39699,13 @@ class AutoMunge:
 
         #convert all values to either numeric or NaN
         mdf_test[tempcolumn_zero] = pd.to_numeric(mdf_test[tempcolumn_zero], errors='coerce')
+        
+        if cap is not False:
+          #replace values in test > cap with cap
+          mdf_test.loc[mdf_test[tempcolumn_zero] > cap, (tempcolumn_zero)] = cap
+        if floor is not False:
+          #replace values in test < floor with floor
+          mdf_test.loc[mdf_test[tempcolumn_zero] < floor, (tempcolumn_zero)] = floor
 
         #convert to 1 activations for zero and 0 elsewhere
         mdf_test = \
@@ -39433,6 +39779,14 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inverse_train_replace_dict']
       zeroset = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['zeroset']
+      cap = False
+      if 'cap' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        #backward compatibility for preceding 6.81
+        cap = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['cap']
+      floor = False
+      if 'floor' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        #backward compatibility for preceding 6.81
+        floor = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['floor']
       
       pworcolumn = column + '_' + suffix
 
@@ -39443,6 +39797,13 @@ class AutoMunge:
 
       #convert all values to either numeric or NaN
       mdf_test[pworcolumn] = pd.to_numeric(mdf_test[pworcolumn], errors='coerce')
+      
+      if cap is not False:
+        #replace values in test > cap with cap
+        mdf_test.loc[mdf_test[pworcolumn] > cap, (pworcolumn)] = cap
+      if floor is not False:
+        #replace values in test < floor with floor
+        mdf_test.loc[mdf_test[pworcolumn] < floor, (pworcolumn)] = floor
       
       if negvalues is True:
         #copy set for negative values
@@ -44702,6 +45063,119 @@ class AutoMunge:
     
     #this returns an arbitrary one of the input columns which is fine
     return df, inputcolumn
+
+  def _custom_inversion_GPS1(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+    """
+    #corresponding to _custom_train_GPS1
+    #recovers form of comma seperated entries
+    #with entries left blank other than latt and long coordinates
+    #for the default configuration, this populates as ',,DDMM.MMMMMMM,C,DDMM.MMMMMMM,C,,,,,,,,,'
+    #this will invert to format of DDMM.... or DDDMM.... when recovered degree magnitude neccesitates
+    """
+    
+    #First let's access the values we'll need from the normalization_dict
+    GPS_convention = normalization_dict['GPS_convention']
+    comma_addresses = normalization_dict['comma_addresses']
+    comma_count = normalization_dict['comma_count']
+    latt_column = normalization_dict['latt_column']
+    long_column = normalization_dict['long_column']
+    
+    supportcolumn1 = 'A1'
+    supportcolumn2 = 'B2'
+    #since we don't check for suffix overlap edge case in inversion this is just a little hack
+    if supportcolumn1 in list(df):
+      while supportcolumn1 in list(df):
+        supportcolumn1 = supportcolumn1 + 'z'
+    if supportcolumn2 in list(df):
+      while supportcolumn2 in list(df):
+        supportcolumn2 = supportcolumn2 + 'z'
+    
+    #so we'll convert supportcolumn1 to latt minutes, 
+    df[supportcolumn1] = df[latt_column].abs() % 60
+    
+    #supportcolumn2 to latt degrees
+    df[supportcolumn2] = (df[latt_column].abs() - df[supportcolumn1]) / 60
+    
+    #then combine everything into df[latt_column] as str CDDMM.MMMMMM where C is compass direction
+    
+    #first initialize latt_column with compass direction
+    condition = df[latt_column].astype(float) < 0
+    df = self._autowhere(df, latt_column, condition, 'S', 'N')
+    
+    #now add the degrees characters
+    df[latt_column] = df[latt_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    
+    #now add the first two minutes characters
+    df[latt_column] = df[latt_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    
+    #now add the decimal
+    df[latt_column] = df[latt_column] + '.'
+    
+    #now add the remaining decimal characters
+    df[latt_column] = df[latt_column] + (df[supportcolumn1] % 1).astype(float).astype(str).str.slice_replace(start=0, stop=2, repl='').str.ljust(6, '0')
+    
+    #now trim extra characters
+    df[latt_column] = df[latt_column].str.slice(0,13)
+    
+    #df[latt_column] is now in the form CDDMM.MMMMMM
+    
+    #now we'll use supportcolumn1 and supportcolumn2 to do the same for long_column
+    
+    #so we'll convert supportcolumn1 to latt minutes, 
+    df[supportcolumn1] = df[long_column].abs() % 60
+    
+    #supportcolumn2 to latt degrees
+    df[supportcolumn2] = (df[long_column].abs() - df[supportcolumn1]) / 60
+    
+    #then combine everything into df[latt_column] as str CDDMM.MMMMMM where C is compass direction
+    
+    #first initialize latt_column with compass direction
+    condition = df[long_column].astype(float) < 0
+    df = self._autowhere(df, long_column, condition, 'W', 'E')
+    
+    #now add the degrees characters
+    df[long_column] = df[long_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    
+    #now add the first two minutes characters
+    df[long_column] = df[long_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    
+    #now add the decimal
+    df[long_column] = df[long_column] + '.'
+    
+    #now add the remaining decimal characters
+    df[long_column] = df[long_column] + (df[supportcolumn1] % 1).astype(float).astype(str).str.slice_replace(start=0, stop=2, repl='').str.ljust(6, '0')
+    
+    #now trim extra characters
+    df[long_column] = df[long_column].str.slice(0,13)
+
+    #now populate our inversion
+    
+    df[inputcolumn] = ',' * comma_addresses[0]
+    
+    df[inputcolumn] = df[inputcolumn] + df[latt_column].str.slice(1, 13)
+    
+    df[inputcolumn] = df[inputcolumn] + ',' * (comma_addresses[1] - comma_addresses[0])
+    
+    df[inputcolumn] = df[inputcolumn] + df[latt_column].str.slice(0, 1)
+    
+    df[inputcolumn] = df[inputcolumn] + ',' * (comma_addresses[2] - comma_addresses[1])
+    
+    df[inputcolumn] = df[inputcolumn] + df[long_column].str.slice(1, 13)
+    
+    df[inputcolumn] = df[inputcolumn] + ',' * (comma_addresses[3] - comma_addresses[2])
+    
+    df[inputcolumn] = df[inputcolumn] + df[long_column].str.slice(0, 1)
+    
+    remaining_commas = ',' * (comma_count - comma_addresses[3])
+    
+    df[inputcolumn] = df[inputcolumn] + remaining_commas
+    
+    #for the default configuration, this populates as ',,DDMM.MMMMMM,C,DDMM.MMMMMM,C,,,,,,,,,'
+    
+    del df[supportcolumn1]
+    del df[supportcolumn2]
+
+    return df
 
   def _inverseprocess_mlti(self, df, categorylist, postprocess_dict):
     """
