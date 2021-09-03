@@ -1652,6 +1652,7 @@ We'll describe the options for processdict entries here. For clarity processdict
 #              'concurrent_act' for multicolumn sets with boolean integer entries as may have 
 #                               multiple entries in the same row, different from 1010 
 #                               in that columns are independent
+#              'concurrent_ordl' for multicolumn sets with ordinal encoded entries (nonnegative integer classification)
 #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
 #              'exclude' for columns which will be excluded from infill, 
 #                        returned data might not be numerically encoded
@@ -3756,7 +3757,7 @@ unless an additional transform is applied downstream.)
   - driftreport postmunge metrics: none
   - returned datatype: consistent with input
   - inversion available: no
-* mlti: mlti is a category available for inclusion in family trees that takes as input a set of one or more columns returned from a concurrent_nmbr MLinfilltype trasnform containing multiple columns of continous numeric entries. mlti applies a normalization to each of the columns on an independant basis. The normalization defaults to z-score via nmbr or alternate trasnforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.)
+* mlti: mlti is a category available for inclusion in family trees that takes as input a set of one or more columns returned from a concurrent_nmbr MLinfilltype trasnform containing multiple columns of continous numeric entries. mlti applies a normalization to each of the columns on an independant basis. The normalization defaults to z-score via nmbr or alternate trasnforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.) mlti is defined in process_dict based on concurrent_nmbr MLinfilltype
   - useful for: normalizing a set of numeric features returned from an upstream transform
   - default infill: consistent with the type of normalization selected
   - default NArowtype: justNaN
@@ -3764,8 +3765,21 @@ unless an additional transform is applied downstream.)
   - assignparam parameters accepted:
     - 'norm_category': defaults to 'nmbr', used to specify type of normalizaiton applied to each column. Used to access transformation functions from process_dict.
     - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}
+    - 'dtype': accepts one of {'float', 'conditionalinteger'}, defaults to float. conditionalinteger is for use with mto
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
+* mlto: comparable to mlti but intended for use with returning multiple ordinal encoded columns. mlto is defined in process_dict based on concurrent_ordl MLinfilltype.
+  - useful for: ordinal encoding a set of categoric features returned from an upstream transform
+  - default infill: consistent with the type of ordinal encoding selected
+  - default NArowtype: justNaN
+  - suffix appender: '\_mlto\_' + suffix associated with the normalization
+  - assignparam parameters accepted:
+    - 'norm_category': defaults to 'ord3', used to specify type of ordinal encoding applied to each column. Used to access transformation functions from process_dict.
+    - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}
+    - 'dtype': accepts one of {'float', 'conditionalinteger'}, defaults to conditionalinteger.
+  - driftreport postmunge metrics: records drift report metrics included with the normalization transform
+  - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
