@@ -588,6 +588,26 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['text'],
                                      'friends'       : []}})
 
+    #mlti primarily intended for use as a downstream tree category
+    transform_dict.update({'mlti' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmbr'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    #mlto primarily intended for use as a downstream tree category
+    transform_dict.update({'mlto' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'smth' : {'parents'       : ['smt0'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -640,6 +660,24 @@ For simplicity just going to copy the code directly from code base where these d
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS3' : {'parents'       : ['GPS3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS4' : {'parents'       : ['GPS4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : ['lngt'],
@@ -4420,6 +4458,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'default'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
@@ -4429,6 +4468,27 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'default'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS3' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS4' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : self._custom_test_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
