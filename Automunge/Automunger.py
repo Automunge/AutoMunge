@@ -634,6 +634,26 @@ class AutoMunge:
                                      'coworkers'     : ['text'],
                                      'friends'       : []}})
 
+    #mlti primarily intended for use as a downstream tree category
+    transform_dict.update({'mlti' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['nmbr'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    #mlto primarily intended for use as a downstream tree category
+    transform_dict.update({'mlto' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'smth' : {'parents'       : ['smt0'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -686,6 +706,24 @@ class AutoMunge:
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS3' : {'parents'       : ['GPS3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS4' : {'parents'       : ['GPS4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlti'],
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : ['lngt'],
@@ -4462,6 +4500,7 @@ class AutoMunge:
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'default'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
@@ -4471,6 +4510,27 @@ class AutoMunge:
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'default'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS3' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS4' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : self._custom_test_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
@@ -11038,6 +11098,108 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
+  def _GPS_parse(self, coordinates, firstcomma, seccondcomma, negdirection):
+    """
+    This is a support function used in GPS1
+
+    based on "$GPGGA message"
+    applied to one set of coordinates
+    receives coordinates as a str for parsing
+
+    note that we are applying the full conversion in this function
+    instead of extracting serately support columns for degrees, minutes, and direction
+    and applying pandas operations to convert entries in parallel
+    it is possible doing the latter may be more efficient
+    for now we are following the full conversion in this function approach for cleaner code
+    we speculate some further optimizations for processing efficiency may be possible
+    by conducting portions of the DDMM operations in pandas instead of to each entry seperately with .transform
+    which would require seperate parsing functions to populate each support column
+    but is also possible the benefit would be offset by the redundant parsing
+    """
+
+    comma_counter = 0
+    maxparsed_address = 0
+    str_length = len(coordinates)
+    parsing_complete = False
+    DDMM = np.nan
+    direction = np.nan
+    latt = np.nan
+
+    for address in range(str_length):
+
+      if address > maxparsed_address and parsing_complete is False:
+
+        current_char = coordinates[address]
+        maxparsed_address = address
+
+        if current_char == ',':
+          comma_counter += 1
+
+        else:
+
+          #direction is single character string as one of {'N', 'S'}
+          if comma_counter == seccondcomma:
+
+            for address3 in range(address, str_length):
+              if comma_counter == seccondcomma:
+                current_char3 = coordinates[address3]
+
+                if current_char3 == ',':
+                  comma_counter += 1
+                  maxparsed_address = address3
+                  parsing_complete = True
+
+                  excerpt = coordinates[address : address3]
+
+                  if len(excerpt) > 0 and excerpt in {'N', 'S', 'E', 'W'}:
+
+                    direction = excerpt
+
+          #latitude in the DDMM.MMMMM (variable decimal) populated after second comma
+          if comma_counter == firstcomma:
+
+            for address2 in range(address, str_length):
+              if comma_counter == firstcomma:
+                current_char2 = coordinates[address2]
+
+                if current_char2 == ',':
+                  comma_counter += 1
+                  maxparsed_address = address2
+
+                  excerpt = coordinates[address : address2]
+
+                  if len(excerpt) > 0 and self._is_number(excerpt):
+#                       if len(excerpt) > 0 and _is_number(excerpt):
+                    DDMM = excerpt
+
+    degrees = np.nan
+    minutes = np.nan
+
+    #the potential scenarios we will accomodate for characters preceding the decimal are DDMM. / DDDMM.
+    if DDMM == DDMM:
+      dot_index = np.nan
+      if '.' in list(DDMM):
+        dot_index = list(DDMM).index('.')
+        if dot_index == 4:
+          degrees = int(DDMM[0:2])
+          minutes = float(DDMM[2:])
+        elif dot_index == 5:
+          degrees = int(DDMM[0:3])
+          minutes = float(DDMM[3:])
+      elif len(DDMM) == 4:
+        degrees = int(DDMM[0:2])
+        minutes = float(DDMM[2:])
+      elif len(DDMM) == 5:
+        degrees = int(DDMM[0:3])
+        minutes = float(DDMM[3:])
+
+      latt = degrees*60 + minutes
+
+      if direction == negdirection:
+        latt *= -1
+
+    return latt
+  
   def _custom_train_GPS1(self, df, column, normalization_dict):
     """
     GPS1 is for converting sets of received GPS coordinates into format of two columns of lattitude and longitude
@@ -11072,11 +11234,15 @@ class AutoMunge:
     note that the NArw aggregation will only recognize received NaN points
     (e.g. it won't recognize cases where lattitude or longitude weren't recorded)
     so if ML infill is desired on returned sets, received missing data should be NaN encoded
+
+    Note that this function uses the support function _GPS_parse
     """
     
     #GPS_convention is to distinguish between conventions for format of received GPS coordinates
-    #currently only supports default, which is based on structure of the "$GPGGA message"
+    #default is based on structure of the "$GPGGA message"
     #which was output from an RTK GPS receiver
+    #in 'default' each row is individually parsed
+    #in 'nonunique', only unique entries are parsed
     if 'GPS_convention' in normalization_dict:
       GPS_convention = normalization_dict['GPS_convention']
     else:
@@ -11099,115 +11265,17 @@ class AutoMunge:
       normalization_dict.update({'comma_count' : comma_count})
 
     #_____
-    
-    #currently only have the default scenario defined, user can specify alternate comma addresses with comma_addresses
+
+    def default_GPS_parse_latt(coordinates1):
+      return self._GPS_parse(coordinates1, comma_addresses[0], comma_addresses[1], 'S')
+
+    def default_GPS_parse_long(coordinates1):
+      return self._GPS_parse(coordinates1, comma_addresses[2], comma_addresses[3], 'W')
+
+    #_____
+
+    #in the default scenario, each row is parsed, which may be appropriate for all unique entries
     if GPS_convention == 'default':
-    
-      def default_GPS_parse(coordinates, firstcomma, seccondcomma, negdirection):
-        """
-        based on "$GPGGA message"
-        applied to one set of coordinates
-        receives coordinates as a str for parsing
-
-        note that we are applying the full conversion in this function
-        instead of extracting serately support columns for degrees, minutes, and direction
-        and applying pandas operations to convert entries in parallel
-        it is possible doing the latter may be more efficient
-        for now we are following the full conversion in this function approach for cleaner code
-        we speculate some further optimizations for processing efficiency may be possible
-        by conducting portions of the DDMM operations in pandas instead of to each entry seperately with .transform
-        which would require seperate parsing functions to populate each support column
-        but is also possible the benefit would be offset by the redundant parsing
-        """
-
-        comma_counter = 0
-        maxparsed_address = 0
-        str_length = len(coordinates)
-        parsing_complete = False
-        DDMM = np.nan
-        direction = np.nan
-        latt = np.nan
-
-        for address in range(str_length):
-
-          if address > maxparsed_address and parsing_complete is False:
-
-            current_char = coordinates[address]
-            maxparsed_address = address
-
-            if current_char == ',':
-              comma_counter += 1
-
-            else:
-
-              #direction is single character string as one of {'N', 'S'}
-              if comma_counter == seccondcomma:
-
-                for address3 in range(address, str_length):
-                  if comma_counter == seccondcomma:
-                    current_char3 = coordinates[address3]
-
-                    if current_char3 == ',':
-                      comma_counter += 1
-                      maxparsed_address = address3
-                      parsing_complete = True
-
-                      excerpt = coordinates[address : address3]
-
-                      if len(excerpt) > 0 and excerpt in {'N', 'S', 'E', 'W'}:
-
-                        direction = excerpt
-
-              #latitude in the DDMM.MMMMM (variable decimal) populated after second comma
-              if comma_counter == firstcomma:
-
-                for address2 in range(address, str_length):
-                  if comma_counter == firstcomma:
-                    current_char2 = coordinates[address2]
-
-                    if current_char2 == ',':
-                      comma_counter += 1
-                      maxparsed_address = address2
-
-                      excerpt = coordinates[address : address2]
-
-                      if len(excerpt) > 0 and self._is_number(excerpt):
-#                       if len(excerpt) > 0 and _is_number(excerpt):
-                        DDMM = excerpt
-
-        degrees = np.nan
-        minutes = np.nan
-
-        #the potential scenarios we will accomodate for characters preceding the decimal are DDMM. / DDDMM.
-        if DDMM == DDMM:
-          dot_index = np.nan
-          if '.' in list(DDMM):
-            dot_index = list(DDMM).index('.')
-            if dot_index == 4:
-              degrees = int(DDMM[0:2])
-              minutes = float(DDMM[2:])
-            elif dot_index == 5:
-              degrees = int(DDMM[0:3])
-              minutes = float(DDMM[3:])
-          elif len(DDMM) == 4:
-            degrees = int(DDMM[0:2])
-            minutes = float(DDMM[2:])
-          elif len(DDMM) == 5:
-            degrees = int(DDMM[0:3])
-            minutes = float(DDMM[3:])
-
-          latt = degrees*60 + minutes
-
-          if direction == negdirection:
-            latt *= -1
-
-        return latt
-
-      def default_GPS_parse_latt(coordinates1):
-        return default_GPS_parse(coordinates1, comma_addresses[0], comma_addresses[1], 'S')
-
-      def default_GPS_parse_long(coordinates1):
-        return default_GPS_parse(coordinates1, comma_addresses[2], comma_addresses[3], 'W')
 
       #here are returned column headers
       latt_column = column + '_latt'
@@ -11223,7 +11291,39 @@ class AutoMunge:
       df[long_column] = pd.Series(df[column].astype(str)).transform(default_GPS_parse_long)
       
       del df[column]
+
+    #_____
     
+    #in the nonunique scenario, only unique entries are parsed, which may be appropriate for common points
+    if GPS_convention == 'nonunique':
+
+      unique_entries = list(df[column].astype(str).unique())
+
+      latt_replace_dict = {}
+      long_replace_dict = {}
+
+      for unique_entry in unique_entries:
+
+        unique_latt = default_GPS_parse_latt(unique_entry)
+        latt_replace_dict.update({unique_entry : unique_latt})
+
+        unique_long = default_GPS_parse_long(unique_entry)
+        long_replace_dict.update({unique_entry : unique_long})
+
+      #here are returned column headers
+      latt_column = column + '_latt'
+      long_column = column + '_long'
+
+      df[latt_column] = df[column].astype(str).astype('object').replace(latt_replace_dict)
+      df[long_column] = df[column].astype(str).astype('object').replace(long_replace_dict)
+
+      del df[column]
+
+      normalization_dict.update({'latt_column' : latt_column,
+                                 'long_column' : long_column,
+                                 'latt_replace_dict' : latt_replace_dict,
+                                 'long_replace_dict' : long_replace_dict})
+
     return df, normalization_dict
 
   def _process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
@@ -24485,6 +24585,9 @@ class AutoMunge:
     
     _convert_leakage_dict is for converting leakage_dict to a single convention of returned header
     for both the keys and the value sets
+
+    and includes the step of incorporating full_exclude columns, which are excluded from every other
+    feature's ML infill basis
     
     it returns the received leakage_dict as leakage_dict_orig
     and a newly populated leakage_dict as leakage_dict
@@ -24508,13 +24611,28 @@ class AutoMunge:
     else:
       ML_cmnd.update({'leakage_dict':{}})
       leakage_dict_orig = {}
-    ML_cmnd.update({'leakage_dict_orig' : leakage_dict_orig})
+    ML_cmnd.update({'leakage_dict_orig' : deepcopy(leakage_dict_orig)})
       
     if 'leakage_dict_derived' in ML_cmnd:
       leakage_dict_derived = ML_cmnd['leakage_dict_derived']
     else:
       leakage_dict_derived = {}
       
+    if 'full_exclude' in ML_cmnd:
+      full_exclude = ML_cmnd['full_exclude']
+    else:
+      full_exclude = []
+      
+    #any full_exclude sets we'll populate for each column
+    i=0
+    for full_exclude_column in full_exclude:
+      for origcolumn in postprocess_dict['origcolumn']:
+        if i==0 and origcolumn not in leakage_dict_orig:
+          leakage_dict_orig.update({origcolumn : {full_exclude_column}})
+        else:
+          leakage_dict_orig[origcolumn] = leakage_dict_orig[origcolumn] | {full_exclude_column}
+      i+=1
+    
     #we'll populate our consolidated entries in returned column convention in leakage_dict_converted
     leakage_dict_converted = {}
     
@@ -29373,7 +29491,7 @@ class AutoMunge:
             
     return PCAexcl, bool_PCAexcl
 
-  def _createPCAsets(self, df_train, df_test, PCAexcl, postprocess_dict):
+  def _createPCAsets(self, df_train, df_test, PCAexcl, postprocess_dict, ML_cmnd):
     '''
     Function that takes as input the dataframes df_train and df_test 
     Removes those columns associated with the PCAexcl (which are the original 
@@ -29385,29 +29503,18 @@ class AutoMunge:
     #initiate list PCAexcl_postransform
     PCAexcl_posttransform = []
 
-    #derive the excluded columns post-transform using postprocess_dict
-    for exclcolumn in PCAexcl:
-      
-      #if this is one of the original columns (pre-transform)
-      if exclcolumn in postprocess_dict['origcolumn']:
-      
-        #get a column key for this column (used to access stuff in postprofcess_dict)
-        exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
+    PCAexcl_posttransform = self._column_convert_support(PCAexcl, postprocess_dict, convert_to='returned')
 
-        #get the columnslist from this columnkey
-        exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
+    #we'll also exclude any features designated in ML_cmnd['full_exclude'], since they may have non-numeric data
+    full_exclude = []
+    if 'full_exclude' in ML_cmnd:
+      full_exclude = ML_cmnd['full_exclude']
+      if len(full_exclude) > 0:
+        #convert to returned column convention
+        full_exclude = self._column_convert_support(full_exclude, postprocess_dict, convert_to='returned')
 
-        #add these items to PCAexcl_posttransform
-        PCAexcl_posttransform.extend(exclcolumnslist)
-        
-      #if this is a post-transformation column
-      elif exclcolumn in postprocess_dict['column_dict']:
-        
-        #if we hadn't already done another column from the same source
-        if exclcolumn not in PCAexcl_posttransform:
-          
-          #add these items to PCAexcl_posttransform
-          PCAexcl_posttransform.extend([exclcolumn])
+    #assemble the set of columns to be dropped
+    PCAexcl_posttransform = list((set(PCAexcl_posttransform) | set(full_exclude)) & set(df_train))
           
     #assemble the sets by dropping the columns excluded
     PCAset_train = df_train.drop(PCAexcl_posttransform, axis=1)
@@ -30153,6 +30260,8 @@ class AutoMunge:
         print("error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
         print("Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
         print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+        print("Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
+        print("This printout will still return in that case.")
         print()
     
     #then check for all valid entries
@@ -30164,6 +30273,8 @@ class AutoMunge:
         print("error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
         print("Some transforms in library may not conduct infill, such as the passthrough transform excl.")
         print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+        print("Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
+        print("This printout will still return in that case.")
         print()
     
     return numeric_data_result, all_valid_entries_result
@@ -30927,6 +31038,15 @@ class AutoMunge:
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'leakage_sets', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=[], 
+                              valid_entries=False,
+                              valid_type=list)
+
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'full_exclude', 
                               printstatus,  
                               check_ML_cmnd_result,
                               default=[], 
@@ -33091,9 +33211,6 @@ class AutoMunge:
     
     postprocess_dict assumes the column_dict entries assosciated with transformation functions have already been populated
     convert_to accepts one of {'returned', 'input'}, which is for specifying the returned form
-    
-    this type of operation is performed in several places already, just trying to formalize to a single implemetnation
-    intent is to replace a few insteances where this operation is performed to standardize in future update
     """
     
     #user can pass a single header as string if they are lazy
@@ -34244,6 +34361,9 @@ class AutoMunge:
     #marker if PCA applied
     PCA_applied = False
 
+    #PCA_transformed_columns are those that are fed to PCA
+    PCA_transformed_columns = []
+
     #if user passed anything to automunge argument PCAn_components 
     #PCAn_components can be passed as float between 0-1, integer, False, or None
     #when PCAn_components is False _PCA not applied
@@ -34308,17 +34428,21 @@ class AutoMunge:
           print("Before PCA train set column count:")
           print(len(df_train.columns))
           print()
-          if len(bool_PCAexcl) > 0:
-            print("columns excluded from PCA: ")
-            print(bool_PCAexcl)
-            print("")
         
         #PCA applied marker set to true
         PCA_applied = True
 
         #this is to carve the excluded columns out from the set
         PCAset_train, PCAset_test, PCAexcl_posttransform = \
-        self._createPCAsets(df_train, df_test, PCAexcl, postprocess_dict)
+        self._createPCAsets(df_train, df_test, PCAexcl, postprocess_dict, ML_cmnd)
+
+        PCA_transformed_columns = list(PCAset_train)
+
+        #printout display progress
+        if printstatus is True:
+          print("Columns served to PCA:")
+          print(PCA_transformed_columns)
+          print()
 
         #run validation to ensure the PCA sets contain all valid numeric entries
         PCA_train_numeric_data_result, PCA_train_all_valid_entries_result = \
@@ -34718,7 +34842,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.81'
+    automungeversion = '6.82'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -34772,6 +34896,7 @@ class AutoMunge:
                              'PCAn_components_orig' : PCAn_components_orig,
                              'PCAexcl' : PCAexcl,
                              'prePCAcolumns' : prePCAcolumns,
+                             'PCA_transformed_columns' : PCA_transformed_columns,
                              'returned_PCA_columns' : returned_PCA_columns,
                              'madethecut' : madethecut,
                              'excl_suffix' : excl_suffix,
@@ -36422,6 +36547,69 @@ class AutoMunge:
         del mdf_test[column]
     
     return mdf_test
+
+  def _custom_test_GPS1(self, df, column, normalization_dict):
+    """
+    #corresponding to _custom_train_GPS1
+
+    #intended for use in with GPS_convention == 'nonunique'
+    #for cases where the set of coordinates in the test set are expected to be the same as the train set
+    #such that parsing is not performed on test set entries
+
+    #although still supports GPS_convention == 'default'
+    #in which case each row is parsed
+    """
+
+    #access parameters from normalization_dict
+    GPS_convention = normalization_dict['GPS_convention']
+    comma_addresses = normalization_dict['comma_addresses']
+    comma_count = normalization_dict['comma_count']
+    latt_column = normalization_dict['latt_column']
+    long_column = normalization_dict['long_column']
+
+    #_____
+
+    def default_GPS_parse_latt(coordinates1):
+      return self._GPS_parse(coordinates1, comma_addresses[0], comma_addresses[1], 'S')
+
+    def default_GPS_parse_long(coordinates1):
+      return self._GPS_parse(coordinates1, comma_addresses[2], comma_addresses[3], 'W')
+
+    #_____
+
+    #in the default scenario, each row is parsed, which may be appropriate for all unique entries
+    if GPS_convention == 'default':
+
+      # df[column] = df[column].astype(str)
+
+      df[latt_column] = pd.Series(df[column].astype(str)).transform(default_GPS_parse_latt)
+
+      df[long_column] = pd.Series(df[column].astype(str)).transform(default_GPS_parse_long)
+      
+      del df[column]
+
+    #_____
+    
+    #in the nonunique scenario, entries are not parsed, relying on assumption test set has same unique entries as train
+    if GPS_convention == 'nonunique':
+
+      latt_replace_dict = normalization_dict['latt_replace_dict']
+      long_replace_dict = normalization_dict['long_replace_dict']
+
+      #entries that weren't present in train set are translated to NaN
+      unique_entries_test = list(df[column].astype(str).unique())
+      for unique_entry_test in unique_entries_test:
+        if unique_entry_test not in latt_replace_dict:
+          latt_replace_dict.update({unique_entry_test : np.nan})
+          long_replace_dict.update({unique_entry_test : np.nan})
+
+      #now populate latt and long columns
+      df[latt_column] = df[column].astype(str).astype('object').replace(latt_replace_dict)
+      df[long_column] = df[column].astype(str).astype('object').replace(long_replace_dict)
+
+      del df[column]
+    
+    return df
 
   def _postprocess_mlti(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -41795,32 +41983,18 @@ class AutoMunge:
 
     PCAexcl = postprocess_dict['PCAexcl']
 
-    #initiate list PCAexcl_postransform
-    PCAexcl_posttransform = []
+    PCAexcl_posttransform = self._column_convert_support(PCAexcl, postprocess_dict, convert_to='returned')
 
-    #derive the excluded columns post-transform using postprocess_dict
-    for exclcolumn in PCAexcl:
-      
-      #if this is one of the original columns (pre-transform)
-      if exclcolumn in postprocess_dict['origcolumn']:
-      
-        #get a column key for this column (used to access stuff in postprofcess_dict)
-        exclcolumnkey = postprocess_dict['origcolumn'][exclcolumn]['columnkey']
-
-        #get the columnslist from this columnkey
-        exclcolumnslist = postprocess_dict['column_dict'][exclcolumnkey]['columnslist']
-
-        #add these items to PCAexcl_posttransform
-        PCAexcl_posttransform.extend(exclcolumnslist)
+    #we'll also exclude any features designated in ML_cmnd['full_exclude'], since they may have non-numeric data
+    full_exclude = []
+    if 'full_exclude' in postprocess_dict['ML_cmnd']:
+      full_exclude = postprocess_dict['ML_cmnd']['full_exclude']
+      if len(full_exclude) > 0:
+        #convert to returned column convention
+        full_exclude = self._column_convert_support(full_exclude, postprocess_dict, convert_to='returned')
         
-      #if this is a post-transformation column
-      elif exclcolumn in postprocess_dict['column_dict']:
-        
-        #if we hadn't already done another column from the same source
-        if exclcolumn not in PCAexcl_posttransform:
-          
-          #add these items to PCAexcl_posttransform
-          PCAexcl_posttransform.extend([exclcolumn])
+    #assemble the set of columns to be dropped
+    PCAexcl_posttransform = list((set(PCAexcl_posttransform) | set(full_exclude)) & set(df_test))
 
     #assemble the sets by dropping the columns excluded
     PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
