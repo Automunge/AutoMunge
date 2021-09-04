@@ -600,7 +600,8 @@ am.automunge(df_train, df_test = False,
 * df_train: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to subsequently train a machine learning model. 
 The set at a minimum should be 'tidy' meaning a single column per feature 
-and a single row per observation. If desired the set may include one are more
+and a single row per observation, with all unique column headers. If 
+desired the set may include one are more
 "ID" columns (intended to be carved out and consistently shuffled or partitioned
 such as an index column) and zero or one column intended to be used as labels 
 for a downstream training operation. The tool supports the inclusion of 
@@ -612,7 +613,7 @@ numpy array any label column should be the final column.
 * df_test: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to generate predictions from a downstream machine 
 learning model trained from the automunge returned sets. The set must be 
-consistently formatted as the train set with consistent column labels and/or
+consistently formatted as the train set with consistent column headers and
 order of columns. (This set may optionally contain a labels column if one 
 was included in the train set although it's inclusion is not required). If 
 desired the set may include one or more ID column(s) or column(s) intended 
@@ -765,8 +766,9 @@ powertransform = 'infill')
 To bidirectionally exclude particular features from eachother's imputation model bases
 (such as may be desired in expectation of data leakage), a user can designate via
 entries to ML_cmnd['leakage_sets'], documented further below with ML_cmnd parameter.
-Or to unidirectionally exclude features from anoter's basis, a user can designate
-via entries to ML_cmnd['leakage_dict'], also documented below.
+Or to unidirectionally exclude features from another's basis, a user can designate
+via entries to ML_cmnd['leakage_dict'], also documented below. To exclude a feature from
+all ML infill and PCA basis, can pass as entries to a list in ML_cmnd['full_exclude'].
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
 accross rows, documented further below with ML_cmnd parameter. This operation
@@ -934,7 +936,7 @@ The ML_cmnd allows a user to set options or pass parameters to model training
 operations associated with ML infill, feature importance, or PCA. ML_cmnd is passed
 as a dictionary with first tier valid keys of:
 {'autoML_type', 'MLinfill_cmnd', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
-'leakage_sets', 'leakage_dict', 'hyperparam_tuner', 'randomCV_n_iter',
+'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
 'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
 
@@ -1088,6 +1090,10 @@ To unidirectionally exclude particular features from anotehr feature's imputatio
 a user can designate via entries to ML_cmnd['leakage_dict'], which accepts entry of a dicitonary
 with target feature keys and values of a set of features to exclude from the target feature's
 basis. This also accepts headers in either of input or returned convention.
+
+To exclude a feature from ML infill basis of all other features, can pass as a list of entries to 
+ML_cmnd['full_exclude']. This also accepts headers in either of input or returned convention. Note
+that entries to 'full_exclude' are also excluded from PCA.
 
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
@@ -3795,13 +3801,15 @@ unless an additional transform is applied downstream.)
   - default NArowtype: justNaN
   - suffix appender: _GPS1_latt_mlti_nmbr and _GPS1_long_mlti_nmbr
   - assignparam parameters accepted:
-    - 'GPS_convention': accept one of {'default'}, currently only supports the base configuration consistent with a NMEA demonstration known as the "$GPGGA message"
+    - 'GPS_convention': accept one of {'default', 'nonunique'}, under default all rows are individually parsed. nonunique is used in GPS3 and GPS4.
     - 'comma_addresses': accepts as list of 4 integers, defaulting to [2,3,4,5], which corresponds to default where lattitude located after comma 2, lattitude direction after comma 3, longitude after comma 4, longitude direction after comma 5
     - 'comma_count': an integer, defaulting to 14, used in inversion to pad out commas on the recovered data format
   - driftreport postmunge metrics: metrics included with the downstream normalization transforms
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with partial recovery e.g. for default configuration recovers data in the form ",,DDMM.MMMMMMM,C,DDMM.MMMMMMM,C,,,,,,,,," (where C is the direction)
-* GPS2: comparable to GPS1 but without the downstream normalization, so returns floats in units of arc minutes.
+* GPS2: comparable to GPS1 but without the downstream normalization, so returns floats in units of arc minutes. (If you want missing data returned as NaN instead of adjinfill, can set process_dict entry NArowtype to 'exclude'.)
+* GPS3: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in both the train and test set. This may benefit latency in cases of redundent entries.
+* GPS4: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in the train set and relies on assumption that the set of unique entries in test set will be the same or a subset of the train set, which may benefit latency for this scenario.
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
@@ -4269,6 +4277,10 @@ avoid unintentional duplication.
 - 'exc9',
 - 'excl',
 - 'fsmh',
+- 'GPS1',
+- 'GPS2',
+- 'GPS3',
+- 'GPS4',
 - 'hash',
 - 'hldy',
 - 'hmsc',
@@ -4313,6 +4325,8 @@ avoid unintentional duplication.
 - 'min4',
 - 'mint',
 - 'misn',
+- 'mlti',
+- 'mlto',
 - 'mltp',
 - 'mmd2',
 - 'mmd3',
@@ -4591,7 +4605,10 @@ Note that for transforms in the custom_train convention, an initial infill is au
 applied as adjacent cell infill to serve as precursor to ML infill. A user may also specify
 by a 'defaultinfill' processdict entry other conventions for this initial infill associated
 with the transformation category, as one of {'adjinfill', 'meaninfill', 'medianinfill', 
-'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}.
+'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}. naninfill may be suitable
+when a custom infill is applied as part of the custom transform. If naninfill retention is
+desired for the returned data, either it may be assigned in assigninfill, or the 'NArowtype' 
+processdict entry can be cast as 'exclude', noting that the latter may interfere with ML infill.
 
 Note that for transforms in the custom_train convention, after the transformation function
 is applied, a data type casting is performed based on the MLinfilltype 
