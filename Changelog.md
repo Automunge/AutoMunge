@@ -4197,3 +4197,17 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - cap and floor default to False, when passed as integer or float they cap or set floor on values in set
 - for example if feature distribution is mostly is in range 0-100, you may not want a dinstinct bin encoding for outlier values over 1000
 - found a flaw in our backward compatibility validation test, working now as intended
+
+6.82
+- small rewrite of GPS1 transforms, superseding the version rolled out yesterday, impacting backward compatibility with 6.81
+- GPS1 now accepts additional GPS_convention parameter scenario of 'nonunique'
+- 'nonunique' encodes comparably to 'default', but instead of parsing each row individually, only parses unique values, as may benefit latency when the data set contains a lot of redundant entries
+- note that we expect most GPS applications will have primarily all unique measurements making them suitable for the default applied with GPS1, so nonunique really just here to support a particular alternate use case
+- new root categories GPS3 and GPS4, comparable to GPS1 (i.e. with downstrema normalization via mlti), but applies GPS_convention = 'nonunique' as the default. 
+- GPS3 differs from GPS4 in that GPS3 parses unique entries both in the train and test data, while GPS4 only parses entries in the train data, relying on the assumption that the test data entries will be the same or a subset of train data entries (as may benefit latency for this scenario)
+- we recommend defaulting to GPS1 unless latency is an important factor, and otherwise experimenting based on the penetration of unique entries in your data to compare between GPS1/3/4
+- new ML_cmnd specification now supported as ML_cmnd['full_exclude']
+- full_exclude accepts a list of columns in input or returned column header convention, which are to be excluded from all model training, including for ML infill, feature importance, and PCA
+- full_exclude may be useful when transforms may return non-numeric data or data without infill and you still want to apply ML infill on the other features
+- new postprocess_dict entry 'PCA_transformed_columns' logging columns serving as input to PCA
+- a tweak to PCA printouts, now displaying PCA_transformed_columns instead of column exclusions
