@@ -8613,9 +8613,9 @@ class AutoMunge:
 
       elif defaultinfill in {'lcinfill'}:
 
-        #(zzzinfill as used here is just an arbitrary string)
+        #(asdf as used here is just an arbitrary string)
         mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
-        mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
+        mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = [suffixcolumn, 'asdf'], ascending = [False, True])
         mode_valuecounts_list = list(mode_valuecounts_list.index)
 
         if len(mode_valuecounts_list) > 0:
@@ -10472,7 +10472,7 @@ class AutoMunge:
 
     #create plug value for missing cells as most common value
     valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-    valuecounts = valuecounts.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
+    valuecounts = valuecounts.rename_axis('asdf').sort_values(by = [suffixcolumn, 'asdf'], ascending = [False, True])
     valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
@@ -10689,9 +10689,6 @@ class AutoMunge:
     #return comparable form of output
     #and accept comaprable parameters
     #primary difference is cleaner code and trimmed a little fat
-    
-    #doing away with 'zzzinfill' reserved string and use NaN instead
-    #and remove the overlap replace operation 
     """
     
     #suffix_convention is to distinguish between text and onht suffixes
@@ -10798,7 +10795,7 @@ class AutoMunge:
     if ordered is False and frequency_sort is True:
       ordered = True
       labels_train_ordered = pd.DataFrame(df[column].value_counts())
-      labels_train_ordered = labels_train_ordered.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -12739,12 +12736,12 @@ class AutoMunge:
       labels_test.sort()
 
       #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
+      if np.nan not in labels_train:
         labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
+        labels_train = labels_train + [np.nan]
+      if np.nan not in labels_test:
         labels_test.sort()
+        labels_test = labels_test + [np.nan]
 
       #get length of the list
       listlength = len(labels_train)
@@ -12787,18 +12784,18 @@ class AutoMunge:
 
 
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[sp19_column] = mdf_train[sp19_column].replace(binary_encoding_dict) 
+      mdf_train[sp19_column] = mdf_train[sp19_column].astype('object').replace(binary_encoding_dict) 
 
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
       testspecificcategories = list(set(labels_test)-set(labels_train))
 
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[sp19_column] = mdf_test[sp19_column].replace(testplug_dict)  
+      testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+      mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(testplug_dict)  
 
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[sp19_column] = mdf_test[sp19_column].replace(binary_encoding_dict)    
+      mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(binary_encoding_dict)    
 
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
@@ -13375,12 +13372,12 @@ class AutoMunge:
       labels_test.sort()
 
       #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_train:
-        labels_train = labels_train + ['zzzinfill']
-        labels_train.sort()
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
+      if np.nan not in labels_train:
+        labels_train = labels_train + [np.nan]
+        # labels_train.sort()
+      if np.nan not in labels_test:
+        labels_test = labels_test + [np.nan]
+        # labels_test.sort()
 
       #get length of the list
       listlength = len(labels_train)
@@ -13423,18 +13420,18 @@ class AutoMunge:
 
 
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_train[sbs3_column] = mdf_train[sbs3_column].replace(binary_encoding_dict) 
+      mdf_train[sbs3_column] = mdf_train[sbs3_column].astype('object').replace(binary_encoding_dict) 
 
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
       testspecificcategories = list(set(labels_test)-set(labels_train))
 
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(testplug_dict)  
+      testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(testplug_dict)  
 
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(binary_encoding_dict)    
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(binary_encoding_dict)    
 
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
@@ -15680,9 +15677,6 @@ class AutoMunge:
     #and accept comaprable parameters
     #primary difference is cleaner code and trimmed a little fat
     #and returned missing data representation now defaults to 0
-    
-    #doing away with 'zzzinfill' reserved string and use NaN instead
-    #and remove the overlap replace operation 
 
     #please note that due to its use in Binary dimensionality reduction,
     #the ordl normalization_dict has a few reserved strings
@@ -15777,7 +15771,7 @@ class AutoMunge:
     if ordered is False and frequency_sort is True:
       ordered = True
       labels_train_ordered = pd.DataFrame(df[column].value_counts())
-      labels_train_ordered = labels_train_ordered.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -16198,22 +16192,12 @@ class AutoMunge:
     mdf_test = \
     self._autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == mdf_test[suffixcolumn], mdf_test[suffixcolumn].astype(str), specified='replacement')
     
-#     #extract categories for column labels
-#     #with values sorted by frequency of occurance from most to least
-#     labels_train = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-#     labels_train = labels_train.rename_axis('zzzinfill').sort_values(by = [suffixcolumn, 'zzzinfill'], ascending = [False, True])
-#     labels_train = list(labels_train.index)
     labels_train = set(mdf_train[suffixcolumn].unique())
     origlen = len(labels_train)
     nanincluded = False
     labels_train = {x for x in labels_train if x==x}
     if len(labels_train) < origlen:
       nanincluded = True
-#     if mdf_train[mdf_train[suffixcolumn].isna()].shape[0] > 0:
-#       labels_train = labels_train + [np.nan]
-    
-#     labels_train = list(mdf_train[suffixcolumn].unique())
-#     labels_train.sort()
   
     labels_test = set(mdf_test[suffixcolumn].unique())
     labels_test = {x for x in labels_test if x==x}
@@ -16286,11 +16270,6 @@ class AutoMunge:
     #and accept comaprable parameters
     #primary difference is cleaner code and trimmed a little fat
     #and returned missing data represenation now defaults to all 0's
-    
-    #for example, going to try and do away with 'zzzinfill' reserved string
-    #and use np.nan instead
-    #and remove the overlap replace operation 
-    #(which was there to accomodate an assumed edge case with pd.replace which I now am unable to duplicate)
 
     #please note that due to its use in Binary dimensionality reduction, 
     #the 1010 normalization_dict has a few reserved strings
@@ -27883,6 +27862,7 @@ class AutoMunge:
                 #consolidate multicolumn infill into a single column of strings with header column
                 #convention is df_traininfill will have header 'infill' in single column case otherwise headers consistent with target columns
                 #note that for concurrent_nmbr and concurrent_act MLinfilltype this will be a single column
+                #this is not further applied as infill, it's just used in this form to evaluate halting criteria
                 df_traininfill = \
                 self._consolidate_multicolumn(df_traininfill, column, MLinfilltype, postprocess_dict)
                 
@@ -27946,23 +27926,29 @@ class AutoMunge:
     """
     #consolidates multicolumn infill representations to a single column of aggregated strings with header column
     #else returns received single column to same column but renamed to header column
+    #this multicolumn representation is used to evaluate halting criteria for infilliterate
     """
     
     if MLinfilltype in {'multirt', '1010'}:
       
       categorylist = list(df_traininfill)
       
-      #these have suffix included so won't have overlap with arbitrary column header 'zzzinfill'
-      df_traininfill['zzzinfill'] = ''
+      #these have suffix included so won't have overlap with arbitrary column header 'asdf', but just in case
+      tempcolumn = 'asdf'
+      if tempcolumn in categorylist:
+        while tempcolumn in categorylist:
+          tempcolumn = tempcolumn + 'z'
+
+      df_traininfill[tempcolumn] = ''
       
       for entry in categorylist:
         
-        df_traininfill['zzzinfill'] = df_traininfill['zzzinfill'] + df_traininfill[entry].astype(str)
+        df_traininfill[tempcolumn] = df_traininfill[tempcolumn] + df_traininfill[entry].astype(str)
         
         del df_traininfill[entry]
         
       #now rename the target column
-      df_traininfill.rename(columns = {'zzzinfill' : column}, inplace = True)
+      df_traininfill.rename(columns = {tempcolumn : column}, inplace = True)
       
     elif 'infill' in df_traininfill:
         
@@ -28994,7 +28980,7 @@ class AutoMunge:
       #find mode of the aggregation
       #binary_mode = tempdf['onehot'].mode()
       mode_valuecounts_list = pd.DataFrame(tempdf['onehot'].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = ['onehot', 'zzzinfill'], ascending = [False, True])
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = ['onehot', 'asdf'], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
 
       if len(mode_valuecounts_list) > 0:
@@ -29033,7 +29019,7 @@ class AutoMunge:
 
       #calculate mode of remaining rows
       mode_valuecounts_list = pd.DataFrame(tempdf[column].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis('zzzinfill').sort_values(by = [column, 'zzzinfill'], ascending = [False, True])
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
       if len(mode_valuecounts_list) > 0:
         mode = mode_valuecounts_list[-1]
@@ -34842,7 +34828,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.82'
+    automungeversion = '6.83'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37166,28 +37152,28 @@ class AutoMunge:
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(_1010_binary_encoding_dict.keys())
-      labels_train.sort()
+      # labels_train.sort()
       labels_test = list(mdf_test[sp19_column].unique())
       labels_test.sort()
       
       #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
+      if np.nan not in labels_test:
+        labels_test = labels_test + [np.nan]
+        # labels_test.sort()
         
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[sp19_column] = mdf_test[sp19_column].replace(_1010_binary_encoding_dict)
+      mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(_1010_binary_encoding_dict)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
       testspecificcategories = list(set(labels_test)-set(labels_train))
       
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[sp19_column] = mdf_test[sp19_column].replace(testplug_dict)
+      testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+      mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(testplug_dict)
       
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[sp19_column] = mdf_test[sp19_column].replace(_1010_binary_encoding_dict)
+      mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(_1010_binary_encoding_dict)
       
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
@@ -37480,28 +37466,28 @@ class AutoMunge:
       #extract categories for column labels
       #note that .unique() extracts the labels as a numpy array
       labels_train = list(_1010_binary_encoding_dict.keys())
-      labels_train.sort()
+      # labels_train.sort()
       labels_test = list(mdf_test[sbs3_column].unique())
-      labels_test.sort()
+      # labels_test.sort()
       
       #if infill not present in train set, insert
-      if 'zzzinfill' not in labels_test:
-        labels_test = labels_test + ['zzzinfill']
-        labels_test.sort()
+      if np.nan not in labels_test:
+        labels_test = labels_test + [np.nan]
+        # labels_test.sort()
         
       #replace the cateogries in train set via ordinal trasnformation
-      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(_1010_binary_encoding_dict)
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(_1010_binary_encoding_dict)
       
       #in test set, we'll need to strike any categories that weren't present in train
       #first let'/s identify what applies
       testspecificcategories = list(set(labels_test)-set(labels_train))
       
       #so we'll just replace those items with our plug value
-      testplug_dict = dict(zip(testspecificcategories, ['zzzinfill'] * len(testspecificcategories)))
-      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(testplug_dict)
+      testplug_dict = dict(zip(testspecificcategories, [np.nan] * len(testspecificcategories)))
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(testplug_dict)
       
       #now we'll apply the 1010 transformation to the test set
-      mdf_test[sbs3_column] = mdf_test[sbs3_column].replace(_1010_binary_encoding_dict)
+      mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(_1010_binary_encoding_dict)
       
       #ok let's create a list of columns to store each entry of the binary encoding
       _1010_columnlist = []
@@ -45534,8 +45520,6 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45553,7 +45537,7 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
     
@@ -45594,7 +45578,7 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     
     #returning zeros from inversion is counter to the convention used in other transforms
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
+    #so returning as nan
     """
     
     normkey = categorylist[0]
@@ -45609,7 +45593,7 @@ class AutoMunge:
     if consolidate_nonoverlaps is True:
 
       df = \
-      self._autowhere(df, inputcolumn, df[inputcolumn] == '0', 'zzzinfill', specified='replacement')
+      self._autowhere(df, inputcolumn, df[inputcolumn] == '0', np.nan, specified='replacement')
   
     return df, inputcolumn
 
@@ -45623,8 +45607,6 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45674,7 +45656,7 @@ class AutoMunge:
       
       i+=1
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
     
@@ -45716,8 +45698,6 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45735,7 +45715,7 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     if int_headers is False:
 
@@ -45772,8 +45752,6 @@ class AutoMunge:
     
     #returns the overlaps, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45823,7 +45801,7 @@ class AutoMunge:
       
       i+=1
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     column_conversion_dict = dict(zip(preint_newcolumns, newcolumns))
     
@@ -45865,8 +45843,6 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45876,7 +45852,7 @@ class AutoMunge:
     search_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['search_dict']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     #to match convention of prioritizing search parameter entries at end of list
     inverse_search = list(search_dict)
@@ -45891,7 +45867,7 @@ class AutoMunge:
         df = \
         self._autowhere(df, 
                         inputcolumn, 
-                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                         search, 
                         specified='replacement')
     
@@ -45907,8 +45883,6 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45920,7 +45894,7 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     #to match convention of prioritizing search parameter entries at end of list
     newcolumns.reverse()
@@ -45934,7 +45908,7 @@ class AutoMunge:
         df = \
         self._autowhere(df, 
                         inputcolumn, 
-                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                         searchterm, 
                         specified='replacement')
     
@@ -45950,8 +45924,6 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -45963,7 +45935,7 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     #to match convention of prioritizing search parameter entries at end of list
     newcolumns.reverse()
@@ -45977,7 +45949,7 @@ class AutoMunge:
         df = \
         self._autowhere(df, 
                         inputcolumn, 
-                        ((df[column] == 1).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                        ((df[column] == 1).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                         searchterm, 
                         specified='replacement')
     
@@ -45993,8 +45965,6 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -46006,7 +45976,7 @@ class AutoMunge:
     suffix = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     #to match convention of prioritizing search parameter entries at end of list
     keys = list(ordl_dict1)
@@ -46022,7 +45992,7 @@ class AutoMunge:
       df = \
       self._autowhere(df, 
                       inputcolumn, 
-                      ((df[normkey] == key).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                      ((df[normkey] == key).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                       searchterm, 
                       specified='replacement')
     
@@ -46038,8 +46008,6 @@ class AutoMunge:
     
     #returns the search term, not the full entries
     #since it doesn't know which of the full entries to return
-
-    #note pandas converts NaN to string for column of dtype object so we use 'zzzinfill'
     """
     
     normkey = categorylist[0]
@@ -46049,7 +46017,7 @@ class AutoMunge:
     overlap_dict = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['overlap_dict']
     
-    df[inputcolumn] = 'zzzinfill'
+    df[inputcolumn] = np.nan
     
     for key in overlap_dict:
       
@@ -46058,7 +46026,7 @@ class AutoMunge:
       df = \
       self._autowhere(df, 
                       inputcolumn, 
-                      ((df[normkey] == extract).astype(int) + (df[inputcolumn] == 'zzzinfill').astype(int)) == 2, 
+                      ((df[normkey] == extract).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                       key, 
                       specified='replacement')
     
@@ -46175,7 +46143,7 @@ class AutoMunge:
     As well as inputcolumn which is the header of the recovered column (as may result from removing the suffix appender)
     
     Note that this wrapper does not perform infill
-    The convention in the library is that missing entries in recovered sets have the string entry 'zzzinfill'
+    The convention in the library is that missing entries in recovered sets are recorded as np.nan
     category serving as basis
     
     We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
