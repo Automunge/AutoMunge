@@ -3874,9 +3874,6 @@ sets that may include scientific units for instance, as prefixes will not be not
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
 by passing 'minsplit' parameter through assignparam.
-Please note that our family of string parsing functions in some cases use the arbitrary string 'zzzinfill' 
-as a placeholder for missing data, meaning parsed entries containing that string may result in 
-an activation overlapping with missing data.
 * splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings e.g. 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
@@ -4524,7 +4521,6 @@ present in dataframe and return results in final printouts and postprocess_dict[
 
  ___ 
 ### Other Reserved Strings
-- 'zzzinfill': our family of string parsing functions in some cases use the string 'zzzinfill' as a placeholder for missing data, meaning parsed entries containing that string may result in an activation overlapping with missing data
 - 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
 - 'Binary_1010_#' / 'Binary_ord3': The columns returned from Binary transform have headers per one of these conventions.
 - 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
