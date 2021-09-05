@@ -4211,3 +4211,16 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - full_exclude may be useful when transforms may return non-numeric data or data without infill and you still want to apply ML infill on the other features
 - new postprocess_dict entry 'PCA_transformed_columns' logging columns serving as input to PCA
 - a tweak to PCA printouts, now displaying PCA_transformed_columns instead of column exclusions
+
+6.83
+- we had noted with 6.76 an intent to audit use of reserved string in string parsing functions
+- turns out the bulk of the usage was in binarized string parsing functions sp19 and sbs3
+- and then also used in inversion functions
+- and then in a few otther places as an arbitrary string
+- the sp19 and sbs3 usages are now replaced with the np.nan convention to be consistent with rest of library
+- the inversion usages are also replaced with np.nan
+- noting that we had a mistaken code comment on the matter, we were attributing a data type drift issue to pandas that we now believe had originated from numpy
+- now resolved with the autowhere function rolled out in 6.74
+- otherwise struck the reserved string throughout just out of spite for all of the trauma it put me through
+- although left it in one place as a memorial for all of the times that we shared together
+- reserved string now fully lifted, automunge accepts all the data, all the time, anywhere, anyhow
