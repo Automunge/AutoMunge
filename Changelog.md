@@ -4224,3 +4224,23 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - otherwise struck the reserved string throughout just out of spite for all of the trauma it put me through
 - although left it in one place as a memorial for all of the times that we shared together
 - reserved string now fully lifted, automunge accepts all the data, all the time, anywhere, anyhow
+
+6.84
+- transformation categories of MLinfilltype 'totalexclude' are now excluded from ML infill basis for other features
+- by appending onto user specifications recorded in ML_cmnd['full_exclude']
+- this serves purpose of allowing returned non-numeric data to automatically be excluded from ML infill basis
+- which saves user the hassle of manually specifying exclusions
+- 'totalexclude' is MLinfilltype for 'excl' transform (full passthorugh) and is now updated be registered for all other categories that may return non-numeric data
+- if a passthrough transformed column is desired to be included in ML infill basis, can instead assign to one of other excl variants such as exc2, exc5, exc8
+- clarifications added to read me library of transformations section on excl variants
+- new NArowtype option as 'totalexclude', which is comparable to 'exclude' but source columns are also excluded from assignnan global option and nan conversions for missing data
+- 'totalexclude' is now assigned as NArowtype for excl and null trasnforms
+- updates to the processdict specifications associated with MLinfilltype, NArowtype, and concluding clarifications
+- added clarifications of which between MLinfilltypes exclude/boolexclude/ordlexclude/totalexclude are included in ML infill basis
+- added desription of new NArowtype totalexclude
+- rephrased the concluding clarifications to processdict specifications for improved clarity, we believe this rephrasing makes the distinction between MLinfilltype and NArowtype scope more clear
+- updates to feature selection in both automunge and postmunge to accomodate non-numeric sets, using basis exclusion specified under ML_cmnd['full_exclude'] as well as new convention of MLinfilltype 'totalexclude' exclusions
+- updates to inspect NArowtype instead of MLinfilltype in _convert_to_nan and _assignnan_convert
+- update to the wrapper functions for custom_train so that final infill exclusions are based on MLinfilltype instead of NArowtype
+- identified a few cases of redundant sort operations applied in sp19 and sbs3 as well as un-needed search in list, simplified
+- moved the validations of all valid numeric entries preceding ML infill model training to be inspected for each trained model instead of once for all models (made sense since the feature exclusions may be tailored to each infill model)
