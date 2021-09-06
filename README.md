@@ -769,6 +769,9 @@ entries to ML_cmnd['leakage_sets'], documented further below with ML_cmnd parame
 Or to unidirectionally exclude features from another's basis, a user can designate
 via entries to ML_cmnd['leakage_dict'], also documented below. To exclude a feature from
 all ML infill and PCA basis, can pass as entries to a list in ML_cmnd['full_exclude'].
+Please note that columns returned from transforms with MLinfilltype 'totalexclude' (such as
+for the excl passthrough transform) are automatically excluded from ML infill basis.
+
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
 accross rows, documented further below with ML_cmnd parameter. This operation
@@ -1092,8 +1095,10 @@ with target feature keys and values of a set of features to exclude from the tar
 basis. This also accepts headers in either of input or returned convention.
 
 To exclude a feature from ML infill basis of all other features, can pass as a list of entries to 
-ML_cmnd['full_exclude']. This also accepts headers in either of input or returned convention. Note
-that entries to 'full_exclude' are also excluded from PCA.
+ML_cmnd['full_exclude']. This also accepts headers in either of input or returned convention. 
+Please note that columns returned from transforms with MLinfilltype 'totalexclude' (such as
+for the excl passthrough transform) are automatically excluded from model training basis.
+Note that entries to 'full_exclude' are also excluded from PCA.
 
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
@@ -1633,6 +1638,8 @@ We'll describe the options for processdict entries here. For clarity processdict
 # - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
 # - 'exclude' for source columns that aren't needing NArow columns derived
+# - 'totalexclude' for source columns that aren't needing NArow columns derived, 
+#                  also excluded from assignnan global option and nan conversions for missing data
 # - 'positivenumeric' for source columns with expected positive numeric entries
 # - 'nonnegativenumeric' for source columns with expected non-negative numeric (zero allowed)
 # - 'nonzeronumeric' for source columns with allowed positive and negative but no zero
@@ -1660,14 +1667,14 @@ We'll describe the options for processdict entries here. For clarity processdict
 #                               in that columns are independent
 #              'concurrent_ordl' for multicolumn sets with ordinal encoded entries (nonnegative integer classification)
 #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
-#              'exclude' for columns which will be excluded from infill, 
-#                        returned data might not be numerically encoded
-#              'boolexclude' boolean set suitable for Binary transform but excluded from all infill 
-#                            (e.g. NArw entries)
+#              'exclude' for columns which will be excluded from infill, included in other features' ML infill bases
+#                        returned data should be numerically encoded
+#              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
+#                            (e.g. NArw entries), included in other features' ML infill bases
 #              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
-#                            ordlexclude may return a multi-column set)
+#                            ordlexclude may return a multi-column set), included in other features' ML infill bases
 #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
-#                             and excluded from inf conversion and assignnan global option
+#                             excluded from other features' ML infill bases
 
 #___________________________________________________________________________
 #Other optional entries for processdict include:
@@ -1733,9 +1740,10 @@ We'll describe the options for processdict entries here. For clarity processdict
 
 #___________________________________________________________________________
 #Other clarifications:
-#Note that NArowtype is associated with a category's use as a root category, 
-#and also for a category's use as a tree category in the custom_train convention
-#MLinfilltype is associated with a category's use as a tree category
+#Note that NArowtype is associated with transformation inputs
+#including for a category's use as a root category and as a tree category
+#MLinfilltype is associated with transformation outputs
+#for a category's use as a tree category
 ```
 
 For example, to populate a custom transformation category 'newt' that uses internally defined transformation functions _process_mnmx and _postprocess_mnmx:
@@ -3682,30 +3690,21 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
   - inversion available: yes
 
 ### Misc. Functions
-* null: deletes source column
-  - default infill: none
-  - default NArowtype: exclude
-  - no suffix appender, column deleted
-  - assignparam parameters accepted: none
-  - driftreport postmunge metrics: none
-  - returned datatype: N/A
-  - inversion available: no
-* excl: passes source column un-altered, no transforms or infill. (Note that returned data may not be 
-numeric and predictive methods like ML infill and feature selection may not work for that scenario.)
-Note that for assignnan designation of infill designations, excl is excluded from 'global' assignments
-(although may still be assigned explicitly under assignnan columns or categories entries).
-  - useful for: passthrough sets
+* excl: passes source column un-altered, no transforms, data type conversion, or infill. The feature is excluded from ML infill basis of all other features. If a passthrough column is desired to be included in ML infill basis for surrounding features, it should instead be passed to one of the other passthorugh trasnforms, such as exc2 for continuous numeric, exc5 for ordinal encoded integers, or exc8 for continuous integers. Data returned from excl may be non-numeric. excl has a special suffix convention in the library in that the column is returned without a suffix appender (to signify full pass-through), if suffix retention is desired it is available by the automunge(.) excl_suffix parameter.
+Note that for assignnan designation of infill conversions, excl is excluded from 'global' assignments
+(although may still be assigned explicitly under assignnan columns or categories entries). excl also retains original form of entries that for other transforms are converted to missing data markers, such as None or inf.
+  - useful for: full passthrough sets
   - default infill: none
   - default NArowtype: exclude
   - suffix appender: None or '\_excl' (dependent on automunge(.) excl_suffix parameter)
   - assignparam parameters accepted: none
   - driftreport postmunge metrics: none
-  - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - returned datatype: retains data type of received data
   - inversion available: yes
-* exc2/exc3/exc4: passes source column unaltered other than force to numeric, mode infill applied
+* exc2/exc3/exc4: passes source column unaltered other than force to numeric, adjinfill applied
 (exc3 and exc4 have downstream standard deviation or power of 10 bins aggregated such as may be beneficial
 when applying TrainLabelFreqLevel to a numeric label set)
-  - useful for: passthrough sets where all numeric entries desired, exc3 and exc4 useful for oversampling with numeric labels by TrainFreqLevelizer
+  - useful for: numeric pass-through sets, feature included in surrounding ML infill models
   - default infill: adjinfill
   - default NArowtype: numeric
   - suffix appender: '_exc2' in base configuration or based on the family tree category
@@ -3714,8 +3713,8 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - driftreport postmunge metrics: none
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
-* exc5/exc8: passes source column unaltered other than force to numeric, mode infill applied for non-integers
-  - useful for: passthrough sets where all numeric entries desired
+* exc5/exc8: passes source column unaltered other than force to numeric, adjinfill applied for non-integers. exc5 is for ordinal encoded integers, exc8 is for continuous integers.
+  - useful for: passthrough integer sets, feature included in surrounding ML infill models
   - default infill: adjinfill
   - default NArowtype: integer
   - suffix appender: '_exc5' in base configuration or based on the family tree category
@@ -3866,6 +3865,14 @@ column with missing or improperly formatted values.
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: pct_NArw
   - returned datatype: int8
+  - inversion available: no
+* null: deletes source column
+  - default infill: none
+  - default NArowtype: exclude
+  - no suffix appender, column deleted
+  - assignparam parameters accepted: none
+  - driftreport postmunge metrics: none
+  - returned datatype: N/A
   - inversion available: no
 
 ### Parsed Categoric Encodings
