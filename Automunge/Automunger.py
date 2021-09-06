@@ -3670,6 +3670,8 @@ class AutoMunge:
     # - 'integer' for source columns with expected integer entries
     # - 'justNaN' for source columns that may have expected entries other than numeric
     # - 'exclude' for source columns that aren't needing NArow columns derived
+    # - 'totalexclude' for source columns that aren't needing NArow columns derived, 
+    #                  also excluded from assignnan global option and nan conversions for missing data
     # - 'positivenumeric' for source columns with expected positive numeric entries
     # - 'nonnegativenumeric' for source columns with expected non-negative numeric (zero allowed)
     # - 'nonzeronumeric' for source columns with allowed positive and negative but no zero
@@ -3697,14 +3699,14 @@ class AutoMunge:
     #                               in that columns are independent
     #              'concurrent_ordl' for multicolumn sets with ordinal encoded entries (nonnegative integer classification)
     #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
-    #              'exclude' for columns which will be excluded from infill, 
-    #                        returned data might not be numerically encoded
-    #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill 
-    #                            (e.g. NArw entries)
+    #              'exclude' for columns which will be excluded from infill, included in other features' ML infill bases
+    #                        returned data should be numerically encoded
+    #              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
+    #                            (e.g. NArw entries), included in other features' ML infill bases
     #              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
-    #                            ordlexclude may return a multi-column set)
+    #                            ordlexclude may return a multi-column set), included in other features' ML infill bases
     #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
-    #                             and excluded from inf conversion and assignnan global option
+    #                             excluded from other features' ML infill bases
 
     #___________________________________________________________________________
     #Other optional entries for processdict include:
@@ -3770,9 +3772,10 @@ class AutoMunge:
 
     #___________________________________________________________________________
     #Other clarifications:
-    #Note that NArowtype is associated with a category's use as a root category, 
-    #and also for a category's use as a tree category in the custom_train convention
-    #MLinfilltype is associated with a category's use as a tree category
+    #Note that NArowtype is associated with transformation inputs
+    #including for a category's use as a root category and as a tree category
+    #MLinfilltype is associated with transformation outputs
+    #for a category's use as a tree category
     '''
     
     process_dict = {}
@@ -4433,7 +4436,7 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
@@ -4558,7 +4561,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'UPCS'}})
     process_dict.update({'Unht' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4568,7 +4571,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'onht'}})
     process_dict.update({'Utxt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4578,7 +4581,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4588,7 +4591,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4598,7 +4601,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Ucct' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4608,7 +4611,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uord' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4618,7 +4621,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'Uor2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4628,7 +4631,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'Uor3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4638,7 +4641,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uor6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4648,7 +4651,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'U101' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4658,7 +4661,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : '1010'}})
     process_dict.update({'splt' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4680,7 +4683,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4692,7 +4695,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4702,7 +4705,7 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl7' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4715,7 +4718,7 @@ class AutoMunge:
                                                      'consolidate_nonoverlaps' : True,
                                                      'minsplit' : 1},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl8' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4738,7 +4741,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp10' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4750,7 +4753,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp11' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4762,7 +4765,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp12' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4774,7 +4777,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp13' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4786,7 +4789,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp14' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4798,7 +4801,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp15' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4834,7 +4837,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp18' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4846,7 +4849,7 @@ class AutoMunge:
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp19' : {'dualprocess' : self._process_sp19,
                                   'singleprocess' : None,
@@ -4947,7 +4950,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hash'}})
     process_dict.update({'Uhs2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4957,7 +4960,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hsh2'}})
     process_dict.update({'Uh10' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4967,7 +4970,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hs10'}})
     process_dict.update({'srch' : {'dualprocess' : self._process_srch,
                                   'singleprocess' : None,
@@ -5017,7 +5020,7 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strn' : {'dualprocess' : None,
                                   'singleprocess' : self._process_strn,
@@ -5025,7 +5028,7 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strg' : {'dualprocess' : None,
                                   'singleprocess' : self._process_strg,
@@ -5035,7 +5038,7 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'strg'}})
     process_dict.update({'nmrc' : {'dualprocess' : None,
                                   'singleprocess' : self._process_nmrc,
@@ -5362,7 +5365,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -5374,7 +5377,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -5386,7 +5389,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ordl' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5423,9 +5426,10 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'frequency_sort' : False,
+                                                     'null_activation' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord5'}})
     process_dict.update({'maxb' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
@@ -5511,7 +5515,7 @@ class AutoMunge:
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'or10' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5520,7 +5524,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'or11' : {'custom_train' : self._custom_train_1010,
                                    'custom_test' : self._custom_test_1010,
@@ -5566,7 +5570,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or16' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5576,7 +5580,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or17' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5586,7 +5590,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or18' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5596,7 +5600,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or19' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5606,7 +5610,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or20' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5616,7 +5620,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or21' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5626,7 +5630,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or22' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5636,7 +5640,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or23' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5646,7 +5650,7 @@ class AutoMunge:
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'om10' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5655,7 +5659,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'mmor' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5732,7 +5736,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'tmzn'}})
     process_dict.update({'date' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5740,7 +5744,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5748,7 +5752,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'dat3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5756,7 +5760,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5764,7 +5768,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5772,7 +5776,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5780,7 +5784,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'year' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
@@ -7076,8 +7080,8 @@ class AutoMunge:
                                   'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : None}})
     process_dict.update({'copy' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
@@ -7086,7 +7090,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'copy'}})
     process_dict.update({'excl' : {'dualprocess' : None,
                                   'singleprocess' : self._process_excl,
@@ -7094,7 +7098,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_excl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
-                                  'NArowtype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'excl'}})
     process_dict.update({'exc2' : {'dualprocess' : self._process_exc2,
@@ -7187,7 +7191,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'shfl'}})
     process_dict.update({'sint' : {'custom_train' : self._custom_train_trig,
                                   'custom_inversion' : self._custom_inversion_trig,
@@ -7295,14 +7299,14 @@ class AutoMunge:
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'nuld' : {'dualprocess' : None,
                                   'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : None}})
     process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
@@ -7342,7 +7346,7 @@ class AutoMunge:
                                   'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'lbor'}})
     process_dict.update({'lbos' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7398,7 +7402,7 @@ class AutoMunge:
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'lgnr' : {'dualprocess' : self._process_absl,
                                   'singleprocess' : None,
@@ -7441,7 +7445,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
@@ -7451,7 +7455,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp,
                                   'singleprocess' : None,
@@ -8148,6 +8152,7 @@ class AutoMunge:
     #now that we've created a new column, we'll apply a default infill
     #contingent on the 'NArowtype' of the tree category serving as basis for this transform
     NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
+    MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
     
     #first to apply default infill we'll convert any nonvalid entries to nan
     
@@ -8203,7 +8208,7 @@ class AutoMunge:
       mdf_train[suffixcolumn] = pd.to_datetime(mdf_train[suffixcolumn], errors = 'coerce', utc=True)
       mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
       
-    elif NArowtype in {'justNaN', 'exclude', 'parsenumeric'}:
+    elif NArowtype in {'justNaN', 'exclude', 'totalexclude', 'parsenumeric'}:
       
       #nonvalid entries are already nan
       pass
@@ -8284,7 +8289,7 @@ class AutoMunge:
     
     #we'll perform one more infill via adjinfill in case user defined transform had unforseen edge case
     
-    if NArowtype not in {'exclude'}:
+    if MLinfilltype not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
       #apply ffill to replace NArows with value from adjacent cell in preceding row
       mdf_train[newcolumns_list] = mdf_train[newcolumns_list].fillna(method='ffill')
@@ -8312,8 +8317,6 @@ class AutoMunge:
     custom_process_wrapper_dict.update({'dtype_convert' : dtype_convert})
     
     if dtype_convert is True:
-
-      MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
 
       if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
         #datatype conversion performed elsewhere based on floatprecision parameter
@@ -8557,8 +8560,8 @@ class AutoMunge:
         if defaultinfill not in {'adjinfill', 'naninfill'}:
           defaultinfill = 'adjinfill'
 
-      #no infill performed for 'exclude' NArowtype
-      if NArowtype in {'exclude'}:
+      #no infill performed for 'exclude' or 'totalexclude' NArowtype
+      if NArowtype in {'exclude', 'totalexclude'}:
         defaultinfill = 'naninfill'
 
       #initialize a dictionary to pass default infill parameters between automunge and postmunge in column_dict
@@ -12735,13 +12738,9 @@ class AutoMunge:
       labels_test = list(mdf_test[sp19_column].unique())
       labels_test.sort()
 
-      #if infill not present in train set, insert
-      if np.nan not in labels_train:
-        # labels_train.sort()
-        labels_train = labels_train + [np.nan]
-      if np.nan not in labels_test:
-        # labels_test.sort()
-        labels_test = labels_test + [np.nan]
+      #labels_train is a list of strings, insert missing data marker
+      labels_train = labels_train + [np.nan]
+      labels_test = labels_test + [np.nan]
 
       #get length of the list
       listlength = len(labels_train)
@@ -13371,13 +13370,9 @@ class AutoMunge:
       labels_test = list(mdf_test[sbs3_column].unique())
       labels_test.sort()
 
-      #if infill not present in train set, insert
-      if np.nan not in labels_train:
-        labels_train = labels_train + [np.nan]
-        # labels_train.sort()
-      if np.nan not in labels_test:
-        labels_test = labels_test + [np.nan]
-        # labels_test.sort()
+      #labels_train is a list of strings, insert missing data marker
+      labels_train = labels_train + [np.nan]
+      labels_test = labels_test + [np.nan]
 
       #get length of the list
       listlength = len(labels_train)
@@ -22512,7 +22507,7 @@ class AutoMunge:
     mdf_test[exclcolumn] = pd.to_numeric(mdf_test[exclcolumn], errors='coerce')
     
     #apply defaultinfill based on processdict entry
-    #(this will default to mode infill)
+    #(this will default to adjinfill)
     mdf_train, defaultinfill_dict = \
     self._apply_defaultinfill(mdf_train, exclcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     mdf_test, _1 = \
@@ -24555,6 +24550,34 @@ class AutoMunge:
 
     return ML_cmnd
 
+  def _append_full_exclude(self, ML_cmnd, postprocess_dict):
+    """
+    #columns of MLinfilltype totalexclude
+    #are appended onto list populated in ML_cmnd['full_exclude']
+    #which has effect of excluding them from ML infill basis of other features
+    """
+    
+    if 'full_exclude' in ML_cmnd:
+      full_exclude = ML_cmnd['full_exclude']
+    else:
+      full_exclude = []
+    
+    excludemarker = False
+    for column_dict_entry in postprocess_dict['column_dict']:
+      
+      treecategory = postprocess_dict['column_dict'][column_dict_entry]['category']
+      MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
+      
+      if MLinfilltype == 'totalexclude':
+        excludemarker = True
+        full_exclude.append(column_dict_entry)
+        
+    if excludemarker is True:
+      
+      ML_cmnd['full_exclude'] = full_exclude
+      
+    return ML_cmnd
+
   def _convert_leakage_dict(self, ML_cmnd, postprocess_dict):
     """
     leakage_dict accepts entries in the form {feature1 : {feature2}}
@@ -24596,13 +24619,17 @@ class AutoMunge:
       leakage_dict_derived = ML_cmnd['leakage_dict_derived']
     else:
       leakage_dict_derived = {}
+
+    #before extracting full_exclude columns
+    #we'll add any columns returned from categories with MLinfilltype totalexclude to full_exclude
+    ML_cmnd = self._append_full_exclude(ML_cmnd, postprocess_dict)
       
     if 'full_exclude' in ML_cmnd:
       full_exclude = ML_cmnd['full_exclude']
     else:
       full_exclude = []
       
-    #any full_exclude sets we'll populate for each column
+    #now for any full_exclude sets we'll populate for each column
     i=0
     for full_exclude_column in full_exclude:
       for origcolumn in postprocess_dict['origcolumn']:
@@ -24737,7 +24764,7 @@ class AutoMunge:
 
     return ML_cmnd
 
-  def _MLinfillfunction (self, df_train, df_test, column, postprocess_dict, \
+  def _MLinfillfunction(self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
                         ML_cmnd, printstatus):
     '''
@@ -24785,6 +24812,12 @@ class AutoMunge:
                          category, randomseed, postprocess_dict, \
                          ML_cmnd, columnslist = columnslist, \
                          categorylist = categorylist)
+      
+      #run validations of all valid numeric, reported in postprocess_dict['temp_miscparameters_results']
+      postprocess_dict = \
+      self._check_ML_infill_2(df_train_filltrain, df_train_filllabel, 
+                             df_train_fillfeatures, df_test_fillfeatures, printstatus,
+                             column, postprocess_dict, reportlocation = 'temp_miscparameters_results', ampm = 'am')
 
       #predict infill values using defined function predictinfill(.)
       df_traininfill, df_testinfill, model, postprocess_dict = \
@@ -26991,6 +27024,31 @@ class AutoMunge:
     am_validation1 = pd.DataFrame(am_validation1)
     am_validationlabels1 = pd.DataFrame(am_validationlabels1)
 
+    #__
+
+    #we'll remove columns from ML_cmnd['full_exclude'] or with MLinfilltype == 'totalexclude'
+    #using a simpler method than applied in ML infill for this purpose since we're only training one model
+    full_exclude_specified = []
+    if 'full_exclude' in FSML_cmnd:
+      full_exclude_specified = FSML_cmnd['full_exclude']
+      
+    totalexclude_MLinfilltype = []
+    for column_dict_entry in FSpostprocess_dict['column_dict']:
+      column_dict_entry_category = FSpostprocess_dict['column_dict'][column_dict_entry]['category']
+      column_dict_entry_category_MLinfilltype = FSpostprocess_dict['process_dict'][column_dict_entry_category]['MLinfilltype']
+      if column_dict_entry_category_MLinfilltype == 'totalexclude':
+        totalexclude_MLinfilltype.append(column_dict_entry)
+        
+    nonnumeric_columns = full_exclude_specified + totalexclude_MLinfilltype
+    #convert to returtned header format
+    nonnumeric_columns = self._column_convert_support(nonnumeric_columns, FSpostprocess_dict, convert_to='returned')
+    
+    #now drop any potentially nonnumeric columns
+    am_train = am_train.drop(nonnumeric_columns, axis=1)
+    am_validation1 = am_validation1.drop(nonnumeric_columns, axis=1)
+
+    #__
+
     #this is the returned process_dict
     #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
     #assembled inside automunge, there is a difference)
@@ -27048,8 +27106,8 @@ class AutoMunge:
 
         if printstatus != 'silent':
           #this is a remote edge case, printout added for troubleshooting support
-          print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
-          print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
+          print("Label root category processdict entry contained a labelctgy entry not found in family tree")
+          print("Feature Selection model training will not run without valid labelgctgy processdict entry")
           print()
 
       elif len(am_categorylist) == 1:
@@ -27554,29 +27612,6 @@ class AutoMunge:
     #initialize early stopping support entries
     halt_dict = {}
     stop_count = infilliterate
-
-    #if ML infill to be performed, validate that data is all numeric with all valid entries
-    if len(postprocess_assigninfill_dict['MLinfill']) > 0:
-
-      train_numeric_data_result, train_all_valid_entries_result = \
-      self._validate_allvalidnumeric(df_train, printstatus)
-
-      infill_validations.update({'MLinfill_train_numeric_data_result': train_numeric_data_result})
-      infill_validations.update({'MLinfill_train_all_valid_entries_result': train_all_valid_entries_result})
-      
-      test_numeric_data_result, test_all_valid_entries_result = \
-      self._validate_allvalidnumeric(df_test, printstatus)
-
-      infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
-      infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
-      
-    else:
-      
-      infill_validations.update({'MLinfill_train_numeric_data_result': False})
-      infill_validations.update({'MLinfill_train_all_valid_entries_result': False})
-      
-      infill_validations.update({'MLinfill_test_numeric_data_result': False})
-      infill_validations.update({'MLinfill_test_all_valid_entries_result': False})
       
     while iteration < infilliterate:
       
@@ -28132,20 +28167,6 @@ class AutoMunge:
       infilliterate = 1
 
     infill_validations = {}
-
-    #if ML infill to be performed, validate that data is all numeric with all valid entries
-    if len(postprocess_assigninfill_dict['MLinfill']) > 0:
-      
-      test_numeric_data_result, test_all_valid_entries_result = \
-      self._validate_allvalidnumeric(df_test, printstatus)
-
-      infill_validations.update({'MLinfill_test_numeric_data_result': test_numeric_data_result})
-      infill_validations.update({'MLinfill_test_all_valid_entries_result': test_all_valid_entries_result})
-      
-    else:
-      
-      infill_validations.update({'MLinfill_test_numeric_data_result': False})
-      infill_validations.update({'MLinfill_test_all_valid_entries_result': False})
     
     while iteration < infilliterate:
       
@@ -30202,6 +30223,8 @@ class AutoMunge:
     """
     #Perform validations that train set is suitable for MLinfill
     #For example ML infill requires >1 source columns in df_train
+
+    #further validations of all valid numeric are performed after partitioning nonnumeric sets in createMLinfillsets
     """
     
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -30222,6 +30245,58 @@ class AutoMunge:
         infill_validations.update({'MLinfill_validations': False})
       
     return infill_validations
+
+  def _check_ML_infill_2(self, df_train_filltrain, df_train_filllabel, 
+                         df_train_fillfeatures, df_test_fillfeatures, printstatus,
+                         column, postprocess_dict, reportlocation = 'temp_miscparameters_results', ampm = 'am'):
+    """
+    #runs validations and records results for each of sets returned from _createMLinfillsets
+    #using _validate_allvalidnumeric
+    #results recorded in postprocess_dict[reportlocation]
+    #this function applied in _MLinfillfunction
+    #reportlocation and ampm used to distinguish between use for automunge vs postmunge MLinfill function
+    """
+
+    if ampm == 'am' and 'df_train_filltrain_numeric_data_result' not in postprocess_dict[reportlocation]:
+      postprocess_dict[reportlocation].update ({'df_train_filltrain_numeric_data_result' : {},
+                                               'df_train_filltrain_all_valid_entries_result' : {},
+                                               'df_train_filllabel_numeric_data_result' : {},
+                                               'df_train_filllabel_all_valid_entries_result' : {},
+                                               'df_train_fillfeatures_numeric_data_result' : {},
+                                               'df_train_fillfeatures_all_valid_entries_result' : {},
+                                               'df_test_fillfeatures_numeric_data_result' : {},
+                                               'df_test_fillfeatures_all_valid_entries_result' : {},
+                                               })
+    
+    if ampm == 'pm' and 'df_test_fillfeatures_numeric_data_result' not in postprocess_dict[reportlocation]:
+      postprocess_dict[reportlocation].update ({'df_test_fillfeatures_numeric_data_result' : {},
+                                                'df_test_fillfeatures_all_valid_entries_result' : {},
+                                               })
+    
+    if ampm == 'am':
+
+      numeric_data_result, all_valid_entries_result = \
+      self._validate_allvalidnumeric(df_train_filltrain, printstatus)
+      postprocess_dict[reportlocation]['df_train_filltrain_numeric_data_result'].update({column : numeric_data_result})
+      postprocess_dict[reportlocation]['df_train_filltrain_all_valid_entries_result'].update({column : all_valid_entries_result})
+
+      numeric_data_result, all_valid_entries_result = \
+      self._validate_allvalidnumeric(df_train_filllabel, printstatus)
+      postprocess_dict[reportlocation]['df_train_filllabel_numeric_data_result'].update({column : numeric_data_result})
+      postprocess_dict[reportlocation]['df_train_filllabel_all_valid_entries_result'].update({column : all_valid_entries_result})
+
+      numeric_data_result, all_valid_entries_result = \
+      self._validate_allvalidnumeric(df_train_fillfeatures, printstatus)
+      postprocess_dict[reportlocation]['df_train_fillfeatures_numeric_data_result'].update({column : numeric_data_result})
+      postprocess_dict[reportlocation]['df_train_fillfeatures_all_valid_entries_result'].update({column : all_valid_entries_result})
+    
+    #df_test_fillfeatures run for both ampm scenarios
+    numeric_data_result, all_valid_entries_result = \
+    self._validate_allvalidnumeric(df_test_fillfeatures, printstatus)
+    postprocess_dict[reportlocation]['df_test_fillfeatures_numeric_data_result'].update({column : numeric_data_result})
+    postprocess_dict[reportlocation]['df_test_fillfeatures_all_valid_entries_result'].update({column : all_valid_entries_result})
+    
+    return postprocess_dict
 
   def _validate_allvalidnumeric(self, df, printstatus):
     """
@@ -31258,7 +31333,7 @@ class AutoMunge:
           print()
       else:
         if processdict[entry]['NArowtype'] not in \
-        {'numeric', 'integer', 'justNaN', 'exclude', 'positivenumeric', 'nonnegativenumeric', \
+        {'numeric', 'integer', 'justNaN', 'exclude', 'totalexclude', 'positivenumeric', 'nonnegativenumeric', \
         'nonzeronumeric', 'parsenumeric', 'datetime'}:
           check_processdict_result = True
           if printstatus != 'silent':
@@ -32408,7 +32483,7 @@ class AutoMunge:
     """
     
     #don't apply to totalexclude MLinfilltype
-    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
+    if postprocess_dict['process_dict'][category]['NArowtype'] not in {'totalexclude'}:
       
       isna_already_performed = False
 
@@ -32473,10 +32548,10 @@ class AutoMunge:
 
           nanpoints = assignnan['columns'][column]
           
-    #we'll have convention that for complete passthrough columns without infill (like: excl, exc6)
+    #we'll have convention that for NArowtype=='totalexclude'
     #global assignnan assignments don't apply and must be assigned explicitly
     #either in assignnan categories or columns entries
-    if postprocess_dict['process_dict'][category]['MLinfilltype'] not in {'totalexclude'}:
+    if postprocess_dict['process_dict'][category]['NArowtype'] not in {'totalexclude'}:
 
       if 'global' in assignnan:
 
@@ -34281,6 +34356,7 @@ class AutoMunge:
     ML_cmnd = self._check_for_leakage(ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict)
 
     #now we convert leakage_dict to returned header convention, including derived and user defined entries
+    #note this includes handling of ML_cmnd['full_exclude'] for ML infill basis exclusions from specification or MLinfilltype
     ML_cmnd = self._convert_leakage_dict(ML_cmnd, postprocess_dict)
 
     #then we'll populate additional leakage_dict entries associated with bidirectional leakage_sets specification
@@ -34828,7 +34904,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.83'
+    automungeversion = '6.84'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35537,11 +35613,12 @@ class AutoMunge:
         
       #treecategory is the category entry to a family tree primitive that served as basis for this transform
       treecategory = postprocess_dict['column_dict'][normkey]['category']
+      NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
+      MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
       
       #___
       
       #now apply default infill based on NArowtype
-      NArowtype = postprocess_dict['process_dict'][treecategory]['NArowtype']
 
       #first to apply default infill we'll convert any nonvalid entries to nan
       
@@ -35628,7 +35705,7 @@ class AutoMunge:
       
       #we'll perform one more adjinfill application in case user defined transform had any unforseen edge cases
       
-      if NArowtype not in {'exclude'}:
+      if MLinfilltype not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
         newcolumns_list = postprocess_dict['column_dict'][normkey]['categorylist']
         
@@ -35647,8 +35724,6 @@ class AutoMunge:
       if custom_process_wrapper_dict['dtype_convert'] is True:
         
         newcolumns_list = postprocess_dict['column_dict'][normkey]['categorylist']
-
-        MLinfilltype = postprocess_dict['process_dict'][treecategory]['MLinfilltype']
 
         if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
           #datatype conversion performed elsewhere based on floatprecision parameter
@@ -37156,10 +37231,8 @@ class AutoMunge:
       labels_test = list(mdf_test[sp19_column].unique())
       labels_test.sort()
       
-      #if infill not present in train set, insert
-      if np.nan not in labels_test:
-        labels_test = labels_test + [np.nan]
-        # labels_test.sort()
+      #labels_test is a list of strings, insert missing data marker
+      labels_test = labels_test + [np.nan]
         
       #replace the cateogries in train set via ordinal trasnformation
       mdf_test[sp19_column] = mdf_test[sp19_column].astype('object').replace(_1010_binary_encoding_dict)
@@ -37470,10 +37543,8 @@ class AutoMunge:
       labels_test = list(mdf_test[sbs3_column].unique())
       # labels_test.sort()
       
-      #if infill not present in train set, insert
-      if np.nan not in labels_test:
-        labels_test = labels_test + [np.nan]
-        # labels_test.sort()
+      #labels_test is a list of strings, insert missing data marker
+      labels_test = labels_test + [np.nan]
         
       #replace the cateogries in train set via ordinal trasnformation
       mdf_test[sbs3_column] = mdf_test[sbs3_column].astype('object').replace(_1010_binary_encoding_dict)
@@ -41915,6 +41986,12 @@ class AutoMunge:
                          category, ML_cmnd, postprocess_dict, \
                          columnslist = columnslist, \
                          categorylist = categorylist)
+      
+      #run validations of all valid numeric, reported in postprocess_dict['temp_pm_miscparameters_results']
+      postprocess_dict = \
+      self._check_ML_infill_2(False, False, 
+                             False, df_test_fillfeatures, printstatus,
+                             column, postprocess_dict, reportlocation = 'temp_pm_miscparameters_results', ampm = 'pm')
 
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
@@ -42113,6 +42190,32 @@ class AutoMunge:
       am_labels, am_validationlabels1 = \
       self._df_split(am_labels, totalvalidation, False, randomseed)
 
+      #__
+      
+      #we'll remove columns from ML_cmnd['full_exclude'] or with MLinfilltype == 'totalexclude'
+      #using a simpler method than applied in ML infill for this purpose since we're only training one model
+
+      full_exclude_specified = []
+      if 'full_exclude' in ML_cmnd:
+        full_exclude_specified = ML_cmnd['full_exclude']
+        
+      totalexclude_MLinfilltype = []
+      for column_dict_entry in FSpostprocess_dict['column_dict']:
+        column_dict_entry_category = FSpostprocess_dict['column_dict'][column_dict_entry]['category']
+        column_dict_entry_category_MLinfilltype = FSpostprocess_dict['process_dict'][column_dict_entry_category]['MLinfilltype']
+        if column_dict_entry_category_MLinfilltype == 'totalexclude':
+          totalexclude_MLinfilltype.append(column_dict_entry)
+          
+      nonnumeric_columns = full_exclude_specified + totalexclude_MLinfilltype
+      #convert to returtned header format
+      nonnumeric_columns = self._column_convert_support(nonnumeric_columns, FSpostprocess_dict, convert_to='returned')
+      
+      #now drop any potentially nonnumeric columns
+      am_train = am_train.drop(nonnumeric_columns, axis=1)
+      am_validation1 = am_validation1.drop(nonnumeric_columns, axis=1)
+      
+      #__
+
       #this is the returned process_dict
       #(remember "processdict" is what we pass to automunge() call, "process_dict" is what is 
       #assembled inside automunge, there is a difference)
@@ -42166,8 +42269,8 @@ class AutoMunge:
         if len(am_categorylist) == 0:
           if printstatus != 'silent':
             #this is a remote edge case, printout added for troubleshooting support
-            print("Label category processdict entry contained a labelctgy entry not found in transformdict entry")
-            print("Feature Seclection model training will not run without valid labelgctgy processdict entry")
+            print("Label root category processdict entry contained a labelctgy entry not found in family tree")
+            print("Feature Selection model training will not run without valid labelgctgy processdict entry")
             print()
 
           labelctgy_not_found_in_familytree_pm_valresult = True
