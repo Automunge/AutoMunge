@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Ok moving this portion of documentaiton from the README into a seperate file to try and improve the flow of rest of documentation. This is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as category properties associated with each category in the section "Category processdict Entries". 
+This document is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as category properties associated with each category in the section "Category processdict Entries". 
 
 Note that any of the family tree definitions can be overwritten in an automunge(.) call with the transformdict parameter and any of the category properties can be overwritten in an automunge(.) call with the processdict parameter.
 
@@ -3628,6 +3628,8 @@ For simplicity just going to copy the code directly from code base where these d
     # - 'integer' for source columns with expected integer entries
     # - 'justNaN' for source columns that may have expected entries other than numeric
     # - 'exclude' for source columns that aren't needing NArow columns derived
+    # - 'totalexclude' for source columns that aren't needing NArow columns derived, 
+    #                  also excluded from assignnan global option and nan conversions for missing data
     # - 'positivenumeric' for source columns with expected positive numeric entries
     # - 'nonnegativenumeric' for source columns with expected non-negative numeric (zero allowed)
     # - 'nonzeronumeric' for source columns with allowed positive and negative but no zero
@@ -3655,14 +3657,14 @@ For simplicity just going to copy the code directly from code base where these d
     #                               in that columns are independent
     #              'concurrent_ordl' for multicolumn sets with ordinal encoded entries (nonnegative integer classification)
     #              'concurrent_nmbr' for multicolumn sets with numeric entries (signed floats)
-    #              'exclude' for columns which will be excluded from infill, 
-    #                        returned data might not be numerically encoded
-    #              'boolexclude' boolean set suitable for Binary transform but excluded from all infill 
-    #                            (e.g. NArw entries)
+    #              'exclude' for columns which will be excluded from infill, included in other features' ML infill bases
+    #                        returned data should be numerically encoded
+    #              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
+    #                            (e.g. NArw entries), included in other features' ML infill bases
     #              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
-    #                            ordlexclude may return a multi-column set)
+    #                            ordlexclude may return a multi-column set), included in other features' ML infill bases
     #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
-    #                             and excluded from inf conversion and assignnan global option
+    #                             excluded from other features' ML infill bases
 
     #___________________________________________________________________________
     #Other optional entries for processdict include:
@@ -3728,9 +3730,10 @@ For simplicity just going to copy the code directly from code base where these d
 
     #___________________________________________________________________________
     #Other clarifications:
-    #Note that NArowtype is associated with a category's use as a root category, 
-    #and also for a category's use as a tree category in the custom_train convention
-    #MLinfilltype is associated with a category's use as a tree category
+    #Note that NArowtype is associated with transformation inputs
+    #including for a category's use as a root category and as a tree category
+    #MLinfilltype is associated with transformation outputs
+    #for a category's use as a tree category
     '''
     
     process_dict = {}
@@ -4391,7 +4394,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
@@ -4516,7 +4519,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'UPCS'}})
     process_dict.update({'Unht' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4526,7 +4529,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'onht'}})
     process_dict.update({'Utxt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4536,7 +4539,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4546,7 +4549,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4556,7 +4559,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Ucct' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4566,7 +4569,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uord' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4576,7 +4579,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'Uor2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4586,7 +4589,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'Uor3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4596,7 +4599,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uor6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4606,7 +4609,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'U101' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4616,7 +4619,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : '1010'}})
     process_dict.update({'splt' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4638,7 +4641,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4650,7 +4653,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4660,7 +4663,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl7' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4673,7 +4676,7 @@ For simplicity just going to copy the code directly from code base where these d
                                                      'consolidate_nonoverlaps' : True,
                                                      'minsplit' : 1},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'spl8' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4696,7 +4699,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp10' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -4708,7 +4711,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : True,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'sp11' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4720,7 +4723,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp12' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4732,7 +4735,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp13' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4744,7 +4747,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp14' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4756,7 +4759,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : True,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp15' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
@@ -4792,7 +4795,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp18' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
@@ -4804,7 +4807,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'defaultparams' : {'test_same_as_train' : False,
                                                       'consolidate_nonoverlaps' : False},
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'sp19' : {'dualprocess' : self._process_sp19,
                                   'singleprocess' : None,
@@ -4905,7 +4908,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hash'}})
     process_dict.update({'Uhs2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4915,7 +4918,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hsh2'}})
     process_dict.update({'Uh10' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
@@ -4925,7 +4928,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hs10'}})
     process_dict.update({'srch' : {'dualprocess' : self._process_srch,
                                   'singleprocess' : None,
@@ -4975,7 +4978,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strn' : {'dualprocess' : None,
                                   'singleprocess' : self._process_strn,
@@ -4983,7 +4986,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strg' : {'dualprocess' : None,
                                   'singleprocess' : self._process_strg,
@@ -4993,7 +4996,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'strg'}})
     process_dict.update({'nmrc' : {'dualprocess' : None,
                                   'singleprocess' : self._process_nmrc,
@@ -5320,7 +5323,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -5332,7 +5335,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ors6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
@@ -5344,7 +5347,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : True},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'ordl' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5381,9 +5384,10 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'frequency_sort' : False,
+                                                     'null_activation' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord5'}})
     process_dict.update({'maxb' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
@@ -5469,7 +5473,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'test_same_as_train' : False,
                                                      'consolidate_nonoverlaps' : False},
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'or10' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5478,7 +5482,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'or11' : {'custom_train' : self._custom_train_1010,
                                    'custom_test' : self._custom_test_1010,
@@ -5524,7 +5528,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or16' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5534,7 +5538,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or17' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5544,7 +5548,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or18' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5554,7 +5558,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or19' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5564,7 +5568,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or20' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5574,7 +5578,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or21' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5584,7 +5588,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or22' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5594,7 +5598,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or23' : {'dualprocess' : None,
                                    'singleprocess' : self._process_UPCS,
@@ -5604,7 +5608,7 @@ For simplicity just going to copy the code directly from code base where these d
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
-                                   'MLinfilltype' : 'exclude',
+                                   'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'om10' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5613,7 +5617,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'mmor' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
@@ -5690,7 +5694,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'tmzn'}})
     process_dict.update({'date' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5698,7 +5702,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5706,7 +5710,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'dat3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5714,7 +5718,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5722,7 +5726,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat5' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5730,7 +5734,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat6' : {'dualprocess' : None,
                                   'singleprocess' : self._process_tmzn,
@@ -5738,7 +5742,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'year' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
@@ -7034,8 +7038,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : None}})
     process_dict.update({'copy' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
@@ -7044,7 +7048,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'copy'}})
     process_dict.update({'excl' : {'dualprocess' : None,
                                   'singleprocess' : self._process_excl,
@@ -7052,7 +7056,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_excl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
-                                  'NArowtype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'excl'}})
     process_dict.update({'exc2' : {'dualprocess' : self._process_exc2,
@@ -7145,7 +7149,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'shfl'}})
     process_dict.update({'sint' : {'custom_train' : self._custom_train_trig,
                                   'custom_inversion' : self._custom_inversion_trig,
@@ -7253,14 +7257,14 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'nuld' : {'dualprocess' : None,
                                   'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : None}})
     process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
@@ -7300,7 +7304,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ordl'}})
+                                  'labelctgy' : 'lbor'}})
     process_dict.update({'lbos' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7356,7 +7360,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'datetime',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'lgnr' : {'dualprocess' : self._process_absl,
                                   'singleprocess' : None,
@@ -7399,7 +7403,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
@@ -7409,7 +7413,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp,
                                   'singleprocess' : None,
