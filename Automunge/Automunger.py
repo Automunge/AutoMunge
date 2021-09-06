@@ -12737,10 +12737,10 @@ class AutoMunge:
 
       #if infill not present in train set, insert
       if np.nan not in labels_train:
-        labels_train.sort()
+        # labels_train.sort()
         labels_train = labels_train + [np.nan]
       if np.nan not in labels_test:
-        labels_test.sort()
+        # labels_test.sort()
         labels_test = labels_test + [np.nan]
 
       #get length of the list
