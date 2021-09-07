@@ -1346,7 +1346,7 @@ with entries as e.g.:
 ```
 assignnan = {'categories' : {'cat1' : ['unknown1']},
              'columns' : {'col1' : ['unknown2']},
-	     'global' : ['unknown3']}
+             'global' : ['unknown3']}
 ```
 Where 'cat1' is example of root category, 'col1' is example of source column header, and 'unknown1'/2/3 
 are examples of entries intended for infill corresponding to each. In cases of redundant specification, 
