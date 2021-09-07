@@ -22842,9 +22842,11 @@ class AutoMunge:
     #or powertransform == 'exc2' for unprocessed but subject to force to numeric and modeinfill
     elif powertransform == 'exc2':
       category = 'exc2'
+
+    #____
     
     #powertransform == 'infill' is for cases where data is already numerically encoded and just want infill
-    elif powertransform == 'infill':
+    elif powertransform in {'infill', 'infill2'}:
       rowcount = df_source.shape[0]
 
       #we'll have convention that eval_ratio only applied for sets with >2,000 rows
@@ -22864,7 +22866,7 @@ class AutoMunge:
       numericset = pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce')
       numericcount = numericset.sum()
       stringset = df[column].astype(str) == df[column]
-      #stringcount = stringset.sum()
+      stringcount = stringset.sum()
       numericstringcount = ((stringset == True) & (numericset == True)).sum()
       nancount = (df[column] != df[column]).sum()
       integercount = (pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round()).sum()
@@ -22877,28 +22879,56 @@ class AutoMunge:
       uniquecount = df[column].nunique()
       rowcount = df[column].shape[0]
       setminimum = pd.to_numeric(df[column], errors='coerce').min()
+      stringratio = stringcount / rowcount
       actualfloatratio = actualfloatcount / rowcount
       actualintegerratio = actualintegercount / rowcount
       uniqueratio = uniquecount / rowcount
 
-      #null if no numeric entries
-      if actualfloatratio == 0 and actualintegerratio == 0:
-        category = 'null'
+      if powertransform == 'infill':
 
-      #exc2 for numeric types
-      elif actualfloatratio > 0:
-        category = 'exc2'
+        #null if no numeric entries
+        if actualfloatratio == 0 and actualintegerratio == 0:
+          category = 'null'
 
-      #exc8 for integer type with unique ratio > 0.75 or if any negative integers present
-      #exc8 is integer MLinfilltype (ML infill applies integer regression)
-      elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75) \
-      or (actualfloatratio == 0 and actualintegerratio > 0 and setminimum < 0):
-        category = 'exc8'
+        #exc2 for numeric types
+        elif actualfloatratio > 0:
+          category = 'exc2'
 
-      #exc5 for integers
-      #exc5 is singlct MLinfilltype (ML infill applies ordinal classification)
-      else:
-        category = 'exc5'
+        #exc8 for integer type with unique ratio > 0.75 or if any negative integers present
+        #exc8 is integer MLinfilltype (ML infill applies integer regression)
+        elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75) \
+        or (actualfloatratio == 0 and actualintegerratio > 0 and setminimum < 0):
+          category = 'exc8'
+
+        #exc5 for integers
+        #exc5 is singlct MLinfilltype (ML infill applies ordinal classification)
+        else:
+          category = 'exc5'
+
+      if powertransform == 'infill2':
+
+        #excl if no numeric entries
+        if actualfloatratio == 0 and actualintegerratio == 0:
+          category = 'excl'
+          
+        #excl if set is majority string
+        elif stringratio > actualintegerratio and stringratio > actualfloatratio:
+          category = 'excl'
+
+        #exc2 for numeric types
+        elif actualfloatratio > 0:
+          category = 'exc2'
+
+        #exc8 for integer type with unique ratio > 0.75 or if any negative integers present
+        #exc8 is integer MLinfilltype (ML infill applies integer regression)
+        elif (actualfloatratio == 0 and actualintegerratio > 0 and uniqueratio > 0.75) \
+        or (actualfloatratio == 0 and actualintegerratio > 0 and setminimum < 0):
+          category = 'exc8'
+
+        #exc5 for integers
+        #exc5 is singlct MLinfilltype (ML infill applies ordinal classification)
+        else:
+          category = 'exc5'
         
       #____
         
@@ -22929,6 +22959,11 @@ class AutoMunge:
       
       #defaultnull is for sets with all missing data
       defaultnull = 'null'
+
+      #not rolling this scenario out in interest of simplicity, if there is a need for it let me know
+      #(it is not the default because it may result in returned sets not suitable for direct application of ML)
+      # if powertransform == 'excl_null':
+      #   defaultnull = 'excl'
       
       #____
       
@@ -22992,7 +23027,8 @@ class AutoMunge:
       #we'll also consider second_mostcommon_type such as for cases where most common is missing data
       second_mostcommon_type = mostcommon_type
       if len(type_tuple_list) > 1:
-        second_mostcommon_type = type_tuple_list[1][0]
+        if type_tuple_list[1][1] != 0.:
+          second_mostcommon_type = type_tuple_list[1][0]
 
       #note that if most common is nan, we'll instead treat second most common as the most common
       if mostcommon_type == 'nan':
@@ -23009,7 +23045,7 @@ class AutoMunge:
       nunique = df[column].nunique()
 
       #____
-      
+
       #now for categoric sets (where most common is string or we recieved column with pandas dtype of 'category')
       #we have four scenarios
       if mostcommon_type == 'string':
@@ -29702,18 +29738,18 @@ class AutoMunge:
     
     #check powertransform
     powertransform_valresult = False
-    if powertransform not in {True, False, 'excl', 'exc2', 'infill'}:
+    if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2'}:
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2'}")
         print()
-    elif powertransform not in {'excl', 'exc2', 'infill'} \
+    elif powertransform not in {'excl', 'exc2', 'infill', 'infill2'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2'}")
         print()
       
     miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
@@ -34904,7 +34940,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.84'
+    automungeversion = '6.85'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
