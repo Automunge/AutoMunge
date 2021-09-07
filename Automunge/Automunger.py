@@ -32745,8 +32745,8 @@ class AutoMunge:
                 ratio = 1 - assignnan['injections'][columnkey][actionkey][targetentry]
                 df_mask = pd.DataFrame()
                 #here we'll use convention that 1 is a target for injection 0 remains static
-                df = \
-                self._autowhere(df, 'mask', df[columnkey] == targetentry, 1, specified='replacement')
+                df_mask = \
+                self._autowhere(df_mask, 'mask', df[columnkey] == targetentry, 1, specified='replacement')
 
                 if ratio > 0:
                   #this get's index list of mask 1 entries for use with .loc
@@ -34928,7 +34928,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.86'
+    automungeversion = '6.87'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
