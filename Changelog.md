@@ -4264,3 +4264,8 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - revised support function for 1010 to onehot with comparable functionality to eliminate edge case
 - found and fixed snafu in onehot to 1010 associated with derivation of binary form
 - we anticipate these revisions will benefit performance of ML infill towards 1010 encodings which is the default categoric encoding under automation
+
+6.87
+- found and fixed a snafu originating from the autowhere rollout
+- associated with populating a column for assignnan missing data injections
+- was impacting assignnan['injections'] option, now resolved
