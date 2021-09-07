@@ -717,29 +717,33 @@ train and test sets or be passed as _'test'_ to only apply levelizing to test se
 will be based on the first categoric / binned set (either one-hot or ordinal)
 based on order of columns.)
 
-* powertransform: _(False/True/'excl'/'exc2'/'infill')_, defaults to False, when passed as 
-True an evaluation will be performed of distribution properties to select between
-box-cox (bxcx), z-score (nmbr), min-max scaling (mnmx), or mean absolute deviation scaling (MAD3) normalization
-of numerical data. Note that after application of box-cox transform child columns 
-are generated for a subsequent z-score normalization. Note that powertransform not applied to label columns by
-default, but can still be applied by passing label column to ptfm in assigncat. 
-Additionally, powertransform may be passed as values 'excl' or 
-'exc2', where for 'excl' columns not explicitly assigned to a root category in 
-assigncat will be left untouched, or for 'exc2' columns not explicitly assigned 
-to a root category in assigncat will be forced to numeric and subject to default 
-modeinfill. (These two excl arguments may be useful if a user wants to experiment 
-with specific transforms on a subset of the columns without incurring processing 
-time of an entire set.) Finally can pass as 'infill' which may be useful when data is already 
-numerically encoded and just infill is desired. 'infill' treats sets with any non-integer 
-floats with exc2 (pass-through numeric), integer sets with any negative entries or unique ratio >0.75 with exc8 
-(for pass-through continuous integer sets subject to ml infill regression), and otherwise 
-integer sets with exc5 (pass-through integer subject to ml infill classification). Of course the rule of treating 
-integer sets with >0.75 ratio of unique entries as targets for ML infill regression or otherwise 
-for classification is an imperfect heuristic. If some particular
-feature set has integers intended for regression below this threshold, the defaults under 
-automation can be overwritten to a specific column with the assigncat parameter, such as to 
-assign the column to exc8 instead of exc5. Note that 'infill'
-includes support for NArw aggregation with NArw_marker parameter.
+* powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2')_, defaults to False.
+The powertransform parameter is used to select between options for derived
+category assignments under automation based on received feature set properties. Please
+note that powertransform options are not inspected in evaluation of label columns under 
+automation (this was a design decision with tradeoffs).
+  - Under the default scenario, category assignments under automation are consistent with section
+  [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations).
+  - Under the True scenario, an evaluation will be performed of distribution properties to select between
+  box-cox (bxcx), z-score (nmbr), min-max scaling (mnmx), or mean absolute deviation scaling (MAD3) normalization
+  of numerical data.
+  - Under the 'excl' scenario, columns not explicitly assigned in assigncat are subject to excl transform 
+  for full pass-through, including data type retention and exclusion from ML infill basis.
+  - Under the 'exc2' scenario, columns not explicitly assigned in assigncat are subject to exc2 transform 
+  for pass-through with force to numeric and adjinfill, and included in ML infill basis.
+  - The 'infill' scenario may be used when data is already numerically encoded and user just desires 
+  ML infill without transformations. 'infill' treats sets with any non-integer 
+  floats with exc2 (pass-through numeric), integer sets with any negative entries or unique ratio >0.75 with exc8 
+  (for pass-through continuous integer sets subject to ml infill regression), and otherwise 
+  integer sets with exc5 (pass-through integer subject to ml infill classification). Of course the rule of treating 
+  integer sets with >0.75 ratio of unique entries as targets for ML infill regression or otherwise 
+  for classification is an imperfect heuristic. If some particular
+  feature set has integers intended for regression below this threshold, the defaults under 
+  automation can be overwritten to a specific column with the assigncat parameter, such as to 
+  assign the column to exc8 instead of exc5. Note that 'infill'
+  includes support for NArw aggregation with NArw_marker parameter.
+  - The 'infill2' scenario is similar to the 'infill' scenario, with added allowance for inclusion of
+  non-numeric sets, which are given an excl pass-through and excluded from ML infill basis. (May return sets not suitable for direct application of ML.)
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
