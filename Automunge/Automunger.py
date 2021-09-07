@@ -22817,17 +22817,22 @@ class AutoMunge:
     when powertransform = 'excl' columns not explicitly assigned to a root category in assigncat will be given excl passthorugh transform
     when powertransform = 'exc2' columns not explicitly assigned to a root category in assigncat will be given exc2 passthorugh transform (forced to numeric and subject to default adjinfill). 
     when powertransform = 'infill' If the data is already numerically encoded with NaN entries for missing data, ML infill can be applied without further preprocessing transformations by passing
+    when powertransform = 'infill2' data is treated comparable to infill scenario with allowance for passthrough of nonnumeric data
     when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, MAD3, nmbr, mnmx.
     
     note that labels = True also changes the defaults to align with conventions for label sets
+    which replaces the default transformations from powertransform=False to following
     lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
-    lbor: for categoric data of >2 unique values, a label set is treated with an 'ordl' ordinal encoding (alphabetical order of encodings).
+    lbor: for categoric data of >2 unique values, a label set is treated with an 'lbor' ordinal encoding (frequency sorted encodings with no missing data bucket).
     lbbn: for categoric data of <3 unique values, a label set is treated with a bnry binary encoding (single column binarization)
     
-    Note that label sets receive powertransform=False unless labels_column assigned to ptfm in assigncat
-    To apply other powertransform options to label sets one can manually specify a transform in assigncat
+    Note that label sets do not receive the distribution evaluation associated with powertransform=True
+    And if that treatment is desired they can instead by assigned to category ptfm in assigncat
 
     #_evalcategory returns category id as a string
+
+    #a future extension may allow passing powertransform as a list or dicitonary of selected options
+    #for now the range of options is short enough that a single string specificaiton is sufficient
     '''
     
     #first we consider special cases associated with powertransform parameter passed as one of {'excl', 'exc2', 'infill'}
@@ -23086,7 +23091,8 @@ class AutoMunge:
       
       #When powertransform = True, we measure statistics of numeric sets for potential overwrite
       if category in {defaultnumerical} \
-      and powertransform is True:
+      and powertransform is True \
+      and labels is False:
         
         #these statistic tests require at least three unique entries
         if df[pd.to_numeric(df[column], errors='coerce').notnull()][column].astype(float).nunique() >= 3:
@@ -23127,7 +23133,8 @@ class AutoMunge:
       del df
       
       #we'll overwrite to the label defaults when this is a labels set as would be designated by labels parameter
-      if labels is True:
+      if labels is True \
+      and powertransform in {True, False}:
 
         #(defaultnumerical = 'nmbr')
         if category == defaultnumerical:
@@ -26291,23 +26298,22 @@ class AutoMunge:
     takes as input dataframe encoded in 1010 format
     and translates to a one-hot encoding equivalent
     with number of columns based on 2^n where n is number of 1010 columns
-    and potentially with columns with all 0
+    and returns a single activation in each row of the onehot form
+    and in some cases returns columns with no activaitons
     """
 
     received_column_count = df_array.shape[1]
+    
+    df_onehot = pd.DataFrame(index=df_array.index)
 
     #initialize a column to store encodings
-    #this relies on convention that received columns with suffix appenders have '_' included to ensure no overlap
-    df_array['-1'] = ''
+    df_onehot['-1'] = ''
 
     #populate column to store encodings 
+    #this populates a set of strings composed of 1 and 0 characters
     for column in df_array.columns:
-      if column != '-1':
-        df_array['-1'] = \
-        df_array['-1'] + df_array[column].astype(int).astype(str)
-
-    #discard other columns
-    df_array = pd.DataFrame(df_array['-1'])
+      df_onehot['-1'] = \
+      df_onehot['-1'] + df_array[column].astype(int).astype(str)
 
     #create list of columns for the encoding with binary encodings
     #this will be full list of range of values based on number of 1010 columns
@@ -26317,7 +26323,7 @@ class AutoMunge:
     textcolumns = ['-1_' + str(format(item, f"0{received_column_count}b")) for item in textcolumns]
 
     df_onehot = \
-    self._onehot_support(df_array, '-1', scenario=2, activations_list = textcolumns)
+    self._onehot_support(df_onehot, '-1', scenario=2, activations_list = textcolumns)
 
     return df_onehot
   
@@ -26327,16 +26333,17 @@ class AutoMunge:
     and translates to a 1010 encoding equivalent
     based on assumption that order of columns consistent per 
     convention of convert_1010_to_onehot(.)
+
+    please note that this assumes the onehot form will have activations in each row
+    which is consistent with our use for ML infill
+    and otherwise populates rows without activations in the all zero bucket
     """
-    
-#     #if not all zeros (all zeros is an edge case)
-#     if np_onehot.any():
 
     #create list of binary encodings corresponding to the onehot array
     #assumes consistent order of columns from convert_1010_to_onehot basis
     columnslist = list(range(np_onehot.shape[1]))
     columnslist = \
-    [str(format(item, f"0{int(np.log2(np_onehot.shape[1]))}b")) for item in columnslist]
+    [str(format(item, f"0{int(np.ceil(np.log2(np_onehot.shape[1])))}b")) for item in columnslist]
 
     #convert to dataframe with columnslist as column headers
     df_array = pd.DataFrame(np_onehot, columns = columnslist)
@@ -26355,13 +26362,6 @@ class AutoMunge:
         self._autowhere(df_array, '1010', df_array[column] != 0, df_array[column], specified='replacement')
 
         del df_array[column]
-
-#       uniquevalues = df_array['1010'].unique()
-#       uniquevalues.sort()
-#       uniquevalues = list(uniquevalues)
-
-#       #get number of 1010 columns
-#       nbrcolumns = len(str(uniquevalues[0]))
 
     nbrcolumns = int(np.ceil(np.log2(np_onehot.shape[1])))
   
@@ -26389,14 +26389,6 @@ class AutoMunge:
     del df_array['1010']
 
     np_1010 = df_array.to_numpy()
-    
-#     #else if np_onehot was all zeros (edge case)
-#     else:
-      
-#       nbrcolumns = int(np.ceil(np.log2(np_onehot.shape[1])))
-      
-#       np_1010 = \
-#       np.zeros((np_onehot.shape[0], nbrcolumns))
 
     return np_1010
 
@@ -34237,7 +34229,7 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
-    #similar processing loop applied for the label set
+
     if labels_column is not False:        
 
       #note that under automation _evalcategory distinguishes between label and training features
@@ -34286,17 +34278,13 @@ class AutoMunge:
           print("")
           print("evaluating label column: ", labels_column)
 
-        #determine labels category and apply appropriate function
-        #labelscategory = self._evalcategory(df_labels, labels_column, numbercategoryheuristic, powertransform)
-
-        #we'll follow convention that default powertransform option not applied to labels
-        #user can apply instead by passing column to ptfm in assigncat
+        #determine labels category under automation
         if evalcat is False:
           labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, False, True)
+                                             numbercategoryheuristic, powertransform, True)
         elif callable(evalcat):
           labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, False, True)
+                                   numbercategoryheuristic, powertransform, True)
           
         #populate the result in the final_assigncat as informational resource
         if labelscategory in final_assigncat:
@@ -34940,7 +34928,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.85'
+    automungeversion = '6.86'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43899,6 +43887,9 @@ class AutoMunge:
     #all returned columns including labels
     returned_columns = \
     postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['finalcolumns_labels']
+
+    #convert returned_columns to returned suffix convention for excl edge case
+    self._list_replace(returned_columns, postprocess_dict['excl_suffix_conversion_dict'])
     
     #these are all derived columns including replaced columns and labels
     produced_columns = list(postprocess_dict['column_dict'])
