@@ -4253,3 +4253,14 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - comparable to powertransform = 'infill' in that it is intended for application towards data that is already numerically encoded and just ML infill is desired without normalizations and etc
 - the difference is that with infill2 user is now allowed to include non-numeric sets in the data, which are given an excl pass through transform and excluded from ML infill basis
 - one way to think about it is that infill will ensure returned sets are all valid numeric, and infill2 will only ensure received majority numeric sets are returned as all valid numeric.
+
+6.86
+- adjustment to label column treatment under automation in context of alternate powertransform scenarios
+- added support for comparable label column treatment in powertransform scenarios {'excl', 'exc2', 'infill', 'infill2'}
+- label column treatment for powertransform scenarios {False, True} remains comparable
+- found and fixed bug associated with label columns applied to category excl
+- ran an audit of the two support functions associated with 1010 conversions for ML infill
+- which convert 1010 to onehot and vice versa
+- revised support function for 1010 to onehot with comparable functionality to eliminate edge case
+- found and fixed snafu in onehot to 1010 associated with derivation of binary form
+- we anticipate these revisions will benefit performance of ML infill towards 1010 encodings which is the default categoric encoding under automation
