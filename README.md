@@ -719,14 +719,12 @@ based on order of columns.)
 
 * powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2')_, defaults to False.
 The powertransform parameter is used to select between options for derived
-category assignments under automation based on received feature set properties. Please
-note that powertransform options are not inspected in evaluation of label columns under 
-automation (this was a design decision with tradeoffs).
+category assignments under automation based on received feature set properties.
   - Under the default scenario, category assignments under automation are consistent with section
   [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations).
   - Under the True scenario, an evaluation will be performed of distribution properties to select between
   box-cox (bxcx), z-score (nmbr), min-max scaling (mnmx), or mean absolute deviation scaling (MAD3) normalization
-  of numerical data.
+  of numerical data. Please note that under automation label columns do not receive this treatment, if desired they can be assigned to category ptfm in assigncat.
   - Under the 'excl' scenario, columns not explicitly assigned in assigncat are subject to excl transform 
   for full pass-through, including data type retention and exclusion from ML infill basis.
   - Under the 'exc2' scenario, columns not explicitly assigned in assigncat are subject to exc2 transform 
