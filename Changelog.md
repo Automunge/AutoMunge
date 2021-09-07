@@ -4244,3 +4244,12 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - update to the wrapper functions for custom_train so that final infill exclusions are based on MLinfilltype instead of NArowtype
 - identified a few cases of redundant sort operations applied in sp19 and sbs3 as well as un-needed search in list, simplified
 - moved the validations of all valid numeric entries preceding ML infill model training to be inspected for each trained model instead of once for all models (made sense since the feature exclusions may be tailored to each infill model)
+
+6.85
+- found and fixed a snafu originating from 6.63 rewrite of evalcategory associated with the null scenario
+- which is associated with received training feature sets of all missing data, which are struck
+- it appears the all nan case was incorectly being assigned to the default transform for numeric, now resolved
+- added a new powertransform option as 'infill2'
+- comparable to powertransform = 'infill' in that it is intended for application towards data that is already numerically encoded and just ML infill is desired without normalizations and etc
+- the difference is that with infill2 user is now allowed to include non-numeric sets in the data, which are given an excl pass through transform and excluded from ML infill basis
+- one way to think about it is that infill will ensure returned sets are all valid numeric, and infill2 will only ensure received majority numeric sets are returned as all valid numeric.
