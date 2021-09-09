@@ -1754,7 +1754,7 @@ class AutoMunge:
     
     transform_dict.update({'nbr2' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['nmbr'],
+                                     'auntsuncles'   : ['nbr2'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -1835,7 +1835,7 @@ class AutoMunge:
     
     transform_dict.update({'mnm4' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['mnm3'],
+                                     'auntsuncles'   : ['mnm4'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -2985,6 +2985,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPn3 primarily intended for use as a tree category
     transform_dict.update({'DPn3' : {'parents'       : ['DPn3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3002,7 +3003,8 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-  
+    
+    #DPm2 primarily intended for use as a tree category
     transform_dict.update({'DPm2' : {'parents'       : ['DPm2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3030,6 +3032,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DLn3 primarily intended for use as a tree category
     transform_dict.update({'DLn3' : {'parents'       : ['DLn3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3047,7 +3050,8 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-  
+
+    #DLm2 primarily intended for use as a tree category
     transform_dict.update({'DLm2' : {'parents'       : ['DLm2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3075,6 +3079,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPb2 primarily intended for use as a tree category
     transform_dict.update({'DPb2' : {'parents'       : ['DPb2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3093,6 +3098,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo4 primarily intended for use as a tree category
     transform_dict.update({'DPo4' : {'parents'       : ['DPo4'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3111,6 +3117,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo5 primarily intended for use as a tree category
     transform_dict.update({'DPo5' : {'parents'       : ['DPo5'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3120,7 +3127,8 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'],
+    #DPo2 primarily intended for use as a tree category
+    transform_dict.update({'DPo2' : {'parents'       : ['onht'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
@@ -3138,6 +3146,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo6 primarily intended for use as a tree category
     transform_dict.update({'DPo6' : {'parents'       : ['DPo6'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3147,9 +3156,10 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'],
+    #DPo3 primarily intended for use as a tree category
+    transform_dict.update({'DPo3' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : [],
+                                     'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3246,6 +3256,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #for exc2 without NArw use exc6
     transform_dict.update({'exc2' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc2'],
@@ -3255,6 +3266,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #exc3 is like exc2 with downstream standard deviation bins
     transform_dict.update({'exc3' : {'parents'       : ['exc3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3264,6 +3276,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : ['bins']}})
     
+    #exc4 is like exc2 with downstream power of ten bins
     transform_dict.update({'exc4' : {'parents'       : ['exc4'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3273,6 +3286,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : ['pwr2']}})
     
+    #exc5 is passthrough integer categoric, for use without NArw use exc7
     transform_dict.update({'exc5' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc5'],
@@ -3281,7 +3295,7 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-
+    
     transform_dict.update({'exc6' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc2'],
@@ -3293,16 +3307,17 @@ class AutoMunge:
 
     transform_dict.update({'exc7' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc7'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    #exc8 is passthrough integer continuous, for use without NArw use exc9
     transform_dict.update({'exc8' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc8'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3311,7 +3326,7 @@ class AutoMunge:
 
     transform_dict.update({'exc9' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc9'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3392,7 +3407,7 @@ class AutoMunge:
 
     transform_dict.update({'101d' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['1010'],
+                                     'auntsuncles'   : ['101d'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3401,7 +3416,7 @@ class AutoMunge:
     
     transform_dict.update({'ordd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['ord3'],
+                                     'auntsuncles'   : ['ordd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3410,7 +3425,7 @@ class AutoMunge:
     
     transform_dict.update({'texd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['text'],
+                                     'auntsuncles'   : ['texd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3419,7 +3434,7 @@ class AutoMunge:
     
     transform_dict.update({'bnrd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['bnry'],
+                                     'auntsuncles'   : ['bnrd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3437,7 +3452,7 @@ class AutoMunge:
     
     transform_dict.update({'nuld' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['null'],
+                                     'auntsuncles'   : ['nuld'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3446,7 +3461,7 @@ class AutoMunge:
     
     transform_dict.update({'lbnm' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc2'],
+                                     'auntsuncles'   : ['lbnm'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3455,7 +3470,7 @@ class AutoMunge:
 
     transform_dict.update({'lbnb' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['nmbr'],
+                                     'auntsuncles'   : ['lbnb'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3464,7 +3479,7 @@ class AutoMunge:
 
     transform_dict.update({'lb10' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['1010'],
+                                     'auntsuncles'   : ['lb10'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3491,7 +3506,7 @@ class AutoMunge:
     
     transform_dict.update({'lbte' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['text'],
+                                     'auntsuncles'   : ['lbte'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3500,7 +3515,7 @@ class AutoMunge:
     
     transform_dict.update({'lbbn' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['bnry'],
+                                     'auntsuncles'   : ['lbbn'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3669,6 +3684,7 @@ class AutoMunge:
     # - 'numeric' for source columns with expected numeric entries
     # - 'integer' for source columns with expected integer entries
     # - 'justNaN' for source columns that may have expected entries other than numeric
+    # - 'binary' similar to justNaN but only the top two most frequent entries are considered valid
     # - 'exclude' for source columns that aren't needing NArow columns derived
     # - 'totalexclude' for source columns that aren't needing NArow columns derived, 
     #                  also excluded from assignnan global option and nan conversions for missing data
@@ -4182,7 +4198,7 @@ class AutoMunge:
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'nbr2'}})
     process_dict.update({'nbr3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
@@ -4276,7 +4292,7 @@ class AutoMunge:
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mnm3'}})
+                                  'labelctgy' : 'mnm4'}})
     process_dict.update({'mnm5' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mnmx,
@@ -4386,7 +4402,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'onevalue'},
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
     process_dict.update({'bnr2' : {'dualprocess' : self._process_binary,
@@ -4397,7 +4413,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'zerovalue'},
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'onht' : {'custom_train' : self._custom_train_onht,
@@ -6870,7 +6886,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
     process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
@@ -6879,7 +6895,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
     process_dict.update({'DPo4' : {'custom_train' : self._custom_train_ordl,
@@ -7086,7 +7102,7 @@ class AutoMunge:
     process_dict.update({'copy' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
@@ -7265,7 +7281,7 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
-                                  'labelctgy' : '1010'}})
+                                  'labelctgy' : '101d'}})
     process_dict.update({'ordd' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7274,7 +7290,7 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'ordd'}})
     process_dict.update({'texd' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
@@ -7283,7 +7299,7 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'texd'}})
     process_dict.update({'bnrd' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_binary,
@@ -7291,9 +7307,9 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
-                                  'labelctgy' : 'bnry'}})
+                                  'labelctgy' : 'bnrd'}})
     process_dict.update({'datd' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
@@ -7307,36 +7323,36 @@ class AutoMunge:
                                   'inplace_option' : False,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
-                                  'labelctgy' : None}})
+                                  'labelctgy' : 'nuld'}})
     process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc2,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'exc2'}})
+                                  'labelctgy' : 'lbnm'}})
     process_dict.update({'lbnb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
-    process_dict.update({'lb10' : {'custom_train' : self._custom_train_onht,
-                                  'custom_test' : self._custom_test_onht,
-                                  'custom_inversion' : self._custom_inversion_onht,
+                                  'labelctgy' : 'lbnb'}})
+    process_dict.update({'lb10' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'multirt',
-                                  'labelctgy' : '1010'}})
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'lb10'}})
     process_dict.update({'lbor' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7353,7 +7369,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
@@ -7365,7 +7381,7 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'lbte'}})
     process_dict.update({'lbbn' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_binary,
@@ -7373,9 +7389,9 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnry'}})
+                                  'NArowtype' : 'binary',
+                                  'MLinfilltype' : 'binary',
+                                  'labelctgy' : 'lbbn'}})
     process_dict.update({'lbsm' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_smth,
@@ -7440,7 +7456,7 @@ class AutoMunge:
     process_dict.update({'sgn3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
@@ -7450,7 +7466,7 @@ class AutoMunge:
     process_dict.update({'sgn4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
@@ -8208,7 +8224,7 @@ class AutoMunge:
       mdf_train[suffixcolumn] = pd.to_datetime(mdf_train[suffixcolumn], errors = 'coerce', utc=True)
       mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
       
-    elif NArowtype in {'justNaN', 'exclude', 'totalexclude', 'parsenumeric'}:
+    elif NArowtype in {'justNaN', 'binary', 'exclude', 'totalexclude', 'parsenumeric'}:
       
       #nonvalid entries are already nan
       pass
@@ -10473,7 +10489,7 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
-    #create plug value for missing cells as most common value
+    #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
     valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
     valuecounts = valuecounts.rename_axis('asdf').sort_values(by = [suffixcolumn, 'asdf'], ascending = [False, True])
     valuecounts = list(valuecounts.index)
@@ -21920,7 +21936,7 @@ class AutoMunge:
     self._df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #first we'll derive our sampled noise for injection
-    mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
+    mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
     
     #now inject noise
     mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
@@ -21930,7 +21946,7 @@ class AutoMunge:
       mdf_test[DPbn_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
@@ -22016,8 +22032,8 @@ class AutoMunge:
     ord_encodings = mdf_train[column].unique()
       
     #first we'll derive our sampled noise for injection
-    mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])))
-    mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])))
+    mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+    mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
     
     #now inject noise
     #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -22032,8 +22048,8 @@ class AutoMunge:
       mdf_test[DPod_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
-      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
+      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -23219,13 +23235,50 @@ class AutoMunge:
       NArows = pd.DataFrame(NArows)
       NArows = NArows.rename(columns = {column:column+'_NArows'})
 
-#     if category == 'bnry':
+    if NArowtype in {'binary'}:
+        
+      #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
+      valuecounts = pd.DataFrame(df2[column].value_counts())
+      valuecounts = valuecounts.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
+      valuecounts = list(valuecounts.index)
 
-#       #returns dataframe of True and False, where True coresponds to the NaN's
-#       #renames column name to column + '_NArows'
-#       NArows = pd.isna(df2[column])
-#       NArows = pd.DataFrame(NArows)
-#       NArows = NArows.rename(columns = {column:column+'_NArows'})
+      if len(valuecounts) == 0:
+        binary_1 = np.nan
+        binary_2 = np.nan
+      elif len(valuecounts) == 1:
+        binary_1 = valuecounts[0]
+        binary_2 = np.nan
+      elif len(valuecounts) >= 2:
+        binary_1 = valuecounts[0]
+        binary_2 = valuecounts[1]
+        
+      if driftassess is True:
+        
+        nunique = df2[column].nunique()
+          
+        if nunique < 500:
+
+          drift_dict.update({column : {'unique' : valuecounts, \
+                                       'nunique' : nunique, \
+                                       'binary_1' : binary_1, \
+                                       'binary_2' : binary_2, \
+                                       'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+          
+        else:
+          
+          drift_dict.update({column : {'unique' : True, \
+                                       'nunique' : nunique, \
+                                       'binary_1' : binary_1, \
+                                       'binary_2' : binary_2, \
+                                       'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
+          
+      #consolidate the two targets to single entry to support next operation
+      df2 = \
+      self._autowhere(df2, column, df2[column]==binary_1, binary_2, specified='replacement')
+
+      #populates as 1 for other data else 0 for the two targets
+      NArows = \
+      self._autowhere(pd.DataFrame(), column+'_NArows', df2[column]!=binary_2, 1, specified='replacement')
 
     if NArowtype in {'numeric'}:
 
@@ -25115,10 +25168,10 @@ class AutoMunge:
       #first we'll derive our sampled noise for injection
 
       #DPod_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
-      df[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])))
+      df[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
 
       #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-      df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])))
+      df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
 
       #now we'll populate another dataframe df_unique2 with index translated 
       #so that rows are in order of sampled index numbers in df[DPod_tempcolumn2]
@@ -31361,7 +31414,7 @@ class AutoMunge:
           print()
       else:
         if processdict[entry]['NArowtype'] not in \
-        {'numeric', 'integer', 'justNaN', 'exclude', 'totalexclude', 'positivenumeric', 'nonnegativenumeric', \
+        {'numeric', 'integer', 'justNaN', 'binary', 'exclude', 'totalexclude', 'positivenumeric', 'nonnegativenumeric', \
         'nonzeronumeric', 'parsenumeric', 'datetime'}:
           check_processdict_result = True
           if printstatus != 'silent':
@@ -34928,7 +34981,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.87'
+    automungeversion = '6.88'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35689,7 +35742,7 @@ class AutoMunge:
         #convert values to datetime
         mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
 
-      elif NArowtype in {'justNaN', 'exclude', 'parsenumeric'}:
+      elif NArowtype in {'justNaN', 'binary', 'exclude', 'parsenumeric'}:
 
         #nonvalid entries are already nan
         pass
@@ -40124,6 +40177,8 @@ class AutoMunge:
       self._autowhere(mdf_test, pworcolumn, mdf_test[pworcolumn] <= 0, np.nan, specified='replacement')
 
       mdf_test[pworcolumn] = np.floor(np.log10(mdf_test[pworcolumn].astype(float)))
+
+      newunique_list = list(train_replace_dict)
   
       test_pos_dict = {}
       posunique = mdf_test[pworcolumn].unique()
@@ -41545,7 +41600,7 @@ class AutoMunge:
       if traindata is True or testnoise is True:
         
         #first we'll derive our sampled noise for injection
-        mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
+        mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
         mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
@@ -41615,8 +41670,8 @@ class AutoMunge:
       if traindata is True or testnoise is True:
         
         #now we'll derive our sampled noise for injection
-        mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])))
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])))
+        mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
         #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -41762,7 +41817,6 @@ class AutoMunge:
 
       if integertype == 'integer':
 
-        mdf_train[exclcolumn] = mdf_train[exclcolumn].astype(np.int32)
         mdf_test[exclcolumn] = mdf_test[exclcolumn].astype(np.int32)
 
     else:
@@ -46804,7 +46858,7 @@ class AutoMunge:
 
             df_test_denseinvert.rename(columns = {postprocess_dict['labels_column'] : \
                                       postprocess_dict['labels_column'] + '_' + denselabel_column}, \
-                           inplace = True)
+                                      inplace = True)
 
             dense_recovered_list += [postprocess_dict['labels_column'] + '_' + denselabel_column]
 
