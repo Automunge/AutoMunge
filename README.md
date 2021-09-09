@@ -3703,9 +3703,9 @@ Note that for assignnan designation of infill conversions, excl is excluded from
   - driftreport postmunge metrics: none
   - returned datatype: retains data type of received data
   - inversion available: yes
-* exc2/exc3/exc4: passes source column unaltered other than force to numeric, adjinfill applied
+* exc2/exc3/exc4/exc6: passes source column unaltered other than force to numeric, adjinfill applied
 (exc3 and exc4 have downstream standard deviation or power of 10 bins aggregated such as may be beneficial
-when applying TrainLabelFreqLevel to a numeric label set)
+when applying TrainLabelFreqLevel to a numeric label set). For use without NArw aggregation use exc6/
   - useful for: numeric pass-through sets, feature included in surrounding ML infill models
   - default infill: adjinfill
   - default NArowtype: numeric
@@ -3715,7 +3715,7 @@ when applying TrainLabelFreqLevel to a numeric label set)
   - driftreport postmunge metrics: none
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
-* exc5/exc8: passes source column unaltered other than force to numeric, adjinfill applied for non-integers. exc5 is for ordinal encoded integers, exc8 is for continuous integers.
+* exc5/exc8: passes source column unaltered other than force to numeric, adjinfill applied for non-integers. exc5 is for ordinal encoded integers, exc8 is for continuous integers. For use without NArw aggregation use exc7/exc9
   - useful for: passthrough integer sets, feature included in surrounding ML infill models
   - default infill: adjinfill
   - default NArowtype: integer
