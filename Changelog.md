@@ -4269,3 +4269,21 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - found and fixed a snafu originating from the autowhere rollout
 - associated with populating a column for assignnan missing data injections
 - was impacting assignnan['injections'] option, now resolved
+
+6.88
+- fixed the exc8 family tree to apply exc8 instead of exc5
+- which impacts powertransform = 'infill'
+- a few clarifications to read me regarding exc6/exc7/exc9
+- a survey of family trees for cases where single category in family tree doesn't match root category
+- there are tradeoffs, a more common category populated as a tree category might be easier to understand when viewing transformdict without inspecting processdict, decided would be more intuitive for this use to match the tree category to the root category, as would be less hassle to assign parameters in assignparam
+- (we had several root categories populated in both conventions, decided it would be better to align to a single common convention, however limiting this update to root categories with a single tree category other than NArw and without offspring, root categories with more elaborate family trees we'll keep the convention of populating the more common tree category)
+- updated nbr2/mnm4/101d/ordd/texd/bnrd/nuld/exc7/exc9/lbnm/lbnb/lb10/lbos/lbte/lbbn for this purpose with comparable functionality
+- update to lbos so defaultparams is consistent with lbor
+- corrected lbbn MLinfilltype to binary
+- new NArowtype option as 'binary'
+- binary now populated for transforms in the bnry family, such as bnry/bnr2/DPbn/bnrd/lbbn
+- and treats entries other than the two most frequent as targets for infill for purposes of NArw aggregation
+- identified and mitigated a potential edge case for noise injection transforms associated with index matching
+- found and fixed bug in pwor associated with scenario negvalues=False, originating from recent rewrite
+- revised our rollout validation tests, there were a few root categories we were previously omitting for esoteric reasons, rollout validations now cover all root categories in library (this was benefited by the new approach for MLinfilltype totalexclude)
+- found and fixed bug in exc8 postprocess
