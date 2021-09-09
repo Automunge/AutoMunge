@@ -1708,7 +1708,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'nbr2' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['nmbr'],
+                                     'auntsuncles'   : ['nbr2'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -1789,7 +1789,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'mnm4' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['mnm3'],
+                                     'auntsuncles'   : ['mnm4'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -2939,6 +2939,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPn3 primarily intended for use as a tree category
     transform_dict.update({'DPn3' : {'parents'       : ['DPn3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -2956,7 +2957,8 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-  
+    
+    #DPm2 primarily intended for use as a tree category
     transform_dict.update({'DPm2' : {'parents'       : ['DPm2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -2984,6 +2986,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DLn3 primarily intended for use as a tree category
     transform_dict.update({'DLn3' : {'parents'       : ['DLn3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3001,7 +3004,8 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-  
+
+    #DLm2 primarily intended for use as a tree category
     transform_dict.update({'DLm2' : {'parents'       : ['DLm2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3029,6 +3033,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPb2 primarily intended for use as a tree category
     transform_dict.update({'DPb2' : {'parents'       : ['DPb2'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3047,6 +3052,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo4 primarily intended for use as a tree category
     transform_dict.update({'DPo4' : {'parents'       : ['DPo4'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3065,6 +3071,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo5 primarily intended for use as a tree category
     transform_dict.update({'DPo5' : {'parents'       : ['DPo5'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3074,7 +3081,8 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo2' : {'parents'       : ['DPo2'],
+    #DPo2 primarily intended for use as a tree category
+    transform_dict.update({'DPo2' : {'parents'       : ['onht'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
@@ -3092,6 +3100,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #DPo6 primarily intended for use as a tree category
     transform_dict.update({'DPo6' : {'parents'       : ['DPo6'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3101,9 +3110,10 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
-    transform_dict.update({'DPo3' : {'parents'       : ['DPo3'],
+    #DPo3 primarily intended for use as a tree category
+    transform_dict.update({'DPo3' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : [],
+                                     'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3200,6 +3210,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #for exc2 without NArw use exc6
     transform_dict.update({'exc2' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc2'],
@@ -3209,6 +3220,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
     
+    #exc3 is like exc2 with downstream standard deviation bins
     transform_dict.update({'exc3' : {'parents'       : ['exc3'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3218,6 +3230,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : ['bins']}})
     
+    #exc4 is like exc2 with downstream power of ten bins
     transform_dict.update({'exc4' : {'parents'       : ['exc4'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
@@ -3227,6 +3240,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : ['pwr2']}})
     
+    #exc5 is passthrough integer categoric, for use without NArw use exc7
     transform_dict.update({'exc5' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc5'],
@@ -3235,7 +3249,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-
+    
     transform_dict.update({'exc6' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['exc2'],
@@ -3247,16 +3261,17 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'exc7' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc7'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    #exc8 is passthrough integer continuous, for use without NArw use exc9
     transform_dict.update({'exc8' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc8'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3265,7 +3280,7 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'exc9' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc5'],
+                                     'auntsuncles'   : ['exc9'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3346,7 +3361,7 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'101d' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['1010'],
+                                     'auntsuncles'   : ['101d'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3355,7 +3370,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'ordd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['ord3'],
+                                     'auntsuncles'   : ['ordd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3364,7 +3379,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'texd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['text'],
+                                     'auntsuncles'   : ['texd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3373,7 +3388,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'bnrd' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['bnry'],
+                                     'auntsuncles'   : ['bnrd'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3391,7 +3406,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'nuld' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['null'],
+                                     'auntsuncles'   : ['nuld'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3400,7 +3415,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'lbnm' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['exc2'],
+                                     'auntsuncles'   : ['lbnm'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3409,7 +3424,7 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'lbnb' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['nmbr'],
+                                     'auntsuncles'   : ['lbnb'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3418,7 +3433,7 @@ For simplicity just going to copy the code directly from code base where these d
 
     transform_dict.update({'lb10' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['1010'],
+                                     'auntsuncles'   : ['lb10'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3445,7 +3460,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'lbte' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['text'],
+                                     'auntsuncles'   : ['lbte'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3454,7 +3469,7 @@ For simplicity just going to copy the code directly from code base where these d
     
     transform_dict.update({'lbbn' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['bnry'],
+                                     'auntsuncles'   : ['lbbn'],
                                      'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
@@ -3627,6 +3642,7 @@ For simplicity just going to copy the code directly from code base where these d
     # - 'numeric' for source columns with expected numeric entries
     # - 'integer' for source columns with expected integer entries
     # - 'justNaN' for source columns that may have expected entries other than numeric
+    # - 'binary' similar to justNaN but only the top two most frequent entries are considered valid
     # - 'exclude' for source columns that aren't needing NArow columns derived
     # - 'totalexclude' for source columns that aren't needing NArow columns derived, 
     #                  also excluded from assignnan global option and nan conversions for missing data
@@ -4140,7 +4156,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
+                                  'labelctgy' : 'nbr2'}})
     process_dict.update({'nbr3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
@@ -4234,7 +4250,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'mnm3'}})
+                                  'labelctgy' : 'mnm4'}})
     process_dict.update({'mnm5' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mnmx,
@@ -4344,7 +4360,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'onevalue'},
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
     process_dict.update({'bnr2' : {'dualprocess' : self._process_binary,
@@ -4355,7 +4371,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'infillconvention' : 'zerovalue'},
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnr2'}})
     process_dict.update({'onht' : {'custom_train' : self._custom_train_onht,
@@ -6828,7 +6844,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
     process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
@@ -6837,7 +6853,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
     process_dict.update({'DPo4' : {'custom_train' : self._custom_train_ordl,
@@ -7044,7 +7060,7 @@ For simplicity just going to copy the code directly from code base where these d
     process_dict.update({'copy' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
@@ -7223,7 +7239,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
-                                  'labelctgy' : '1010'}})
+                                  'labelctgy' : '101d'}})
     process_dict.update({'ordd' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7232,7 +7248,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'ord3'}})
+                                  'labelctgy' : 'ordd'}})
     process_dict.update({'texd' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
@@ -7241,7 +7257,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'texd'}})
     process_dict.update({'bnrd' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_binary,
@@ -7249,9 +7265,9 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
+                                  'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
-                                  'labelctgy' : 'bnry'}})
+                                  'labelctgy' : 'bnrd'}})
     process_dict.update({'datd' : {'dualprocess' : None,
                                   'singleprocess' : None,
                                   'postprocess' : None,
@@ -7265,36 +7281,36 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : False,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
-                                  'labelctgy' : None}})
+                                  'labelctgy' : 'nuld'}})
     process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_exc2,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'exc2'}})
+                                  'labelctgy' : 'lbnm'}})
     process_dict.update({'lbnb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
                                   'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
-                                  'labelctgy' : 'nmbr'}})
-    process_dict.update({'lb10' : {'custom_train' : self._custom_train_onht,
-                                  'custom_test' : self._custom_test_onht,
-                                  'custom_inversion' : self._custom_inversion_onht,
+                                  'labelctgy' : 'lbnb'}})
+    process_dict.update({'lb10' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'multirt',
-                                  'labelctgy' : '1010'}})
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'lb10'}})
     process_dict.update({'lbor' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -7311,7 +7327,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
-                                  'defaultparams' : {'frequency_sort' : False},
+                                  'defaultparams' : {'null_activation' : False},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
@@ -7323,7 +7339,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'text'}})
+                                  'labelctgy' : 'lbte'}})
     process_dict.update({'lbbn' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_binary,
@@ -7331,9 +7347,9 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'multirt',
-                                  'labelctgy' : 'bnry'}})
+                                  'NArowtype' : 'binary',
+                                  'MLinfilltype' : 'binary',
+                                  'labelctgy' : 'lbbn'}})
     process_dict.update({'lbsm' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_smth,
@@ -7398,7 +7414,7 @@ For simplicity just going to copy the code directly from code base where these d
     process_dict.update({'sgn3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
@@ -7408,7 +7424,7 @@ For simplicity just going to copy the code directly from code base where these d
     process_dict.update({'sgn4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self._inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
