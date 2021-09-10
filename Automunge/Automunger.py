@@ -3632,15 +3632,15 @@ class AutoMunge:
     #function to singleprocess, and omit or pass None to those not used.
     #A user can also pass an inversion function to inverseprocess if available.
     #Most of the transforms defined internal to the library follow this convention.
-    
+
     #dualprocess: for passing a processing function in which normalization 
     #             parameters are derived from properties of the training set
     #             and jointly process the train set and if available corresponding test set
-    
+
     #singleprocess: for passing a processing function in which no normalization
     #               parameters are needed from the train set to process the
     #               test set, such that train and test sets processed separately
-    
+
     #postprocess: for passing a processing function in which normalization 
     #             parameters originally derived from the train set are applied
     #             to separately process a corresponding test set
@@ -6978,7 +6978,7 @@ class AutoMunge:
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt1'}})
     process_dict.update({'qbt2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -6990,7 +6990,7 @@ class AutoMunge:
                                   'defaultparams' : {'integer_bits' : 15,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt2'}})
     process_dict.update({'qbt3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -7002,7 +7002,7 @@ class AutoMunge:
                                   'defaultparams' : {'sign_bit' : False,
                                                      'fractional_bits' : 13},
                                   'NArowtype' : 'nonnegativenumeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt3'}})
     process_dict.update({'qbt4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -7015,7 +7015,7 @@ class AutoMunge:
                                                      'integer_bits' : 16,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'nonnegativenumeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt4'}})
     process_dict.update({'nmqb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
@@ -7451,7 +7451,7 @@ class AutoMunge:
                                                      'fractional_bits' : 3,
                                                      'sign_bit' : True},
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt5'}})
     process_dict.update({'sgn3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
@@ -8334,7 +8334,7 @@ class AutoMunge:
     
     if dtype_convert is True:
 
-      if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+      if MLinfilltype in {'numeric', 'concurrent_nmbr', 'exclude'}:
         #datatype conversion performed elsewhere based on floatprecision parameter
         pass
 
@@ -8362,6 +8362,8 @@ class AutoMunge:
           mdf_train[newcolumns_list] = mdf_train[newcolumns_list].astype(np.uint32)
           mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint32)
       
+      #this scenairo would also work for 'singlct' and 'ordlexclude', we are keeping seperate for postmunge backward compatibility
+      #concurrent_ordl was added in 6.80
       if MLinfilltype in {'concurrent_ordl'}:
         
         #for concurrent_ordl we'll populate a dicitonary of max_encodings for each newcolumn
@@ -8384,7 +8386,7 @@ class AutoMunge:
 
         custom_process_wrapper_dict.update({'max_encoding_for_dtype_convert' : max_encoding_for_dtype_convert})
 
-      if MLinfilltype in {'integer', 'exclude', 'totalexclude'}:
+      if MLinfilltype in {'integer', 'totalexclude'}:
         #no conversion, assumes any conversion takes place in transformation function
         pass
 
@@ -23521,7 +23523,7 @@ class AutoMunge:
       
 #       NArows = self._parsedate(df2, column)
       
-    if NArowtype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
+    if NArowtype in {'exclude', 'totalexclude'}:
       
       if driftassess is True:
         drift_dict.update({column : {}})
@@ -24369,6 +24371,7 @@ class AutoMunge:
                         'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
 
       #if this is a single column set or concurrent_act
+      #note that in edge cases multirt and 1010 may have len(categorylist) == 1
       if len(categorylist) == 1 or \
       postprocess_dict['process_dict'][category]['MLinfilltype'] in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
 
@@ -24497,6 +24500,8 @@ class AutoMunge:
 
       #if this is a single column set (not categorical)
       #or a multicolumn set with distinct infill to each column
+      #note that in edge cases multirt and 1010 may have len(categorylist) == 1
+      #singlecolumncase refers to cases where one column at a time is inserted into multicolumn sets, such as for particular assigninfill scenarios
       if len(categorylist) == 1 or singlecolumncase is True \
       or MLinfilltype in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
         
@@ -24547,7 +24552,7 @@ class AutoMunge:
           df = \
           self._autowhere(df, textcolumnname, NArows[NArowcolumn], NArows['tempindex1'], specified='replacement')
 
-    if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
+    elif MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
       pass
 
     return df
@@ -25012,7 +25017,7 @@ class AutoMunge:
     categorylist = postprocess_dict['column_dict'][column]['categorylist']
     
     #if target is numeric (currently stochastic impute not supported for integer MLinfilltype)
-    if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+    if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
       
       if 'stochastic_impute_numeric' in ML_cmnd and ML_cmnd['stochastic_impute_numeric'] is True:
         
@@ -25251,6 +25256,8 @@ class AutoMunge:
     if 'stochastic_imputation_dict' not in postprocess_dict:
       postprocess_dict.update({'stochastic_imputation_dict' : {}})
 
+    MLinfilltype = postprocess_dict['process_dict'][postprocess_dict['column_dict'][targetcolumn]['category']]['MLinfilltype']
+
     #test data case
     if targetcolumn in postprocess_dict['stochastic_imputation_dict']:
 
@@ -25310,6 +25317,7 @@ class AutoMunge:
     and max_minus_min != 0:
 
       #for numeric injections df will only have one column (which should be header 'infill' based on current convention)
+      #note this is also true for infill to concurrent_nmbr MLinfilltype
       column = list(df)[0]
 
       #convert imputations to a min/max representation to be consistent with noise range
@@ -25385,6 +25393,9 @@ class AutoMunge:
 
       #now invert the min/max scaling
       df[column] = df[column] * max_minus_min + minimum
+
+      if MLinfilltype == 'integer':
+        df[column] = df[column].round()
       
     #returned data now has stochastic noise injected to a subset of imputations (per flip_prob ratio)
     return df, postprocess_dict
@@ -26589,6 +26600,9 @@ class AutoMunge:
     #labels.) Returns train_df, labels_df, trainID_df.
     #for now have convention that MLinfilltypes of 1010 or concurrent_act
     #not yet supported (future extension)
+
+    #note that the methods take into account the MLinfilltype 
+    #of the lblctgy entry (tree category) associated with label set root category
     """
 
     #find origcateogry of am_labels from FSpostprocess_dict
@@ -26599,8 +26613,7 @@ class AutoMunge:
     #find labelctgy from process_dict based on this origcategory
     labelscategory = process_dict[origcategory]['labelctgy']
 
-    #this is an exception to convention elsewhere that MLinfilltype is based on tree category
-    #here we're inspecting based on root category
+    #here we're inspecting MLinfilltype based on the labelctgy tree category
     MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
 
     #columns_labels may be reset for numeric labels, labels is fixed
@@ -26618,7 +26631,7 @@ class AutoMunge:
       setlengthlist = []
       multiplierlist = []
 
-      #this is the MLinfilltype of the root category
+      #this is the MLinfilltype of the labelctgy
       if MLinfilltype in {'numeric', 'integer'}:
 
         columns_labels = []
@@ -26636,14 +26649,14 @@ class AutoMunge:
             columns_labels.append(label)
 
           if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
-          in {'singlct', 'binary', 'concurrent_ordl'} \
+          in {'singlct', 'binary'} \
           and multirt_append is False:
             singlct_append = True
             columns_labels.append(label)
 
-      #this is the MLinfilltype of the root category
+      #this is the MLinfilltype of the labelctgy
       if MLinfilltype in {'multirt'} \
-      or MLinfilltype in {'numeric'} and multirt_append is True:
+      or MLinfilltype in {'numeric', 'integer'} and multirt_append is True:
         if columns_labels != []:
           
           #we'll only apply to first multirt set in labels
@@ -26805,6 +26818,15 @@ class AutoMunge:
   
   def _trainFSmodel(self, am_subset, am_labels, randomseed, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd, printstatus):
+    """
+    This function is used in feature importance evaluation
+    And serves to translate a feature importance model to the conventions of ML infill
+    So that we can use a common model training operation for both use cases with _predictinfill
+    Thus ML_cmnd model training parameters, such as hyperparmeter tuning, are included
+    Although basis exclusions are handled preceding this function call, 
+    and include inspection of ML_cmnd['full_exclude'] and cases of MLinfilltype = 'totalexclude'
+    since feature importance does not apply same approach for partitioning sets as ML infill
+    """
     
     if len(list(am_labels)) > 0:
 
@@ -27105,6 +27127,9 @@ class AutoMunge:
     am_validation1 = pd.DataFrame(am_validation1)
     am_validationlabels1 = pd.DataFrame(am_validationlabels1)
 
+    #capture any ML_cmnd preprocessing returned from automunge
+    FSML_cmnd = FSpostprocess_dict['ML_cmnd']
+
     #__
 
     #we'll remove columns from ML_cmnd['full_exclude'] or with MLinfilltype == 'totalexclude'
@@ -27222,7 +27247,7 @@ class AutoMunge:
       #FSmodel, baseaccuracy = \
       FSmodel = \
       self._trainFSmodel(am_train, am_labels, randomseed, \
-                        FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
+                        FSprocess_dict, FSpostprocess_dict, labelctgy, FSML_cmnd, \
                         printstatus)
       
       if FSmodel is False:
@@ -27741,14 +27766,10 @@ class AutoMunge:
 
             if iteration == 0:
               
-              # #stndrdinfill (just prinouts, this was done in processing funcitons)
-              # if column in postprocess_assigninfill_dict['stdrdinfill']:
-
-              #   #printout display progress
-              #   if printstatus is True:
-              #     print("infill to column: ", column)
-              #     print("     infill type: stdrdinfill")
-              #     print("")
+              #stndrdinfill 
+              #printouts are ommitted, this is referring to cases of no MLinfill 
+              #and no assigninfill other than stndrdinfill
+              #(so infill defers to defaultinfill from processing function)
                   
               #zeroinfill
               if column in postprocess_assigninfill_dict['zeroinfill']:
@@ -27837,7 +27858,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_ordl', 'concurrent_act'}:
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -27870,7 +27891,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_ordl', 'concurrent_act'}:
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -27903,9 +27924,9 @@ class AutoMunge:
                 #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
                 boolcolumn = False
                 
-                #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'boolexclude', 'concurrent_nmbr'}:
+                in {}:
+                # in {'boolexclude', 'concurrent_nmbr'}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -27934,7 +27955,7 @@ class AutoMunge:
 
                 #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'boolexclude', 'concurrent_nmbr'}:
+                in {}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -27967,7 +27988,6 @@ class AutoMunge:
               self._MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd, \
                                     printstatus)
-              
               
               MLinfilltype = postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
               
@@ -28271,15 +28291,11 @@ class AutoMunge:
           not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
-              
-              # #stndrdinfill (just prinouts, this was done in processing funcitons)
-              # if column in postprocess_assigninfill_dict['stdrdinfill']:
 
-              #   #printout display progress
-              #   if printstatus is True:
-              #     print("infill to column: ", column)
-              #     print("     infill type: stdrdinfill")
-              #     print("")
+              #stndrdinfill 
+              #printouts are ommitted, this is referring to cases of no MLinfill 
+              #and no assigninfill other than stndrdinfill
+              #(so infill defers to defaultinfill from processing function)
 
               #zeroinfill:
               if column in postprocess_assigninfill_dict['zeroinfill']:
@@ -28346,7 +28362,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_ordl', 'concurrent_act'}:
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -28380,7 +28396,7 @@ class AutoMunge:
                 boolcolumn = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'multirt', 'singlct', 'binary', '1010', 'boolexclude', 'concurrent_ordl', 'concurrent_act'}:
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
                   boolcolumn = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
@@ -28414,7 +28430,7 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'boolexclude', 'concurrent_nmbr'}:
+                in {}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -28442,7 +28458,7 @@ class AutoMunge:
                 boolcolumn = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-                in {'boolexclude', 'concurrent_nmbr'}:
+                in {}:
                   boolcolumn = True
 
                 if boolcolumn is False:
@@ -32989,7 +33005,7 @@ class AutoMunge:
           MLinfilltype = \
           postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
           
-          if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+          if MLinfilltype in {'numeric', 'concurrent_nmbr', 'exclude'}:
             
             #add to numeric
             columntype_report['continuous'].append(column)
@@ -33047,7 +33063,7 @@ class AutoMunge:
 
               populated_columns.append(entry)
               
-          elif MLinfilltype in {'exclude', 'totalexclude'}:
+          elif MLinfilltype in {'totalexclude'}:
             
             #add to ordinal
             columntype_report['passthrough'].append(column)
@@ -33480,8 +33496,27 @@ class AutoMunge:
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
     check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
     
-    #ML_cmnd_orig is to record state of ML_cmnd as received
-    ML_cmnd_orig = deepcopy(ML_cmnd)
+    #___
+    #deepcopy passed dictionaries so as not to edit exterior objects
+    #(these are not expected to be large objects so the memory impact is negligable)
+    #including ML_cmnd, assigncat, assignparam, assigninfill, assignnan, transformdict, processdict 
+    if isinstance(ML_cmnd, dict):
+      ML_cmnd = deepcopy(ML_cmnd)
+      #ML_cmnd_orig is to record state of ML_cmnd as received
+      ML_cmnd_orig = deepcopy(ML_cmnd)
+    if isinstance(assigncat, dict):
+      assigncat = deepcopy(assigncat)
+    if isinstance(assignparam, dict):
+      assignparam = deepcopy(assignparam)
+    if isinstance(assigninfill, dict):
+      assigninfill = deepcopy(assigninfill)
+    if isinstance(assignnan, dict):
+      assignnan = deepcopy(assignnan)
+    if isinstance(transformdict, dict):
+      transformdict = deepcopy(transformdict)
+    if isinstance(processdict, dict):
+      processdict = deepcopy(processdict)
+    #___
 
     #initialize ML_cmnd if incompletely specified, also some validation tests
     check_ML_cmnd_result, ML_cmnd = \
@@ -33496,9 +33531,6 @@ class AutoMunge:
 
     #transformdict is user passed data structure to add entries to transform_dict
     if bool(transformdict) is not False:
-      
-      #deepcopy so as not to edit exterior object
-      transformdict = deepcopy(transformdict)
 
       #validates format of transformdict
       check_transformdict000_result1, check_transformdict000_result2 = \
@@ -33552,9 +33584,6 @@ class AutoMunge:
 
     #processdict is user passed data strucure to add entries to process_dict
     if bool(processdict) is not False:
-      
-      #deepcopy so as not to edit exterior object
-      processdict = deepcopy(processdict)
       
       #this function checks if any category entries in user passed processdict 
       #have a functionpointer entry
@@ -34882,7 +34911,7 @@ class AutoMunge:
 
     #now we'll apply the floatprecision transformation    
     #floatprecision adjustment only applied to columns returned from transforms
-    #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    #with mlinfilltype in {'numeric', 'concurrent_nmbr', 'exclude'}
     #when dtype_convert not deactivated for the associated category in processdict
     floatcolumns_train = list(df_train)
     floatcolumns_labels = list(df_labels)
@@ -34891,7 +34920,7 @@ class AutoMunge:
       if floatcolumn not in returned_PCA_columns and \
       floatcolumn in postprocess_dict['column_dict'] and \
       (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'} \
+      not in {'numeric', 'concurrent_nmbr', 'exclude'} \
       or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
       and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_train.remove(floatcolumn)
@@ -34901,7 +34930,7 @@ class AutoMunge:
       if floatcolumn not in returned_PCA_columns and \
       floatcolumn in postprocess_dict['column_dict'] and \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'}:
+      not in {'numeric', 'concurrent_nmbr', 'exclude'}:
         floatcolumns_labels.remove(floatcolumn)
 
     df_train = self._floatprecision_transform(df_train, floatcolumns_train, floatprecision)
@@ -34981,7 +35010,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.88'
+    automungeversion = '6.89'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35742,7 +35771,7 @@ class AutoMunge:
         #convert values to datetime
         mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
 
-      elif NArowtype in {'justNaN', 'binary', 'exclude', 'parsenumeric'}:
+      elif NArowtype in {'justNaN', 'binary', 'exclude', 'totalexclude', 'parsenumeric'}:
 
         #nonvalid entries are already nan
         pass
@@ -35802,7 +35831,7 @@ class AutoMunge:
         
         newcolumns_list = postprocess_dict['column_dict'][normkey]['categorylist']
 
-        if MLinfilltype in {'numeric', 'concurrent_nmbr'}:
+        if MLinfilltype in {'numeric', 'concurrent_nmbr', 'exclude'}:
           #datatype conversion performed elsewhere based on floatprecision parameter
           pass
 
@@ -35824,6 +35853,8 @@ class AutoMunge:
           else:
             mdf_test[newcolumns_list] = mdf_test[newcolumns_list].astype(np.uint32)
 
+        #this scenairo would also work for 'singlct' and 'ordlexclude', we are keeping seperate for postmunge backward compatibility
+        #concurrent_ordl was added in 6.80
         if MLinfilltype in {'concurrent_ordl'}:
 
           max_encoding_for_dtype_convert = custom_process_wrapper_dict['max_encoding_for_dtype_convert']
@@ -35839,7 +35870,7 @@ class AutoMunge:
             else:
               mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.uint32)
 
-        if MLinfilltype in {'integer', 'exclude', 'totalexclude'}:
+        if MLinfilltype in {'integer', 'totalexclude'}:
           #no conversion, assumes any conversion takes place in transformation function
           pass
 
@@ -43567,14 +43598,14 @@ class AutoMunge:
     floatcolumns_testlabels = list(df_testlabels)
 
     #floatprecision adjustment only applied to columns returned from transforms
-    #with mlinfilltype in {'numeric', 'concurrent_nmbr'}
+    #with mlinfilltype in {'numeric', 'concurrent_nmbr', 'exclude'}
     #when dtype_convert not deactivated for the associated category in processdict
     floatcolumns_test_copy = floatcolumns_test.copy()
     for floatcolumn in floatcolumns_test_copy:
       if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
       floatcolumn in postprocess_dict['column_dict'] and \
       (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'} \
+      not in {'numeric', 'concurrent_nmbr', 'exclude'} \
       or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
       and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_test.remove(floatcolumn)
@@ -43584,7 +43615,7 @@ class AutoMunge:
       if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
       floatcolumn in postprocess_dict['column_dict'] and \
       postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr'}:
+      not in {'numeric', 'concurrent_nmbr', 'exclude'}:
         floatcolumns_testlabels.remove(floatcolumn)
 
     #now we'll apply the floatprecision transformation
