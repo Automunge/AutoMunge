@@ -4287,3 +4287,25 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - found and fixed bug in pwor associated with scenario negvalues=False, originating from recent rewrite
 - revised our rollout validation tests, there were a few root categories we were previously omitting for esoteric reasons, rollout validations now cover all root categories in library (this was benefited by the new approach for MLinfilltype totalexclude)
 - found and fixed bug in exc8 postprocess
+
+6.89
+- updated the read me processdict writeup to align with last rollout
+- note that we have decided not to make further revisions to the medium version, that version is frozen
+- audited automunge parameters to identify cases where internal operations could result in editing exterior objects from dictionary memory sharing, identified a few cases not yet mitigated, now resolved
+- surveyed ML_cmnd usage for feature selection, consolidated to use of single version (now using only version returned from automunge call which includes any validation preparations)
+- added function description to support function _trainFSmodel
+- corrected code comments to align with what is drafted in code, in regards to MLinfillytpe being based on a tree category and not the root category in support function _LabelFrequencyLevelizer 
+- (specifically the levelizer takes into account the MLinfilltype of the labelctgy entry (which is a tree category) associated with the root catregory)
+- the struck comments were added in a recent code review in which I believe I had a small amount of confusion in interpretation between function variables labelscategory (the labelctgy tree category associated with the root category) vs origcategory (the label root category), the code implementation long preceded the addition of the struck comments
+- struck scenario for concurrent_ordl MLinfilltype in TrainLabelFreqLevel
+- added TrainLabelFreqLevel support for scenario of labels with integer MLinfilltype labelctgy supplemented by multirt
+- recent convention is that any added code associated with backward compatibility accomodation includes the phrase "backward compatibility" in the code comment, the intent is that if we were ever to decide on any kind of backward compatibility breaking update we could then consolidate all of these scenarios at once (as used here backward compatibility refers to passing a postproces_dict to postmunge that was populated in a prior version than the one running postmunge)
+- a few code comments added here and there for clarity
+- struck some redundant MLinfilltype exclusions for boolexclude in support function _apply_am_infill and _apply_pm_infill
+- struck concurrent_nmbr MLinfilltype exclusion from modeinfill and lcinfill in support function _apply_am_infill and _apply_pm_infill
+- added stochastic_impute support for integer MLinfilltype
+- exclude MLinfilltype is now subject to any data type conversion based on floatprecision parameter
+- updated qbt1 family of transforms from exclude MLinfilltype to boolexclude to ensure exclusion from PCA dimensionality reduction
+- this also results in qbt1 returned sets now being included in Binary dimensionality reduction and included in the boolean set in the returned columntype_report
+- updated columntype_report so that MLinfilltype exclude is reported as numeric
+- audited MLinfilltype and NArowtype inspections throughout codebase
