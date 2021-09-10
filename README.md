@@ -1639,6 +1639,7 @@ We'll describe the options for processdict entries here. For clarity processdict
 # - 'numeric' for source columns with expected numeric entries
 # - 'integer' for source columns with expected integer entries
 # - 'justNaN' for source columns that may have expected entries other than numeric
+# - 'binary' similar to justNaN but only the top two most frequent entries are considered valid
 # - 'exclude' for source columns that aren't needing NArow columns derived
 # - 'totalexclude' for source columns that aren't needing NArow columns derived, 
 #                  also excluded from assignnan global option and nan conversions for missing data
