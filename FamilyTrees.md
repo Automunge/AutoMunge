@@ -680,7 +680,34 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['mlti'],
                                      'friends'       : []}})
 
-    transform_dict.update({'lngt' : {'parents'       : ['lngt'],
+    transform_dict.update({'GPS5' : {'parents'       : ['GPS5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlto'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS6' : {'parents'       : ['GPS6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlto', 'mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'lngt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['lngt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'lngm' : {'parents'       : ['lngm'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
@@ -695,7 +722,25 @@ For simplicity just going to copy the code directly from code base where these d
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['log0'],
+                                     'coworkers'     : ['logn'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'bnst' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnst'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bnso' : {'parents'       : ['bnso'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
     transform_dict.update({'UPCS' : {'parents'       : [],
@@ -3590,15 +3635,15 @@ For simplicity just going to copy the code directly from code base where these d
     #function to singleprocess, and omit or pass None to those not used.
     #A user can also pass an inversion function to inverseprocess if available.
     #Most of the transforms defined internal to the library follow this convention.
-    
+
     #dualprocess: for passing a processing function in which normalization 
     #             parameters are derived from properties of the training set
     #             and jointly process the train set and if available corresponding test set
-    
+
     #singleprocess: for passing a processing function in which no normalization
     #               parameters are needed from the train set to process the
     #               test set, such that train and test sets processed separately
-    
+
     #postprocess: for passing a processing function in which normalization 
     #             parameters originally derived from the train set are applied
     #             to separately process a corresponding test set
@@ -4511,7 +4556,35 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS5' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlto'}})
+    process_dict.update({'GPS6' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlto'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_lngt,
+                                  'postprocess' : None,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'integer',
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'lngm' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
@@ -4527,6 +4600,26 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
+    process_dict.update({'bnst' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_bnst,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_bnst,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'bnst'}})
+    process_dict.update({'bnso' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_bnst,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_bnst,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'UPCS' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
@@ -6936,7 +7029,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt1'}})
     process_dict.update({'qbt2' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -6948,7 +7041,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'integer_bits' : 15,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt2'}})
     process_dict.update({'qbt3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -6960,7 +7053,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'defaultparams' : {'sign_bit' : False,
                                                      'fractional_bits' : 13},
                                   'NArowtype' : 'nonnegativenumeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt3'}})
     process_dict.update({'qbt4' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
@@ -6973,7 +7066,7 @@ For simplicity just going to copy the code directly from code base where these d
                                                      'integer_bits' : 16,
                                                      'fractional_bits' : 0},
                                   'NArowtype' : 'nonnegativenumeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt4'}})
     process_dict.update({'nmqb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
@@ -7409,7 +7502,7 @@ For simplicity just going to copy the code directly from code base where these d
                                                      'fractional_bits' : 3,
                                                      'sign_bit' : True},
                                   'NArowtype' : 'numeric',
-                                  'MLinfilltype' : 'exclude',
+                                  'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt5'}})
     process_dict.update({'sgn3' : {'dualprocess' : None,
                                   'singleprocess' : self._process_copy,
