@@ -726,7 +726,34 @@ class AutoMunge:
                                      'coworkers'     : ['mlti'],
                                      'friends'       : []}})
 
-    transform_dict.update({'lngt' : {'parents'       : ['lngt'],
+    transform_dict.update({'GPS5' : {'parents'       : ['GPS5'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlto'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'GPS6' : {'parents'       : ['GPS6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlto', 'mlti'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'lngt' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['lngt'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'lngm' : {'parents'       : ['lngm'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
@@ -741,7 +768,25 @@ class AutoMunge:
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['log0'],
+                                     'coworkers'     : ['logn'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'bnst' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['bnst'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bnso' : {'parents'       : ['bnso'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
     transform_dict.update({'UPCS' : {'parents'       : [],
@@ -4553,7 +4598,35 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
+    process_dict.update({'GPS5' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlto'}})
+    process_dict.update({'GPS6' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : None,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'GPS_convention' : 'nonunique'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_nmbr',
+                                  'labelctgy' : 'mlto'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_lngt,
+                                  'postprocess' : None,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'integer',
+                                  'labelctgy' : 'mnmx'}})
+    process_dict.update({'lngm' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
@@ -4569,6 +4642,26 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
+    process_dict.update({'bnst' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_bnst,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_bnst,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'bnst'}})
+    process_dict.update({'bnso' : {'dualprocess' : None,
+                                  'singleprocess' : self._process_bnst,
+                                  'postprocess' : None,
+                                  'inverseprocess' : self._inverseprocess_bnst,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'UPCS' : {'dualprocess' : None,
                                   'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
@@ -11378,6 +11471,7 @@ class AutoMunge:
     #where 'float' is for use with mlti applied with concurrent_nmbr MLinfilltype
     #and 'conditionalinteger' is for use with concurrent_ordl MLinfilltype
     #(may be needed for transforms in custom_trian convention, otherwise can just leave as 'float' to defer to transform basis)
+    #note conditionalinteger is only applied when processdict[norm_category]['dtype_convert'] is not False
     if 'dtype' in params:
       dtype = params['dtype']
     else:
@@ -11507,22 +11601,27 @@ class AutoMunge:
     #if this is an ordinal encoded set returned form transform in custom_train convention we may need to apply dtype convert
     max_encoding_for_dtype_convert_dict = {}
     if dtype in {'conditionalinteger'}:
-      for final_returned_column in final_returned_columns:
 
-        max_encoding_for_dtype_convert = mdf_train[final_returned_column].max()
+      if 'dtype_convert' not in postprocess_dict['process_dict'][norm_category] \
+      or 'dtype_convert' in postprocess_dict['process_dict'][norm_category] \
+      and postprocess_dict['process_dict'][norm_category]['dtype_convert'] is not False:
 
-        #save the max encoding with key of final_returned_column for use in postmunge
-        max_encoding_for_dtype_convert_dict.update({final_returned_column : max_encoding_for_dtype_convert})
+        for final_returned_column in final_returned_columns:
 
-        if max_encoding_for_dtype_convert <= 255:
-          mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint8)
-          mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint8)
-        elif max_encoding_for_dtype_convert <= 65535:
-          mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint16)
-          mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint16)
-        else:
-          mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint32)
-          mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
+          max_encoding_for_dtype_convert = mdf_train[final_returned_column].max()
+
+          #save the max encoding with key of final_returned_column for use in postmunge
+          max_encoding_for_dtype_convert_dict.update({final_returned_column : max_encoding_for_dtype_convert})
+
+          if max_encoding_for_dtype_convert <= 255:
+            mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint8)
+            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint8)
+          elif max_encoding_for_dtype_convert <= 65535:
+            mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint16)
+            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint16)
+          else:
+            mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint32)
+            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
 
     column_dict_list = []
     for tc in final_returned_columns:
@@ -11645,6 +11744,91 @@ class AutoMunge:
 
       column_dict_list.append(column_dict)
 
+    return df, column_dict_list
+
+  def _process_bnst(self, df, column, category, treecategory, postprocess_dict, params = {}):
+    """
+    intended for application downstream of a 1010, multirt, or concurrent_act MLinfilltype encoding (with boolean integer entries)
+    bnst converts multicolumn categoric representations to a single column representation
+    returning a single column string aggregation of the received multi column input
+    this may be useful if the upstream categoric transform isn't available in ordinal form
+    as some  learning libraries may not accept multi column categoric encodings for label sets
+    note that an additional downstream ordinal encoding could be specified in family tree to convert output to numeric
+    
+    note that bnst is very similar to what has been used in prior transforms such as inverseprocess_1010 which preceded custom_inversion_1010
+    
+    parameter upstreaminteger should be passed as True when upstream contains integers (such as boolean integer or ordinal int)
+    else can pass as False when upstream contains string entries
+    
+    since reducing the number of columns does not support inplace
+    
+    implemented in the singleprocess convention
+    """
+    
+    suffixoverlap_results = {}
+    
+    if 'upstreaminteger' in params:
+      upstreaminteger = params['upstreaminteger']
+    else:
+      upstreaminteger = True
+    
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+    
+    #this function is intended to be applied donstream of a 1010, multirt, or concurrent encoding
+    #meaning there may be multiple columns serving as target
+    #we'll access the upstream categorylist stored in postprocess_dict
+    if column in postprocess_dict['column_dict']:
+      inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    else:
+      inputtextcolumns = [column]
+    
+    #note that column will be the first column in the upstream categorylist
+    suffixcolumn = column + '_' + suffix
+    
+    #check for suffix overlap before initizlizing suffixcolumn
+    suffixoverlap_results = \
+    self._df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+    
+    df[suffixcolumn] = ''
+
+    for inputtextcolumn in inputtextcolumns:
+      
+      if upstreaminteger is True:
+
+        #only supports inputtextcolumn containing entries of 0 and 1, assumes infill performed upstream
+        #partly motivated by inversion requires a fixed character width 
+        df[suffixcolumn] = df[suffixcolumn] + pd.to_numeric(df[inputtextcolumn], errors='coerce').fillna(0).abs().astype(int).clip(lower=0, upper=1).astype(str)
+
+      #we need a fixed character width for inversion        
+      else:
+        df[suffixcolumn] = df[suffixcolumn] + df[inputtextcolumn].astype(str)
+        
+    normalization_dict = {suffixcolumn : {'upstreaminteger' : upstreaminteger, \
+                                          'suffix' : suffix, \
+                                          'inputtextcolumns' : inputtextcolumns}}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in [suffixcolumn]:
+      
+      column_dict = { nc : {'category' : treecategory, \
+                           'origcategory' : category, \
+                           'normalization_dict' : normalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : [suffixcolumn], \
+                           'categorylist' : [suffixcolumn], \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict)
+        
     return df, column_dict_list
   
   def _process_UPCS(self, df, column, category, treecategory, postprocess_dict, params = {}):
@@ -26860,9 +27044,11 @@ class AutoMunge:
     shuffleset = am_subset.copy()
     
     for clcolumn in columnslist:
-      
-      #uses support function
-      shuffleset = self._df_shuffle_series(shuffleset, clcolumn, randomseed)
+
+      if clcolumn in shuffleset:
+        
+        #uses support function
+        shuffleset = self._df_shuffle_series(shuffleset, clcolumn, randomseed)
       
     return shuffleset
 
@@ -26875,11 +27061,13 @@ class AutoMunge:
     shuffleset2 = am_subset.copy()
     
     for clcolumn in columnslist:
+
+      if clcolumn in shuffleset2:
         
-      if clcolumn != column:
-            
-        #uses support function
-        shuffleset2 = self._df_shuffle_series(shuffleset2, clcolumn, randomseed)
+        if clcolumn != column:
+              
+          #uses support function
+          shuffleset2 = self._df_shuffle_series(shuffleset2, clcolumn, randomseed)
     
     return shuffleset2
 
@@ -27148,6 +27336,8 @@ class AutoMunge:
     nonnumeric_columns = full_exclude_specified + totalexclude_MLinfilltype
     #convert to returtned header format
     nonnumeric_columns = self._column_convert_support(nonnumeric_columns, FSpostprocess_dict, convert_to='returned')
+
+    nonnumeric_columns = list(set(nonnumeric_columns) & set(am_train))
     
     #now drop any potentially nonnumeric columns
     am_train = am_train.drop(nonnumeric_columns, axis=1)
@@ -27320,57 +27510,59 @@ class AutoMunge:
         #perform feature evaluation on each column
         for column in am_train_columns:
 
-          if FScolumn_dict[column]['FScomplete'] is False:
+          if column not in nonnumeric_columns:
 
-            #categorylist = FScolumn_dict[column]['categorylist']
-            #update version 1.80, let's perform FS on columnslist instead of categorylist
+            if FScolumn_dict[column]['FScomplete'] is False:
+
+              columnslist = FScolumn_dict[column]['columnslist']
+
+              #create set with columns shuffle from columnslist
+              #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
+              #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
+              shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
+
+              #determine resulting accuracy after shuffle
+              columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
+                                                    FSmodel, randomseed, am_categorylist, \
+                                                    FSprocess_dict, labelctgy, FSpostprocess_dict)
+
+              #I think this will clear some memory
+              del shuffleset
+
+              #category accuracy penalty metric
+              metric = baseaccuracy - columnaccuracy
+              #metric2 = baseaccuracy - columnaccuracy2
+
+              #save accuracy to FScolumn_dict and set FScomplete to True
+              #(for each column in the categorylist)
+              #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
+              for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
+
+                if categorycolumn not in nonnumeric_columns:
+
+                  FScolumn_dict[categorycolumn]['FScomplete'] = True
+                  FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
+                  FScolumn_dict[categorycolumn]['metric'] = metric
+                  #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
+                  #FScolumn_dict[categorycolumn]['metric2'] = metric2
+
             columnslist = FScolumn_dict[column]['columnslist']
 
-            #create set with columns shuffle from columnslist
-            #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
-            #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
-            shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
+            #create second set with all but one columns shuffled from columnslist
+            #this will allow us to compare the relative importance between columns
+            #derived from the same parent
+            #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
+            shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
 
             #determine resulting accuracy after shuffle
-            columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
+            columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
                                                   FSmodel, randomseed, am_categorylist, \
                                                   FSprocess_dict, labelctgy, FSpostprocess_dict)
 
-            #I think this will clear some memory
-            del shuffleset
+            metric2 = baseaccuracy - columnaccuracy2
 
-            #category accuracy penalty metric
-            metric = baseaccuracy - columnaccuracy
-            #metric2 = baseaccuracy - columnaccuracy2
-
-            #save accuracy to FScolumn_dict and set FScomplete to True
-            #(for each column in the categorylist)
-            #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
-            for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
-
-              FScolumn_dict[categorycolumn]['FScomplete'] = True
-              FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
-              FScolumn_dict[categorycolumn]['metric'] = metric
-              #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
-              #FScolumn_dict[categorycolumn]['metric2'] = metric2
-
-          columnslist = FScolumn_dict[column]['columnslist']
-
-          #create second set with all but one columns shuffled from columnslist
-          #this will allow us to compare the relative importance between columns
-          #derived from the same parent
-          #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
-          shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
-
-          #determine resulting accuracy after shuffle
-          columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                FSmodel, randomseed, am_categorylist, \
-                                                FSprocess_dict, labelctgy, FSpostprocess_dict)
-
-          metric2 = baseaccuracy - columnaccuracy2
-
-          FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
-          FScolumn_dict[column]['metric2'] = metric2
+            FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
+            FScolumn_dict[column]['metric2'] = metric2
         
         madethecut = self._assemblemadethecut(FScolumn_dict, featurethreshold, \
                                           featureselection, am_train_columns, FSprocess_dict)
@@ -29676,7 +29868,7 @@ class AutoMunge:
     newcolumncount = np.size(PCAset_train,1)
 
     #generate a list of column names for the conversion to pandas
-    columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
+    columnnames = ['PCA__'+str(y) for y in range(newcolumncount)]
 
     #convert output to pandas
     PCAset_train = pd.DataFrame(PCAset_train, columns = columnnames)
@@ -30289,6 +30481,33 @@ class AutoMunge:
           print()
         
     return check_FSmodel_result
+
+  def _check_df_type(self, df_train, df_test, printstatus):
+    """
+    Validates that df_train is one of np.array, pd.Series, pd.Dataframe
+    Valides that df_test is one of those or is boolean False
+    False is good
+    """
+    
+    check_df_train_type_result = False
+    check_df_test_type_result = False
+    
+    check_df_train_type_result = \
+    not isinstance(df_train, (type(np.array([])), type(pd.Series([1])), type(pd.DataFrame())))
+    
+    check_df_test_type_result = \
+    not isinstance(df_test, (type(np.array([])), type(pd.Series([1])), type(pd.DataFrame()), bool))
+    
+    if df_test is True:
+      check_df_test_type_result = True
+
+    if check_df_train_type_result is True and printstatus != 'silent':
+      print("error: df_train received as type other than pd.DataFrame, pd.Series, or np.array.")
+
+    if check_df_test_type_result is True and printstatus != 'silent':
+      print("error: df_test received as type other than pd.DataFrame, pd.Series, np.array, or boolean False.")
+    
+    return check_df_train_type_result, check_df_test_type_result
 
   def _check_np_shape(self, df_train, df_test, printstatus):
     """
@@ -32414,9 +32633,9 @@ class AutoMunge:
     """
     
     if Binary in {True, 'retain'}:
-      Binary_column = 'Binary_1010'
+      Binary_column = 'Binary__1010'
     if Binary in {'ordinal', 'ordinalretain'}:
-      Binary_column = 'Binary_ord3'
+      Binary_column = 'Binary__ord3'
     
     #this ensures that the 'Binary' support column header added to dataframe isn't already present
     #(should not be the case since at this point columns have suffix appenders, just here to be consistent)
@@ -32439,7 +32658,7 @@ class AutoMunge:
     if Binary in {True, 'retain'}:
       
       df_train, Binary_dict = \
-      self._custom_train_1010(df_train, Binary_column, {})
+      self._custom_train_1010(df_train, Binary_column, {'null_activation' : False})
     
       df_test = \
       self._custom_test_1010(df_test, Binary_column, Binary_dict)
@@ -32447,7 +32666,7 @@ class AutoMunge:
     if Binary in {'ordinal', 'ordinalretain'}:
       
       df_train, Binary_dict = \
-      self._custom_train_ordl(df_train, Binary_column, {})
+      self._custom_train_ordl(df_train, Binary_column, {'null_activation' : False})
     
       df_test = \
       self._custom_test_ordl(df_test, Binary_column, Binary_dict)
@@ -32455,6 +32674,7 @@ class AutoMunge:
     returned_columns = set(df_train)
     
     newcolumns = list(returned_columns - initial_columns)
+    newcolumns = sorted(newcolumns)
     
     suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
                                                          newcolumns, \
@@ -32494,9 +32714,9 @@ class AutoMunge:
     """
     
     if Binary in {True, 'retain'}:
-      Binary_column = 'Binary_1010'
+      Binary_column = 'Binary__1010'
     if Binary in {'ordinal', 'ordinalretain'}:
-      Binary_column = 'Binary_ord3'
+      Binary_column = 'Binary__ord3'
     
     bool_column_list = Binary_dict['bool_column_list']
     
@@ -32558,14 +32778,14 @@ class AutoMunge:
     
     if Binary in {True, 'retain'}:
       
-      inputcolumn = inputcolumn = 'Binary_1010'
+      inputcolumn = inputcolumn = 'Binary__1010'
     
       df= \
       self._custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
       
     if postprocess_dict['Binary'] in {'ordinal', 'ordinalretain'}:
       
-      inputcolumn = inputcolumn = 'Binary_ord3'
+      inputcolumn = inputcolumn = 'Binary__ord3'
       
       df = \
       self._custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
@@ -33167,20 +33387,35 @@ class AutoMunge:
     """
     
     indexcolumn = 'Automunge_index'
+    indexcolumn_valresult = False
+
+    fullset = set()
     
     if isinstance(trainID_column, list):
+      fullset = fullset | set(trainID_column)
       if 'Automunge_index' in trainID_column:
         indexcolumn = 'Automunge_index_' + str(application_number)
     elif 'Automunge_index' == trainID_column:
+      fullset = fullset | {trainID_column}
       indexcolumn = 'Automunge_index_' + str(application_number)
         
     if isinstance(testID_column, list):
+      fullset = fullset | set(testID_column)
       if 'Automunge_index' in testID_column:
         indexcolumn = 'Automunge_index_' + str(application_number)
     elif 'Automunge_index' == testID_column:
+      fullset = fullset | {testID_column}
       indexcolumn = 'Automunge_index_' + str(application_number)
+
+    #this is a very remote edge case, just being comprehensive
+    if indexcolumn in fullset:
+      while indexcolumn in fullset:
+        indexcolumn = indexcolumn + ','
+
+    if indexcolumn != 'Automunge_index':
+      indexcolumn_valresult = True
     
-    return indexcolumn
+    return indexcolumn, indexcolumn_valresult
 
   def _assemble_excluded_from_postmunge_getNArows(self, postprocess_dict):
     """
@@ -33516,6 +33751,17 @@ class AutoMunge:
       transformdict = deepcopy(transformdict)
     if isinstance(processdict, dict):
       processdict = deepcopy(processdict)
+
+    #similarly copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(trainID_column, list):
+      trainID_column = trainID_column.copy()
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+    if isinstance(Binary, list):
+      Binary = Binary.copy()
+    if isinstance(PCAexcl, list):
+      PCAexcl = PCAexcl.copy()
     #___
 
     #initialize ML_cmnd if incompletely specified, also some validation tests
@@ -33743,6 +33989,20 @@ class AutoMunge:
       print("Begin Automunge")
       print("")
 
+    check_df_train_type_result, check_df_test_type_result = \
+    self._check_df_type(df_train, df_test, printstatus)
+    miscparameters_results.update({'check_df_train_type_result' : check_df_train_type_result, \
+                                   'check_df_test_type_result' : check_df_test_type_result})
+
+    #copy input dataframes to internal state so as not to edit exterior objects
+    #this helps with recursion in feature importance
+    #note this is performed after any conversion from array to dataframe
+    #or conversion from 
+    if inplace is not True:
+      df_train = df_train.copy()
+      if df_test is not False:
+        df_test = df_test.copy()
+
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
@@ -33777,11 +34037,27 @@ class AutoMunge:
                                    'checkseries_test_result' : checkseries_test_result})
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
-    trainlabels=[]
-    for column in df_train.columns:
-      trainlabels.append(str(column))
+    trainlabels=[str(x) for x in list(df_train)]
     df_train.columns = trainlabels
-    
+
+    #convention is that if df_test provided as False then we'll create
+    #a dummy set derived from df_train's first row
+    #test_plug_marker used to identify that this step was taken
+    test_plug_marker = False
+    if not isinstance(df_test, pd.DataFrame):
+      df_test = df_train[0:1].copy()
+      testID_column = trainID_column
+      test_plug_marker = True
+      if labels_column is not False:
+        if labels_column is True:
+          del df_test[trainlabels[-1]]
+        else:
+          del df_test[labels_column]
+
+    #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    testlabels=[str(x) for x in list(df_test)]
+    df_test.columns = testlabels
+
     #confirm all unique column headers
     check_columnheaders_result = \
     self._check_columnheaders(list(df_train), printstatus)
@@ -33802,48 +34078,6 @@ class AutoMunge:
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
                                    'check_assignnan_columns_result'         : check_assignnan_columns_result, \
                                    'assignnan_actions_valresult'            : assignnan_actions_valresult})
-    
-    #we originally had the convention that some preprocessing was done on assignparam here
-    #to create assign_param
-    #keeping the assign_param convention in cases we later reintroduce
-    assign_param = assignparam
-
-    #we'll introduce convention that if df_test provided as False then we'll create
-    #a dummy set derived from df_train's first row
-    #test_plug_marker used to identify that this step was taken
-    test_plug_marker = False
-    if not isinstance(df_test, pd.DataFrame):
-      df_test = df_train[0:1].copy()
-      testID_column = trainID_column
-      test_plug_marker = True
-      if labels_column is not False:
-        if labels_column is True:
-          del df_test[trainlabels[-1]]
-        else:
-          del df_test[labels_column]
-
-    #this converts any numeric columns labels, such as from a passed numpy array, to strings
-    testlabels=[]
-    for column in df_test.columns:
-      testlabels.append(str(column))
-    df_test.columns = testlabels
-
-    #copy input dataframes to internal state so as not to edit exterior objects
-    #this helps with recursion in feature importance
-    if inplace is not True:
-      df_train = df_train.copy()
-      df_test = df_test.copy()
-    
-    #similarly copy any input lists to internal state
-    #(these won't be large so not taking account of inplace parameter)
-    if isinstance(trainID_column, list):
-      trainID_column = trainID_column.copy()
-    if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
-    if isinstance(Binary, list):
-      Binary = Binary.copy()
-    if isinstance(PCAexcl, list):
-      PCAexcl = PCAexcl.copy()
 
     #worth a disclaimer:
     #the trainID_column and testID_column column parameters are somewhat overloaded
@@ -33859,7 +34093,9 @@ class AutoMunge:
 
     #this either sets indexcolumn for returned ID sets as 'Automunge_index' 
     #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
-    indexcolumn = self._set_indexcolumn(trainID_column, testID_column, application_number)
+    indexcolumn, indexcolumn_valresult = self._set_indexcolumn(trainID_column, testID_column, application_number)
+    #this is not logged with other suffix overlaps because not an error channel, just results in different index column header
+    miscparameters_results.update({'indexcolumn_valresult' : indexcolumn_valresult})
     
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set as well
@@ -34141,6 +34377,11 @@ class AutoMunge:
     #these are used in the ML infill methods
     masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
+
+    #we originally had the convention that some preprocessing was done on assignparam
+    #to create assign_param
+    #keeping the assign_param convention in cases we later reintroduce
+    assign_param = assignparam
     
     #initialize postprocess_dict
     #the dictionary / list values are populated through processing
@@ -34929,8 +35170,10 @@ class AutoMunge:
     for floatcolumn in floatcolumns_labels_copy:
       if floatcolumn not in returned_PCA_columns and \
       floatcolumn in postprocess_dict['column_dict'] and \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr', 'exclude'}:
+      (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr', 'exclude'} \
+      or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
+      and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_labels.remove(floatcolumn)
 
     df_train = self._floatprecision_transform(df_train, floatcolumns_train, floatprecision)
@@ -35010,7 +35253,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.89'
+    automungeversion = '6.90'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36911,16 +37154,21 @@ class AutoMunge:
           del mdf_test[textcolumns]
 
       if dtype in {'conditionalinteger'}:
-        for final_returned_column in final_returned_columns:
 
-          max_encoding_for_dtype_convert = max_encoding_for_dtype_convert_dict[final_returned_column]
+        if 'dtype_convert' not in postprocess_dict['process_dict'][norm_category] \
+        or 'dtype_convert' in postprocess_dict['process_dict'][norm_category] \
+        and postprocess_dict['process_dict'][norm_category]['dtype_convert'] is not False:
 
-          if max_encoding_for_dtype_convert <= 255:
-            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint8)
-          elif max_encoding_for_dtype_convert <= 65535:
-            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint16)
-          else:
-            mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
+          for final_returned_column in final_returned_columns:
+
+            max_encoding_for_dtype_convert = max_encoding_for_dtype_convert_dict[final_returned_column]
+
+            if max_encoding_for_dtype_convert <= 255:
+              mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint8)
+            elif max_encoding_for_dtype_convert <= 65535:
+              mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint16)
+            else:
+              mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
 
     else:
 
@@ -42187,7 +42435,7 @@ class AutoMunge:
     newcolumncount = np.size(PCAset_test,1)
 
     #generate a list of column names for the conversion to pandas
-    columnnames = ['PCAcol'+str(y) for y in range(newcolumncount)]
+    columnnames = ['PCA__'+str(y) for y in range(newcolumncount)]
 
     #convert output to pandas
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
@@ -42318,6 +42566,8 @@ class AutoMunge:
       nonnumeric_columns = full_exclude_specified + totalexclude_MLinfilltype
       #convert to returtned header format
       nonnumeric_columns = self._column_convert_support(nonnumeric_columns, FSpostprocess_dict, convert_to='returned')
+
+      nonnumeric_columns = list(set(nonnumeric_columns) & set(am_train))
       
       #now drop any potentially nonnumeric columns
       am_train = am_train.drop(nonnumeric_columns, axis=1)
@@ -42490,62 +42740,64 @@ class AutoMunge:
           #perform feature evaluation on each column
           for column in am_train_columns:
 
-#             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
-#             and FScolumn_dict[column]['FScomplete'] is False:
-            if FScolumn_dict[column]['FScomplete'] is False:
+            if column not in nonnumeric_columns:
 
-              #categorylist = FScolumn_dict[column]['categorylist']
-              #update version 1.80, let's perform FS on columnslist instead of categorylist
+  #             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
+  #             and FScolumn_dict[column]['FScomplete'] is False:
+              if FScolumn_dict[column]['FScomplete'] is False:
+
+                columnslist = FScolumn_dict[column]['columnslist']
+
+                #create set with columns shuffle from columnslist
+                #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
+                #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
+                shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
+
+                #determine resulting accuracy after shuffle
+                columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
+                                                      FSmodel, randomseed, am_categorylist, \
+                                                      FSprocess_dict, labelctgy, FSpostprocess_dict)
+
+                #I think this will clear some memory
+                del shuffleset
+
+                #category accuracy penalty metric
+                metric = baseaccuracy - columnaccuracy
+                #metric2 = baseaccuracy - columnaccuracy2
+                
+                #save accuracy to FScolumn_dict and set FScomplete to True
+                #(for each column in the categorylist)
+                #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
+                for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
+
+                  if categorycolumn not in nonnumeric_columns:
+
+                    FScolumn_dict[categorycolumn]['FScomplete'] = True
+                    FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
+                    FScolumn_dict[categorycolumn]['metric'] = metric
+                    #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
+                    #FScolumn_dict[categorycolumn]['metric2'] = metric2
+
               columnslist = FScolumn_dict[column]['columnslist']
 
-              #create set with columns shuffle from columnslist
-              #shuffleset = self._createFSsets(am_train, column, categorylist, randomseed)
-              #shuffleset = self._createFSsets(am_train, column, columnslist, randomseed)
-              shuffleset = self._createFSsets(am_validation1, column, columnslist, randomseed)
+              #create second set with all but one columns shuffled from columnslist
+              #this will allow us to compare the relative importance between columns
+              #derived from the same parent
+              #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
+              shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
 
               #determine resulting accuracy after shuffle
-              columnaccuracy = self._shuffleaccuracy(shuffleset, am_validationlabels1, \
+      #           columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_labels, FSmodel, \
+      #                                                 randomseed, \
+      #                                                 process_dict)
+              columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
                                                     FSmodel, randomseed, am_categorylist, \
                                                     FSprocess_dict, labelctgy, FSpostprocess_dict)
 
-              #I think this will clear some memory
-              del shuffleset
+              metric2 = baseaccuracy - columnaccuracy2
 
-              #category accuracy penalty metric
-              metric = baseaccuracy - columnaccuracy
-              #metric2 = baseaccuracy - columnaccuracy2
-              
-              #save accuracy to FScolumn_dict and set FScomplete to True
-              #(for each column in the categorylist)
-              #for categorycolumn in FSpostprocess_dict['column_dict'][column]['categorylist']:
-              for categorycolumn in FSpostprocess_dict['column_dict'][column]['columnslist']:
-
-                FScolumn_dict[categorycolumn]['FScomplete'] = True
-                FScolumn_dict[categorycolumn]['shuffleaccuracy'] = columnaccuracy
-                FScolumn_dict[categorycolumn]['metric'] = metric
-                #FScolumn_dict[categorycolumn]['shuffleaccuracy2'] = columnaccuracy2
-                #FScolumn_dict[categorycolumn]['metric2'] = metric2
-
-            columnslist = FScolumn_dict[column]['columnslist']
-
-            #create second set with all but one columns shuffled from columnslist
-            #this will allow us to compare the relative importance between columns
-            #derived from the same parent
-            #shuffleset2 = self._createFSsets2(am_train, column, columnslist, randomseed)
-            shuffleset2 = self._createFSsets2(am_validation1, column, columnslist, randomseed)
-
-            #determine resulting accuracy after shuffle
-    #           columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_labels, FSmodel, \
-    #                                                 randomseed, \
-    #                                                 process_dict)
-            columnaccuracy2 = self._shuffleaccuracy(shuffleset2, am_validationlabels1, \
-                                                  FSmodel, randomseed, am_categorylist, \
-                                                  FSprocess_dict, labelctgy, FSpostprocess_dict)
-
-            metric2 = baseaccuracy - columnaccuracy2
-
-            FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
-            FScolumn_dict[column]['metric2'] = metric2
+              FScolumn_dict[column]['shuffleaccuracy2'] = columnaccuracy2
+              FScolumn_dict[column]['metric2'] = metric2
 
     #     madethecut = self._assemblemadethecut(FScolumn_dict, featurepct, featuremetric, \
     #                                          featuremethod, am_train_columns)
@@ -42916,6 +43168,10 @@ class AutoMunge:
     self._check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, testID_column)
+
+    check_df_test_type_result, _1 = \
+    self._check_df_type(df_test, False, printstatus)
+    pm_miscparameters_results.update({'check_df_test_type_result' : check_df_test_type_result})
     
     #printout display progress
     if printstatus is True:
@@ -42988,6 +43244,19 @@ class AutoMunge:
                         'driftreport':{}, \
                         'pm_miscparameters_results':pm_miscparameters_results}
 
+    #copy input dataframes to internal state so as not to edit exterior objects
+    #this step can be omitted to reduce memory overhead with inplace parameter
+    if inplace is not True:
+      df_test = df_test.copy()
+      # postprocess_dict = deepcopy(postprocess_dict)
+
+    #similarly copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(testID_column, list):
+      testID_column = testID_column.copy()
+    if isinstance(inversion, list):
+      inversion = inversion.copy()
+
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
@@ -43032,19 +43301,6 @@ class AutoMunge:
     process_dict = postprocess_dict['process_dict']
       
     assign_param = postprocess_dict['assign_param']
-
-    #copy input dataframes to internal state so as not to edit exterior objects
-    #this step can be omitted to reduce memory overhead with inplace parameter
-    if inplace is not True:
-      df_test = df_test.copy()
-      # postprocess_dict = deepcopy(postprocess_dict)
-
-    #similarly copy any input lists to internal state
-    #(these won't be large so not taking account of inplace parameter)
-    if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
-    if isinstance(inversion, list):
-      inversion = inversion.copy()
 
     #_______
     #here is where inversion is performed if selected
@@ -43614,8 +43870,10 @@ class AutoMunge:
     for floatcolumn in floatcolumns_testlabels_copy:
       if floatcolumn not in postprocess_dict['returned_PCA_columns'] and \
       floatcolumn in postprocess_dict['column_dict'] and \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
-      not in {'numeric', 'concurrent_nmbr', 'exclude'}:
+      (postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['MLinfilltype'] \
+      not in {'numeric', 'concurrent_nmbr', 'exclude'} \
+      or 'dtype_convert' in postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']] \
+      and postprocess_dict['process_dict'][postprocess_dict['column_dict'][floatcolumn]['category']]['dtype_convert'] is False):
         floatcolumns_testlabels.remove(floatcolumn)
 
     #now we'll apply the floatprecision transformation
@@ -44703,6 +44961,39 @@ class AutoMunge:
     df[inputcolumn] = df[normkey] ** 2
     
     return df, inputcolumn
+
+  def _inverseprocess_bnst(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_bnst
+    #assumes any relevant parameters were saved in normalization_dict
+    #does not perform infill, assumes clean data
+    #note that this will return numeric entries as str
+
+    #when upstreaminteger is False this does not invert
+    """
+    
+    normkey = categorylist[0]
+    
+    upstreaminteger = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['upstreaminteger']
+    suffix = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+    inputtextcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+    
+    for i, inputtextcolumn in enumerate(inputtextcolumns):
+      
+      if upstreaminteger is True:
+        df[inputtextcolumn] = df[normkey].str.slice(i,i+1).astype(int)
+      
+      else:
+        #inversion requires a fixed character width
+        df[inputtextcolumn] = df[normkey]
+        
+    #this returns the first inputcolumn in upstream categorylist
+    inputcolumn = inputtextcolumns[0]
+    
+    return df, inputcolumn
   
   def _inverseprocess_UPCS(self, df, categorylist, postprocess_dict):
     """
@@ -45721,7 +46012,7 @@ class AutoMunge:
       df[inputcolumn] = df[inputcolumn].astype('object')
     
     #now perform the inversion
-    df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
+    df[inputcolumn] = df[inputcolumn].astype('object').replace(inverse_binary_encoding_dict)
 
     return df
 
