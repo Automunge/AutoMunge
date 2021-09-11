@@ -3280,7 +3280,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: no
-* lngt, lnlg: returns string length of categoric entries (lngt followed by min/max, lnlg by log)
+* lngt/lngm/lnlg: returns string length of categoric entries (lngm followed by mnmx, lnlg by logn)
   - useful for: supplementing categoric sets with a proxy for information content (based on string length)
   - default infill: plug value of 3 (based on len(str(np.nan)) )
   - default NArowtype: justNaN
@@ -3797,11 +3797,22 @@ unless an additional transform is applied downstream.)
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
+* bnst/bnso: intended for use downstream of multicolumn boolean integer sets, such as those returned from MLinfilltype multirt, 1010, concurrent_act. bnst serves to aggregate the multicolumn  representation into a single column encoding. bnst returns a string representation, bnso performs a downstream ordinal encoding. Intended for sets with boolean integer entries.
+  - useful for: some downstream libraries prefer label sets in single column representations. This allows user to convert a multicolumn to single column for this or some other purpose.
+  - default infill: zeroinfill (assumes infill performed upstream.)
+  - default NArowtype: justNaN
+  - suffix appender: '_bnst'
+  - assignparam parameters accepted:
+    - suffix: defaults to tree category, accepts string
+    - upstreaminteger: defaults to True for boolean integer input, when False can recieve other single character entries, although inversion not support for the False scenario
+  - driftreport postmunge metrics: none
+  - returned datatype: bnst returns string, bnso conditional integer per downstream ordinal encoding
+  - inversion available: supported for upstreaminteger True scenario, False perfoms a passthrough inversion without recovery
 * GPS1: for converting sets of GPS coordinates to normalized lattitude and longitude, relies on comma seperated inputs, with lattitude/longitude reported as DDMM.... or DDDMM.... and direction as one of 'N'/'S' or 'E'/'W'. Note that with GPS data, depending on the application, there may be benefit to setting the automunge(.) floatprecision parameter to 64 instead of the default 32. If you want to apply ML infill or some other assigninfill on the returned sets, we recommend ensuring missing data is recieved as NaN, otherwise missing entries will receive adjinfill.
   - useful for: converting GPS coordinates to normalized lattitude and normalized longitude
   - default infill: adjinfill
   - default NArowtype: justNaN
-  - suffix appender: _GPS1_latt_mlti_nmbr and _GPS1_long_mlti_nmbr
+  - suffix appender: \_GPS1\_latt\_mlti\_nmbr and \_GPS1\_long\_mlti\_nmbr
   - assignparam parameters accepted:
     - 'GPS_convention': accept one of {'default', 'nonunique'}, under default all rows are individually parsed. nonunique is used in GPS3 and GPS4.
     - 'comma_addresses': accepts as list of 4 integers, defaulting to [2,3,4,5], which corresponds to default where lattitude located after comma 2, lattitude direction after comma 3, longitude after comma 4, longitude direction after comma 5
@@ -3812,6 +3823,8 @@ unless an additional transform is applied downstream.)
 * GPS2: comparable to GPS1 but without the downstream normalization, so returns floats in units of arc minutes. (If you want missing data returned as NaN instead of adjinfill, can set process_dict entry NArowtype to 'exclude'.)
 * GPS3: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in both the train and test set. This may benefit latency in cases of redundent entries.
 * GPS4: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in the train set and relies on assumption that the set of unique entries in test set will be the same or a subset of the train set, which may benefit latency for this scenario.
+* GPS5: comparable to GPS3 but performs a downstream ordinal encoding instead of normalization, as may be desired when treating a fixed range of GPS coordinates as a categoric feature, lattitude and longitude encoded seperately.
+* GPS6: comparable to GPS3 but performs both a downstream ordinal encoding and a downstream normalizaiton, such as to treat lattitude and longitude both as categoric and continuous numeric features. This is probably a better default than GPS3 or GPS5 for fixed range of entries.
 * NArw: produces a column of boolean identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
@@ -4167,6 +4180,12 @@ avoid unintentional duplication.
 - 'DPod',
 - 'DPoh',
 - 'DPrt',
+- 'GPS1',
+- 'GPS2',
+- 'GPS3',
+- 'GPS4',
+- 'GPS5',
+- 'GPS6',
 - 'MAD2',
 - 'MAD3',
 - 'MADn',
@@ -4218,6 +4237,8 @@ avoid unintentional duplication.
 - 'bnr2',
 - 'bnrd',
 - 'bnry',
+- 'bnso',
+- 'bnst',
 - 'bnwb',
 - 'bnwK',
 - 'bnwM',
@@ -4284,10 +4305,6 @@ avoid unintentional duplication.
 - 'exc9',
 - 'excl',
 - 'fsmh',
-- 'GPS1',
-- 'GPS2',
-- 'GPS3',
-- 'GPS4',
 - 'hash',
 - 'hldy',
 - 'hmsc',
@@ -4314,6 +4331,7 @@ avoid unintentional duplication.
 - 'lgnm',
 - 'lgnr',
 - 'lngt',
+- 'lngm',
 - 'lnlg',
 - 'log0',
 - 'log1',
@@ -4531,16 +4549,19 @@ present in dataframe and return results in final printouts and postprocess_dict[
 
  ___ 
 ### Other Reserved Strings
-- 'Binary': a reserved column header for cases where a Binary transform is applied with the automunge(.) Binary parameter. 
-- 'Binary_1010_#' / 'Binary_ord3': The columns returned from Binary transform have headers per one of these conventions.
-- 'PCAcol#': when PCA dimensionality reduction is performed, returned columns have headers per this convention.
+Note that as Automunge applies transformations, new column headers are derived with addition of suffix appenders with leading underscore. There is an edge case where a new column header may be derived matching one already found in the set, which would be a channel for error. All new header configurations are validated for this overlap channel and if found, reported in final printouts and logged in the validation results. To eliminate risk of column header overlap edge cases, one can pass column headers in df_train that omit the underscore character '\_'.
+
+- 'Binary__1010_#' / 'Binary__ord3': The columns returned from Binary transform have headers per one of these conventions.
+- 'PCA__#': The columns returned from PCA dimensionality reduction have headers per this convention.
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
 populated with an index matching order of rows from original returned set, note that if this header is already present in the ID sets
-it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number.
+it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number and will be reported with validation results.
 
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
-automunge(.) in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned from postmunge(.) in the postreports_dict
-as postreports_dict['pm_miscparameters_results']. (If the function fails to compile check the printouts.)
+automunge(.) in closing printouts and in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned 
+from postmunge(.) in the postreports_dict as postreports_dict['pm_miscparameters_results']. (If the function fails to compile 
+check the printouts.) It is not a requirement, but we also recommend ommiting underscore characters in strings used for 
+transformation category identifiers for interpretation purposes.
  ___ 
 ### Root Category Family Tree Definitions
 The family tree definitions reference documentation are now recorded in a seperate file in the github repo titled "FamilyTrees.md".
