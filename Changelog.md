@@ -4309,3 +4309,40 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - this also results in qbt1 returned sets now being included in Binary dimensionality reduction and included in the boolean set in the returned columntype_report
 - updated columntype_report so that MLinfilltype exclude is reported as numeric
 - audited MLinfilltype and NArowtype inspections throughout codebase
+
+6.90
+- lngt family tree revised to omit downstream mnmx scaling
+- new root category lngm, comparable to prior configuration of lngt
+- lnlg now has downstream logn instead of log0
+- (lngt returns string length of categoric entries)
+- new root category GPS5, comparable to GPS3 (with GPS_convention of nonunique and assumption of test entries same or subset of train entries), but with downstream ordinal enocding instead of numeric scaling,  with lattitude and longitude seperately encoded
+- GPS5 may be appropriate when there are a fixed range of GPS coordinates and they are wished to be treated as categoric
+- note that alternate categoric enocdings may be applied by passing norm_category partameter to the downstream mlto
+- note that if a single categoric encoding is desired representing the combined lattitude and longitude, the string representation can be passed directly to a categoric transform without a GPS1 parsing
+- new root category GPS6, comparable to GPS5 but performs both a downstream normalization and a downstream ordinal encoding, allowing lattitude and longitude to be evaluated both as categoric and continuous numeric features. This is probably a better default than GPS3 or GPS5 for sets with a fixed range of entries.
+- updated validation tests so that there is a category assignment representing each of the MLinfilltype options and a correpsonding inversion excluding PCA
+- fixed the feature selection carveouts associated with totalexclude MLinfilltype that had been incorporated in 6.84 (we had missed a few edge cases resulting from the exclusions)
+- new transform bnst, intended for use downstream of multicolumn categoric encodings, such as with 1010 or multirt MLinfilltype
+- bnst aggregates multicolumn representations into a single column categoric string representation
+- accepts parameter upstreaminteger defaulting to True to indicate that the upstream encodings are integers
+- new root categories bnst and bnso, where bnst returns the string representation, bnso performs a downstream ordinal encoding
+- inversion supported
+- bnst or bnso may be useful in scenario where a multicolumn categoric transform is desired for label encoding targeting a downstream library that doesn't accept multicolumn representations for labels
+- update to mlti transform to take into account dtype_convert processdict entry associated with the normcategory
+- (so that if normcategory is in custom_train convention and dtype is conditionalinteger dtype conversion only applied when dtype_convert is not False, consistent with basis for custom_train otherwise)
+- audited defaultinfill and dtype_convert, identified missing dtype_convert acomodation associated with floatprecision application to label sets, resolved
+- updated tutorials to include link to data sets
+- found and fixed bug in Binary inversion
+- slight tweak to the returned column header conventions associated with Binary and PCA dimensionality reduction. Added an extra underscore to align with convention that received column headers that omit the underscore character are ensured of no suffix overlap edge cases
+- now Binary returned with form 'Binary__#' and PCA returned with form 'PCA__#'
+- conducted a walkthough of openning automunge code surrounding initial dataframe preparations, repositioned a few snippets for clarity
+- moved a few spots up for automunge inplace parameter inspection so that it is performed prior to column header conversions
+- moved assign_param variable initialization to a more reasonale spot
+- moved list copying to internal state next where we do same for dictionaries
+- moved application of _check_assignnan
+- this walkthrough was partly motivated by ensuring inplace parameter inspection performed prior to any header conversions, and turned out to result in a much cleaner layout
+- a few similar repositionings at openning of postmunge
+- new validation results reported as check_df_train_type_result, check_df_test_type_result
+- these results are from a validation that df_train is received as one of np.array, pd.Series, or pd.DataFrame and df_test is received as one of same or False
+- similar validation results reported in postmunge for check_df_test_type_result
+- the omission of this validation prior was an oversight
