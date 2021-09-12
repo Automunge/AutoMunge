@@ -10870,6 +10870,9 @@ class AutoMunge:
       
     #null_activation is to have a distinct column for missing data
     #note that when activated, entries in test set not found in train set will still be returned without activation
+    #also accepts as 'Binary', which is used in Binary dimensionality reduction to return from inversion all zeros
+    #for cases where test activation sets don't match any found in train activation sets
+    #note that in Binary scenario we don't accept NaN entries in input
     if 'null_activation' in normalization_dict:
       null_activation = normalization_dict['null_activation']
     else:
@@ -10888,7 +10891,10 @@ class AutoMunge:
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
     missing_marker = np.nan
-    # missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = '0' * len(str(df[column].iat[0]))
+
+    normalization_dict.update({'missing_marker' : missing_marker})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -11044,7 +11050,7 @@ class AutoMunge:
       labels_train = sorted(labels_train, key=str)
       
     #add our missing_marker, note adding as last position will result in last column even in ordered scenario
-    if null_activation is True:
+    if null_activation is not False:
       labels_train = labels_train + [missing_marker]
 
     #one hot encoding support function
@@ -15937,6 +15943,9 @@ class AutoMunge:
     #null_activation is to have a distinct activation for missing data
     #which defaults to the 0 integer
     #note that when deactivated, missing data is grouped into whichever else entry is for the zero bucket
+    #also accepts as 'Binary', which is used in Binary dimensionality reduction to return from inversion all zeros
+    #for cases where test activation sets don't match any found in train activation sets
+    #note that in Binary scenario we don't accept NaN entries in input
     if 'null_activation' in normalization_dict:
       null_activation = normalization_dict['null_activation']
     else:
@@ -15948,6 +15957,9 @@ class AutoMunge:
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
     missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = '0' * len(str(df[column].iat[0]))
+    normalization_dict.update({'missing_marker' : missing_marker})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -16107,6 +16119,9 @@ class AutoMunge:
     #add our missing_marker, note adding as first position will result in 0 representation even in ordered scenario
     if null_activation is True:
       labels_train = [missing_marker] + labels_train
+    elif null_activation == 'Binary':
+      if missing_marker not in labels_train:
+        labels_train = [missing_marker] + labels_train
       
     #get length of the list, then zip a dictionary from list and range(length)
     #the range values will be our ordinal points to replace the categories
@@ -16517,6 +16532,9 @@ class AutoMunge:
     #null_activation is to have a distinct activation for missing data
     #which defaults to the 0 integer
     #note that when deactivated, missing data is grouped into whichever else entry is for the zero bucket
+    #also accepts as 'Binary', which is used in Binary dimensionality reduction to return from inversion all zeros
+    #for cases where test activation sets don't match any found in train activation sets
+    #note that in Binary scenario we don't accept NaN entries in input
     if 'null_activation' in normalization_dict:
       null_activation = normalization_dict['null_activation']
     else:
@@ -16528,6 +16546,10 @@ class AutoMunge:
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
     missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = '0' * len(str(df[column].iat[0]))
+
+    normalization_dict.update({'missing_marker' : missing_marker})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -16663,6 +16685,9 @@ class AutoMunge:
     #add our missing_marker, note adding as first position will result in all 0 representation
     if null_activation is True:
       labels_train = [missing_marker] + labels_train
+    elif null_activation == 'Binary':
+      if missing_marker not in labels_train:
+        labels_train = [missing_marker] + labels_train
     
     #get length of the list of activation targets
     listlength = len(labels_train)
@@ -16689,6 +16714,7 @@ class AutoMunge:
       binary_encoding_dict.update({labels_train[i] : encoding})
       
     if null_activation is False:
+      
       binary_encoding_dict.update({np.nan : format(0, f"0{binary_column_count}b")})
       
     normalization_dict.update({'binary_encoding_dict' : binary_encoding_dict})
@@ -29866,15 +29892,19 @@ class AutoMunge:
 
     #get new number of columns (scikit PCA returns as numpy so using np.size)
     newcolumncount = np.size(PCAset_train,1)
-
-    #generate a list of column names for the conversion to pandas
-    columnnames = ['PCA__'+str(y) for y in range(newcolumncount)]
+    
+    #___
+    
+    columnnames, PCA_columns_valresult = \
+    self._set_PCA_column(newcolumncount, postprocess_dict, root='PCA_')
+        
+    #___
 
     #convert output to pandas
     PCAset_train = pd.DataFrame(PCAset_train, columns = columnnames)
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
-    return PCAset_train, PCAset_test, postprocess_dict
+    return PCAset_train, PCAset_test, postprocess_dict, PCA_columns_valresult
   
   def _check_am_miscparameters(self, valpercent, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
@@ -30169,19 +30199,19 @@ class AutoMunge:
   
     #check Binary
     Binary_valresult = False
-    if not isinstance(Binary, list) and Binary not in {True, False, 'retain', 'ordinal', 'ordinalretain'}:
+    if not isinstance(Binary, list) and Binary not in {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       Binary_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for Binary parameter.")
-        print("Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', [list]}")
+        print("Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
         print()
     elif not isinstance(Binary, list) \
     and not isinstance(Binary, bool) \
-    and Binary not in {'retain', 'ordinal', 'ordinalretain'}:
+    and Binary not in {'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       Binary_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for Binary parameter.")
-        print("Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', [list]}")
+        print("Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
       
     miscparameters_results.update({'Binary_valresult' : Binary_valresult})
     
@@ -32624,18 +32654,36 @@ class AutoMunge:
     #returns the set wtih a reduced number of columns and a dictionary containing the
     #parameters of conversion
     
-    #note that infill has already been applied on these columns so no need for infill
-    #on train set (but yes on test set)
+    #assumes columns in bool_column_list have all boolean integer entries
 
     #note that at this point if user had originally passed Binary as a list 
     #it will already have been converted to boolean or string
     #with the list contents incorporated into bool_column_list
+
+    #null_activation parameter set to 'Binary' to accomodate cases where
+    #activation sets in test data don't match activation sets found in train data
+    #which will be returned as all zero in inversion
     """
     
-    if Binary in {True, 'retain'}:
-      Binary_column = 'Binary__1010'
+    #suffixrange is for evaluating overalaps with different numebr of returned columns
+    #we'll run an initial check
+    #and if suffixrange turns out to be insufficient after having access to number of unique encodings
+    #we'll run this again below
     if Binary in {'ordinal', 'ordinalretain'}:
-      Binary_column = 'Binary__ord3'
+      suffixrange = 1
+    else:
+      suffixrange = 33
+
+    Binary_root, set_Binary_column_valresult = \
+    self._set_Binary_column(postprocess_dict, suffixrange, root = 'Binary_')
+    
+#     Binary_root = 'Binary_'
+    if Binary in {True, 'retain'}:
+      Binary_column = Binary_root + '_1010'
+    if Binary in {'ordinal', 'ordinalretain'}:
+      Binary_column = Binary_root + '_ord3'
+    if Binary in {'onehot', 'onehotretain'}:
+      Binary_column = Binary_root + '_onht'
     
     #this ensures that the 'Binary' support column header added to dataframe isn't already present
     #(should not be the case since at this point columns have suffix appenders, just here to be consistent)
@@ -32654,11 +32702,50 @@ class AutoMunge:
   
       df_train[Binary_column] = df_train[Binary_column] + df_train[column].astype(int).astype(str)
       df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
+
+    #___
+    #this is for a remote edge case to be comprehensive, 
+    #in case suffixrange used above was insufficient, now that we have access to nunique we can recalculate
+    if Binary in {'onehot', 'onehotretain'}:
+      suffixrange2 = df_train[Binary_column].nunique()
+    elif Binary in {True, 'retain'}:
+      suffixrange2 = int(np.ceil(np.log2(df_train[Binary_column].nunique())))
+
+    if Binary in {'onehot', 'onehotretain', True, 'retain'} and suffixrange2 > suffixrange:
+
+      Binary_root2, set_Binary_column_valresult = \
+      self._set_Binary_column(postprocess_dict, suffixrange2, root = 'Binary_')
+
+      if Binary in {True, 'retain'}:
+        Binary_column2 = Binary_root2 + '_1010'
+      # if Binary in {'ordinal', 'ordinalretain'}:
+      #   Binary_column2 = Binary_root2 + '_ord3'
+      if Binary in {'onehot', 'onehotretain'}:
+        Binary_column2 = Binary_root2 + '_onht'
+
+      if Binary_column2 != Binary_column:
+
+        df_train.rename(columns = {Binary_column : Binary_column2}, inplace = True)
+        df_test.rename(columns = {Binary_column : Binary_column2}, inplace = True)
+
+        Binary_root = Binary_root2
+        Binary_column = Binary_column2
+
+        Binary_present2 = \
+        self._df_check_suffixoverlap(df_train, 
+                                    Binary_column, 
+                                    suffixoverlap_results = {}, 
+                                    printstatus = postprocess_dict['printstatus'])
+
+        #this will result in Binary_present recording suffix overlap results for both Binary_column configurations
+        Binary_present.update(Binary_present2)
+
+    #___
     
     if Binary in {True, 'retain'}:
       
       df_train, Binary_dict = \
-      self._custom_train_1010(df_train, Binary_column, {'null_activation' : False})
+      self._custom_train_1010(df_train, Binary_column, {'null_activation' : 'Binary'})
     
       df_test = \
       self._custom_test_1010(df_test, Binary_column, Binary_dict)
@@ -32666,10 +32753,19 @@ class AutoMunge:
     if Binary in {'ordinal', 'ordinalretain'}:
       
       df_train, Binary_dict = \
-      self._custom_train_ordl(df_train, Binary_column, {'null_activation' : False})
+      self._custom_train_ordl(df_train, Binary_column, {'null_activation' : 'Binary'})
     
       df_test = \
       self._custom_test_ordl(df_test, Binary_column, Binary_dict)
+
+    if Binary in {'onehot', 'onehotretain'}:
+      
+      df_train, Binary_dict = \
+      self._custom_train_onht(df_train, Binary_column, {'null_activation' : 'Binary',
+                                                        'suffix_convention' : 'onht'})
+    
+      df_test = \
+      self._custom_test_onht(df_test, Binary_column, Binary_dict)
       
     returned_columns = set(df_train)
     
@@ -32682,7 +32778,7 @@ class AutoMunge:
                                                          printstatus = postprocess_dict['printstatus'])
       
     Binary_dict.update({'bool_column_list' : bool_column_list})
-
+    Binary_dict.update({'Binary_root' : Binary_root})
     Binary_dict.update({'temp_pm_miscparameters_results' : {}})
     
     #(this is a bit of a hack to carry suffix overlap result for 'Binary' to final report)
@@ -32692,14 +32788,14 @@ class AutoMunge:
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
-    if Binary not in {'retain', 'ordinalretain'}:
+    if Binary not in {'retain', 'ordinalretain', 'onehotretain'}:
 
       for column in bool_column_list:
 
         del df_train[column]
         del df_test[column]
 
-    return df_train, df_test, Binary_dict
+    return df_train, df_test, Binary_dict, set_Binary_column_valresult
 
   def _postBinary_convert(self, df_test, Binary_dict, Binary):
     """
@@ -32713,10 +32809,18 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
     
+    if 'Binary_root' in Binary_dict:
+      Binary_root = Binary_dict['Binary_root']
+    else:
+      #for backward compatibility preceding 6.91
+      Binary_root = 'Binary_'
+
     if Binary in {True, 'retain'}:
-      Binary_column = 'Binary__1010'
+      Binary_column = Binary_root + '_1010'
     if Binary in {'ordinal', 'ordinalretain'}:
-      Binary_column = 'Binary__ord3'
+      Binary_column = Binary_root + '_ord3'
+    if Binary in {'onehot', 'onehotretain'}:
+      Binary_column = Binary_root + '_onht'
     
     bool_column_list = Binary_dict['bool_column_list']
     
@@ -32735,10 +32839,15 @@ class AutoMunge:
 
       df_test = \
       self._custom_test_ordl(df_test, Binary_column, Binary_dict)
+
+    if Binary in {'onehot', 'onehotretain'}:
+
+      df_test = \
+      self._custom_test_onht(df_test, Binary_column, Binary_dict)
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
-    if Binary not in {'retain', 'ordinalretain'}:
+    if Binary not in {'retain', 'ordinalretain', 'onehotretain'}:
       
       for column in bool_column_list:
 
@@ -32775,20 +32884,33 @@ class AutoMunge:
     return df
   
   def _inverseprocess_Binary(self, df, Binary_columns, Binary_dict, Binary):
+
+    if 'Binary_root' in Binary_dict:
+      Binary_root = Binary_dict['Binary_root']
+    else:
+      #for backward compatibility preceding 6.91
+      Binary_root = 'Binary_'
     
     if Binary in {True, 'retain'}:
       
-      inputcolumn = inputcolumn = 'Binary__1010'
+      inputcolumn = inputcolumn = Binary_root + '_1010'
     
       df= \
       self._custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
       
-    if postprocess_dict['Binary'] in {'ordinal', 'ordinalretain'}:
+    if Binary in {'ordinal', 'ordinalretain'}:
       
-      inputcolumn = inputcolumn = 'Binary__ord3'
+      inputcolumn = inputcolumn = Binary_root + '_ord3'
       
       df = \
       self._custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
+
+    if Binary in {'onehot', 'onehotretain'}:
+      
+      inputcolumn = inputcolumn = Binary_root + '_onht'
+      
+      df = \
+      self._custom_inversion_onht(df, Binary_columns, inputcolumn, Binary_dict)
       
     return df, inputcolumn
   
@@ -33416,6 +33538,111 @@ class AutoMunge:
       indexcolumn_valresult = True
     
     return indexcolumn, indexcolumn_valresult
+
+  def _set_Binary_column(self, postprocess_dict, suffixrange, root = 'Binary_'):
+    """
+    #this support function used in Binary dimensionality reduction
+    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
+    #so we will compare the root of the new column
+    #which for Binary will be 'Binary_'
+    #to input columns logged in postprocess_dict['origcolumn']
+    #and returned columns logged in postprocess_dict['column_dict']
+    #and if overlap found add an appender to the root as string of the application_number
+    #which is a 12 digit integer derived by random sample for each automunge(.) call
+    #similar to what is done for Automunge_index returned in ID sets
+    #note that we'll also check for overlaps between potential configurations of root plus suffix
+    #if overlap found a validation result will be returned
+    #suffixrange is an integer >= 0 which sets depth of how many overlaps will be checked
+    #which we know the number of returned columns from Binary will be <= 2**len(bool_column_list)
+    #(this is true because the target columns for consolidation have only boolean integer entries)
+    """
+    
+    #root column will be base of the new column header
+    rootcolumn = root
+    set_Binary_column_valresult = False
+    
+    #___
+    
+    #permutations are potential derivaitons from the root based on different Binary options
+    #note that to ensure comprehensive, we set a suffixrange depth of inspection based on len(bool_column_list)
+    permutations = {rootcolumn, rootcolumn+'_ord3'}
+    for i in range(suffixrange):
+      _1010_permutation = rootcolumn + '_1010_' + str(i)
+      _onht_permutation = rootcolumn + '_onht_' + str(i)
+      permutations = permutations | {_1010_permutation, _onht_permutation}
+      
+    origcolumns = set(postprocess_dict['origcolumn'])
+    returnedcolumns = set(postprocess_dict['column_dict'])
+    fullcolumns = origcolumns | returnedcolumns
+    
+    #if overlap between fullcolumns and root and permutations add application number appender
+    if len(permutations & fullcolumns) > 0:
+      rootcolumn = rootcolumn + str(postprocess_dict['application_number'])
+      set_Binary_column_valresult = True
+      
+    #___
+    
+    if set_Binary_column_valresult is True:
+      #now one more check to be comprehensive, this is for a very remote edge case
+      permutations = {rootcolumn, rootcolumn+'_ord3'}
+      for i in range(suffixrange):
+        _1010_permutation = rootcolumn + '_1010_' + str(i)
+        _onht_permutation = rootcolumn + '_onht_' + str(i)
+        permutations = permutations | {_1010_permutation, _onht_permutation}
+
+      if len(permutations & fullcolumns) > 0:
+        while len(permutations & fullcolumns) > 0:
+
+          rootcolumn = rootcolumn + ','
+
+          permutations = {rootcolumn, rootcolumn+'_ord3'}
+          for i in range(suffixrange):
+            _1010_permutation = rootcolumn + '_1010_' + str(i)
+            _onht_permutation = rootcolumn + '_onht_' + str(i)
+            permutations = permutations | {_1010_permutation, _onht_permutation}
+          
+    #___
+    
+    return rootcolumn, set_Binary_column_valresult
+
+  def _set_PCA_column(self, newcolumncount, postprocess_dict, root='PCA_'):
+    """
+    #this support function used in PCA dimensionality reduction
+    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
+    #so we will compare the root of the new column
+    #which for PCA will be 'PCA_'
+    #to input columns logged in postprocess_dict['origcolumn']
+    #and returned columns logged in postprocess_dict['column_dict']
+    #and if overlap found add an appender to the root as string of the application_number
+    #which is a 12 digit integer derived by random sample for each automunge(.) call
+    #similar to what is done for Automunge_index returned in ID sets
+    #if overlap found a validation result will be returned
+    """
+    
+    #the returned column names check for overlap with existing columns to accomodate edge case
+    origcolumns = set(postprocess_dict['origcolumn'])
+    returnedcolumns = set(postprocess_dict['column_dict'])
+    fullcolumns = origcolumns | returnedcolumns
+    PCA_columns_valresult = False
+    
+    #generate a list of column names for the conversion to pandas
+    columnnames = [root + '_' + str(y) for y in range(newcolumncount)]
+    
+    #if overlap found, add the application_number to column headers
+    if len((set(columnnames) | {root}) & fullcolumns) > 0:
+      PCA_columns_valresult = True
+      
+      columnnames = [(root + str(postprocess_dict['application_number']) + '_' + str(y)) for y in range(newcolumncount)]
+      
+    #one more to be comprehensive, this is for a very remote edge case
+    if PCA_columns_valresult is True:
+      i=1
+      if len((set(columnnames) | {root}) & fullcolumns) > 0:
+        while len(set(columnnames) & fullcolumns) > 0:
+          columnnames = [(root + str(postprocess_dict['application_number']) + i*',' + '_' + str(y)) for y in range(newcolumncount)]
+          i+=1
+        
+    return columnnames, PCA_columns_valresult
 
   def _assemble_excluded_from_postmunge_getNArows(self, postprocess_dict):
     """
@@ -34399,6 +34626,7 @@ class AutoMunge:
                         'process_dict' : process_dict,
                         'printstatus' : printstatus,
                         'randomseed' : randomseed,
+                        'application_number' : application_number,
                         'autoMLer' : autoMLer }
     
     #mirror assigncat which will populate the returned categories from eval function
@@ -34867,9 +35095,11 @@ class AutoMunge:
         miscparameters_results.update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
 
         #this is to train the PCA model and perform transforms on train and test set
-        PCAset_train, PCAset_test, postprocess_dict = \
+        PCAset_train, PCAset_test, postprocess_dict, PCA_columns_valresult = \
         self._PCAfunction(PCAset_train, PCAset_test, n_components, PCActgy, postprocess_dict, \
                          randomseed, ML_cmnd)
+
+        miscparameters_results.update({'PCA_columns_valresult': PCA_columns_valresult})
 
         #printout display progress
         if printstatus is True:
@@ -34931,7 +35161,7 @@ class AutoMunge:
     #we'll only apply to training and test data not labels
     #making an executive decvision for now that ordinal encoded columns will be excluded
     Binary_orig = Binary
-    if isinstance(Binary, list) or Binary in {True, 'retain', 'ordinal', 'ordinalretain'}:
+    if isinstance(Binary, list) or Binary in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       
       #printout display progress
       if printstatus is True:
@@ -34946,16 +35176,22 @@ class AutoMunge:
         
         temp_Binary = True
         
-        #check for any first entry signaling deviation from default Binary 1010 encoding with replacement, 
-        #True is ordinalretain, False is retain, None is ordinal, string (column header) first entry defaults to replace
-        if isinstance(Binary[0], bool):
-          if Binary[0] is True:  
-            temp_Binary = 'ordinalretain'
-          elif Binary[0] is False:
+        #check for any first entry signaling deviation from default Binary 1010 encoding with replacement,
+        #we'll allow first entry as a set to signal it is a specification i.e. as {<specification>}
+        if isinstance(Binary[0], set):
+          
+          if str(Binary[0]) == "{True}":
+            temp_Binary = True
+          elif str(Binary[0]) == "{'retain'}":
             temp_Binary = 'retain'
-          del Binary[0]
-        elif Binary[0] == None:
-          temp_Binary = 'ordinal'
+          elif str(Binary[0]) == "{'ordinal'}":
+            temp_Binary = 'ordinal'
+          elif str(Binary[0]) == "{'ordinalretain'}":  
+            temp_Binary = 'ordinalretain'
+          elif str(Binary[0]) == "{'onehot'}":
+            temp_Binary = 'onehot'
+          elif str(Binary[0]) == "{'onehotretain'}":
+            temp_Binary = 'onehotretain'
           del Binary[0]
         
         #for Binary need returned columns
@@ -34998,7 +35234,8 @@ class AutoMunge:
         print()
 
       if len(bool_column_list) > 0:
-        df_train, df_test, Binary_dict = self._Binary_convert(df_train, df_test, bool_column_list, Binary, postprocess_dict)
+        df_train, df_test, Binary_dict, set_Binary_column_valresult = \
+        self._Binary_convert(df_train, df_test, bool_column_list, Binary, postprocess_dict)
 
         returned_Binary_columns = list(Binary_dict['column_dict'])
 
@@ -35012,7 +35249,8 @@ class AutoMunge:
       for entry in Binary_dict['column_dict']:
         Binary_suffixoverlap_results.update(Binary_dict['column_dict'][entry]['suffixoverlap_results'])
         
-      miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
+      miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results,
+                                     'set_Binary_column_valresult' : set_Binary_column_valresult})
       
       if printstatus is True:
         print("Boolean column count = ")
@@ -35253,7 +35491,7 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.90'
+    automungeversion = '6.91'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36852,6 +37090,8 @@ class AutoMunge:
     null_activation = normalization_dict['null_activation']
     
     missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = normalization_dict['missing_marker']
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -39016,8 +39256,15 @@ class AutoMunge:
     str_convert = normalization_dict['str_convert']
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
     ordinal_dict = normalization_dict['ordinal_dict']
+
+    null_activation = True
+    #backward compatibility preceding 6.91
+    if 'null_activation' in normalization_dict:
+      null_activation = normalization_dict['null_activation']
     
     missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = normalization_dict['missing_marker']
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -39204,7 +39451,14 @@ class AutoMunge:
     binary_encoding_dict = normalization_dict['binary_encoding_dict']
     _1010_columnlist = normalization_dict['_1010_columnlist']
     
+    null_activation = True
+    #backward compatibility preceding 6.91
+    if 'null_activation' in normalization_dict:
+      null_activation = normalization_dict['null_activation']
+
     missing_marker = np.nan
+    if null_activation == 'Binary':
+      missing_marker = normalization_dict['missing_marker']
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -42435,7 +42689,7 @@ class AutoMunge:
     newcolumncount = np.size(PCAset_test,1)
 
     #generate a list of column names for the conversion to pandas
-    columnnames = ['PCA__'+str(y) for y in range(newcolumncount)]
+    columnnames = postprocess_dict['returned_PCA_columns']
 
     #convert output to pandas
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
@@ -43757,7 +44011,7 @@ class AutoMunge:
     #note if Binary was originally passed to automunge as a list of columns to consolidate
     #postprocess_dict will record Binary as True or string and base the list of columns to consolidate on Binary_dict
     #the origional passed Binary list is recorded in postprocess_dict as Binary_orig
-    if postprocess_dict['Binary'] in {True, 'retain', 'ordinal', 'ordinalretain'}:
+    if postprocess_dict['Binary'] in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       
       #printout display progress
       if printstatus is True:
@@ -45924,7 +46178,8 @@ class AutoMunge:
       #this scenario for backward compatibility for postprocess_dict populated in versions preceding 6.77
       null_activation = True
     
-    if null_activation is True:
+    #this includes the null_activation = 'Binary' case
+    if null_activation is not False:
       inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items()}
     elif null_activation is False:
       inverse_ordinal_dict = {value:key for key,value in ordinal_dict.items() if key==key}
@@ -45993,7 +46248,8 @@ class AutoMunge:
       #this scenario for backward compatibility for postprocess_dict populated in versions preceding 6.78
       null_activation = True
     
-    if null_activation is True:
+    #includes True and Binary scenarios
+    if null_activation is not False:
       inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items()}
     elif null_activation is False:
       inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items() if key==key}
@@ -46943,12 +47199,12 @@ class AutoMunge:
     #if Binary was performed, treatment depends on whether it was a replace or retain
     if len(list(postprocess_dict['Binary_dict']['column_dict'])) > 0:
       #if Binary was a 'retain' call then we don't need these columns for inversion
-      if postprocess_dict['Binary'] in {'retain', 'ordinalretain'} and inversion == 'test':
+      if postprocess_dict['Binary'] in {'retain', 'ordinalretain', 'onehotretain'} and inversion == 'test':
         inversion = list(df_test)
         for entry in postprocess_dict['Binary_dict']['column_dict']:
           if entry in inversion:
             inversion.remove(entry)
-      if postprocess_dict['Binary'] in {'retain', 'ordinalretain'} and isinstance(inversion, list):
+      if postprocess_dict['Binary'] in {'retain', 'ordinalretain', 'onehotretain'} and isinstance(inversion, list):
         #we'll have convention that if Binary didn't replace columns 
         #partial inversion only available for Binary source columns
         for entry in postprocess_dict['Binary_dict']['column_dict']:
@@ -46957,9 +47213,9 @@ class AutoMunge:
               print("please note partial inversion lists only supported for columns not returned from Binary")
               print("when Binary was not performed with replacement (i.e. when Binary passed to automunge as 'retain'")
             inversion.remove(entry)
-      if postprocess_dict['Binary'] in {True, 'ordinal'} and inversion == 'test':
+      if postprocess_dict['Binary'] in {True, 'ordinal', 'onehot'} and inversion == 'test':
         Binary_inversion_marker = True
-      if postprocess_dict['Binary'] in {True, 'ordinal'} and isinstance(inversion, list):
+      if postprocess_dict['Binary'] in {True, 'ordinal', 'onehot'} and isinstance(inversion, list):
         if (set(list(postprocess_dict['Binary_dict']['column_dict'])) - {'Binary'}).issubset(set(inversion)):
           Binary_inversion_marker = True
           for entry in postprocess_dict['Binary_dict']['column_dict']:
