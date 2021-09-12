@@ -4346,3 +4346,30 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - these results are from a validation that df_train is received as one of np.array, pd.Series, or pd.DataFrame and df_test is received as one of same or False
 - similar validation results reported in postmunge for check_df_test_type_result
 - the omission of this validation prior was an oversight
+
+6.91
+- with last rollout had put some thought into accomodating all potential edge cases for column header overlaps
+- including a clarification added to the documentation in section for other reserved strings
+- realized the Binary and PCA dimensionality reductions deserve some additional treatment due to their unique convention
+- referring to how they apply new column headers by means other than suffix appention which is case for rest of library
+- so have added convention that in cases where header overlaps are identified for PCA or Binary, the new column header is adjusted by addition of a string of the application number, which is a 12 digit random integer sampled for each automunge(.) call
+- e.g. for PCA, 'PCA__#' would be replaced by 'PCA_############_#'
+- this is similar to what has previously been done for the Automunge_index column returned in the ID sets
+- additionally, to ensure we are being comprehensive, in very remote edge case where even the adjusted header has overlap, we add comma characters until resolved
+- a validaiton result is logged for both Binary and PCA for cases where header is adjusted as set_Binary_column_valresult and PCA_columns_valresult
+- added a note to the Binary writeup associated with how stochastic_impute_categoric may reduce the extent of contraction
+- found an oversight in the Binary dimensionality reduction
+- most of our rollout validations are conducted to ensure prepared train data matches prepared consistent test data
+- in Binary dimensionality reduction, there is also a complication where test data activation sets may not match activation sets found in train data
+- which since we have to accomodate inversion needs to be handled a little differently than the 1010 transform it is built on top of
+- so accomodated by new null_activation scenario to 1010 transform as null_activation = 'Binary'
+- which results in test data activation sets not matching train data activation sets being both returned from Binary as all zero activations as well as being returned from inversion as all zero activations
+- returning from inversion as all zeros ensures upstream transforms will be able to handle inversion since 1010 transform encodings start from the all zero case, and in multirt the all zeros are treated as missing data
+- similarly, new null_activation scenario to ordl and onht transform as null_activation = 'Binary' to support Binary options
+- new convention for specifying list of Binary target by passing column headers as list
+- previously we had a few reserved entries such as boolean False/True, None, etc which were reserved for this use in these lists, realized it is much cleaner to use alternate convention that uses same specification entries as the master Binary parameter, so now when specifying a subset of columns for Binary, can pass the first entry in the list as a Binary parameter value embedded in set brackets, for example if you want to consolidate any boolean integer sets derived from columns 'c1', 'c2', 'c3', and you want them aggregated into a ordinal Binary encoding, you can pass the automunge(.) Binary parameter as Binary = [{'ordinal'}, 'c1', 'c2', 'c3']
+- new options for Binary dimensionality reduction as Binary = 'onehot' or 'onehotretain'.
+- these are comparable to 'ordinal' and 'ordinalretain' except the returned consolidation is onehot encoded instead of ordinal encoded as you would expect
+- the reason for this extension was to align with general convention in the library that all of the fundamental categoric transforms are available in corresponding forms differing as ordinal, one hot, or binarized representations.
+- and even when a transform is only available in one of these forms can apply a downstream transform to translate
+- such as can make use of an intermediate bnst to translate multicolumn forms or can otherwise apply directly
