@@ -889,23 +889,22 @@ may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to the infill. Defaults to _False_, can be passed as one of
 _{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
-When False Binary is not performed. When True boolean integer encoded categoric
-features are consolidated into a single common binarization with replacement.
-When 'retain' there is a similar consolidation to a common binarization but the 
-original columns are retained in the returned set. 'ordinal' and 'ordinalretain'
-are comparable to True and 'retain' with the exception that the consolidated 
-set is returned in an ordinal encoding instead of a binarization. A user can also
-pass a list of target column headers if consolidation is only desired on a subset of the categoric
-features. The column headers may be as received column headers or returned column headers
-with suffix appenders included. To allow distinguishing between the other conventions
+- False: the default, Binary dimensionality reduciton not performed
+- True: consolidates Boolean integer sets into a single common binarization encoding
+- 'retain': comparable to True, but original columns are retained instead of replaced
+- 'ordinal': comparable to True, but consolidates into an ordinal encoding instead of binarization
+- 'ordinalretain': comparable to 'ordinal', but original columns are retained instead of replaced
+- 'onehot': comparable to True, but consolidates into a one hot encoding instead of binarization
+- 'ordinalretain': comparable to 'onehot', but original columns are retained instead of replaced
+A user can also pass a list of target column headers if consolidation is only desired on 
+a subset of the categoric features. The column headers may be as received column headers or returned column headers with suffix appenders included. To allow distinguishing between the other conventions
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
-a user may optionally include a few special entries as the first item in the list to
-designate. When the first item in the list is the boolean True, the 'ordinalretain' option is 
-applied, when the first item in the list is the boolean False, the 'retain' option is applied,
-when the first item in the list is the value None, the 'ordinal' option is applied.
-Otherwise when the first value in list is just a column header string the base convention
-consistent with Binary=True is applied to the target columns. Note that inversion as can be performed 
-with postmunge(.) is supported in conjunction with Binary.
+a user may optionally include the specification embeded in set brackets {} as the first entry to the list, e.g. [{'ordinal'}, 'targetcolumn', ...], where specification may be one of
+True, 'retain', 'ordinal', etc. Otherwise when the first value in list is just a column 
+header string the base convention consistent with Binary=True is applied to the target columns. 
+Note that inversion as can be performed with postmunge(.) is supported in conjunction with Binary. 
+(One may wish to abstain from stochastic_impute_categoric in conjunction with Binary since it may 
+interfere with the extent of contraction by expanding the number of activation sets.)
 
 * PCAn_components: defaults to False for no PCA dimensionality reduction performed.
 A user can pass _an integer_ to define the number of PCA returned features for 
@@ -3177,7 +3176,7 @@ Note that text and onht are implemented with the same functions by updates to th
     - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text' (onht process_dict specification overwrites this to 'onht'). Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set
+    - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set.  (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
@@ -3198,7 +3197,7 @@ Note that text and onht are implemented with the same functions by updates to th
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
@@ -3219,7 +3218,7 @@ occurrence, second basis for common count entries is alphabetical
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
@@ -3243,7 +3242,7 @@ efficient than one-hot encoding)
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
-    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding
+    - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set), note NaN missing data representation will be added
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
@@ -4551,8 +4550,8 @@ present in dataframe and return results in final printouts and postprocess_dict[
 ### Other Reserved Strings
 Note that as Automunge applies transformations, new column headers are derived with addition of suffix appenders with leading underscore. There is an edge case where a new column header may be derived matching one already found in the set, which would be a channel for error. All new header configurations are validated for this overlap channel and if found, reported in final printouts and logged in the validation results. To eliminate risk of column header overlap edge cases, one can pass column headers in df_train that omit the underscore character '\_'.
 
-- 'Binary__1010_#' / 'Binary__ord3': The columns returned from Binary transform have headers per one of these conventions.
-- 'PCA__#': The columns returned from PCA dimensionality reduction have headers per this convention.
+- 'Binary__1010_#' / 'Binary__ord3': The columns returned from Binary transform have headers per one of these conventions. Note that if this header is already present in the data, it will instead populate as 'Binary_############_1010_#' / 'Binary_############_ord3' which includes the 12 digit random integer associated with the application number and this adjustment will be reported with validation results.
+- 'PCA__#': The columns returned from PCA dimensionality reduction have headers per this convention. Note that if this header is already present in the data, it will instead populate as 'PCA_############_#' which includes the 12 digit random integer associated with the application number and this adjustment will be reported with validation results.
 - 'Automunge_index': a reserved column header for index columns returned in ID sets. When automunge(.) is run the returned ID sets are
 populated with an index matching order of rows from original returned set, note that if this header is already present in the ID sets
 it will instead populate as 'Automunge_index_' + a 12 digit random integer associated with the application number and will be reported with validation results.
