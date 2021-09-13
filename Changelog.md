@@ -4373,3 +4373,14 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - the reason for this extension was to align with general convention in the library that all of the fundamental categoric transforms are available in corresponding forms differing as ordinal, one hot, or binarized representations.
 - and even when a transform is only available in one of these forms can apply a downstream transform to translate
 - such as can make use of an intermediate bnst to translate multicolumn forms or can otherwise apply directly
+
+6.92
+- updated Binary onehot scenario so that test activation sets not found in train are returned with all zeros to be consistent with other Binary options by way of tweaks to the null_activation='Binary' scenario
+- aligned Binary postmunge(.) printouts with automunge(.)
+- added Binary support for specifying multiple consolidation subsets by passing Binary as list of lists
+- where first entry in each sublist can optionally serve to pass specification for that sublist by embedding specificaiton in set
+- thus Binary can now be applied to seperately consolidate multiple non overlapping categoric sets
+- corrected paraemter list copying at start of automunge(.) and postmunge(.)
+- formalized the convention that we follow version numbers using float equivalent strings
+- to support backward compatibility checks
+- going forward, when reaching a round integer, the next version will be selected as int + 0.10 instead of 0.01
