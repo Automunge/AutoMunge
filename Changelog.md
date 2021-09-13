@@ -4384,3 +4384,6 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - formalized the convention that we follow version numbers using float equivalent strings
 - to support backward compatibility checks
 - going forward, when reaching a round integer, the next version will be selected as int + 0.10 instead of 0.01
+
+6.93
+- postmunge(.) inversion now records and returns validation results in inversion_info_dict
