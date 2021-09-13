@@ -2203,7 +2203,7 @@ sets with label smoothing is supported. Note that during an inversion operation 
 postmunge function only considers the parameters postprocess_dict, df_test, inversion, 
 pandasoutput, and/or printstatus. Note that in an inversion operation the 
 postmunge(.) function returns three sets: a recovered set, a list of recovered columns, and 
-a dictionary logging results of the path selection process. Please note that the general 
+a dictionary logging results of the path selection process and validation results. Please note that the general 
 convention in library is that entries not successfully recovered from inversion may be recorded 
 corresponding to the imputation value from the forward pass, NaN, or some other transformation function specific convention.
 
