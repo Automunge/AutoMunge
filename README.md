@@ -887,7 +887,8 @@ as may drastically reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
-will be subject to the infill. Defaults to _False_, can be passed as one of
+will be subject to zeroinfill. 
+Defaults to _False_, can be passed as one of
 _{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
 - False: the default, Binary dimensionality reduciton not performed
 - True: consolidates Boolean integer sets into a single common binarization encoding
@@ -901,8 +902,10 @@ a subset of the categoric features. The column headers may be as received column
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
 a user may optionally include the specification embeded in set brackets {} as the first entry to the list, e.g. [{'ordinal'}, 'targetcolumn', ...], where specification may be one of
 True, 'retain', 'ordinal', etc. Otherwise when the first value in list is just a column 
-header string the base convention consistent with Binary=True is applied to the target columns. 
-Note that inversion as can be performed with postmunge(.) is supported in conjunction with Binary. 
+header string the binarization convention consistent with Binary=True is applied. 
+In order to seperately consolidate multiple nonoverlapping sets of categoric features, one
+can pass Binary as a list of lists, with the sublists matching criteria noted preceding (such as allowance for first entry to embed specification in set brackets). Note that each sublist may include a distinct specification convention.
+Note that postmunge(.) inversion is supported in conjunction with any of these Binary options. When applying inversion based on a specified list of columns (as opposed to inversion='test' for instance), if the specificaiton includes a Binary returned column it should include the entire set of Binary columns associated with that consolidation, and if the Binary application was in the retain convention the inversion list should specify the Binary input columns instead of the Binary output columns.
 (One may wish to abstain from stochastic_impute_categoric in conjunction with Binary since it may 
 interfere with the extent of contraction by expanding the number of activation sets.)
 
