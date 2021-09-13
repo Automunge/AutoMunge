@@ -35609,7 +35609,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.92'
+    automungeversion = '6.93'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43690,7 +43690,7 @@ class AutoMunge:
 
       df_test, recovered_list, inversion_info_dict = \
       self._inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
-                            pandasoutput)
+                            pandasoutput, pm_miscparameters_results)
       
       return df_test, recovered_list, inversion_info_dict
     #_______
@@ -47137,6 +47137,8 @@ class AutoMunge:
     
     #we'll store the inversion paths info in this dictionary
     inversion_info_dict = {}
+
+    meta_miscparameters_results = {}
     
     #this will be a list of columns successfully recovered
     recovered_list = []
@@ -47238,12 +47240,14 @@ class AutoMunge:
 
             break
           
+      fullcategorylistforinversion = True
       if best_path is not False:
         #check that best path has all categorylist entries present
         #accounting for excl suffix if applicable
         df_test_list = list(df_test)
         self._list_replace(df_test_list, postprocess_dict['excl_suffix_conversion_dict'])
         if not set(postprocess_dict['column_dict'][best_path]['categorylist']).issubset(set(df_test_list)):
+          fullcategorylistforinversion = False
           if printstatus is True:
             print("Inversion path selected based on returned column ", best_path)
             print("Inversion not available due to incomplete set of categorylist entries.")
@@ -47272,6 +47276,7 @@ class AutoMunge:
           
       #great we've selected our path for this source column's inversion
       inversion_info_dict.update({source_column : {'best_path' : best_path, \
+                                                   'fullcategorylistforinversion' : fullcategorylistforinversion,
                                                    'info_retention' : info_retention_marker}})
       
       #now let's apply our inversion transforms
@@ -47317,11 +47322,15 @@ class AutoMunge:
       and column in postprocess_dict['excl_columns_without_suffix'] \
       and column in postprocess_dict['finalcolumns_train']:
         recovered_list.append(column)
+
+    # pm_miscparameters_results
+    inversion_info_dict = {'pm_miscparameters_results' : meta_miscparameters_results,
+                           'inversion_paths' : inversion_info_dict}
     
     return df_test, recovered_list, inversion_info_dict
 
   def _inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
-                       pandasoutput):
+                       pandasoutput, pm_miscparameters_results):
 
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
       if printstatus != 'silent':
@@ -47382,6 +47391,8 @@ class AutoMunge:
         inversion = list(df_test)
         
     if isinstance(inversion, list):
+
+      Binary_partialinversion_valresult = False
       
       for key in meta_Binary_dict:
         Binary_dict = meta_Binary_dict[key]
@@ -47394,7 +47405,7 @@ class AutoMunge:
           for entry in Binary_dict['column_dict']:
             if entry in inversion:
               inversion.remove(entry)
-              
+
         if Binary_specification in {True, 'ordinal', 'onehot'}:
           Binary_inversion_marker = False
           if (set(Binary_dict['column_dict'])).issubset(set(inversion)):
@@ -47413,6 +47424,9 @@ class AutoMunge:
           #where by partial set am referring to partial with respect to this specified Binary subaggregation
 
           else:
+
+            Binary_partialinversion_valresult = True
+
             if printstatus != 'silent':
               print("error: partial inversion lists only supported for columns returned from Binary")
               print("when entire set of Binary columns are included in the inversion list")
@@ -47427,7 +47441,8 @@ class AutoMunge:
               print("Recovered Binary columns:")
               print(Binary_dict['bool_column_list'])
               print()
-    
+      pm_miscparameters_results.update({'Binary_partialinversion_valresult' : Binary_partialinversion_valresult})
+
     #this is relevant for when feature importance dimensionality reduction was performed
     if inversion == 'test':
       if set(df_test).issubset(set(postprocess_dict['pre_dimred_finalcolumns_train'])):
@@ -47443,9 +47458,12 @@ class AutoMunge:
         self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of train an test sets
+      validate_traintest_columnlabelscompare = False
+      validate_traintest_columnorder = False
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
+        validate_traintest_columnlabelscompare = True
         if printstatus != 'silent':
           print("error, different number of returned columns in train and test sets")
         return
@@ -47454,15 +47472,20 @@ class AutoMunge:
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_train']) == set(columns_test):
         if postprocess_dict['finalcolumns_train'] != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
+
+      pm_miscparameters_results.update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
+                                        'validate_traintest_columnorder' : validate_traintest_columnorder})
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
@@ -47479,6 +47502,8 @@ class AutoMunge:
         print("Inversion succeeded in recovering original form for columns:")
         print(recovered_list)
         print()
+
+      inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
 
       if pandasoutput is False:
 
@@ -47497,9 +47522,12 @@ class AutoMunge:
         self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of label sets
+      validate_traintest_columnlabelscompare = False
+      validate_traintest_columnorder = False
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
+        validate_traintest_columnlabelscompare = True
         if printstatus != 'silent':
           print("error, different number of returned label columns in train and test sets")
         return
@@ -47508,15 +47536,20 @@ class AutoMunge:
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
         if postprocess_dict['finalcolumns_labels'] != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
+
+      pm_miscparameters_results.update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
+                                        'validate_traintest_columnorder' : validate_traintest_columnorder})
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
@@ -47533,6 +47566,8 @@ class AutoMunge:
         print("Inversion succeeded in recovering original form for columns:")
         print(recovered_list)
         print()
+
+      inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
 
       if pandasoutput is False:
 
@@ -47555,9 +47590,12 @@ class AutoMunge:
         self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
       #confirm consistency of label sets
+      validate_traintest_columnlabelscompare = False
+      validate_traintest_columnorder = False
 
       #check number of columns is consistent
       if len(finalcolumns_labels)!= df_test.shape[1]:
+        validate_traintest_columnlabelscompare = True
         if printstatus != 'silent':
           print("error, different number of returned label columns in train and test sets")
         return
@@ -47566,15 +47604,20 @@ class AutoMunge:
       columns_test = list(df_test)
       if set(finalcolumns_labels) == set(columns_test):
         if finalcolumns_labels != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
       elif set(postprocess_dict['finalcolumns_labels']) == set(columns_test):
         if postprocess_dict['finalcolumns_labels'] != columns_test:
+          validate_traintest_columnorder = True
           if printstatus != 'silent':
             print("error, different order of column labels in the train and test set")
           return
+
+      pm_miscparameters_results.update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
+                                        'validate_traintest_columnorder' : validate_traintest_columnorder})
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
@@ -47630,6 +47673,8 @@ class AutoMunge:
         print(dense_recovered_list)
         print()
 
+      inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
+
       if pandasoutput is False:
 
         df_test_denseinvert_final = df_test_denseinvert_final.to_numpy()
@@ -47664,15 +47709,19 @@ class AutoMunge:
         if entry not in inversion:
           inversion.append(entry)
 
+      inversion_listentrycompare_valresult = False
+
       #check these are all valid source columns
       for entry in inversion:
 
         if entry not in source_columns:
-          
+          inversion_listentrycompare_valresult = True
           if printstatus != 'silent':
             #(note this will trigger a printout if inversion passed as list targeting entry to label set, can be ignored)
             print("error: entry passed to inversion parameter list not matching a source or derived column")
             print("for entry: ", entry)
+
+      pm_miscparameters_results.update({'inversion_listentrycompare_valresult' : inversion_listentrycompare_valresult})
 
       df_test, recovered_list, inversion_info_dict = \
       self._df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
@@ -47681,6 +47730,8 @@ class AutoMunge:
         print("Inversion succeeded in recovering original form for columns:")
         print(recovered_list)
         print()
+
+      inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
 
       if pandasoutput is False:
 
@@ -47694,13 +47745,16 @@ class AutoMunge:
       
       #convention is set case accepts single entry
       #so we'll just confirm
+      inversion_setsingleentry_valresult = False
       if len(inversion) != 1:
-        
+        inversion_setsingleentry_valresult = True
         if printstatus != 'silent':
           print("error: inversion was passed as a set with more than one entry")
           print("the inversion set case is for specifying a single target inversion path")
           print("and thus accepts a set of one string entry representing a returned column header")
           
+      pm_miscparameters_results.update({'inversion_setsingleentry_valresult' : inversion_setsingleentry_valresult})
+
       #temporarily recast as a list
       inversion = list(inversion)
         
@@ -47716,14 +47770,17 @@ class AutoMunge:
       #now convert inversion to string entry (of returned column header)
       inversion = inversion[0]
       
+      inversion_listentrycompare_valresult = False
       #confirm entry is a returned column header
       if inversion not in finalcolumns_train:
-        
+        inversion_listentrycompare_valresult = True
         if printstatus != 'silent':
           print("error: inversion was passed as a set with entry not matching one of the returned columns")
           print("the inversion set case is for specifying a single target inversion path")
           print("and thus accepts a set of one string entry representing a returned column header")
           
+      pm_miscparameters_results.update({'inversion_listentrycompare_valresult' : inversion_listentrycompare_valresult})
+
       origcolumn = postprocess_dict['column_dict'][inversion]['origcolumn']
       
       df_test, recovered_list, inversion_info_dict = \
@@ -47733,6 +47790,8 @@ class AutoMunge:
         print("Inversion succeeded in recovering original form for columns:")
         print(recovered_list)
         print()
+
+      inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
 
       if pandasoutput is False:
 
