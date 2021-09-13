@@ -11050,7 +11050,7 @@ class AutoMunge:
       labels_train = sorted(labels_train, key=str)
       
     #add our missing_marker, note adding as last position will result in last column even in ordered scenario
-    if null_activation is not False:
+    if null_activation is True:
       labels_train = labels_train + [missing_marker]
 
     #one hot encoding support function
@@ -32646,7 +32646,7 @@ class AutoMunge:
   
     return df, categorycomplete_dict
 
-  def _Binary_convert(self, df_train, df_test, bool_column_list, Binary, postprocess_dict):
+  def _Binary_convert(self, df_train, df_test, bool_column_list, Binary, postprocess_dict, Binary_sublist_count_tuple):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -32673,9 +32673,16 @@ class AutoMunge:
       suffixrange = 1
     else:
       suffixrange = 33
-
+      
+    #if only one consolidation root of new column header is 'Binary_'
+    root = 'Binary_'
+#     Binary_sublist_count_tuple = (Binary_sublist_number, Binary_sublist_count)
+    if Binary_sublist_count_tuple[1] > 1:
+      root = 'Binary' + str(Binary_sublist_count_tuple[0]) + '_'
+    
+    #this converts column header root in case of overlap
     Binary_root, set_Binary_column_valresult = \
-    self._set_Binary_column(postprocess_dict, suffixrange, root = 'Binary_')
+    self._set_Binary_column(postprocess_dict, suffixrange, root = root)
     
 #     Binary_root = 'Binary_'
     if Binary in {True, 'retain'}:
@@ -32712,9 +32719,9 @@ class AutoMunge:
       suffixrange2 = int(np.ceil(np.log2(df_train[Binary_column].nunique())))
 
     if Binary in {'onehot', 'onehotretain', True, 'retain'} and suffixrange2 > suffixrange:
-
+      
       Binary_root2, set_Binary_column_valresult = \
-      self._set_Binary_column(postprocess_dict, suffixrange2, root = 'Binary_')
+      self._set_Binary_column(postprocess_dict, suffixrange2, root = root)
 
       if Binary in {True, 'retain'}:
         Binary_column2 = Binary_root2 + '_1010'
@@ -32769,11 +32776,16 @@ class AutoMunge:
       
     returned_columns = set(df_train)
     
-    newcolumns = list(returned_columns - initial_columns)
-    newcolumns = sorted(newcolumns)
+    newcolumns = returned_columns - initial_columns
+    
+    #this sorts to match order of returned columns
+    newcolumns_sorted = []
+    for returned_column in list(df_train):
+      if returned_column in newcolumns:
+        newcolumns_sorted.append(returned_column)
     
     suffixoverlap_results = self._df_check_suffixoverlap(initial_columns, \
-                                                         newcolumns, \
+                                                         newcolumns_sorted, \
                                                          suffixoverlap_results = Binary_present, \
                                                          printstatus = postprocess_dict['printstatus'])
       
@@ -32783,8 +32795,11 @@ class AutoMunge:
     
     #(this is a bit of a hack to carry suffix overlap result for 'Binary' to final report)
     Binary_dict.update({'column_dict':{}})
-    for newcolumn in newcolumns:
+    for newcolumn in newcolumns_sorted:
       Binary_dict['column_dict'].update({newcolumn:{'suffixoverlap_results':suffixoverlap_results}})
+
+    Binary_dict.update({'returned_Binary_columns' : newcolumns_sorted,
+                        'Binary_specification' : Binary})
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
@@ -32855,20 +32870,19 @@ class AutoMunge:
     
     return df_test
 
-  def _meta_inverseprocess_Binary(self, df, postprocess_dict):
+  def _meta_inverseprocess_Binary(self, df, Binary_dict, postprocess_dict):
     """
     #converts string boolean integers returned from inverseprocess_Binary to int
     #cleans up columns
     """
     
-    Binary_returned_columns = list(postprocess_dict['Binary_dict']['column_dict'])
-    Binary_dict = postprocess_dict['Binary_dict']
-    Binary_source_columns = postprocess_dict['Binary_dict']['bool_column_list']
-    Binary = postprocess_dict['Binary']
-    
+    Binary_returned_columns = Binary_dict['returned_Binary_columns']
+    Binary_source_columns = Binary_dict['bool_column_list']
+    Binary = Binary_dict['Binary_specification']
+  
     df, inputcolumn = \
     self._inverseprocess_Binary(df, Binary_returned_columns, Binary_dict, Binary)
-    
+
     i=0
     for Binary_source_column in Binary_source_columns:
 
@@ -32876,7 +32890,7 @@ class AutoMunge:
 
       df[Binary_source_column] = df[Binary_source_column].astype(np.int8)
       i += 1
-      
+
     #we'll have convention that the Binary columns not returned from inversion
     for Binary_returned_column in Binary_returned_columns:
       del df[Binary_returned_column]
@@ -33302,6 +33316,9 @@ class AutoMunge:
                          'passthrough' : []}
     
     populated_columns = []
+
+    #this supports Binary returned columns
+    Binary_sets_log = deepcopy(postprocess_dict['returned_Binary_sets'])
     
     #for column in postprocess_dict['finalcolumns_train']:
     for column in target_columns:
@@ -33315,22 +33332,61 @@ class AutoMunge:
           columntype_report['continuous'].append(column)
           
           populated_columns.append(column)
-          
+
         elif 'returned_Binary_columns' in postprocess_dict and \
         column in postprocess_dict['returned_Binary_columns']:
-          
-          #initialize binary_sets
-          columntype_report['binary_sets'].append([])
 
-          for entry in postprocess_dict['returned_Binary_columns']:
+          if column in Binary_sets_log['type']:
+            Btype = Binary_sets_log['type'][column]
 
-            columntype_report['binary_sets'][-1] = \
-            columntype_report['binary_sets'][-1] + [entry]
+            #note the Binary treatment here operates on assumption that
+            #if one column from a Binary set is included, they all are
+            #which is consistent with implementation
+            
+            if Btype == '1010':
+              
+              for returned_1010_set in Binary_sets_log['1010']:
+                
+                if column in returned_1010_set:
+                  
+                  columntype_report['binary_sets'].append(returned_1010_set)
 
-            #add to binary
-            columntype_report['binary'].append(entry)
+                  columntype_report['binary'] = \
+                  columntype_report['binary'] + returned_1010_set
 
-            populated_columns.append(entry)
+                  populated_columns = \
+                  populated_columns + returned_1010_set
+                  
+                  #now reset Binary_sets_log marker so can circumvent redundant searches
+                  for returned_1010_set_entry in returned_1010_set:
+                    del Binary_sets_log['type'][returned_1010_set_entry]
+                    # Binary_sets_log['type'][returned_1010_set_entry] = False
+            
+            if Btype == 'onht':
+              
+              for returned_onht_set in Binary_sets_log['onht']:
+                
+                if column in returned_onht_set:
+                  
+                  columntype_report['onehot_sets'].append(returned_onht_set)
+                  
+                  columntype_report['onehot'] = \
+                  columntype_report['onehot'] + returned_onht_set
+                  
+                  populated_columns = \
+                  populated_columns + returned_onht_set
+                  
+                  #now reset Binary_sets_log marker so can circumvent redundant searches
+                  for returned_onht_set_entry in returned_onht_set:
+                    del Binary_sets_log['type'][returned_onht_set_entry]
+                    # Binary_sets_log['type'][returned_onht_set_entry] = False
+              
+            if Btype == 'ord3':
+              
+              columntype_report['ordinal'].append(column)
+              populated_columns.append(column)
+              
+              Binary_sets_log['type'][column] = False
           
         elif 'excl_suffix' in postprocess_dict and \
         'excl_columns_without_suffix' in postprocess_dict and \
@@ -33982,13 +34038,13 @@ class AutoMunge:
     #similarly copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
     if isinstance(trainID_column, list):
-      trainID_column = trainID_column.copy()
+      trainID_column = deepcopy(trainID_column)
     if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
+      testID_column = deepcopy(testID_column)
     if isinstance(Binary, list):
-      Binary = Binary.copy()
+      Binary = deepcopy(Binary)
     if isinstance(PCAexcl, list):
-      PCAexcl = PCAexcl.copy()
+      PCAexcl = deepcopy(PCAexcl)
     #___
 
     #initialize ML_cmnd if incompletely specified, also some validation tests
@@ -35156,11 +35212,19 @@ class AutoMunge:
 
       miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
+    #_____
+
     #Binary dimensionality reduction goes here
-    
     #we'll only apply to training and test data not labels
-    #making an executive decvision for now that ordinal encoded columns will be excluded
-    Binary_orig = Binary
+    #test data activation sets not found in train data will return with all zeros
+    #Binary will target columns containing boolean integers per MLinfilltype
+    #requires all valid entries (performed after infill, so no naninfill)
+    
+    if isinstance(Binary, list):
+      Binary_orig = deepcopy(Binary)
+    else:
+      Binary_orig = Binary
+    
     if isinstance(Binary, list) or Binary in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       
       #printout display progress
@@ -35171,106 +35235,157 @@ class AutoMunge:
         print("Before Binary train set column count = ")
         print(df_train.shape[1])
         print("")
-      
-      if isinstance(Binary, list):
+
+      #_(1)_
+      #this is to convert to common form as Binary passed as list of lists
+      if not isinstance(Binary, list):
+        Binary = [{Binary}] + list(df_train)
+      if not isinstance(Binary[0], list):
+        Binary = [Binary]
         
-        temp_Binary = True
+      Binary_sublist_count = len(Binary)
         
+      Binary_dict = {}
+      final_returned_Binary_columns = []
+      final_returned_Binary_sets = {'type' : {},
+                                    '1010' : [],
+                                    'onht' : [],
+                                    'ord3' : []}
+        
+      #_(1)_
+      for Binary_sublist_number, Binary_sublist in enumerate(Binary):
+        
+        Binary_sublist_count_tuple = (Binary_sublist_number, Binary_sublist_count)
+        
+        #_(2)_
         #check for any first entry signaling deviation from default Binary 1010 encoding with replacement,
         #we'll allow first entry as a set to signal it is a specification i.e. as {<specification>}
-        if isinstance(Binary[0], set):
-          
-          if str(Binary[0]) == "{True}":
+        #we'll pass the specification to _Binary_convert as temp_Binary
+        #and it will be returned in Binary_dict['Binary_specification']
+        if isinstance(Binary_sublist[0], set):
+          if str(Binary_sublist[0]) == "{True}":
             temp_Binary = True
-          elif str(Binary[0]) == "{'retain'}":
+            Btype = '1010'
+          elif str(Binary_sublist[0]) == "{'retain'}":
             temp_Binary = 'retain'
-          elif str(Binary[0]) == "{'ordinal'}":
+            Btype = '1010'
+          elif str(Binary_sublist[0]) == "{'ordinal'}":
             temp_Binary = 'ordinal'
-          elif str(Binary[0]) == "{'ordinalretain'}":  
+            Btype = 'ord3'
+          elif str(Binary_sublist[0]) == "{'ordinalretain'}":  
             temp_Binary = 'ordinalretain'
-          elif str(Binary[0]) == "{'onehot'}":
+            Btype = 'ord3'
+          elif str(Binary_sublist[0]) == "{'onehot'}":
             temp_Binary = 'onehot'
-          elif str(Binary[0]) == "{'onehotretain'}":
+            Btype = 'onht'
+          elif str(Binary_sublist[0]) == "{'onehotretain'}":
             temp_Binary = 'onehotretain'
-          del Binary[0]
+            Btype = 'onht'
+          del Binary_sublist[0]
+        else:
+          temp_Binary = True
+          Btype = '1010'
         
         #for Binary need returned columns
-        Binary_copy = Binary.copy()
-        for entry in Binary_copy:
-          if entry in columns_train:
-            Binary.remove(entry)
-            Binary += postprocess_dict['origcolumn'][entry]['columnkeylist']
+        Binary_sublist = \
+        self._column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
         
-        #consolidate any redundancies
-        Binary_copy = Binary.copy()
-        Binary = []
-        for entry in Binary_copy:
-          if entry not in Binary:
-            Binary.append(entry)
-        
-        Binary_target_columns = Binary.copy()
-        Binary = temp_Binary
-      
-      else:
-        
-        Binary_target_columns = list(df_train)
-        
-      bool_column_list = []
-      
-      for column in Binary_target_columns:
-        
-        if column in postprocess_dict['column_dict']:
+        #_(2)_
+        bool_column_list = []
 
-          column_category = postprocess_dict['column_dict'][column]['category']
+        for column in Binary_sublist:
 
-          if process_dict[column_category]['MLinfilltype'] in \
-          ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+          if column in postprocess_dict['column_dict']:
 
-            bool_column_list.append(column)
-            
+            column_category = postprocess_dict['column_dict'][column]['category']
+
+            if process_dict[column_category]['MLinfilltype'] in \
+            ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+
+              bool_column_list.append(column)
+
+        if printstatus is True:
+          print("Consolidating boolean columns:")
+          print(bool_column_list)
+          print()
+          print("Boolean column count = ")
+          print(len(bool_column_list))
+          print("")
+
+        if len(bool_column_list) > 0:
+          df_train, df_test, Binary_sublist_dict, set_Binary_column_valresult = \
+          self._Binary_convert(df_train, df_test, bool_column_list, temp_Binary, postprocess_dict, Binary_sublist_count_tuple)
+
+          returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
+
+        else:
+          Binary_sublist_dict = {'bool_column_list' : [], 
+                                 'column_dict' : {},
+                                 'Binary_root' : '',
+                                 'returned_Binary_columns' : [],
+                                 'Binary_specification' : False}
+          miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
+          returned_Binary_columns = []
+          
+        final_returned_Binary_columns += returned_Binary_columns
+        
+        final_returned_Binary_sets['type'].update(dict(zip(returned_Binary_columns, [Btype] * len(returned_Binary_columns))))
+        if Btype in {'1010', 'onht'}:
+          final_returned_Binary_sets[Btype].append(returned_Binary_columns)
+        elif Btype in {'ord3'}:
+          final_returned_Binary_sets[Btype] = final_returned_Binary_sets[Btype] + returned_Binary_columns
+        
+        #aggregate suffix overlap validations
+        Binary_suffixoverlap_results = {}
+        for entry in Binary_sublist_dict['column_dict']:
+          Binary_suffixoverlap_results.update(Binary_sublist_dict['column_dict'][entry]['suffixoverlap_results'])
+
+        #log the validation results in miscparameters_results for Binary_suffixoverlap_results
+        if 'Binary_suffixoverlap_results' in miscparameters_results:
+          miscparameters_results['Binary_suffixoverlap_results'].update(Binary_suffixoverlap_results)
+        else:
+          miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
+        
+        #log the validation results in miscparameters_results for set_Binary_column_valresult
+        if 'set_Binary_column_valresult' not in miscparameters_results \
+        or 'set_Binary_column_valresult' in miscparameters_results \
+        and miscparameters_results['set_Binary_column_valresult'] is not True:
+          miscparameters_results.update({'set_Binary_column_valresult' : set_Binary_column_valresult})
+
+        #_(2)_
+        Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
+        
+        if printstatus is True:
+          print("Returned Binary columns:")
+          print(returned_Binary_columns)
+          print()
+          print("Returned Binary column count = ")
+          print(len(returned_Binary_columns))
+          print("")
+          
+      #_(1)_
       if printstatus is True:
-        print("Consolidating boolean columns:")
-        print(bool_column_list)
-        print()
-
-      if len(bool_column_list) > 0:
-        df_train, df_test, Binary_dict, set_Binary_column_valresult = \
-        self._Binary_convert(df_train, df_test, bool_column_list, Binary, postprocess_dict)
-
-        returned_Binary_columns = list(Binary_dict['column_dict'])
-
-      else:
-        Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
-        miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
-        returned_Binary_columns = []
-
-      #aggregate suffix overlap validations
-      Binary_suffixoverlap_results = {}
-      for entry in Binary_dict['column_dict']:
-        Binary_suffixoverlap_results.update(Binary_dict['column_dict'][entry]['suffixoverlap_results'])
-        
-      miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results,
-                                     'set_Binary_column_valresult' : set_Binary_column_valresult})
-      
-      if printstatus is True:
-        print("Boolean column count = ")
-        print(len(bool_column_list))
-        print("")
-        print("Returned Binary columns:")
-        print(returned_Binary_columns)
-        print()
-        print("Returned Binary column count = ")
-        print(len(returned_Binary_columns))
-        print("")
         print("After Binary train set column count = ")
         print(df_train.shape[1])
         print("")
-      
+
     else:
       
-      Binary_dict = {'bool_column_list' : [], 'column_dict' : {}}
+      Binary_dict = {0 : {'bool_column_list' : [], 
+                          'column_dict' : {},
+                          'Binary_root' : '',
+                          'returned_Binary_columns' : [],
+                          'Binary_specification' : False}}
+
       miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
       returned_Binary_columns = []
+      final_returned_Binary_columns = []
+      final_returned_Binary_sets = {'type' : {},
+                                    '1010' : [],
+                                    'onht' : [],
+                                    'ord3' : []}
+
+    #_____
 
     #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
     train_rowcount = df_train.shape[0]
@@ -35491,7 +35606,10 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
-    automungeversion = '6.91'
+    #note that we follow convention of using float equivalent strings as version numbers
+    #to support backward compatibility checks
+    #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
+    automungeversion = '6.92'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35539,7 +35657,8 @@ class AutoMunge:
                              'Binary' : Binary,
                              'Binary_orig' : Binary_orig,
                              'Binary_dict' : Binary_dict,
-                             'returned_Binary_columns' : returned_Binary_columns,
+                             'returned_Binary_columns' : final_returned_Binary_columns,
+                             'returned_Binary_sets' : final_returned_Binary_sets,
                              'PCA_applied' : PCA_applied,
                              'PCAn_components' : PCAn_components,
                              'PCAn_components_orig' : PCAn_components_orig,
@@ -43507,9 +43626,9 @@ class AutoMunge:
     #similarly copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
     if isinstance(testID_column, list):
-      testID_column = testID_column.copy()
+      testID_column = deepcopy(testID_column)
     if isinstance(inversion, list):
-      inversion = inversion.copy()
+      inversion = deepcopy(inversion)
 
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
@@ -44004,14 +44123,15 @@ class AutoMunge:
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': False})
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_all_valid_entries_result': False})
 
-    #Binary dimensionality reduction goes here
-    #we'll only apply to test data not labels
-    #making an executive decvision for now that ordinal encoded columns will be excluded
+    #_____
 
-    #note if Binary was originally passed to automunge as a list of columns to consolidate
-    #postprocess_dict will record Binary as True or string and base the list of columns to consolidate on Binary_dict
+    #Binary dimensionality reduction goes here
+
+    #note if Binary was originally passed to automunge as anything other than False
+    #postprocess_dict will record Binary as a list of lists
+    #with the Binary type either omitted or recorded as a first entry embedded in set brackets
     #the origional passed Binary list is recorded in postprocess_dict as Binary_orig
-    if postprocess_dict['Binary'] in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
+    if postprocess_dict['Binary'] is not False:
       
       #printout display progress
       if printstatus is True:
@@ -44021,25 +44141,49 @@ class AutoMunge:
         print("Before transform test set column count = ")
         print(df_test.shape[1])
         print("")
+
+      #this portion associated with backward compatibility preceding 6.92
+      #we'll convert prior form to match 6.92
+      if float(postprocess_dict['automungeversion']) < 6.92:
+        temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
+        temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
+                                 'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
+        meta_Binary_dict = {0 : temp_Binary_dict}
+      else:
+        #this is form after 6.92
+        meta_Binary_dict = postprocess_dict['Binary_dict']
       
-      Binary_dict = postprocess_dict['Binary_dict']
-      Binary = postprocess_dict['Binary']
+      #_(1)_
+      for key in meta_Binary_dict:
+
+        Binary_dict = meta_Binary_dict[key]
+        Binary = meta_Binary_dict[key]['Binary_specification']
       
-      if printstatus is True:
-        print("Consolidating boolean columns:")
-        print(Binary_dict['bool_column_list'])
-        print()
+        if printstatus is True:
+          print("Consolidating boolean columns:")
+          print(Binary_dict['bool_column_list'])
+          print()
+          print("Boolean column count = ")
+          print(len(Binary_dict['bool_column_list']))
+          print("")
+
+        df_test = self._postBinary_convert(df_test, Binary_dict, Binary)
+
+        if printstatus is True:
+          print("Returned Binary columns:")
+          print(Binary_dict['returned_Binary_columns'])
+          print()
+          print("Returned Binary column count = ")
+          print(len(Binary_dict['returned_Binary_columns']))
+          print("")
           
-      df_test = self._postBinary_convert(df_test, Binary_dict, Binary)
-      
-      #printout display progress
-      if printstatus is True:
-        print("Boolean column count = ")
-        print(len(Binary_dict['bool_column_list']))
-        print("")
-        print("After transform test set column count = ")
-        print(df_test.shape[1])
-        print("")
+        #_(1)_
+        if printstatus is True:
+          print("After transform test set column count = ")
+          print(df_test.shape[1])
+          print("")
+
+    #_____
 
     #populate row count basis here (before duplications or oversampling)
     postreports_dict.update({'rowcount_basis' : {'automunge_train_rowcount' : postprocess_dict['train_rowcount'], \
@@ -45930,10 +46074,17 @@ class AutoMunge:
     
     #First let's access the values we'll need from the normalization_dict
     labels_dict = normalization_dict['labels_dict']
+
+    missing_marker = np.nan
+    if 'missing_marker' in normalization_dict:
+      missing_marker = normalization_dict['missing_marker']
+    else:
+      #backward compatibility preceding 6.91
+      missing_marker = np.nan
     
     inverse_labels_dict = {value:key for key,value in labels_dict.items()}
     
-    df[inputcolumn] = np.nan
+    df[inputcolumn] = missing_marker
     
     for categorylist_entry in inverse_labels_dict:
       
@@ -47168,7 +47319,7 @@ class AutoMunge:
         recovered_list.append(column)
     
     return df_test, recovered_list, inversion_info_dict
-  
+
   def _inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
                        pandasoutput):
 
@@ -47191,73 +47342,100 @@ class AutoMunge:
       #accomodate excl suffix convention by adding suffix back on
       if postprocess_dict['excl_suffix'] is False:
         self._list_replace(inversion, postprocess_dict['excl_suffix_conversion_dict'])
+    
+    #now consider whether Binary dimensionality reduction was performed
 
-    #initialize objects that may be adjusted in case of Binary
-    Binary_finalcolumns_train = postprocess_dict['finalcolumns_train'].copy()
-    Binary_inversion_marker = False
-
-    #if Binary was performed, treatment depends on whether it was a replace or retain
-    if len(list(postprocess_dict['Binary_dict']['column_dict'])) > 0:
-      #if Binary was a 'retain' call then we don't need these columns for inversion
-      if postprocess_dict['Binary'] in {'retain', 'ordinalretain', 'onehotretain'} and inversion == 'test':
-        inversion = list(df_test)
-        for entry in postprocess_dict['Binary_dict']['column_dict']:
-          if entry in inversion:
-            inversion.remove(entry)
-      if postprocess_dict['Binary'] in {'retain', 'ordinalretain', 'onehotretain'} and isinstance(inversion, list):
-        #we'll have convention that if Binary didn't replace columns 
-        #partial inversion only available for Binary source columns
-        for entry in postprocess_dict['Binary_dict']['column_dict']:
-          if entry in inversion:
-            if printstatus != 'silent':
-              print("please note partial inversion lists only supported for columns not returned from Binary")
-              print("when Binary was not performed with replacement (i.e. when Binary passed to automunge as 'retain'")
-            inversion.remove(entry)
-      if postprocess_dict['Binary'] in {True, 'ordinal', 'onehot'} and inversion == 'test':
-        Binary_inversion_marker = True
-      if postprocess_dict['Binary'] in {True, 'ordinal', 'onehot'} and isinstance(inversion, list):
-        if (set(list(postprocess_dict['Binary_dict']['column_dict'])) - {'Binary'}).issubset(set(inversion)):
-          Binary_inversion_marker = True
-          for entry in postprocess_dict['Binary_dict']['column_dict']:
-            if entry != 'Binary':
-              inversion.remove(entry)
-          inversion += postprocess_dict['Binary_dict']['bool_column_list']
-        elif bool((set(postprocess_dict['Binary_dict']['column_dict']) - {'Binary'}) & set(inversion)):
-          if printstatus != 'silent':
-            print("error: partial inversion lists only supported for columns returned from Binary")
-            print("when entire set of Binary columns are included in the inversion list")
-
-    if Binary_inversion_marker is True:
-
-      if printstatus is True:
-        print("Recovering columns from Binary dimensionality reduction.")
-        print()
-
-      df_test = self._meta_inverseprocess_Binary(df_test, postprocess_dict)
-
-      for entry in postprocess_dict['Binary_dict']['column_dict']:
-
-        if entry != 'Binary':
-
-          Binary_finalcolumns_train.remove(entry)
-
-      Binary_finalcolumns_train += postprocess_dict['Binary_dict']['bool_column_list']
-
-      if printstatus is True:
-        print("Recovered Binary columns:")
-        print(postprocess_dict['Binary_dict']['bool_column_list'])
-        print()
+    #this portion associated with backward compatibility preceding 6.92
+    #we'll convert prior form to match 6.92
+    if float(postprocess_dict['automungeversion']) < 6.92:
+      temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
+      temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
+                               'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
+      meta_Binary_dict = {0 : temp_Binary_dict}
+    else:
+      #this is form after 6.92
+      meta_Binary_dict = postprocess_dict['Binary_dict']
+    
+    retain_Binary_present = False
+    for key in meta_Binary_dict:
+      if meta_Binary_dict[key]['Binary_specification'] in {'retain', 'ordinalretain', 'onehotretain'} \
+      and len(list(meta_Binary_dict[key]['column_dict'])) > 0:
+        retain_Binary_present = True
+        
+    replace_Binary_present = False
+    for key in meta_Binary_dict:
+      if meta_Binary_dict[key]['Binary_specification'] in {True, 'ordinal', 'onehot'} \
+      and len(list(meta_Binary_dict[key]['column_dict'])) > 0:
+        replace_Binary_present = True
+    
+    if replace_Binary_present is True:
       
+      if printstatus is True:
+        print("Recovering columns from Binary dimensionality reduction")
+        print()
+        
+    if inversion == 'test':
+      
+      if retain_Binary_present is True or replace_Binary_present is True:
+        
+        #for all cases where a Binary was performed, inversion = 'test' is translated to a list of columns
+        inversion = list(df_test)
+        
+    if isinstance(inversion, list):
+      
+      for key in meta_Binary_dict:
+        Binary_dict = meta_Binary_dict[key]
+        Binary_specification = Binary_dict['Binary_specification']
+        
+        if Binary_specification in {'retain', 'ordinalretain', 'onehotretain'}:
+          #we'll have convention that if Binary didn't replace columns 
+          #partial inversion only available for Binary source columns
+          #since any inversion from the Binary form would be redundant
+          for entry in Binary_dict['column_dict']:
+            if entry in inversion:
+              inversion.remove(entry)
+              
+        if Binary_specification in {True, 'ordinal', 'onehot'}:
+          Binary_inversion_marker = False
+          if (set(Binary_dict['column_dict'])).issubset(set(inversion)):
+            Binary_inversion_marker = True
+            for entry in Binary_dict['column_dict']:
+              inversion.remove(entry)
+            inversion += Binary_dict['bool_column_list']
+          
+          #if inversion was passed as a list subset of returned columns
+          #Binary_inversion_marker won't be activated if Binary columns aren"t in that list 
+          
+          elif len((set(Binary_dict['column_dict'])) & set(inversion)) == 0:
+            pass
+          
+          #or is an error channel when only a partial set of Binary columns are included
+          #where by partial set am referring to partial with respect to this specified Binary subaggregation
+
+          else:
+            if printstatus != 'silent':
+              print("error: partial inversion lists only supported for columns returned from Binary")
+              print("when entire set of Binary columns are included in the inversion list")
+              
+          if Binary_inversion_marker is True:
+
+            df_test = self._meta_inverseprocess_Binary(df_test, Binary_dict, postprocess_dict)
+
+            inversion += Binary_dict['bool_column_list']
+
+            if printstatus is True:
+              print("Recovered Binary columns:")
+              print(Binary_dict['bool_column_list'])
+              print()
+    
     #this is relevant for when feature importance dimensionality reduction was performed
     if inversion == 'test':
-      if set(Binary_finalcolumns_train).issubset(set(postprocess_dict['pre_dimred_finalcolumns_train'])):
-        inversion = Binary_finalcolumns_train
+      if set(df_test).issubset(set(postprocess_dict['pre_dimred_finalcolumns_train'])):
+        inversion = list(df_test)
         
     if inversion == 'test':
 
-      #this is to handle edge case of excl transforms
-      #which after processing have their suffix removed from header
-      finalcolumns_labels = Binary_finalcolumns_train
+      finalcolumns_labels = list(df_test)
       source_columns = postprocess_dict['origtraincolumns']
 
       #accomodate excl suffix convention by adding suffix back on
