@@ -4395,3 +4395,7 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - bug originated from the new NArw aggregations returning integers instead of boolean
 - which was inconsistent with other NArowtypes
 - resolved
+
+6.95
+- Binary now also accepts ordinal encoded categoric columns as targets for consolidation
+- new validation test performed for labels_column parameter
