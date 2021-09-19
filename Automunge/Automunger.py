@@ -23490,7 +23490,9 @@ class AutoMunge:
 
       #populates as 1 for other data else 0 for the two targets
       NArows = \
-      self._autowhere(pd.DataFrame(), column+'_NArows', df2[column]!=binary_2, 1, specified='replacement')
+      self._autowhere(pd.DataFrame(), column+'_NArows', df2[column]!=binary_2, True, False, specified='replacementalternative')
+
+      # NArows[column+'_NArows'] = NArows[column+'_NArows'].astype(bool)
 
     if NArowtype in {'numeric'}:
 
@@ -24723,7 +24725,7 @@ class AutoMunge:
         NArows['tempindex1'] = df.index
 
         #create list of index numbers coresponding to the NArows True values
-        infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
+        infillindex = NArows.loc[NArows[NArowcolumn].astype(bool)]['tempindex1']
 
         #create a dictionary for use to insert infill using df's index as the key
         infill_dict = dict(zip(infillindex, infill.to_numpy()))
@@ -24736,7 +24738,7 @@ class AutoMunge:
 
         #now carry that infill over to the target column for rows where NArows is True
         df = \
-        self._autowhere(df, column, NArows[NArowcolumn], NArows['tempindex1'], specified='replacement')
+        self._autowhere(df, column, NArows[NArowcolumn].astype(bool), NArows['tempindex1'], specified='replacement')
 
       #else if categorylist wasn't single value
       else:
@@ -24747,7 +24749,7 @@ class AutoMunge:
           NArows['tempindex1'] = df.index
 
           #create list of index numbers coresponding to the NArows True values
-          infillindex = NArows.loc[NArows[NArowcolumn]]['tempindex1']
+          infillindex = NArows.loc[NArows[NArowcolumn].astype(bool)]['tempindex1']
 
           #create a dictionary for use to insert infill using df's index as the key
           infill_dict = dict(zip(infillindex, infill[textcolumnname].to_numpy()))
@@ -24760,7 +24762,7 @@ class AutoMunge:
 
           #now carry that infill over to the target column for rows where NArows is True
           df = \
-          self._autowhere(df, textcolumnname, NArows[NArowcolumn], NArows['tempindex1'], specified='replacement')
+          self._autowhere(df, textcolumnname, NArows[NArowcolumn].astype(bool), NArows['tempindex1'], specified='replacement')
 
     elif MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
       pass
@@ -35609,7 +35611,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.93'
+    automungeversion = '6.94'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
