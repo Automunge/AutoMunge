@@ -881,17 +881,17 @@ through assignparam which is applied external to function call.
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
 
-* Binary: a dimensionality reduction technique whereby the set of columns
-with boolean encodings are collectively encoded with binary encoding such
-as may drastically reduce the column count. This has many benefits such as
+* Binary: a dimensionality reduction technique whereby the set of columns from
+categoric encodings are collectively encoded with binary encoding such
+as may reduce the column count. This has many benefits such as
 memory bandwidth and energy cost for inference I suspect, however, there 
 may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to zeroinfill. 
 Defaults to _False_, can be passed as one of
 _{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
-- False: the default, Binary dimensionality reduciton not performed
-- True: consolidates Boolean integer sets into a single common binarization encoding
+- False: the default, Binary dimensionality reduction not performed
+- True: consolidates Boolean integer sets into a single common binarization encoding with replacement
 - 'retain': comparable to True, but original columns are retained instead of replaced
 - 'ordinal': comparable to True, but consolidates into an ordinal encoding instead of binarization
 - 'ordinalretain': comparable to 'ordinal', but original columns are retained instead of replaced
@@ -903,8 +903,8 @@ such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of c
 a user may optionally include the specification embeded in set brackets {} as the first entry to the list, e.g. [{'ordinal'}, 'targetcolumn', ...], where specification may be one of
 True, 'retain', 'ordinal', etc. Otherwise when the first value in list is just a column 
 header string the binarization convention consistent with Binary=True is applied. 
-In order to seperately consolidate multiple nonoverlapping sets of categoric features, one
-can pass Binary as a list of lists, with the sublists matching criteria noted preceding (such as allowance for first entry to embed specification in set brackets). Note that each sublist may include a distinct specification convention.
+In order to seperately consolidate multiple sets of categoric features, one
+can pass Binary as a list of lists, with the sublists matching criteria noted preceding (such as allowance for first entry to embed specification in set brackets). For cases where a consolidation with replacement is perfomed these sets should be nonoverlapping. Note that each sublist may include a distinct specification convention.
 Note that postmunge(.) inversion is supported in conjunction with any of these Binary options. When applying inversion based on a specified list of columns (as opposed to inversion='test' for instance), if the specificaiton includes a Binary returned column it should include the entire set of Binary columns associated with that consolidation, and if the Binary application was in the retain convention the inversion list should specify the Binary input columns instead of the Binary output columns.
 (One may wish to abstain from stochastic_impute_categoric in conjunction with Binary since it may 
 interfere with the extent of contraction by expanding the number of activation sets.)
@@ -2843,7 +2843,7 @@ Other Q Notation root categories:
     - 'negvalues', boolean defaults to False, True bins values <0
       (recommend using pwr2 instead of this parameter since won't update NArowtype)
     - 'suffix': to change suffix appender (leading underscore added internally)
-    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation instead of grouping with missing data (recommend also updating NArowtype, such as to nonnegativenumeric)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
   - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
@@ -2858,7 +2858,7 @@ Other Q Notation root categories:
   - assignparam parameters accepted: 
     - 'negvalues', boolean defaults to True, True bins values <0
       (recommend using pwrs instead of this parameter since won't update NArowtype)
-    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation instead of grouping with missing data (recommend also updating NArowtype, such as to numeric)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
@@ -2873,8 +2873,8 @@ value fell with respect to powers of 10
   - default NArowtype: positivenumeric
   - suffix appender: '_pwor' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
-    - 'negvalues', boolean defaults to False, True bins values <0
-    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
+    - 'negvalues', boolean defaults to False, True bins values <0 (recommend using por2 instead of this parameter since won't update NArowtype)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation instead of grouping with missing data (recommend also updating NArowtype, such as to nonnegativenumeric)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
@@ -2888,8 +2888,8 @@ value fell with respect to powers of 10 (comparable to pwor with negvalues param
   - default NArowtype: nonzeronumeric
   - suffix appender: '_por2' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
-    - 'negvalues', boolean defaults to True, True bins values <0
-    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation (instead of grouping with missing data)
+    - 'negvalues', boolean defaults to True, True bins values <0 (recommend using pwor instead of this parameter since won't update NArowtype)
+    - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation instead of grouping with missing data (recommend also updating NArowtype, such as to numeric)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
@@ -4974,4 +4974,4 @@ contact available via [automunge.com](https://automunge.com)
 
 Copyright (C) 2018, 2019, 2020, 2021 - All Rights Reserved
 
-Patent Pending, applications 16552857, 17021770
+Patent Pending, including applications 16552857, 17021770
