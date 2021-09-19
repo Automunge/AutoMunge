@@ -3827,7 +3827,7 @@ unless an additional transform is applied downstream.)
 * GPS4: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in the train set and relies on assumption that the set of unique entries in test set will be the same or a subset of the train set, which may benefit latency for this scenario.
 * GPS5: comparable to GPS3 but performs a downstream ordinal encoding instead of normalization, as may be desired when treating a fixed range of GPS coordinates as a categoric feature, lattitude and longitude encoded seperately.
 * GPS6: comparable to GPS3 but performs both a downstream ordinal encoding and a downstream normalizaiton, such as to treat lattitude and longitude both as categoric and continuous numeric features. This is probably a better default than GPS3 or GPS5 for fixed range of entries.
-* NArw: produces a column of boolean identifiers for rows in the source
+* NArw: produces a column of boolean integer identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
 when NArw is passed as the root category it bases NArowtype on default.
