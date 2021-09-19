@@ -4387,3 +4387,11 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 
 6.93
 - postmunge(.) inversion now records and returns validation results in inversion_info_dict
+
+6.94
+- quick fix
+- found a bug introduced in 6.88 with the new 'binary' NArowtype
+- I don't know why this didn't show up in testing, will put some thought into that
+- bug originated from the new NArw aggregations returning integers instead of boolean
+- which was inconsistent with other NArowtypes
+- resolved
