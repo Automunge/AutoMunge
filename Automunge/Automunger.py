@@ -32648,7 +32648,7 @@ class AutoMunge:
   
     return df, categorycomplete_dict
 
-  def _Binary_convert(self, df_train, df_test, bool_column_list, Binary, postprocess_dict, Binary_sublist_count_tuple):
+  def _Binary_convert(self, df_train, df_test, categoric_column_tuple, Binary, postprocess_dict, Binary_sublist_count_tuple):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -32665,6 +32665,9 @@ class AutoMunge:
     #null_activation parameter set to 'Binary' to accomodate cases where
     #activation sets in test data don't match activation sets found in train data
     #which will be returned as all zero in inversion
+    
+    #categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
+    #where categoric_column_list encompasses the other two in order of dr_train columns
     """
     
     #suffixrange is for evaluating overalaps with different numebr of returned columns
@@ -32706,11 +32709,43 @@ class AutoMunge:
     
     df_train[Binary_column] = ''
     df_test[Binary_column] = ''
+    
+    #ordinal_width_dict stores string width for ordinal entries, inversion needs a constant character width
+    ordinal_width_dict = {}
   
-    for column in bool_column_list:
-  
-      df_train[Binary_column] = df_train[Binary_column] + df_train[column].astype(int).astype(str)
-      df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
+    for column in categoric_column_tuple[2]:
+      
+      #boolean integer case
+      if column in categoric_column_tuple[0]:
+
+        df_train[Binary_column] = df_train[Binary_column] + df_train[column].astype(int).astype(str)
+        df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
+        
+      #ordinal case
+      else:
+        
+        #get data type from train set (e.g. might be different integer size)
+        train_dtype = type(df_train[column].iat[0])
+        
+        #get max activation from train set
+        train_max_activation = df_train[column].max()
+        
+        #use to derive a string width
+        train_max_width = int(np.ceil(np.log10(train_max_activation + 1)))
+        
+        #add a contingency factor for case where encoding space wasn't fully represented
+        #this scenario is not common in our library
+        #as used here if ordinal encoding space found in train set was 10^3, this will support encodings up to 10^10
+        train_max_width += 7
+        
+        #store width in ordinal_width_dict
+        ordinal_width_dict.update({column : {'train_max_width' : train_max_width,
+                                             'train_dtype' : train_dtype}})
+        
+        #append onto Binary_column with padding to consistent width
+        #the slice avoids bug when width contingency factor was inadequate, tradeoff is that will result in false encoding
+        df_train[Binary_column] = df_train[Binary_column] + df_train[column].astype(int).astype(str).str.pad(train_max_width, side='left', fillchar='0').str.slice(start=0, stop=train_max_width)
+        df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str).str.pad(train_max_width, side='left', fillchar='0').str.slice(start=0, stop=train_max_width)
 
     #___
     #this is for a remote edge case to be comprehensive, 
@@ -32791,7 +32826,8 @@ class AutoMunge:
                                                          suffixoverlap_results = Binary_present, \
                                                          printstatus = postprocess_dict['printstatus'])
       
-    Binary_dict.update({'bool_column_list' : bool_column_list})
+    Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
+    Binary_dict.update({'ordinal_width_dict' : ordinal_width_dict})
     Binary_dict.update({'Binary_root' : Binary_root})
     Binary_dict.update({'temp_pm_miscparameters_results' : {}})
     
@@ -32807,7 +32843,7 @@ class AutoMunge:
     #(such that the binary encoding is a supplement instead of a replacement)
     if Binary not in {'retain', 'ordinalretain', 'onehotretain'}:
 
-      for column in bool_column_list:
+      for column in categoric_column_tuple[2]:
 
         del df_train[column]
         del df_test[column]
@@ -32839,13 +32875,29 @@ class AutoMunge:
     if Binary in {'onehot', 'onehotretain'}:
       Binary_column = Binary_root + '_onht'
     
-    bool_column_list = Binary_dict['bool_column_list']
+    if 'categoric_column_tuple' in Binary_dict:
+      categoric_column_tuple = Binary_dict['categoric_column_tuple']
+    else:
+      #backward compatibility preceding 6.95
+      categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
     
     df_test[Binary_column] = ''
     
-    for column in bool_column_list:
-  
-      df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
+    for column in categoric_column_tuple[2]:
+      
+      #boolean integer case
+      if column in categoric_column_tuple[0]:
+
+        df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str)
+        
+      #ordinal case
+      else:
+        
+        #get train_max_width from train set
+        train_max_width = Binary_dict['ordinal_width_dict'][column]['train_max_width']
+        
+        #append onto Binary_column with padding to consistent width
+        df_test[Binary_column] = df_test[Binary_column] + df_test[column].astype(int).astype(str).str.pad(train_max_width, side='left', fillchar='0').str.slice(start=0, stop=train_max_width)
 
     if Binary in {True, 'retain'}:
 
@@ -32866,7 +32918,7 @@ class AutoMunge:
     #(such that the binary encoding is a supplement instead of a replacement)
     if Binary not in {'retain', 'ordinalretain', 'onehotretain'}:
       
-      for column in bool_column_list:
+      for column in categoric_column_tuple[2]:
 
         del df_test[column]
     
@@ -32879,19 +32931,43 @@ class AutoMunge:
     """
     
     Binary_returned_columns = Binary_dict['returned_Binary_columns']
-    Binary_source_columns = Binary_dict['bool_column_list']
     Binary = Binary_dict['Binary_specification']
+    
+    if 'categoric_column_tuple' in Binary_dict:
+      categoric_column_tuple = Binary_dict['categoric_column_tuple']
+    else:
+      #backward compatibility preceding 6.95
+      categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
   
     df, inputcolumn = \
     self._inverseprocess_Binary(df, Binary_returned_columns, Binary_dict, Binary)
 
     i=0
-    for Binary_source_column in Binary_source_columns:
+    for Binary_source_column in categoric_column_tuple[2]:
+      
+      #boolean integer case
+      if Binary_source_column in categoric_column_tuple[0]:
 
-      df[Binary_source_column] = df[inputcolumn].str.slice(start=i, stop=i+1)
+        df[Binary_source_column] = df[inputcolumn].str.slice(start=i, stop=i+1)
 
-      df[Binary_source_column] = df[Binary_source_column].astype(np.int8)
-      i += 1
+        df[Binary_source_column] = df[Binary_source_column].astype(np.int8)
+        i += 1
+        
+      #ordinal case
+      else:
+        
+        #get train_dtype from train set
+        train_dtype = Binary_dict['ordinal_width_dict'][Binary_source_column]['train_dtype']
+        
+        #get train_max_width from train set
+        train_max_width = Binary_dict['ordinal_width_dict'][Binary_source_column]['train_max_width']
+        
+        #append onto Binary_column with padding to consistent width
+        df[Binary_source_column] = df[inputcolumn].str.slice(start=i, stop=i+train_max_width)
+        
+        df[Binary_source_column] = df[Binary_source_column].astype(train_dtype)
+        
+        i += train_max_width
 
     #we'll have convention that the Binary columns not returned from inversion
     for Binary_returned_column in Binary_returned_columns:
@@ -33611,8 +33687,7 @@ class AutoMunge:
     #note that we'll also check for overlaps between potential configurations of root plus suffix
     #if overlap found a validation result will be returned
     #suffixrange is an integer >= 0 which sets depth of how many overlaps will be checked
-    #which we know the number of returned columns from Binary will be <= 2**len(bool_column_list)
-    #(this is true because the target columns for consolidation have only boolean integer entries)
+    #which we know the number of returned columns from Binary will be <= a value as function of nunique
     """
     
     #root column will be base of the new column header
@@ -33622,7 +33697,7 @@ class AutoMunge:
     #___
     
     #permutations are potential derivaitons from the root based on different Binary options
-    #note that to ensure comprehensive, we set a suffixrange depth of inspection based on len(bool_column_list)
+    #note that to ensure comprehensive, we set a suffixrange depth of inspection as per _Binary_convert
     permutations = {rootcolumn, rootcolumn+'_ord3'}
     for i in range(suffixrange):
       _1010_permutation = rootcolumn + '_1010_' + str(i)
@@ -34324,6 +34399,16 @@ class AutoMunge:
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     trainlabels=[str(x) for x in list(df_train)]
     df_train.columns = trainlabels
+
+    #validate that labels_column, which at this point has been converted to string, is present in df_train
+    labels_column_valresult = False
+    if labels_column is not False and labels_column is not True:
+      if labels_column not in df_train.columns:
+        labels_column_valresult = True
+        if printstatus != 'silent':
+          print("error: labels_column not found as a column header in df_train")
+          print()
+    miscparameters_results.update({'labels_column_valresult' : labels_column_valresult})
 
     #convention is that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first row
@@ -35291,9 +35376,12 @@ class AutoMunge:
         #for Binary need returned columns
         Binary_sublist = \
         self._column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
-        
+
         #_(2)_
+        #categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
         bool_column_list = []
+        ordinal_column_list = []
+        categoric_column_list = []
 
         for column in Binary_sublist:
 
@@ -35305,23 +35393,33 @@ class AutoMunge:
             ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
 
               bool_column_list.append(column)
-
+              categoric_column_list.append(column)
+              
+            elif process_dict[column_category]['MLinfilltype'] in \
+            ['singlct', 'ordlexclude', 'concurrent_ordl']:
+              
+              ordinal_column_list.append(column)
+              categoric_column_list.append(column)
+        
+        categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
+        
         if printstatus is True:
-          print("Consolidating boolean columns:")
-          print(bool_column_list)
+          print("Consolidating categoric columns:")
+          print(categoric_column_list)
           print()
-          print("Boolean column count = ")
-          print(len(bool_column_list))
+          print("categoric column count = ")
+          print(len(categoric_column_list))
           print("")
 
-        if len(bool_column_list) > 0:
+        if len(categoric_column_list) > 0:
           df_train, df_test, Binary_sublist_dict, set_Binary_column_valresult = \
-          self._Binary_convert(df_train, df_test, bool_column_list, temp_Binary, postprocess_dict, Binary_sublist_count_tuple)
+          self._Binary_convert(df_train, df_test, categoric_column_tuple, temp_Binary, postprocess_dict, Binary_sublist_count_tuple)
 
           returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
 
         else:
-          Binary_sublist_dict = {'bool_column_list' : [], 
+          Binary_sublist_dict = {'categoric_column_tuple' : ([], [], []),
+                                 'ordinal_width_dict' : {},
                                  'column_dict' : {},
                                  'Binary_root' : '',
                                  'returned_Binary_columns' : [],
@@ -35373,7 +35471,8 @@ class AutoMunge:
 
     else:
       
-      Binary_dict = {0 : {'bool_column_list' : [], 
+      Binary_dict = {0 : {'categoric_column_tuple' : ([], [], []),
+                          'ordinal_width_dict' : {},
                           'column_dict' : {},
                           'Binary_root' : '',
                           'returned_Binary_columns' : [],
@@ -35611,7 +35710,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.94'
+    automungeversion = '6.95'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44154,19 +44253,24 @@ class AutoMunge:
       else:
         #this is form after 6.92
         meta_Binary_dict = postprocess_dict['Binary_dict']
-      
+
       #_(1)_
       for key in meta_Binary_dict:
 
         Binary_dict = meta_Binary_dict[key]
         Binary = meta_Binary_dict[key]['Binary_specification']
+
+        if 'categoric_column_tuple' not in Binary_dict:
+          #backward compatibility preceding 6.95
+          categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
+          Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
       
         if printstatus is True:
-          print("Consolidating boolean columns:")
-          print(Binary_dict['bool_column_list'])
+          print("Consolidating categoric columns:")
+          print(Binary_dict['categoric_column_tuple'][2])
           print()
           print("Boolean column count = ")
-          print(len(Binary_dict['bool_column_list']))
+          print(len(Binary_dict['categoric_column_tuple'][2]))
           print("")
 
         df_test = self._postBinary_convert(df_test, Binary_dict, Binary)
@@ -47391,7 +47495,7 @@ class AutoMunge:
         
         #for all cases where a Binary was performed, inversion = 'test' is translated to a list of columns
         inversion = list(df_test)
-        
+
     if isinstance(inversion, list):
 
       Binary_partialinversion_valresult = False
@@ -47399,6 +47503,11 @@ class AutoMunge:
       for key in meta_Binary_dict:
         Binary_dict = meta_Binary_dict[key]
         Binary_specification = Binary_dict['Binary_specification']
+
+        if 'categoric_column_tuple' not in Binary_dict:
+          #backward compatibility preceding 6.95
+          categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
+          Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
         
         if Binary_specification in {'retain', 'ordinalretain', 'onehotretain'}:
           #we'll have convention that if Binary didn't replace columns 
@@ -47414,7 +47523,7 @@ class AutoMunge:
             Binary_inversion_marker = True
             for entry in Binary_dict['column_dict']:
               inversion.remove(entry)
-            inversion += Binary_dict['bool_column_list']
+            inversion += Binary_dict['categoric_column_tuple'][2]
           
           #if inversion was passed as a list subset of returned columns
           #Binary_inversion_marker won't be activated if Binary columns aren"t in that list 
@@ -47437,11 +47546,11 @@ class AutoMunge:
 
             df_test = self._meta_inverseprocess_Binary(df_test, Binary_dict, postprocess_dict)
 
-            inversion += Binary_dict['bool_column_list']
+            inversion += Binary_dict['categoric_column_tuple'][2]
 
             if printstatus is True:
               print("Recovered Binary columns:")
-              print(Binary_dict['bool_column_list'])
+              print(Binary_dict['categoric_column_tuple'][2])
               print()
       pm_miscparameters_results.update({'Binary_partialinversion_valresult' : Binary_partialinversion_valresult})
 
