@@ -1728,8 +1728,8 @@ We'll describe the options for processdict entries here. For clarity processdict
 #           category is applied to a label set resulting in a set returned in multiple configurations. 
 #           Also used in label frequency levelizer. 
 #           Note that since this is only used for small edge case populating a labelctgy entry is optional. 
-#           If one is not assigned or accessed based on functionpointer, an arbitrary entry will be accessed 
-#           from the family tree. This option primarily included to support special cases.
+#           If one is not assigned, an arbitrary entry will be accessed from the family tree. 
+#           This option primarily included to support special cases.
 
 #___________________________________________________________________________
 #functionpointer: Only supported in user passed processdict, a functionpointer entry 
