@@ -4399,3 +4399,10 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 6.95
 - Binary now also accepts ordinal encoded categoric columns as targets for consolidation
 - new validation test performed for labels_column parameter
+
+6.96
+- moved the validation for labelctgy processdict entry
+- now takes place after identifying the root label category
+- and limits validations to that entry
+- which reduces overhead and moves an unnecessarily prominent printout for custom processdict
+- a tweak to the labelctgy writeup (struck reference to functionpointer) to align with the functionpointer writeup
