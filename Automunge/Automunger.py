@@ -3816,8 +3816,8 @@ class AutoMunge:
     #           category is applied to a label set resulting in a set returned in multiple configurations. 
     #           Also used in label frequency levelizer. 
     #           Note that since this is only used for small edge case populating a labelctgy entry is optional. 
-    #           If one is not assigned or accessed based on functionpointer, an arbitrary entry will be accessed 
-    #           from the family tree. This option primarily included to support special cases.
+    #           If one is not assigned, an arbitrary entry will be accessed from the family tree. 
+    #           This option primarily included to support special cases.
 
     #___________________________________________________________________________
     #functionpointer: Only supported in user passed processdict, a functionpointer entry 
@@ -27404,7 +27404,7 @@ class AutoMunge:
       origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
       #find labelctgy from process_dict based on this origcategory
-      labelctgy = process_dict[origcategory]['labelctgy']
+      labelctgy = FSprocess_dict[origcategory]['labelctgy']
 
       am_categorylist = []
 
@@ -31703,7 +31703,7 @@ class AutoMunge:
             print()
         
       #labelctgy is an optional entry to processdict, if not populated or accessed from functionpointer
-      #it is given an arbitrary assignment in _check_processdict3
+      #it is given an arbitrary assignment in _check_processdict3 when entry is a root labels category
       # if 'labelctgy' not in processdict[entry]:
       #   check_processdict_result = True
       #   if printstatus != 'silent':
@@ -31727,7 +31727,7 @@ class AutoMunge:
       
     return check_processdict_result, check_processdict_result2
 
-  def _check_processdict3(self, processdict, process_dict, transform_dict, printstatus):
+  def _check_processdict3(self, entry, processdict, process_dict, transform_dict, printstatus):
     """
     The processdict 'labelctgy' entry is only really used on small part of library
     Which is there to direct feature importance or levelizer to a specific returned set
@@ -31738,16 +31738,19 @@ class AutoMunge:
     An arbitrary target is accessed from the family trees
     prioritize to upstream primitive entries without offspring
     followed by same convention for downstream primitizes if upstring target isn't identified
+    
+    This function applied after accessing the labelscategory root category for labels in automunge
+    Which is passed to this function as 'entry'
     """
 
     check_processdict3_valresult = False
     check_processdict3_validlabelctgy_valresult = False
 
-    #intentionally limiting search to user passed processdict entries instead of full process_dict
+    #intentionally limiting search to labelscategory in user passed processdict entries instead of full process_dict
     #note this function is applied after processdict and process_dict have already been consolidated
     #and functionpointers have been applied to populate missing entries
     #similarly transform_dict at this point has already been consolidated
-    for entry in processdict:
+    if entry in processdict:
 
       if 'labelctgy' not in process_dict[entry]:
 
@@ -31756,7 +31759,7 @@ class AutoMunge:
         #'labelctgy' only used when entry serves as a root category in transform_dict
         if entry in transform_dict:
 
-          if printstatus is True:
+          if printstatus != 'silent':
 
             print("labelctgy processdict entry wasn't provided for ", entry)
             print("selecting arbitrary entry based on family tree")
@@ -34218,14 +34221,6 @@ class AutoMunge:
       miscparameters_results.update({'check_processdict_result' : False,
                                      'check_processdict_result2': False})
 
-    #we have convention that if processdict entry did't include a labelctgy or one wasn't populated based on functionpointer
-    #we'll grab an arbitrary labelcty entry from family tree
-    process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
-    self._check_processdict3(processdict, process_dict, transform_dict, printstatus)
-
-    miscparameters_results.update({'check_processdict3_valresult' : check_processdict3_valresult,
-                                   'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
-
     #now that both transform_dict and process_dict are consolidated, validate transformdict roots have processdict entries
     check_transform_dict_roots_result = \
     self._check_transform_dict_roots(transform_dict, process_dict, printstatus)
@@ -35054,6 +35049,17 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
         print("")
 
+      #now that we know the root label category, we'll verify that if this was a custom processdict entry
+      #it either includes a labelctgy entry or we'll otherwise populate one based on family tree
+      process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
+      self._check_processdict3(labelscategory, processdict, process_dict, transform_dict, printstatus)
+      
+      if check_processdict3_valresult is True or check_processdict3_validlabelctgy_valresult is True:
+        postprocess_dict['process_dict'].update(process_dict)
+      
+      miscparameters_results.update({'check_processdict3_valresult' : check_processdict3_valresult,
+                                     'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
+
     #now that we've pre-processed all of the columns, let's apply infill
     
     #printout display progress
@@ -35710,7 +35716,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.95'
+    automungeversion = '6.96'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43080,7 +43086,7 @@ class AutoMunge:
         origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
         #find labelctgy from process_dict based on this origcategory
-        labelctgy = process_dict[origcategory]['labelctgy']
+        labelctgy = FSprocess_dict[origcategory]['labelctgy']
 
         am_categorylist = []
 
