@@ -4406,3 +4406,20 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - and limits validations to that entry
 - which reduces overhead and moves an unnecessarily prominent printout for custom processdict
 - a tweak to the labelctgy writeup (struck reference to functionpointer) to align with the functionpointer writeup
+
+6.97
+- moved the conversion of passed dictionaries and lists to internal state a little earlier
+- updated the support function parameter_str_convert so that if first entry is enclosed in set brackets it is exclude form string conversion (relvant to new labels_column scenario)
+- added parameter_str_convert to Binary specifications to be consistent with convention that received numeric column headers are converted to string
+- restated for clarity: automunge(.) converts all column headers to string to align with suffix appention convention
+- added a clarifying word to df_train description in read me that column headers should be unique strings
+- labels_column automunge parameter now accepts specification of list of label columns, resulting in multiple labels in returned label sets
+- each of the list entries may have their own root category assigned in assigncat if desired
+- labels_column automunge parameter, when passed as a list of label columns, accepts a first entry set bracket specification to activate a consolidation of categoric labels, resulting in a single classifciation target even in cases of multiple categoric labels, where the form of multiple labels can automatically be recovered in an inversion operation for data returned from an inference
+- such that a single classification model can then be trained for use with multiple classification targets
+- set bracket specification options are consistent with those options supported for Binary, with exception that binarized with replacement requires specification as {True} 
+- (instead of automatic when ommitted as is case with Binary)
+- we recommend defaulting to the ordinal option, e.g. to consolidate three labels with headers 'categoriclabel_#':
+- labels_column = [{'ordinal', 'categoriclabel_1', 'categoriclabel_2', 'categoriclabel_3']
+- which can then be recovered back to the form of three seperate labels in postmunge with inversion='labels'
+- updated form of postprocess_dict['labelsencoding_dict'], now with extra tiers of entries as well as entries associated with categoric consolidations
