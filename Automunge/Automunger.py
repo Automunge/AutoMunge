@@ -27394,6 +27394,24 @@ class AutoMunge:
         print("_______________")
         print("No labels returned from automunge(.), Feature Importance halted")
         print("")
+
+    if FSpostprocess_dict['labels_Binary_dict'] != {}:
+      FSmodel = False
+      am_labels = pd.DataFrame()
+
+      baseaccuracy = False
+
+      FS_validations.update({'FS_numeric_data_result': False})
+      FS_validations.update({'FS_all_valid_entries_result': False})
+
+      returned_label_set_for_featureselect_valresult = True
+      FS_validations.update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
+      
+      #printout display progress
+      if printstatus != 'silent':
+        print("_______________")
+        print("Feature importance not yet supported for consolidated categoric labels, Feature Importance halted")
+        print("")
   
     #if am_labels is not an empty set
     if am_labels.empty is False:
@@ -32167,6 +32185,7 @@ class AutoMunge:
     """
     #Converts parameter, such as one that might be either list or int or str, to a str or list of str
     #where True or False left unchanged
+    #if parameter is a list and first entry encosed in set brackets it is retained as set
     """
 
     if isinstance(parameter, int) and str(parameter) != 'False' and str(parameter) != 'True':
@@ -32174,7 +32193,10 @@ class AutoMunge:
     if isinstance(parameter, float):
       parameter = str(parameter)
     if isinstance(parameter, list):
-      parameter = [str(i) for i in parameter]
+      if not isinstance(parameter[0], set):
+        parameter = [str(i) for i in parameter]
+      else:
+        parameter = [parameter[0]] + [str(i) for i in parameter[1:]]
 
     return parameter
   
@@ -32651,7 +32673,265 @@ class AutoMunge:
   
     return df, categorycomplete_dict
 
-  def _Binary_convert(self, df_train, df_test, categoric_column_tuple, Binary, postprocess_dict, Binary_sublist_count_tuple):
+  def _BinaryConsolidate(self, df_train, df_test, Binary, postprocess_dict, root):
+    """
+    Binary categoric consolidation master function applied in automunge
+    also used seperately for label consolidations
+    """
+
+    #Binary dimensionality reduction goes here
+    #test data activation sets not found in train data will return with all zeros
+    #Binary will target columns containing categoric integer encodings per MLinfilltype
+    #requires all valid entries 
+    #(training data performed after infill, so no naninfill, labels performed after family trees)
+    
+    printstatus = postprocess_dict['printstatus']
+    
+    if isinstance(Binary, list):
+      Binary_orig = deepcopy(Binary)
+    else:
+      Binary_orig = Binary
+    
+    if isinstance(Binary, list) or Binary in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
+      
+      #printout display progress
+      if printstatus is True:
+        print("_______________")
+        print("Begin Binary categoric consolidations")
+        print("")
+        print("Before Binary train set column count = ")
+        print(df_train.shape[1])
+        print("")
+
+      #_(1)_
+      #this is to convert to common form as Binary passed as list of lists
+      if not isinstance(Binary, list):
+        Binary = [{Binary}] + list(df_train)
+      if not isinstance(Binary[0], list):
+        Binary = [Binary]
+        
+      Binary_sublist_count = len(Binary)
+        
+      Binary_dict = {}
+      final_returned_Binary_columns = []
+      final_returned_Binary_sets = {'type' : {},
+                                    '1010' : [],
+                                    'onht' : [],
+                                    'ord3' : []}
+        
+      #_(1)_
+      for Binary_sublist_number, Binary_sublist in enumerate(Binary):
+
+        #convert Binary specifications to str (used in cases of integer headers)
+        Binary_sublist = self._parameter_str_convert(Binary_sublist)
+        
+        Binary_sublist_count_tuple = (Binary_sublist_number, Binary_sublist_count)
+        
+        #_(2)_
+        #check for any first entry signaling deviation from default Binary 1010 encoding with replacement,
+        #we'll allow first entry as a set to signal it is a specification i.e. as {<specification>}
+        #we'll pass the specification to _Binary_convert as temp_Binary
+        #and it will be returned in Binary_dict['Binary_specification']
+        if isinstance(Binary_sublist[0], set):
+          if str(Binary_sublist[0]) == "{True}":
+            temp_Binary = True
+            Btype = '1010'
+          elif str(Binary_sublist[0]) == "{'retain'}":
+            temp_Binary = 'retain'
+            Btype = '1010'
+          elif str(Binary_sublist[0]) == "{'ordinal'}":
+            temp_Binary = 'ordinal'
+            Btype = 'ord3'
+          elif str(Binary_sublist[0]) == "{'ordinalretain'}":  
+            temp_Binary = 'ordinalretain'
+            Btype = 'ord3'
+          elif str(Binary_sublist[0]) == "{'onehot'}":
+            temp_Binary = 'onehot'
+            Btype = 'onht'
+          elif str(Binary_sublist[0]) == "{'onehotretain'}":
+            temp_Binary = 'onehotretain'
+            Btype = 'onht'
+          del Binary_sublist[0]
+        else:
+          temp_Binary = True
+          Btype = '1010'
+        
+        #for Binary need returned columns
+        Binary_sublist = \
+        self._column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
+
+        #_(2)_
+        #categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
+        bool_column_list = []
+        ordinal_column_list = []
+        categoric_column_list = []
+
+        for column in Binary_sublist:
+
+          if column in postprocess_dict['column_dict']:
+
+            column_category = postprocess_dict['column_dict'][column]['category']
+
+            if postprocess_dict['process_dict'][column_category]['MLinfilltype'] in \
+            ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
+
+              bool_column_list.append(column)
+              categoric_column_list.append(column)
+              
+            elif postprocess_dict['process_dict'][column_category]['MLinfilltype'] in \
+            ['singlct', 'ordlexclude', 'concurrent_ordl']:
+              
+              ordinal_column_list.append(column)
+              categoric_column_list.append(column)
+        
+        categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
+        
+        if printstatus is True:
+          print("Consolidating categoric columns:")
+          print(categoric_column_list)
+          print()
+          print("categoric column count = ")
+          print(len(categoric_column_list))
+          print("")
+
+        if len(categoric_column_list) > 0:
+          df_train, df_test, Binary_sublist_dict, set_Binary_column_valresult = \
+          self._Binary_convert(df_train, df_test, categoric_column_tuple, temp_Binary, postprocess_dict, Binary_sublist_count_tuple, root)
+
+          returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
+
+        else:
+          Binary_sublist_dict = {'categoric_column_tuple' : ([], [], []),
+                                 'ordinal_width_dict' : {},
+                                 'column_dict' : {},
+                                 'Binary_root' : '',
+                                 'returned_Binary_columns' : [],
+                                 'Binary_specification' : False}
+          if 'Binary_suffixoverlap_results' not in postprocess_dict['temp_miscparameters_results']:
+            postprocess_dict['temp_miscparameters_results'].update({'Binary_suffixoverlap_results' : {}})
+          returned_Binary_columns = []
+          
+        final_returned_Binary_columns += returned_Binary_columns
+        
+        final_returned_Binary_sets['type'].update(dict(zip(returned_Binary_columns, [Btype] * len(returned_Binary_columns))))
+        if Btype in {'1010', 'onht'}:
+          final_returned_Binary_sets[Btype].append(returned_Binary_columns)
+        elif Btype in {'ord3'}:
+          final_returned_Binary_sets[Btype] = final_returned_Binary_sets[Btype] + returned_Binary_columns
+        
+        #aggregate suffix overlap validations
+        Binary_suffixoverlap_results = {}
+        for entry in Binary_sublist_dict['column_dict']:
+          Binary_suffixoverlap_results.update(Binary_sublist_dict['column_dict'][entry]['suffixoverlap_results'])
+
+        #log the validation results in miscparameters_results for Binary_suffixoverlap_results
+        if 'Binary_suffixoverlap_results' in postprocess_dict['temp_miscparameters_results']:
+          postprocess_dict['temp_miscparameters_results']['Binary_suffixoverlap_results'].update(Binary_suffixoverlap_results)
+        else:
+          postprocess_dict['temp_miscparameters_results'].update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
+        
+        #log the validation results in miscparameters_results for set_Binary_column_valresult
+        if 'set_Binary_column_valresult' not in postprocess_dict['temp_miscparameters_results'] \
+        or 'set_Binary_column_valresult' in postprocess_dict['temp_miscparameters_results'] \
+        and postprocess_dict['temp_miscparameters_results']['set_Binary_column_valresult'] is not True:
+          postprocess_dict['temp_miscparameters_results'].update({'set_Binary_column_valresult' : set_Binary_column_valresult})
+
+        #_(2)_
+        Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
+        
+        if printstatus is True:
+          print("Returned Binary columns:")
+          print(returned_Binary_columns)
+          print()
+          print("Returned Binary column count = ")
+          print(len(returned_Binary_columns))
+          print("")
+          
+      #_(1)_
+      if printstatus is True:
+        print("After Binary train set column count = ")
+        print(df_train.shape[1])
+        print("")
+
+    else:
+      
+      Binary_dict = {0 : {'categoric_column_tuple' : ([], [], []),
+                          'ordinal_width_dict' : {},
+                          'column_dict' : {},
+                          'Binary_root' : '',
+                          'returned_Binary_columns' : [],
+                          'Binary_specification' : False}}
+
+      if 'Binary_suffixoverlap_results' not in postprocess_dict['temp_miscparameters_results']:
+        postprocess_dict['temp_miscparameters_results'].update({'Binary_suffixoverlap_results' : {}})
+      returned_Binary_columns = []
+      final_returned_Binary_columns = []
+      final_returned_Binary_sets = {'type' : {},
+                                    '1010' : [],
+                                    'onht' : [],
+                                    'ord3' : []}
+      
+    return df_train, df_test, Binary_dict, postprocess_dict, final_returned_Binary_columns, final_returned_Binary_sets, Binary_orig, Binary
+
+  def _postBinaryConsolidate(self, df_test, meta_Binary_dict, Binary, printstatus):
+    """
+    Binary categoric consolidation master function applied in postmunge
+    also used seperately for label consolidations
+    """
+
+    #note if Binary was originally passed to automunge as anything other than False
+    #postprocess_dict will record Binary as a list of lists
+    #with the Binary type either omitted or recorded as a first entry embedded in set brackets
+    #the origional passed Binary list is recorded in postprocess_dict as Binary_orig
+    if Binary is not False:
+      
+      #printout display progress
+      if printstatus is True:
+        print("_______________")
+        print("Begin Binary dimensionality reduction")
+        print("")
+        print("Before transform test set column count = ")
+        print(df_test.shape[1])
+        print("")
+
+      #_(1)_
+      for key in meta_Binary_dict:
+
+        Binary_dict = meta_Binary_dict[key]
+        Binary = meta_Binary_dict[key]['Binary_specification']
+
+        if 'categoric_column_tuple' not in Binary_dict:
+          #backward compatibility preceding 6.95
+          categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
+          Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
+      
+        if printstatus is True:
+          print("Consolidating categoric columns:")
+          print(Binary_dict['categoric_column_tuple'][2])
+          print()
+          print("Boolean column count = ")
+          print(len(Binary_dict['categoric_column_tuple'][2]))
+          print("")
+
+        df_test = self._postBinary_convert(df_test, Binary_dict, Binary)
+
+        if printstatus is True:
+          print("Returned Binary columns:")
+          print(Binary_dict['returned_Binary_columns'])
+          print()
+          print("Returned Binary column count = ")
+          print(len(Binary_dict['returned_Binary_columns']))
+          print("")
+          
+        #_(1)_
+        if printstatus is True:
+          print("After transform test set column count = ")
+          print(df_test.shape[1])
+          print("")
+          
+    return df_test
+
+  def _Binary_convert(self, df_train, df_test, categoric_column_tuple, Binary, postprocess_dict, Binary_sublist_count_tuple, root):
     """
     #Binary_convert takes as input a processed dataframe and a list of boolean encoded columns
     #and applies a dimensionality reduction on the boolean set as a binary encodiong
@@ -32683,10 +32963,11 @@ class AutoMunge:
       suffixrange = 33
       
     #if only one consolidation root of new column header is 'Binary_'
-    root = 'Binary_'
 #     Binary_sublist_count_tuple = (Binary_sublist_number, Binary_sublist_count)
     if Binary_sublist_count_tuple[1] > 1:
-      root = 'Binary' + str(Binary_sublist_count_tuple[0]) + '_'
+      root = root + str(Binary_sublist_count_tuple[0]) + '_'
+    else:
+      root = root + '_'
     
     #this converts column header root in case of overlap
     Binary_root, set_Binary_column_valresult = \
@@ -32926,6 +33207,72 @@ class AutoMunge:
         del df_test[column]
     
     return df_test
+
+  def _masterBinaryinvert(self, df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus):
+    """
+    accepts inversion as a list
+    can be applied to df_test including test data or labels data, (inversion receives either as df_test)
+    if meta_Binary_dict is empty no inversion performed
+    returns an adjusted inversion list which removes Binary columns and replaces with their associated inputs
+    if Binary was a retain consolidation simply removes the redundant consolidations
+    """
+    Binary_partialinversion_valresult = False
+
+    for key in meta_Binary_dict:
+      Binary_dict = meta_Binary_dict[key]
+      Binary_specification = Binary_dict['Binary_specification']
+
+      if 'categoric_column_tuple' not in Binary_dict:
+        #backward compatibility preceding 6.95
+        categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
+        Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
+
+      if Binary_specification in {'retain', 'ordinalretain', 'onehotretain'}:
+        #we'll have convention that if Binary didn't replace columns 
+        #partial inversion only available for Binary source columns
+        #since any inversion from the Binary form would be redundant
+        for entry in Binary_dict['column_dict']:
+          if entry in inversion:
+            inversion.remove(entry)
+
+      if Binary_specification in {True, 'ordinal', 'onehot'}:
+        Binary_inversion_marker = False
+        if (set(Binary_dict['column_dict'])).issubset(set(inversion)):
+          Binary_inversion_marker = True
+          for entry in Binary_dict['column_dict']:
+            inversion.remove(entry)
+          inversion += Binary_dict['categoric_column_tuple'][2]
+
+        #if inversion was passed as a list subset of returned columns
+        #Binary_inversion_marker won't be activated if Binary columns aren"t in that list 
+
+        elif len((set(Binary_dict['column_dict'])) & set(inversion)) == 0:
+          pass
+
+        #or is an error channel when only a partial set of Binary columns are included
+        #where by partial set am referring to partial with respect to this specified Binary subaggregation
+
+        else:
+
+          Binary_partialinversion_valresult = True
+
+          if printstatus != 'silent':
+            print("error: partial inversion lists only supported for columns returned from Binary")
+            print("when entire set of Binary columns are included in the inversion list")
+
+        if Binary_inversion_marker is True:
+
+          df_test = self._meta_inverseprocess_Binary(df_test, Binary_dict, postprocess_dict)
+
+          inversion += Binary_dict['categoric_column_tuple'][2]
+
+          if printstatus is True:
+            print("Recovered Binary columns:")
+            print(Binary_dict['categoric_column_tuple'][2])
+            print()
+    pm_miscparameters_results.update({'Binary_partialinversion_valresult' : Binary_partialinversion_valresult})
+
+    return df_test, inversion, pm_miscparameters_results
 
   def _meta_inverseprocess_Binary(self, df, Binary_dict, postprocess_dict):
     """
@@ -33399,7 +33746,8 @@ class AutoMunge:
     populated_columns = []
 
     #this supports Binary returned columns
-    Binary_sets_log = deepcopy(postprocess_dict['returned_Binary_sets'])
+    Binary_sets_log = {'trainlog' : deepcopy(postprocess_dict['returned_Binary_sets']),
+                       'labellog' : deepcopy(postprocess_dict['final_returned_labelBinary_sets'])}
     
     #for column in postprocess_dict['finalcolumns_train']:
     for column in target_columns:
@@ -33415,10 +33763,16 @@ class AutoMunge:
           populated_columns.append(column)
 
         elif 'returned_Binary_columns' in postprocess_dict and \
-        column in postprocess_dict['returned_Binary_columns']:
+        (column in postprocess_dict['returned_Binary_columns'] \
+        or column in postprocess_dict['final_returned_labelBinary_columns']):
 
-          if column in Binary_sets_log['type']:
-            Btype = Binary_sets_log['type'][column]
+          if column in postprocess_dict['returned_Binary_columns']:
+            Binary_sets_log_key = 'trainlog'
+          else:
+            Binary_sets_log_key = 'labellog'
+
+          if column in Binary_sets_log[Binary_sets_log_key]['type']:
+            Btype = Binary_sets_log[Binary_sets_log_key]['type'][column]
 
             #note the Binary treatment here operates on assumption that
             #if one column from a Binary set is included, they all are
@@ -33426,7 +33780,7 @@ class AutoMunge:
             
             if Btype == '1010':
               
-              for returned_1010_set in Binary_sets_log['1010']:
+              for returned_1010_set in Binary_sets_log[Binary_sets_log_key]['1010']:
                 
                 if column in returned_1010_set:
                   
@@ -33440,12 +33794,12 @@ class AutoMunge:
                   
                   #now reset Binary_sets_log marker so can circumvent redundant searches
                   for returned_1010_set_entry in returned_1010_set:
-                    del Binary_sets_log['type'][returned_1010_set_entry]
-                    # Binary_sets_log['type'][returned_1010_set_entry] = False
+                    del Binary_sets_log[Binary_sets_log_key]['type'][returned_1010_set_entry]
+                    # Binary_sets_log[Binary_sets_log_key]['type'][returned_1010_set_entry] = False
             
             if Btype == 'onht':
               
-              for returned_onht_set in Binary_sets_log['onht']:
+              for returned_onht_set in Binary_sets_log[Binary_sets_log_key]['onht']:
                 
                 if column in returned_onht_set:
                   
@@ -33459,15 +33813,15 @@ class AutoMunge:
                   
                   #now reset Binary_sets_log marker so can circumvent redundant searches
                   for returned_onht_set_entry in returned_onht_set:
-                    del Binary_sets_log['type'][returned_onht_set_entry]
-                    # Binary_sets_log['type'][returned_onht_set_entry] = False
+                    del Binary_sets_log[Binary_sets_log_key]['type'][returned_onht_set_entry]
+                    # Binary_sets_log[Binary_sets_log_key]['type'][returned_onht_set_entry] = False
               
             if Btype == 'ord3':
               
               columntype_report['ordinal'].append(column)
               populated_columns.append(column)
               
-              Binary_sets_log['type'][column] = False
+              Binary_sets_log[Binary_sets_log_key]['type'][column] = False
           
         elif 'excl_suffix' in postprocess_dict and \
         'excl_columns_without_suffix' in postprocess_dict and \
@@ -33570,7 +33924,8 @@ class AutoMunge:
       finalcolumn2 = finalcolumn
       
       if finalcolumn2 not in postprocess_dict['returned_PCA_columns'] and \
-      finalcolumn2 not in postprocess_dict['returned_Binary_columns']:
+      finalcolumn2 not in postprocess_dict['returned_Binary_columns'] and \
+      finalcolumn2 not in postprocess_dict['final_returned_labelBinary_columns']:
       
         if postprocess_dict['excl_suffix'] is False:
 
@@ -34066,6 +34421,39 @@ class AutoMunge:
     trainID_column_orig = trainID_column
     testID_column_orig = testID_column
 
+    #deepcopy passed dictionaries so as not to edit exterior objects
+    #(these are not expected to be large objects so the memory impact is negligable)
+    #including ML_cmnd, assigncat, assignparam, assigninfill, assignnan, transformdict, processdict 
+    if isinstance(ML_cmnd, dict):
+      ML_cmnd = deepcopy(ML_cmnd)
+      #ML_cmnd_orig is to record state of ML_cmnd as received
+      ML_cmnd_orig = deepcopy(ML_cmnd)
+    if isinstance(assigncat, dict):
+      assigncat = deepcopy(assigncat)
+    if isinstance(assignparam, dict):
+      assignparam = deepcopy(assignparam)
+    if isinstance(assigninfill, dict):
+      assigninfill = deepcopy(assigninfill)
+    if isinstance(assignnan, dict):
+      assignnan = deepcopy(assignnan)
+    if isinstance(transformdict, dict):
+      transformdict = deepcopy(transformdict)
+    if isinstance(processdict, dict):
+      processdict = deepcopy(processdict)
+
+    #similarly copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(labels_column, list):
+      labels_column = deepcopy(labels_column)
+    if isinstance(trainID_column, list):
+      trainID_column = deepcopy(trainID_column)
+    if isinstance(testID_column, list):
+      testID_column = deepcopy(testID_column)
+    if isinstance(Binary, list):
+      Binary = deepcopy(Binary)
+    if isinstance(PCAexcl, list):
+      PCAexcl = deepcopy(PCAexcl)
+
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
     assigncat = self._assigncat_str_convert(assigncat)
     assigninfill = self._assigninfill_str_convert(assigninfill)
@@ -34093,39 +34481,6 @@ class AutoMunge:
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self._check_assigncat(assigncat, printstatus)
     check_assigninfill_result = self._check_assigninfill(assigninfill, printstatus)
-    
-    #___
-    #deepcopy passed dictionaries so as not to edit exterior objects
-    #(these are not expected to be large objects so the memory impact is negligable)
-    #including ML_cmnd, assigncat, assignparam, assigninfill, assignnan, transformdict, processdict 
-    if isinstance(ML_cmnd, dict):
-      ML_cmnd = deepcopy(ML_cmnd)
-      #ML_cmnd_orig is to record state of ML_cmnd as received
-      ML_cmnd_orig = deepcopy(ML_cmnd)
-    if isinstance(assigncat, dict):
-      assigncat = deepcopy(assigncat)
-    if isinstance(assignparam, dict):
-      assignparam = deepcopy(assignparam)
-    if isinstance(assigninfill, dict):
-      assigninfill = deepcopy(assigninfill)
-    if isinstance(assignnan, dict):
-      assignnan = deepcopy(assignnan)
-    if isinstance(transformdict, dict):
-      transformdict = deepcopy(transformdict)
-    if isinstance(processdict, dict):
-      processdict = deepcopy(processdict)
-
-    #similarly copy any input lists to internal state
-    #(these won't be large so not taking account of inplace parameter)
-    if isinstance(trainID_column, list):
-      trainID_column = deepcopy(trainID_column)
-    if isinstance(testID_column, list):
-      testID_column = deepcopy(testID_column)
-    if isinstance(Binary, list):
-      Binary = deepcopy(Binary)
-    if isinstance(PCAexcl, list):
-      PCAexcl = deepcopy(PCAexcl)
-    #___
 
     #initialize ML_cmnd if incompletely specified, also some validation tests
     check_ML_cmnd_result, ML_cmnd = \
@@ -34360,6 +34715,7 @@ class AutoMunge:
 
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
+    #note that numpy array scenario requires matched ID columns between train and test
     checknp = np.array([])
 
     #first validate numpy data is tabular
@@ -34395,14 +34751,26 @@ class AutoMunge:
     trainlabels=[str(x) for x in list(df_train)]
     df_train.columns = trainlabels
 
+    labels_column_listofcolumns = []
+
     #validate that labels_column, which at this point has been converted to string, is present in df_train
     labels_column_valresult = False
-    if labels_column is not False and labels_column is not True:
+    if labels_column is not False and labels_column is not True and not isinstance(labels_column, list):
+      labels_column_listofcolumns = [labels_column]
       if labels_column not in df_train.columns:
         labels_column_valresult = True
         if printstatus != 'silent':
           print("error: labels_column not found as a column header in df_train")
           print()
+    if isinstance(labels_column, list):
+      for labels_column_entry in labels_column:
+        if not isinstance(labels_column_entry, set): 
+          labels_column_listofcolumns.append(labels_column_entry)
+          if labels_column_entry not in df_train.columns:
+            labels_column_valresult = True
+            if printstatus != 'silent':
+              print("error: labels_column not found as a column header in df_train")
+              print()
     miscparameters_results.update({'labels_column_valresult' : labels_column_valresult})
 
     #convention is that if df_test provided as False then we'll create
@@ -34416,6 +34784,10 @@ class AutoMunge:
       if labels_column is not False:
         if labels_column is True:
           del df_test[trainlabels[-1]]
+        elif isinstance(labels_column, list):
+          for labels_column_entry in labels_column:
+            if not isinstance(labels_column_entry, set):
+              del df_test[labels_column_entry]
         else:
           del df_test[labels_column]
 
@@ -34649,28 +35021,32 @@ class AutoMunge:
     labelspresenttest = False
     single_train_column_labels_case = False
 
-    #if user passes labels_column as True, labels_column based on final column (including in single column scenario)
+    #if user passes labels_column as True, labels_column converted to final column (including in single column scenario)
     if labels_column is True:
       labels_column = trainlabels[-1]
+      labels_column_listofcolumns = [labels_column]
 
     if labels_column is False:
       labelsencoding_dict = {}
 
     if labels_column is not False:
-      df_labels = pd.DataFrame(df_train[labels_column])
+    
+      df_labels = pd.DataFrame(df_train[labels_column_listofcolumns])
 
-      del df_train[labels_column]
+      for labels_column_listofcolumns_entry in labels_column_listofcolumns:
+        del df_train[labels_column_listofcolumns_entry]
       labelspresenttrain = True
-      
+
       #if we only had one (label) column to begin with we'll create a dummy train set
       if df_train.shape[1] == 0:
         df_train = df_labels[0:1].copy()
         single_train_column_labels_case = True
 
       #if the labels column is present in test set too
-      if labels_column in df_test.columns:
-        df_testlabels = pd.DataFrame(df_test[labels_column])
-        del df_test[labels_column]
+      if len(set(df_test) - set(labels_column_listofcolumns)) < len(set(df_test)):
+        df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns])
+        for labels_column_listofcolumns_entry in labels_column_listofcolumns:
+          del df_test[labels_column_listofcolumns_entry]
         labelspresenttest = True
 
     if labelspresenttrain is False:
@@ -34755,6 +35131,8 @@ class AutoMunge:
     #are populated at completion of processing and infill
     #note that temp_miscparameters_results is later consolidated with miscparameters_results
     #and used to store validaiton results internal to various support functions
+    #such that miscparameters_results logs validation results in the automunge workflow
+    #and temp_miscparameters_results logs results in support functions that have access to postprocess_dict but not miscparameters_results
     #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
     postprocess_dict = {'column_dict' : {},
                         'columnkey_dict' : {},
@@ -34918,8 +35296,10 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
+    labelsencoding_dict = {'transforms' : {}}
 
-    if labels_column is not False:        
+    #when labels_column = False, labels_column_listofcolumns will be empty list []
+    for labels_column_entry in labels_column_listofcolumns:    
 
       #note that under automation _evalcategory distinguishes between label and training features
       #or user can assign category to labels via assigncat consistent to assignments for train features
@@ -34930,16 +35310,16 @@ class AutoMunge:
 
       if bool(assigncat) is True:
     
-        if labels_column in inverse_assigncat:
+        if labels_column_entry in inverse_assigncat:
         
-          labelscategory = inverse_assigncat[labels_column]
+          labelscategory = inverse_assigncat[labels_column_entry]
           categorycomplete = True
 
           #printout display progress
           if printstatus is True:
             print("______")
             print("")
-            print("evaluating label column: ", labels_column)
+            print("evaluating label column: ", labels_column_entry)
 
           #assigncat has special case, can assign distinct columns to automated evaluation
           #if user assigned column to 'eval' or 'ptfm'
@@ -34953,10 +35333,10 @@ class AutoMunge:
               temp_powertransform_for_evalcategory_call = True
 
             if evalcat is False:
-              labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+              labelscategory = self._evalcategory(df_labels, labels_column_entry, randomseed, eval_ratio, \
                                            numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
             elif callable(evalcat):
-              labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+              labelscategory = evalcat(df_labels, labels_column_entry, randomseed, eval_ratio, \
                                  numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
 
       if categorycomplete is False:
@@ -34965,34 +35345,34 @@ class AutoMunge:
         if printstatus is True:
           print("______")
           print("")
-          print("evaluating label column: ", labels_column)
+          print("evaluating label column: ", labels_column_entry)
 
         #determine labels category under automation
         if evalcat is False:
-          labelscategory = self._evalcategory(df_labels, labels_column, randomseed, eval_ratio, \
+          labelscategory = self._evalcategory(df_labels, labels_column_entry, randomseed, eval_ratio, \
                                              numbercategoryheuristic, powertransform, True)
         elif callable(evalcat):
-          labelscategory = evalcat(df_labels, labels_column, randomseed, eval_ratio, \
+          labelscategory = evalcat(df_labels, labels_column_entry, randomseed, eval_ratio, \
                                    numbercategoryheuristic, powertransform, True)
           
         #populate the result in the final_assigncat as informational resource
         if labelscategory in final_assigncat:
-          final_assigncat[labelscategory].append(labels_column)
+          final_assigncat[labelscategory].append(labels_column_entry)
         else:
-          final_assigncat.update({labelscategory:[labels_column]})
+          final_assigncat.update({labelscategory:[labels_column_entry]})
 
       #apply assignnan_convert
-      df_labels = self._assignnan_convert(df_labels, labels_column, labelscategory, assignnan, postprocess_dict)
-      df_testlabels = self._assignnan_convert(df_testlabels, labels_column, labelscategory, assignnan, postprocess_dict)
+      df_labels = self._assignnan_convert(df_labels, labels_column_entry, labelscategory, assignnan, postprocess_dict)
+      df_testlabels = self._assignnan_convert(df_testlabels, labels_column_entry, labelscategory, assignnan, postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_labels = self._convert_to_nan(df_labels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
-      df_testlabels = self._convert_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
+      df_labels = self._convert_to_nan(df_labels, labels_column_entry, labelscategory, postprocess_dict, convert_to_nan_list)
+      df_testlabels = self._convert_to_nan(df_testlabels, labels_column_entry, labelscategory, postprocess_dict, convert_to_nan_list)
 
       #printout display progress
       if printstatus is True:
 
-        print("processing label column: ", labels_column)
+        print("processing label column: ", labels_column_entry)
         print("    root label category: ", labelscategory)
         print("")
 
@@ -35002,12 +35382,12 @@ class AutoMunge:
 
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
-      self._processfamily(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+      self._processfamily(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
                         process_dict, transform_dict, postprocess_dict, assign_param)
       
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
-      self._circleoflife(df_labels, df_testlabels, labels_column, labelscategory, labelscategory, \
+      self._circleoflife(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
                         process_dict, transform_dict, postprocess_dict, templist1)
 
       #here's another templist to support the postprocess_dict entry below
@@ -35023,30 +35403,30 @@ class AutoMunge:
 
       #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
       if len(columnkeylist) == 0:
-        columnkey = labels_column
+        columnkey = labels_column_entry
       else:
         columnkey = columnkeylist[0]
 
-      finalcolumns_labels = list(df_labels)
+      postprocess_dict['origcolumn'].update({labels_column_entry : {'type' : 'label', \
+                                                                    'category' : labelscategory, \
+                                                                    'columnkeylist' : columnkeylist, \
+                                                                    'columnkey' : columnkey}})
 
-      postprocess_dict['origcolumn'].update({labels_column : {'type' : 'label', \
-                                                              'category' : labelscategory, \
-                                                              'columnkeylist' : finalcolumns_labels, \
-                                                              'columnkey' : columnkey}})
-      
       #labelsencoding_dict is returned in postprocess_dict
       #this is redundant with information stored in postprocess_dict['column_dict']
+      #for normalization_dict's of replaced columns refer to column_dict
       #(this was included as a resource for label inversion before we had inversion in postmunge, 
-      #to be clear postmunge inversion is much cleaner)
-      labelsencoding_dict = {labelscategory:{}}
-      for finalcolumn_labels in finalcolumns_labels:
-        labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_labels]['normalization_dict']
-        labelsencoding_dict[labelscategory].update(labelsnormalization_dict)
+      #the recommended resource is postmunge inversion)
+      labelsencoding_dict['transforms'].update({labels_column_entry : {labelscategory:{}}})
+      for finalcolumn_label in columnkeylist:
+        labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict']
+        #this populates a labelsnormalization_dict as {returnedcolumn : {normalization_dict}}
+        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
         
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
-        print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
+        print(postprocess_dict['origcolumn'][labels_column_entry]['columnkeylist'])
         print("")
 
       #now that we know the root label category, we'll verify that if this was a custom processdict entry
@@ -35096,6 +35476,7 @@ class AutoMunge:
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
+    pre_dimred_finalcolumns_labels = list(df_labels)
     
     #Here's where we'll trim the columns that were stricken as part of featureselection method
     #if feature importance dimensionality reduction is applied based on featureselection and featurethreshold parameters
@@ -35307,190 +35688,27 @@ class AutoMunge:
 
     #_____
 
-    #Binary dimensionality reduction goes here
-    #we'll only apply to training and test data not labels
-    #test data activation sets not found in train data will return with all zeros
-    #Binary will target columns containing boolean integers per MLinfilltype
-    #requires all valid entries (performed after infill, so no naninfill)
-    
-    if isinstance(Binary, list):
-      Binary_orig = deepcopy(Binary)
+    #Binary dimensionality reduction to train and test data goes here
+    df_train, df_test, Binary_dict, postprocess_dict, final_returned_Binary_columns, final_returned_Binary_sets, Binary_orig, Binary = \
+    self._BinaryConsolidate(df_train, df_test, Binary, postprocess_dict, 'Binary')
+
+    #Binary dimensionality reduction to df_labels and df_testlabels data goes here
+    if isinstance(labels_column, list) and len(labels_column) > 1 and isinstance(labels_column[0], set):
+      df_labels, df_testlabels, labels_Binary_dict, postprocess_dict, final_returned_labelBinary_columns, final_returned_labelBinary_sets, labelBinary_orig, labelBinary = \
+      self._BinaryConsolidate(df_labels, df_testlabels, labels_column, postprocess_dict, 'LabelBinary')
     else:
-      Binary_orig = Binary
-    
-    if isinstance(Binary, list) or Binary in {True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
-      
-      #printout display progress
-      if printstatus is True:
-        print("_______________")
-        print("Begin Binary dimensionality reduction")
-        print("")
-        print("Before Binary train set column count = ")
-        print(df_train.shape[1])
-        print("")
-
-      #_(1)_
-      #this is to convert to common form as Binary passed as list of lists
-      if not isinstance(Binary, list):
-        Binary = [{Binary}] + list(df_train)
-      if not isinstance(Binary[0], list):
-        Binary = [Binary]
-        
-      Binary_sublist_count = len(Binary)
-        
-      Binary_dict = {}
-      final_returned_Binary_columns = []
-      final_returned_Binary_sets = {'type' : {},
-                                    '1010' : [],
-                                    'onht' : [],
-                                    'ord3' : []}
-        
-      #_(1)_
-      for Binary_sublist_number, Binary_sublist in enumerate(Binary):
-        
-        Binary_sublist_count_tuple = (Binary_sublist_number, Binary_sublist_count)
-        
-        #_(2)_
-        #check for any first entry signaling deviation from default Binary 1010 encoding with replacement,
-        #we'll allow first entry as a set to signal it is a specification i.e. as {<specification>}
-        #we'll pass the specification to _Binary_convert as temp_Binary
-        #and it will be returned in Binary_dict['Binary_specification']
-        if isinstance(Binary_sublist[0], set):
-          if str(Binary_sublist[0]) == "{True}":
-            temp_Binary = True
-            Btype = '1010'
-          elif str(Binary_sublist[0]) == "{'retain'}":
-            temp_Binary = 'retain'
-            Btype = '1010'
-          elif str(Binary_sublist[0]) == "{'ordinal'}":
-            temp_Binary = 'ordinal'
-            Btype = 'ord3'
-          elif str(Binary_sublist[0]) == "{'ordinalretain'}":  
-            temp_Binary = 'ordinalretain'
-            Btype = 'ord3'
-          elif str(Binary_sublist[0]) == "{'onehot'}":
-            temp_Binary = 'onehot'
-            Btype = 'onht'
-          elif str(Binary_sublist[0]) == "{'onehotretain'}":
-            temp_Binary = 'onehotretain'
-            Btype = 'onht'
-          del Binary_sublist[0]
-        else:
-          temp_Binary = True
-          Btype = '1010'
-        
-        #for Binary need returned columns
-        Binary_sublist = \
-        self._column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
-
-        #_(2)_
-        #categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
-        bool_column_list = []
-        ordinal_column_list = []
-        categoric_column_list = []
-
-        for column in Binary_sublist:
-
-          if column in postprocess_dict['column_dict']:
-
-            column_category = postprocess_dict['column_dict'][column]['category']
-
-            if process_dict[column_category]['MLinfilltype'] in \
-            ['multirt', 'binary', '1010', 'boolexclude', 'concurrent_act']:
-
-              bool_column_list.append(column)
-              categoric_column_list.append(column)
-              
-            elif process_dict[column_category]['MLinfilltype'] in \
-            ['singlct', 'ordlexclude', 'concurrent_ordl']:
-              
-              ordinal_column_list.append(column)
-              categoric_column_list.append(column)
-        
-        categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
-        
-        if printstatus is True:
-          print("Consolidating categoric columns:")
-          print(categoric_column_list)
-          print()
-          print("categoric column count = ")
-          print(len(categoric_column_list))
-          print("")
-
-        if len(categoric_column_list) > 0:
-          df_train, df_test, Binary_sublist_dict, set_Binary_column_valresult = \
-          self._Binary_convert(df_train, df_test, categoric_column_tuple, temp_Binary, postprocess_dict, Binary_sublist_count_tuple)
-
-          returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
-
-        else:
-          Binary_sublist_dict = {'categoric_column_tuple' : ([], [], []),
-                                 'ordinal_width_dict' : {},
-                                 'column_dict' : {},
-                                 'Binary_root' : '',
-                                 'returned_Binary_columns' : [],
-                                 'Binary_specification' : False}
-          miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
-          returned_Binary_columns = []
-          
-        final_returned_Binary_columns += returned_Binary_columns
-        
-        final_returned_Binary_sets['type'].update(dict(zip(returned_Binary_columns, [Btype] * len(returned_Binary_columns))))
-        if Btype in {'1010', 'onht'}:
-          final_returned_Binary_sets[Btype].append(returned_Binary_columns)
-        elif Btype in {'ord3'}:
-          final_returned_Binary_sets[Btype] = final_returned_Binary_sets[Btype] + returned_Binary_columns
-        
-        #aggregate suffix overlap validations
-        Binary_suffixoverlap_results = {}
-        for entry in Binary_sublist_dict['column_dict']:
-          Binary_suffixoverlap_results.update(Binary_sublist_dict['column_dict'][entry]['suffixoverlap_results'])
-
-        #log the validation results in miscparameters_results for Binary_suffixoverlap_results
-        if 'Binary_suffixoverlap_results' in miscparameters_results:
-          miscparameters_results['Binary_suffixoverlap_results'].update(Binary_suffixoverlap_results)
-        else:
-          miscparameters_results.update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
-        
-        #log the validation results in miscparameters_results for set_Binary_column_valresult
-        if 'set_Binary_column_valresult' not in miscparameters_results \
-        or 'set_Binary_column_valresult' in miscparameters_results \
-        and miscparameters_results['set_Binary_column_valresult'] is not True:
-          miscparameters_results.update({'set_Binary_column_valresult' : set_Binary_column_valresult})
-
-        #_(2)_
-        Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
-        
-        if printstatus is True:
-          print("Returned Binary columns:")
-          print(returned_Binary_columns)
-          print()
-          print("Returned Binary column count = ")
-          print(len(returned_Binary_columns))
-          print("")
-          
-      #_(1)_
-      if printstatus is True:
-        print("After Binary train set column count = ")
-        print(df_train.shape[1])
-        print("")
-
-    else:
-      
-      Binary_dict = {0 : {'categoric_column_tuple' : ([], [], []),
-                          'ordinal_width_dict' : {},
-                          'column_dict' : {},
-                          'Binary_root' : '',
-                          'returned_Binary_columns' : [],
-                          'Binary_specification' : False}}
-
-      miscparameters_results.update({'Binary_suffixoverlap_results' : {}})
-      returned_Binary_columns = []
-      final_returned_Binary_columns = []
-      final_returned_Binary_sets = {'type' : {},
-                                    '1010' : [],
-                                    'onht' : [],
-                                    'ord3' : []}
+      labels_Binary_dict = {}
+      labelBinary_orig = False
+      labelBinary = False
+      final_returned_labelBinary_columns = []
+      final_returned_labelBinary_sets = {'type' : {},
+                                         '1010' : [],
+                                         'onht' : [],
+                                         'ord3' : []}
+    labelsencoding_dict.update({'consolidations' : {'labels_Binary_dict' : labels_Binary_dict,
+                                                    'labelBinary_orig' : labelBinary_orig,
+                                                    'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
+                                                    'final_returned_labelBinary_sets' : final_returned_labelBinary_sets}})
 
     #_____
 
@@ -35506,8 +35724,9 @@ class AutoMunge:
 
     #here is the process to levelize the frequency of label rows in train data
     #based on TrainLabelFreqLevel parameter
+    #consolidated label support pending
     if TrainLabelFreqLevel in {True, 'traintest'} \
-    and labels_column is not False:
+    and labels_column is not False and labels_Binary_dict == {}:
 
       #printout display progress
       if printstatus is True:
@@ -35547,7 +35766,7 @@ class AutoMunge:
         print("")
 
     if TrainLabelFreqLevel in {'test', 'traintest'} \
-    and labelspresenttest is True:
+    and labelspresenttest is True and labels_Binary_dict == {}:
 
       #printout display progress
       if printstatus is True:
@@ -35711,12 +35930,13 @@ class AutoMunge:
     #numpy arrays is performed below based on pandasoutput it scrubs the column headers
     finalcolumns_train = list(df_train)
     finalcolumns_test = list(df_test)
+    finalcolumns_labels = list(df_labels)
 
     #we'll create some tags specific to the application to support postprocess_dict versioning
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.96'
+    automungeversion = '6.97'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35727,11 +35947,13 @@ class AutoMunge:
     #note that some of the data structures will have been populated earlier such as column_dict etc
     postprocess_dict.update({'origtraincolumns' : columns_train,
                              'origcolumns_all' : origcolumns_all,
+                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train,
                              'finalcolumns_train' : finalcolumns_train,
                              'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list,
-                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train,
                              'labels_column' : labels_column,
-                             'finalcolumns_labels' : list(df_labels),
+                             'labels_column_listofcolumns' : labels_column_listofcolumns,
+                             'pre_dimred_finalcolumns_labels' : pre_dimred_finalcolumns_labels,
+                             'finalcolumns_labels' : finalcolumns_labels,
                              'single_train_column_labels_case' : single_train_column_labels_case,
                              'trainID_column_orig' : trainID_column_orig,
                              'trainID_column' : trainID_column,
@@ -35766,6 +35988,11 @@ class AutoMunge:
                              'Binary_dict' : Binary_dict,
                              'returned_Binary_columns' : final_returned_Binary_columns,
                              'returned_Binary_sets' : final_returned_Binary_sets,
+                             'labelBinary' : labelBinary,
+                             'labelBinary_orig' : labelBinary_orig,
+                             'labels_Binary_dict' : labels_Binary_dict,
+                             'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
+                             'final_returned_labelBinary_sets' : final_returned_labelBinary_sets,
                              'PCA_applied' : PCA_applied,
                              'PCAn_components' : PCAn_components,
                              'PCAn_components_orig' : PCAn_components_orig,
@@ -43076,6 +43303,24 @@ class AutoMunge:
 
         returned_label_set_for_postfeatureselect_valresult = True
         FS_validations.update({'returned_label_set_for_postfeatureselect_valresult' : returned_label_set_for_postfeatureselect_valresult})
+
+      if FSpostprocess_dict['labels_Binary_dict'] != {}:
+        FSmodel = False
+        am_labels = pd.DataFrame()
+
+        baseaccuracy = False
+
+        FS_validations.update({'FS_numeric_data_result': False})
+        FS_validations.update({'FS_all_valid_entries_result': False})
+
+        returned_label_set_for_featureselect_valresult = True
+        FS_validations.update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
+        
+        #printout display progress
+        if printstatus != 'silent':
+          print("_______________")
+          print("Feature importance not yet supported for consolidated categoric labels, Feature Importance halted")
+          print("")
     
       #if am_labels is not an empty set
       if am_labels.empty is False:
@@ -43639,6 +43884,13 @@ class AutoMunge:
     indexcolumn = postprocess_dict['indexcolumn']
     testID_column_orig = testID_column
 
+    #copy any input lists to internal state
+    #(these won't be large so not taking account of inplace parameter)
+    if isinstance(testID_column, list):
+      testID_column = deepcopy(testID_column)
+    if isinstance(inversion, list):
+      inversion = deepcopy(inversion)
+
     #quick conversion of any passed column idenitfiers to str
     testID_column = self._parameter_str_convert(testID_column)
     
@@ -43730,13 +43982,6 @@ class AutoMunge:
       df_test = df_test.copy()
       # postprocess_dict = deepcopy(postprocess_dict)
 
-    #similarly copy any input lists to internal state
-    #(these won't be large so not taking account of inplace parameter)
-    if isinstance(testID_column, list):
-      testID_column = deepcopy(testID_column)
-    if isinstance(inversion, list):
-      inversion = deepcopy(inversion)
-
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
     checknp = np.array([])
@@ -43750,9 +43995,10 @@ class AutoMunge:
 
       #this is one spot where having a labelscolumn parameter would be nice, but not worth added complexity
       if postprocess_dict['labels_column'] is not False:
-        if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - 1:
+        if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - len(postprocess_dict['labels_column_listofcolumns']):
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
-          origcolumns_all_excluding_label.remove(postprocess_dict['labels_column'])
+          for labels_column_listofcolumns_entry in postprocess_dict['labels_column_listofcolumns']:
+            origcolumns_all_excluding_label.remove(labels_column_listofcolumns_entry)
           df_test.columns = origcolumns_all_excluding_label
 
     #if series convert to dataframe
@@ -43766,10 +44012,27 @@ class AutoMunge:
     for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
-
+  
+    #labels_column with underscore is the automunge train set labels
+    labels_column = False
+    #labelscolumn without underscore is the postmunge test set labels or False if not present
     labelscolumn = False
-    if postprocess_dict['labels_column'] in list(df_test):
-      labelscolumn = postprocess_dict['labels_column']
+    #labels_column_listofcolumns is list of label columns for automunge train set labels
+    labels_column_listofcolumns = []
+    #labels_column_listofcolumns_test is list of test set label columns, which may be empty set if not present
+    labels_column_listofcolumns_test = []
+    
+    if postprocess_dict['labels_column'] is not False:
+      labels_column = postprocess_dict['labels_column']
+      if 'labels_column_listofcolumns' in postprocess_dict:
+        labels_column_listofcolumns = postprocess_dict['labels_column_listofcolumns']
+      else:
+        #backward compatibility preceding 6.97
+        labels_column_listofcolumns = [labels_column]
+    
+    if set(labels_column_listofcolumns).issubset(set(df_test)):
+      labelscolumn = labels_column
+      labels_column_listofcolumns_test = labels_column_listofcolumns
 
     #access a few entries from postprocess_dict
     powertransform = postprocess_dict['powertransform']
@@ -43871,14 +44134,14 @@ class AutoMunge:
     #where labelscolumn will be False when labels_column not present in postmunge df_test
     #otherwise labelscolumn = labels_column
     if labelscolumn is not False:
-      labels_column = postprocess_dict['labels_column']
     
     #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
     #current convention is that these labels now have default infill associated with applied transformation function
 #         df_test = df_test.dropna(subset=[labels_column])
 
-      df_testlabels = pd.DataFrame(df_test[labels_column])
-      del df_test[labels_column]
+      df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns_test])
+      for labels_column_listofcolumns_test_entry in labels_column_listofcolumns_test:
+        del df_test[labels_column_listofcolumns_test_entry]
       
       #if we only had one (label) column to begin with we'll create a dummy test set
       if df_test.shape[1] == 0:
@@ -44091,43 +44354,40 @@ class AutoMunge:
 
     #process labels consistent to the train set if any are included in the postmunge test set
 
-    #first let's get the name of the labels column from postprocess_dict
-    labels_column = postprocess_dict['labels_column']
-
     #ok now let's check if that labels column is present in the test set
-    
-    if labelscolumn is not False:
+      
+    for labels_column_listofcolumns_entry in labels_column_listofcolumns_test:
      
-      labelscategory = postprocess_dict['origcolumn'][labels_column]['category']
+      labelscategory = postprocess_dict['origcolumn'][labels_column_listofcolumns_entry]['category']
 
       #apply assignnan_convert
-      df_testlabels = self._assignnan_convert(df_testlabels, labels_column, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
+      df_testlabels = self._assignnan_convert(df_testlabels, labels_column_listofcolumns_entry, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
       
       #apply convert_inf_to_nan
-      df_testlabels = self._convert_to_nan(df_testlabels, labels_column, labelscategory, postprocess_dict, convert_to_nan_list)
+      df_testlabels = self._convert_to_nan(df_testlabels, labels_column_listofcolumns_entry, labelscategory, postprocess_dict, convert_to_nan_list)
 
       if printstatus is True:
         #printout display progress
         print("______")
         print("")
-        print("processing label column: ", labels_column)
+        print("processing label column: ", labels_column_listofcolumns_entry)
         print("    root label category: ", labelscategory)
         print("")
 
       #process family
       df_testlabels = \
-      self._postprocessfamily(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
+      self._postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, process_dict, \
                              transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_testlabels = \
-      self._postcircleoflife(df_testlabels, labels_column, labelscategory, labelscategory, process_dict, \
+      self._postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, process_dict, \
                             transform_dict, postprocess_dict)
     
       #printout display progress
       if printstatus is True:
         print(" returned columns:")
-        print(postprocess_dict['origcolumn'][labels_column]['columnkeylist'])
+        print(postprocess_dict['origcolumn'][labels_column_listofcolumns_entry]['columnkeylist'])
         print("")
 
     #now that we've pre-processed all of the columns, let's apply infill
@@ -44233,67 +44493,38 @@ class AutoMunge:
     #_____
 
     #Binary dimensionality reduction goes here
-
-    #note if Binary was originally passed to automunge as anything other than False
-    #postprocess_dict will record Binary as a list of lists
-    #with the Binary type either omitted or recorded as a first entry embedded in set brackets
-    #the origional passed Binary list is recorded in postprocess_dict as Binary_orig
-    if postprocess_dict['Binary'] is not False:
+  
+    #test processing
+    Binary = postprocess_dict['Binary']
+    
+    #access meta_Binary_dict
+    #this portion associated with backward compatibility preceding 6.92
+    #we'll convert prior form to match 6.92
+    if float(postprocess_dict['automungeversion']) < 6.92:
+      temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
+      temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
+                               'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
+      meta_Binary_dict = {0 : temp_Binary_dict}
+    else:
+      #this is form after 6.92
+      meta_Binary_dict = postprocess_dict['Binary_dict']
       
-      #printout display progress
-      if printstatus is True:
-        print("_______________")
-        print("Begin Binary dimensionality reduction")
-        print("")
-        print("Before transform test set column count = ")
-        print(df_test.shape[1])
-        print("")
+    df_test = self._postBinaryConsolidate(df_test, meta_Binary_dict, Binary, printstatus)
+    
+    #_________
+    
+    #label processing
+    if len(labels_column_listofcolumns_test) > 0:
+      
+      if 'labelBinary' in postprocess_dict:
+        Binary = postprocess_dict['labelBinary']
+        meta_Binary_dict = postprocess_dict['labels_Binary_dict']
 
-      #this portion associated with backward compatibility preceding 6.92
-      #we'll convert prior form to match 6.92
-      if float(postprocess_dict['automungeversion']) < 6.92:
-        temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
-        temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
-                                 'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
-        meta_Binary_dict = {0 : temp_Binary_dict}
+        df_testlabels = self._postBinaryConsolidate(df_testlabels, meta_Binary_dict, Binary, printstatus)
+
+      #backward compatibility preceding 6.97
       else:
-        #this is form after 6.92
-        meta_Binary_dict = postprocess_dict['Binary_dict']
-
-      #_(1)_
-      for key in meta_Binary_dict:
-
-        Binary_dict = meta_Binary_dict[key]
-        Binary = meta_Binary_dict[key]['Binary_specification']
-
-        if 'categoric_column_tuple' not in Binary_dict:
-          #backward compatibility preceding 6.95
-          categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
-          Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
-      
-        if printstatus is True:
-          print("Consolidating categoric columns:")
-          print(Binary_dict['categoric_column_tuple'][2])
-          print()
-          print("Boolean column count = ")
-          print(len(Binary_dict['categoric_column_tuple'][2]))
-          print("")
-
-        df_test = self._postBinary_convert(df_test, Binary_dict, Binary)
-
-        if printstatus is True:
-          print("Returned Binary columns:")
-          print(Binary_dict['returned_Binary_columns'])
-          print()
-          print("Returned Binary column count = ")
-          print(len(Binary_dict['returned_Binary_columns']))
-          print("")
-          
-        #_(1)_
-        if printstatus is True:
-          print("After transform test set column count = ")
-          print(df_test.shape[1])
-          print("")
+        pass
 
     #_____
 
@@ -44389,7 +44620,6 @@ class AutoMunge:
     #now we'll apply the floatprecision transformation
     df_test = self._floatprecision_transform(df_test, floatcolumns_test, floatprecision)
     if labelscolumn is not False:
-      finalcolumns_labels = list(df_testlabels)
       df_testlabels = self._floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
 
     #a special case, those columns that we completely excluded from processing via excl
@@ -44739,7 +44969,7 @@ class AutoMunge:
     
     #all returned columns including labels
     returned_columns = \
-    postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['finalcolumns_labels']
+    postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['pre_dimred_finalcolumns_labels']
 
     #convert returned_columns to returned suffix convention for excl edge case
     self._list_replace(returned_columns, postprocess_dict['excl_suffix_conversion_dict'])
@@ -47465,17 +47695,24 @@ class AutoMunge:
         self._list_replace(inversion, postprocess_dict['excl_suffix_conversion_dict'])
     
     #now consider whether Binary dimensionality reduction was performed
-
-    #this portion associated with backward compatibility preceding 6.92
-    #we'll convert prior form to match 6.92
-    if float(postprocess_dict['automungeversion']) < 6.92:
-      temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
-      temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
-                               'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
-      meta_Binary_dict = {0 : temp_Binary_dict}
-    else:
-      #this is form after 6.92
-      meta_Binary_dict = postprocess_dict['Binary_dict']
+    
+    if inversion != 'labels':
+      #this portion associated with backward compatibility preceding 6.92
+      #we'll convert prior form to match 6.92
+      if float(postprocess_dict['automungeversion']) < 6.92:
+        temp_Binary_dict = deepcopy(postprocess_dict['Binary_dict'])
+        temp_Binary_dict.update({'Binary_specification' : postprocess_dict['Binary'],
+                                 'returned_Binary_columns' : postprocess_dict['returned_Binary_columns']})
+        meta_Binary_dict = {0 : temp_Binary_dict}
+      else:
+        #this is form after 6.92
+        meta_Binary_dict = postprocess_dict['Binary_dict']
+    elif inversion == 'labels':
+      if 'labels_Binary_dict' in postprocess_dict:
+        meta_Binary_dict = postprocess_dict['labels_Binary_dict']
+      else:
+        #backward compatibility preceding 6.97
+        meta_Binary_dict = {}
     
     retain_Binary_present = False
     for key in meta_Binary_dict:
@@ -47488,12 +47725,6 @@ class AutoMunge:
       if meta_Binary_dict[key]['Binary_specification'] in {True, 'ordinal', 'onehot'} \
       and len(list(meta_Binary_dict[key]['column_dict'])) > 0:
         replace_Binary_present = True
-    
-    if replace_Binary_present is True:
-      
-      if printstatus is True:
-        print("Recovering columns from Binary dimensionality reduction")
-        print()
         
     if inversion == 'test':
       
@@ -47501,64 +47732,6 @@ class AutoMunge:
         
         #for all cases where a Binary was performed, inversion = 'test' is translated to a list of columns
         inversion = list(df_test)
-
-    if isinstance(inversion, list):
-
-      Binary_partialinversion_valresult = False
-      
-      for key in meta_Binary_dict:
-        Binary_dict = meta_Binary_dict[key]
-        Binary_specification = Binary_dict['Binary_specification']
-
-        if 'categoric_column_tuple' not in Binary_dict:
-          #backward compatibility preceding 6.95
-          categoric_column_tuple = (Binary_dict['bool_column_list'], [], Binary_dict['bool_column_list'])
-          Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
-        
-        if Binary_specification in {'retain', 'ordinalretain', 'onehotretain'}:
-          #we'll have convention that if Binary didn't replace columns 
-          #partial inversion only available for Binary source columns
-          #since any inversion from the Binary form would be redundant
-          for entry in Binary_dict['column_dict']:
-            if entry in inversion:
-              inversion.remove(entry)
-
-        if Binary_specification in {True, 'ordinal', 'onehot'}:
-          Binary_inversion_marker = False
-          if (set(Binary_dict['column_dict'])).issubset(set(inversion)):
-            Binary_inversion_marker = True
-            for entry in Binary_dict['column_dict']:
-              inversion.remove(entry)
-            inversion += Binary_dict['categoric_column_tuple'][2]
-          
-          #if inversion was passed as a list subset of returned columns
-          #Binary_inversion_marker won't be activated if Binary columns aren"t in that list 
-          
-          elif len((set(Binary_dict['column_dict'])) & set(inversion)) == 0:
-            pass
-          
-          #or is an error channel when only a partial set of Binary columns are included
-          #where by partial set am referring to partial with respect to this specified Binary subaggregation
-
-          else:
-
-            Binary_partialinversion_valresult = True
-
-            if printstatus != 'silent':
-              print("error: partial inversion lists only supported for columns returned from Binary")
-              print("when entire set of Binary columns are included in the inversion list")
-              
-          if Binary_inversion_marker is True:
-
-            df_test = self._meta_inverseprocess_Binary(df_test, Binary_dict, postprocess_dict)
-
-            inversion += Binary_dict['categoric_column_tuple'][2]
-
-            if printstatus is True:
-              print("Recovered Binary columns:")
-              print(Binary_dict['categoric_column_tuple'][2])
-              print()
-      pm_miscparameters_results.update({'Binary_partialinversion_valresult' : Binary_partialinversion_valresult})
 
     #this is relevant for when feature importance dimensionality reduction was performed
     if inversion == 'test':
@@ -47635,6 +47808,12 @@ class AutoMunge:
       finalcolumns_labels = postprocess_dict['finalcolumns_labels']
       source_columns = postprocess_dict['labels_column']
 
+      if 'labels_column_listofcolumns' in postprocess_dict:
+        source_columns = postprocess_dict['labels_column_listofcolumns']
+      else:
+        #backward compatibility preceding 6.97
+        source_columns = [postprocess_dict['labels_column']]
+
       if postprocess_dict['excl_suffix'] is False:
         self._list_replace(finalcolumns_labels, postprocess_dict['excl_suffix_conversion_dict'])
 
@@ -47671,13 +47850,32 @@ class AutoMunge:
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
         df_test.columns = finalcolumns_labels
+        
+      #if there was a categoric consolidation address here
+      if replace_Binary_present is True:
+
+        if printstatus is True:
+          print("Recovering columns from Binary dimensionality reduction")
+          print()
+          
+      #for all cases where a Binary was performed, inversion = 'test' is translated to a list of columns
+      inversion = finalcolumns_labels
+          
+      if retain_Binary_present is True or replace_Binary_present is True:
+
+        df_test, inversion, pm_miscparameters_results = \
+        self._masterBinaryinvert(df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
 
       if printstatus is True:
         print("Performing inversion recovery of original columns for label set.")
         print()
+        
+      #_df_inversion_meta takes source columns as input
+      inversion = \
+      self._column_convert_support(inversion, postprocess_dict, convert_to='input')
 
       df_test, recovered_list, inversion_info_dict = \
-      self._df_inversion_meta(df_test, [postprocess_dict['labels_column']], postprocess_dict, printstatus)
+      self._df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
 
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
@@ -47799,6 +47997,15 @@ class AutoMunge:
       return df_test_denseinvert_final, dense_recovered_list, inversion_info_dict
 
     if isinstance(inversion, list):
+      
+      if replace_Binary_present is True:
+
+        if printstatus is True:
+          print("Recovering columns from Binary dimensionality reduction")
+          print()
+      
+      df_test, inversion, pm_miscparameters_results = \
+      self._masterBinaryinvert(df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
@@ -47816,15 +48023,9 @@ class AutoMunge:
 #         #for inversion need source columns
 #         inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train else entry for entry in inversion]
 
-      #for inversion need source columns
-      inversion = [postprocess_dict['column_dict'][entry]['origcolumn'] if entry in finalcolumns_train or entry in postprocess_dict['excl_columns_with_suffix'] else entry for entry in inversion]
-
-      #consolidate redundancies
-      inversion_copy = inversion.copy()
-      inversion = []
-      for entry in inversion_copy:
-        if entry not in inversion:
-          inversion.append(entry)
+      #_df_inversion_meta takes source columns as input
+      inversion = \
+      self._column_convert_support(inversion, postprocess_dict, convert_to='input')
 
       inversion_listentrycompare_valresult = False
 
