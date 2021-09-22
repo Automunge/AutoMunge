@@ -600,7 +600,7 @@ am.automunge(df_train, df_test = False,
 * df_train: a pandas dataframe or numpy array containing a structured 
 dataset intended for use to subsequently train a machine learning model. 
 The set at a minimum should be 'tidy' meaning a single column per feature 
-and a single row per observation, with all unique column headers. If 
+and a single row per observation, with all unique string column headers. If 
 desired the set may include one are more
 "ID" columns (intended to be carved out and consistently shuffled or partitioned
 such as an index column) and zero or one column intended to be used as labels 
@@ -633,7 +633,13 @@ column of the train set (including cases of single column in train set).
 A label column for df_train data is partitioned and returned in the labels set.
 Note that a designated labels column will automatically be checked for in
 corresponding df_test data and partitioned to the returned test_labels set when 
-included.
+included. Note that labels_column can also be passed as a list of multiple
+label columns. Note that when labels_column is passed as a list, a first entry
+set bracket specificaiton comparable to as available for the Binary parameter
+can be applied to designate that multiple categoric labels in the list may be consolidated to a
+single categoric label, such as to train a single classification model for multiple classification targets,
+which form may then be recovered in a postmunge inversion='labels' operation, such as to convert the
+consoldiated form after an inference operation back to the form of seperate inferred labels.
 
 * trainID_column:  defaults to False, user can pass a string of the column header or list of string column headers
 for columns that are to be segregated from the df_train set for return in the train_ID
@@ -2192,7 +2198,7 @@ with passing df_test = test_labels (where test_labels is a dataframe of labels o
 automunge or postmunge call). When inversion is passed as a list, accepts list of source column or returned column 
 headers for inversion targets. When inversion is passed as a set, accepts a set with single entry of a returned 
 column header serving as a custom target for the inversion path. 'denselabels' is for label set inversion in which 
-labels were prepared in multiple formats, such as to recover the original form on each basis for comparison.
+labels were prepared in multiple formats, such as to recover the original form on each basis for comparison (currently supported for single labels_column case).
 The inversion operation is supported by the optional process_dict entry 'info_retention' and required for inversion process_dict entry 
 'inverseprocess' (or 'custom_inversion'). Note that columns are only recovered for those sets in which a path of 
 inversion was available by these processdict entries. Note that the path of 
