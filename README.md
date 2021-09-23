@@ -1285,10 +1285,11 @@ ignore.
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
-In order of precedence, parameters assigned to distinct category/column configurations 
-take precedence to default_assignparam assigned to categories which take precedence to 
-global_assignparam assigned to all transformations which take precedence to parameters 
-set as defaultparams in processdict definition. 
+In order of precedence, parameter assignments may be designated targeting a transformation 
+category as applied to a specific column header with suffix appenders, a transformation 
+category as applied to an input column header (which may include multiple instances), 
+all instances of a specific transformation category, all transformation categories, or may 
+be initialized as default parameters when defining a transformation category.
 
 See the Library of Transformations section below for those transformations that 
 accept parameters.
