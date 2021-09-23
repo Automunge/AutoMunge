@@ -26819,14 +26819,28 @@ class AutoMunge:
 
     #find origcateogry of am_labels from FSpostprocess_dict
     labelcolumnkey = list(labels_df)[0]
-    origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-    origcategory = postprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-    #find labelctgy from process_dict based on this origcategory
-    labelscategory = process_dict[origcategory]['labelctgy']
-
-    #here we're inspecting MLinfilltype based on the labelctgy tree category
-    MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
+    if labelcolumnkey in postprocess_dict['column_dict']:
+      consolidatedcase = False
+      origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
+      origcategory = postprocess_dict['column_dict'][labelcolumnkey]['origcategory']
+      #find labelctgy from process_dict based on this origcategory
+      labelscategory = process_dict[origcategory]['labelctgy']
+      #here we're inspecting MLinfilltype based on the labelctgy tree category
+      MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
+    #else means the labels were prepared by a categoric consolidation
+    else:
+      consolidatedcase = True
+      Binary_specification = postprocess_dict['labels_Binary_dict'][0]['Binary_specification']
+      if Binary_specification in {True}:
+        labelscategory = '1010'
+        MLinfilltype = '1010'
+      if Binary_specification in {'ordinal'}:
+        labelscategory = 'ord3'
+        MLinfilltype = 'singlct'
+      if Binary_specification in {'onht'}:
+        labelscategory = 'onht'
+        MLinfilltype = 'multirt'
 
     #columns_labels may be reset for numeric labels, labels is fixed
     columns_labels = list(labels_df)
@@ -26871,13 +26885,16 @@ class AutoMunge:
       or MLinfilltype in {'numeric', 'integer'} and multirt_append is True:
         if columns_labels != []:
           
-          #we'll only apply to first multirt set in labels
-          if multirt_append is False:
-            for label in labels:
-              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
-              in {'multirt'}:
-                columns_labels = postprocess_dict['column_dict'][label]['categorylist']
-                break
+          if consolidatedcase is False:
+            #we'll only apply to first multirt set in labels
+            if multirt_append is False:
+              for label in labels:
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][label]['category']]['MLinfilltype'] \
+                in {'multirt'}:
+                  columns_labels = postprocess_dict['column_dict'][label]['categorylist']
+                  break
+          elif consolidatedcase is True:
+            columns_labels = postprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns']
 
           #note for. label smoothing activation values won't be 1, recomend supplementing transform with onehot set
           level_activation = 1
@@ -26955,11 +26972,14 @@ class AutoMunge:
         if len(labels) == 1:
           singlctcolumn = labels[0]
         else:
-          for labelcolumn in labels:
-            #levelizing based on first singlct column found in labels set
-            if postprocess_dict['process_dict'][postprocess_dict['column_dict'][labelcolumn]['category']]['MLinfilltype'] \
-            in {'singlct'}:
-              singlctcolumn = labelcolumn
+          if consolidatedcase is False:
+            for labelcolumn in labels:
+              #levelizing based on first singlct column found in labels set
+              if postprocess_dict['process_dict'][postprocess_dict['column_dict'][labelcolumn]['category']]['MLinfilltype'] \
+              in {'singlct'}:
+                singlctcolumn = labelcolumn
+          if consolidatedcase is True:
+            columns_labels = postprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns']
 
         uniquevalues = list(labels_df[singlctcolumn].unique())
 
@@ -33208,7 +33228,7 @@ class AutoMunge:
     
     return df_test
 
-  def _masterBinaryinvert(self, df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus):
+  def _masterBinaryinvert(self, df_test, inversion, inversion_orig, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus):
     """
     accepts inversion as a list
     can be applied to df_test including test data or labels data, (inversion receives either as df_test)
@@ -33234,6 +33254,14 @@ class AutoMunge:
         for entry in Binary_dict['column_dict']:
           if entry in inversion:
             inversion.remove(entry)
+
+        #if inversion was originally passed as 'test' or 'labels'
+        #then strike the Binary columns to be consistent with original input form
+        #(if inversion was originally passed as list that means inversion only applied on subset of columns)
+        if inversion_orig in {'test', 'labels'}:
+          for entry in Binary_dict['column_dict']:
+            if entry in df_test:
+              del df_test[entry]
 
       if Binary_specification in {True, 'ordinal', 'onehot'}:
         Binary_inversion_marker = False
@@ -33322,6 +33350,9 @@ class AutoMunge:
     #we'll have convention that the Binary columns not returned from inversion
     for Binary_returned_column in Binary_returned_columns:
       del df[Binary_returned_column]
+
+    if inputcolumn not in Binary_returned_columns:
+      del df[inputcolumn]
     
     return df
   
@@ -33335,21 +33366,21 @@ class AutoMunge:
     
     if Binary in {True, 'retain'}:
       
-      inputcolumn = inputcolumn = Binary_root + '_1010'
+      inputcolumn = Binary_root + '_1010'
     
       df= \
       self._custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
       
-      inputcolumn = inputcolumn = Binary_root + '_ord3'
+      inputcolumn = Binary_root + '_ord3'
       
       df = \
       self._custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
 
     if Binary in {'onehot', 'onehotretain'}:
       
-      inputcolumn = inputcolumn = Binary_root + '_onht'
+      inputcolumn = Binary_root + '_onht'
       
       df = \
       self._custom_inversion_onht(df, Binary_columns, inputcolumn, Binary_dict)
@@ -34748,7 +34779,15 @@ class AutoMunge:
                                    'checkseries_test_result' : checkseries_test_result})
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
+    unique_string_headers_valresult = False
     trainlabels=[str(x) for x in list(df_train)]
+    if len(set(trainlabels)) != len(set(df_train)):
+      unique_string_headers_valresult = True
+      if printstatus != 'silent':
+        print("error: column header string conversion resulted in redundant headers (may be case where e.g. 1 and '1' are both headers)")
+        print()
+    miscparameters_results.update({'unique_string_headers_valresult' : unique_string_headers_valresult})
+    
     df_train.columns = trainlabels
 
     labels_column_listofcolumns = []
@@ -35710,6 +35749,9 @@ class AutoMunge:
                                                     'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
                                                     'final_returned_labelBinary_sets' : final_returned_labelBinary_sets}})
 
+    #store labels_Binary_dict in p[ostprocess_dict to support _LabelFrequencyLevelizer
+    postprocess_dict.update({'labels_Binary_dict' : labels_Binary_dict})
+
     #_____
 
     #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
@@ -35726,7 +35768,7 @@ class AutoMunge:
     #based on TrainLabelFreqLevel parameter
     #consolidated label support pending
     if TrainLabelFreqLevel in {True, 'traintest'} \
-    and labels_column is not False and labels_Binary_dict == {}:
+    and labels_column is not False:
 
       #printout display progress
       if printstatus is True:
@@ -35766,7 +35808,7 @@ class AutoMunge:
         print("")
 
     if TrainLabelFreqLevel in {'test', 'traintest'} \
-    and labelspresenttest is True and labels_Binary_dict == {}:
+    and labelspresenttest is True:
 
       #printout display progress
       if printstatus is True:
@@ -35936,7 +35978,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.97'
+    automungeversion = '6.98'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -35990,7 +36032,7 @@ class AutoMunge:
                              'returned_Binary_sets' : final_returned_Binary_sets,
                              'labelBinary' : labelBinary,
                              'labelBinary_orig' : labelBinary_orig,
-                             'labels_Binary_dict' : labels_Binary_dict,
+                            #  'labels_Binary_dict' : labels_Binary_dict, populated at derivation
                              'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
                              'final_returned_labelBinary_sets' : final_returned_labelBinary_sets,
                              'PCA_applied' : PCA_applied,
@@ -36010,7 +36052,7 @@ class AutoMunge:
                              'transformdict' : transformdict,
                              'transform_dict' : transform_dict,
                              'processdict' : processdict,
-                             'process_dict' : process_dict,
+                            #  'process_dict' : process_dict, populated during initialization
                              'postprocess_assigninfill_dict' : postprocess_assigninfill_dict,
                              'assignparam' : assignparam,
                              'assign_param' : assign_param,
@@ -36086,7 +36128,7 @@ class AutoMunge:
     if postprocess_dict['labels_column'] is not False:
 
       privacy_headers_labels = list(range(len(finalcolumns_labels)))
-      len_privacy_headers_labels = len(finalcolumns_trainID)
+      len_privacy_headers_labels = len(privacy_headers_labels)
       privacy_headers_labels = [x + len_privacy_headers_train for x in privacy_headers_labels]
 
       privacy_headers_labels_dict = dict(zip(finalcolumns_labels, privacy_headers_labels))
@@ -47674,6 +47716,11 @@ class AutoMunge:
   def _inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
                        pandasoutput, pm_miscparameters_results):
 
+    if isinstance(inversion, str):
+      inversion_orig = inversion
+    elif isinstance(inversion, list):
+      inversion_orig = deepcopy(inversion)
+
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
       if printstatus != 'silent':
         print("error: full test set inversion not currently supported with PCA.")
@@ -47864,7 +47911,7 @@ class AutoMunge:
       if retain_Binary_present is True or replace_Binary_present is True:
 
         df_test, inversion, pm_miscparameters_results = \
-        self._masterBinaryinvert(df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
+        self._masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
 
       if printstatus is True:
         print("Performing inversion recovery of original columns for label set.")
@@ -47895,6 +47942,15 @@ class AutoMunge:
     #in which case we'll return an inversion for each returned column for comparison
     #note that this implementation is a little inelligant, the printouts don't exaclty match, it works though
     if inversion == 'denselabels':
+
+      #note denselabels only supported for single label case
+      validate_denselabels_singlelabel = False
+      if isinstance(postprocess_dict['labels_column'], list) and len(postprocess_dict['labels_column']) > 1:
+        validate_denselabels_singlelabel = True
+        if printstatus != 'silent':
+          print("error, inverison 'denselabels' option only supported for single label case, does not support consolidations.")
+        return
+      pm_miscparameters_results.update({'validate_denselabels_singlelabel' : validate_denselabels_singlelabel})
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
@@ -48005,7 +48061,7 @@ class AutoMunge:
           print()
       
       df_test, inversion, pm_miscparameters_results = \
-      self._masterBinaryinvert(df_test, inversion, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
+      self._masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, pm_miscparameters_results, postprocess_dict, printstatus)
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
