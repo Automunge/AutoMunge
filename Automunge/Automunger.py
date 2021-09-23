@@ -7591,7 +7591,7 @@ class AutoMunge:
 
     return process_dict
 
-  def _processfamily(self, df_train, df_test, column, category, origcategory, process_dict, \
+  def _processfamily(self, df_train, df_test, column, category, origcategory, \
                     transform_dict, postprocess_dict, assign_param):
     '''
     #as automunge runs a for loop through each column in automunge, this is the master 
@@ -7621,7 +7621,7 @@ class AutoMunge:
         #note we use the processparent function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self._processparent(df_train, df_test, column, sibling, origcategory, final_upstream, \
-                          process_dict, transform_dict, postprocess_dict, assign_param)
+                          transform_dict, postprocess_dict, assign_param)
     
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[category]['cousins']:
@@ -7632,7 +7632,7 @@ class AutoMunge:
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self._processcousin(df_train, df_test, column, cousin, origcategory, final_upstream, \
-                            process_dict, transform_dict, postprocess_dict, assign_param)
+                            transform_dict, postprocess_dict, assign_param)
 
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[category]['parents']:
@@ -7641,7 +7641,7 @@ class AutoMunge:
 
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self._processparent(df_train, df_test, column, parent, origcategory, final_upstream, \
-                          process_dict, transform_dict, postprocess_dict, assign_param)
+                          transform_dict, postprocess_dict, assign_param)
         
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[category]['auntsuncles']:
@@ -7651,7 +7651,7 @@ class AutoMunge:
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self._processcousin(df_train, df_test, column, auntuncle, origcategory, final_upstream, \
-                            process_dict, transform_dict, postprocess_dict, assign_param)
+                            transform_dict, postprocess_dict, assign_param)
 
     #if we had replacement transformations performed then mark column for deletion
     #(circle of life)
@@ -7670,7 +7670,7 @@ class AutoMunge:
 
     return df_train, df_test, postprocess_dict
 
-  def _circleoflife(self, df_train, df_test, column, category, origcategory, process_dict, \
+  def _circleoflife(self, df_train, df_test, column, category, origcategory, \
                     transform_dict, postprocess_dict, templist1):
     '''
     #This function deletes source column for cases where family primitives 
@@ -7798,7 +7798,7 @@ class AutoMunge:
     return postprocess_dict
   
   def _processcousin(self, df_train, df_test, column, cousin, origcategory, final_upstream, \
-                     process_dict, transform_dict, postprocess_dict, assign_param):
+                     transform_dict, postprocess_dict, assign_param):
     '''
     #cousin is one of the primitives for processfamily function, and it involves
     #transformations without downstream derivations without replacement of source column
@@ -7818,6 +7818,8 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
 
     '''
+
+    process_dict = postprocess_dict['process_dict']
     
     inplaceperformed = False
     inplacecandidate = False
@@ -7936,7 +7938,7 @@ class AutoMunge:
     return df_train, df_test, postprocess_dict, inplaceperformed
 
   def _processparent(self, df_train, df_test, column, parent, origcategory, final_upstream, \
-                    process_dict, transform_dict, postprocess_dict, assign_param):
+                    transform_dict, postprocess_dict, assign_param):
     '''
     #parent is one of the primitives for processfamily function, and it involves
     #transformations with downstream derivations with replacement of source column
@@ -7958,6 +7960,8 @@ class AutoMunge:
     #we want to apply in order of
     #upstream process, niecesnephews, friends, children, coworkers
     '''
+
+    process_dict = postprocess_dict['process_dict']
 
     #upstream process
     
@@ -8115,7 +8119,7 @@ class AutoMunge:
           #parent column
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self._processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                             process_dict, transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param)
 
       #process any friends
       for friend in transform_dict[parent]['friends']:
@@ -8126,7 +8130,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self._processcousin(df_train, df_test, parentcolumn, friend, origcategory, final_downstream, \
-                             process_dict, transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param)
 
       for child in transform_dict[parent]['children']:
 
@@ -8137,7 +8141,7 @@ class AutoMunge:
           #parent column
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self._processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
-                             process_dict, transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param)
 
       #process any coworkers
       for coworker in transform_dict[parent]['coworkers']:
@@ -8148,7 +8152,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self._processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                             process_dict, transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param)
 
       #if we had replacement transformations performed then mark column for deletion
       #(circle of life)
@@ -26801,7 +26805,7 @@ class AutoMunge:
     return df
 
   def _LabelFrequencyLevelizer(self, train_df, labels_df, \
-                                postprocess_dict, process_dict):
+                                postprocess_dict):
     """
     #LabelFrequencyLevelizer(.)
     #takes as input dataframes for train set, labels, and label category
@@ -26825,7 +26829,7 @@ class AutoMunge:
       origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
       origcategory = postprocess_dict['column_dict'][labelcolumnkey]['origcategory']
       #find labelctgy from process_dict based on this origcategory
-      labelscategory = process_dict[origcategory]['labelctgy']
+      labelscategory = postprocess_dict['process_dict'][origcategory]['labelctgy']
       #here we're inspecting MLinfilltype based on the labelctgy tree category
       MLinfilltype = postprocess_dict['process_dict'][labelscategory]['MLinfilltype']
     #else means the labels were prepared by a categoric consolidation
@@ -27950,7 +27954,7 @@ class AutoMunge:
   
   def _apply_am_infill(self, df_train, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
-                      masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd):
+                      masterNArows_train, masterNArows_test, randomseed, ML_cmnd):
     """
     #Modularizes the application of infill to train and test sets
     """
@@ -28019,7 +28023,7 @@ class AutoMunge:
           
         if column in postprocess_dict['column_dict']:
           
-          if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+          if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
           not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
@@ -28295,7 +28299,7 @@ class AutoMunge:
     #naninfill is performed after ML infill to avoid interference
     for column in postprocess_assigninfill_dict['naninfill']:
         
-      if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
       not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
         #printout display progress
@@ -28500,7 +28504,7 @@ class AutoMunge:
   
   def _apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
-                      masterNArows_test, process_dict):
+                      masterNArows_test):
     """
     #Modularizes the application of infill to test sets
     """
@@ -28545,7 +28549,7 @@ class AutoMunge:
 
         if column in postprocess_dict['column_dict']:
         
-          if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+          if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
           not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
             if iteration == 0:
@@ -31765,7 +31769,7 @@ class AutoMunge:
       
     return check_processdict_result, check_processdict_result2
 
-  def _check_processdict3(self, entry, processdict, process_dict, transform_dict, printstatus):
+  def _check_processdict3(self, entry, processdict, postprocess_dict, transform_dict, printstatus):
     """
     The processdict 'labelctgy' entry is only really used on small part of library
     Which is there to direct feature importance or levelizer to a specific returned set
@@ -31790,7 +31794,7 @@ class AutoMunge:
     #similarly transform_dict at this point has already been consolidated
     if entry in processdict:
 
-      if 'labelctgy' not in process_dict[entry]:
+      if 'labelctgy' not in postprocess_dict['process_dict'][entry]:
 
         check_processdict3_valresult = True
 
@@ -31806,14 +31810,14 @@ class AutoMunge:
 
           if len(familytree['auntsuncles']) > 0:
             new_labelctgy = familytree['auntsuncles'][0]
-            process_dict[entry]['labelctgy'] = new_labelctgy
+            postprocess_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
             if printstatus is True:
               print("labelctgy selected as ", new_labelctgy)
               print()
 
           elif len(familytree['cousins']) > 0:
             new_labelctgy = familytree['cousins'][0]
-            process_dict[entry]['labelctgy'] = new_labelctgy
+            postprocess_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
             if printstatus is True:
               print("labelctgy selected as ", new_labelctgy)
               print()
@@ -31824,7 +31828,7 @@ class AutoMunge:
             new_labelctgy = \
             self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
-            process_dict[entry]['labelctgy'] = new_labelctgy
+            postprocess_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
             if printstatus is True:
               print("labelctgy selected as ", new_labelctgy)
               print()
@@ -31835,25 +31839,25 @@ class AutoMunge:
             new_labelctgy = \
             self._check_processdict3_support(transform_dict, offspringparent, printstatus)
 
-            process_dict[entry]['labelctgy'] = new_labelctgy
+            postprocess_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
             if printstatus is True:
               print("labelctgy selected as ", new_labelctgy)
               print()
 
-      elif 'labelctgy' in process_dict[entry]:
+      elif 'labelctgy' in postprocess_dict['process_dict'][entry]:
 
-        if process_dict[entry]['labelctgy'] not in process_dict:
+        if postprocess_dict['process_dict'][entry]['labelctgy'] not in postprocess_dict['process_dict']:
 
           check_processdict3_validlabelctgy_valresult = True
 
           if printstatus != 'silent':
             
-            printsupport = process_dict[entry]['labelctgy']
+            printsupport = postprocess_dict['process_dict'][entry]['labelctgy']
             print("labelctgy processdict entry wasn't valid for entry ", entry)
             print("Was entered as ", printsupport)
             print("labelctgy needs to be a valid transformation category with entries in process_dict and transform_dict")
 
-    return process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult
+    return postprocess_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult
 
   def _check_processdict3_support(self, transform_dict, offspringparent, printstatus):
     """
@@ -35173,6 +35177,7 @@ class AutoMunge:
     #such that miscparameters_results logs validation results in the automunge workflow
     #and temp_miscparameters_results logs results in support functions that have access to postprocess_dict but not miscparameters_results
     #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
+    #after this point we only inspect process_dict as postprocess_dict['process_dict']
     postprocess_dict = {'column_dict' : {},
                         'columnkey_dict' : {},
                         'origcolumn' : {},
@@ -35296,13 +35301,13 @@ class AutoMunge:
       ##
       #now process family
       df_train, df_test, postprocess_dict = \
-      self._processfamily(df_train, df_test, column, category, category, process_dict, \
+      self._processfamily(df_train, df_test, column, category, category, \
                         transform_dict, postprocess_dict, assign_param)
 
       ##
       #now delete columns that were subject to replacement
       df_train, df_test, postprocess_dict = \
-      self._circleoflife(df_train, df_test, column, category, category, process_dict, \
+      self._circleoflife(df_train, df_test, column, category, category, \
                         transform_dict, postprocess_dict, templist1)
       ##
       #here's another templist to support the postprocess_dict entry below
@@ -35422,12 +35427,12 @@ class AutoMunge:
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
       self._processfamily(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
-                        process_dict, transform_dict, postprocess_dict, assign_param)
+                        transform_dict, postprocess_dict, assign_param)
       
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
       self._circleoflife(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
-                        process_dict, transform_dict, postprocess_dict, templist1)
+                        transform_dict, postprocess_dict, templist1)
 
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_labels)
@@ -35470,11 +35475,9 @@ class AutoMunge:
 
       #now that we know the root label category, we'll verify that if this was a custom processdict entry
       #it either includes a labelctgy entry or we'll otherwise populate one based on family tree
-      process_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
-      self._check_processdict3(labelscategory, processdict, process_dict, transform_dict, printstatus)
-      
-      if check_processdict3_valresult is True or check_processdict3_validlabelctgy_valresult is True:
-        postprocess_dict['process_dict'].update(process_dict)
+      #returning any update in postprocess_dict['process_dict']
+      postprocess_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
+      self._check_processdict3(labelscategory, processdict, postprocess_dict, transform_dict, printstatus)
       
       miscparameters_results.update({'check_processdict3_valresult' : check_processdict3_valresult,
                                      'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
@@ -35509,7 +35512,7 @@ class AutoMunge:
     df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count = \
     self._apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, list(df_train), \
-                        masterNArows_train, masterNArows_test, process_dict, randomseed, ML_cmnd)
+                        masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
 
     miscparameters_results.update(infill_validations)
 
@@ -35784,8 +35787,7 @@ class AutoMunge:
         
       #apply LabelFrequencyLevelizer defined function
       df_train, df_labels = \
-      self._LabelFrequencyLevelizer(df_train, df_labels, \
-                                   postprocess_dict, process_dict)
+      self._LabelFrequencyLevelizer(df_train, df_labels, postprocess_dict)
 
       #extract trainID
       if trainID_column is not False:
@@ -35824,8 +35826,7 @@ class AutoMunge:
 
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
-      self._LabelFrequencyLevelizer(df_test, df_testlabels, \
-                                   postprocess_dict, process_dict)
+      self._LabelFrequencyLevelizer(df_test, df_testlabels, postprocess_dict)
         
       #extract testID
       if testID_column is not False:
@@ -35978,7 +35979,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.98'
+    automungeversion = '6.99'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36319,7 +36320,7 @@ class AutoMunge:
     df_test, df_testID, df_testlabels, \
     postprocess_dict
 
-  def _postprocessfamily(self, df_test, column, category, origcategory, process_dict, \
+  def _postprocessfamily(self, df_test, column, category, origcategory, \
                         transform_dict, postprocess_dict, assign_param):
     '''
     #as postmunge runs a for loop through each column, this is the  
@@ -36352,7 +36353,7 @@ class AutoMunge:
       if sibling != None:
         #note we use the processparent function here
         df_test = \
-        self._postprocessparent(df_test, column, sibling, origcategory, final_upstream, process_dict, \
+        self._postprocessparent(df_test, column, sibling, origcategory, final_upstream, \
                               transform_dict, postprocess_dict, assign_param)
   
     #process the cousins (no downstream, supplemental)
@@ -36363,7 +36364,7 @@ class AutoMunge:
       if cousin != None:
         #note we use the processsibling function here
         df_test = \
-        self._postprocesscousin(df_test, column, cousin, origcategory, final_upstream, process_dict, \
+        self._postprocesscousin(df_test, column, cousin, origcategory, final_upstream, \
                                 transform_dict, postprocess_dict, assign_param)
   
     #process the parents (with downstream, with replacement)
@@ -36373,7 +36374,7 @@ class AutoMunge:
 
       if parent != None:
         df_test = \
-        self._postprocessparent(df_test, column, parent, origcategory, final_upstream, process_dict, \
+        self._postprocessparent(df_test, column, parent, origcategory, final_upstream, \
                               transform_dict, postprocess_dict, assign_param)
         
     #process the auntsuncles (no downstream, with replacement)
@@ -36383,7 +36384,7 @@ class AutoMunge:
 
       if auntuncle != None:
         df_test = \
-        self._postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, process_dict, \
+        self._postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, \
                                 transform_dict, postprocess_dict, assign_param)
 
   #     #if we had replacement transformations performed then delete the original column 
@@ -36393,7 +36394,7 @@ class AutoMunge:
 
     return df_test
 
-  def _postcircleoflife(self, df_test, column, category, origcategory, process_dict, \
+  def _postcircleoflife(self, df_test, column, category, origcategory, \
                         transform_dict, postprocess_dict):
     '''
     This functino deletes source columns for family primitives that included replacement.
@@ -36419,7 +36420,7 @@ class AutoMunge:
 
     return df_test
 
-  def _postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, process_dict, \
+  def _postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, \
                        transform_dict, postprocess_dict, assign_param):
     """
     #postprocesscousin is comparable to processcousin but applied in postmunge instead of automunge
@@ -36430,6 +36431,8 @@ class AutoMunge:
     #takes precedence over a postprocess function
     #which takes precedence over a singleprocess function
     """
+
+    process_dict = postprocess_dict['process_dict']
 
     inplaceperformed = False
     inplacecandidate = False
@@ -36489,7 +36492,7 @@ class AutoMunge:
 
     return df_test
 
-  def _postprocessparent(self, df_test, column, parent, origcategory, final_upstream, process_dict, \
+  def _postprocessparent(self, df_test, column, parent, origcategory, final_upstream, \
                       transform_dict, postprocess_dict, assign_param):
     """
     #postprocessparent is comparable to processparent but applied in postmunge instead of automunge
@@ -36503,6 +36506,8 @@ class AutoMunge:
     #takes precedence over a postprocess function
     #which takes precedence over a singleprocess function
     """
+
+    process_dict = postprocess_dict['process_dict']
     
     #this is used to derive the new columns from the trasform
     origcolumnsset = set(df_test)
@@ -36596,7 +36601,7 @@ class AutoMunge:
           #note the function applied is postprocessparent (using recursion)
           df_test = \
           self._postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                                  process_dict, transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param)
 
       #process any friends
       for friend in transform_dict[parent]['friends']:
@@ -36607,7 +36612,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self._postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
-                                  process_dict, transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param)
 
       #process any children
       for child in transform_dict[parent]['children']:
@@ -36618,7 +36623,7 @@ class AutoMunge:
           #note the function applied is postprocessparent (using recursion)
           #parent column
           df_test = \
-          self._postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, process_dict, \
+          self._postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, \
                                   transform_dict, postprocess_dict, assign_param)
 
       #process any coworkers
@@ -36630,7 +36635,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self._postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                                  process_dict, transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param)
 
     return df_test
 
@@ -43782,7 +43787,7 @@ class AutoMunge:
       #now process family
       df_test2_temp, df_test3_temp, drift_ppd = \
       self._processfamily(df_test2_temp, df_test3_temp, drift_column, drift_category, \
-                         drift_category, drift_process_dict, drift_transform_dict, \
+                         drift_category, drift_transform_dict, \
                          drift_ppd, drift_assign_param)
 
       #here's a second templist to support the columnkey entry below
@@ -44380,12 +44385,12 @@ class AutoMunge:
 
       #process family
       df_test = \
-      self._postprocessfamily(df_test, column, category, category, process_dict, \
+      self._postprocessfamily(df_test, column, category, category, \
                             transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_test = \
-      self._postcircleoflife(df_test, column, category, category, process_dict, \
+      self._postcircleoflife(df_test, column, category, category, \
                             transform_dict, postprocess_dict)
 
       #printout display progress
@@ -44418,12 +44423,12 @@ class AutoMunge:
 
       #process family
       df_testlabels = \
-      self._postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, process_dict, \
+      self._postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, \
                              transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_testlabels = \
-      self._postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, process_dict, \
+      self._postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, \
                             transform_dict, postprocess_dict)
     
       #printout display progress
@@ -44446,7 +44451,7 @@ class AutoMunge:
     df_test, infill_validations = \
     self._apply_pm_infill(df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, printstatus, list(df_test), \
-                        masterNArows_test, process_dict)
+                        masterNArows_test)
 
     postreports_dict['pm_miscparameters_results'].update(infill_validations)
 
@@ -44600,8 +44605,7 @@ class AutoMunge:
 
       #apply LabelFrequencyLevelizer defined function
       df_test, df_testlabels = \
-      self._LabelFrequencyLevelizer(df_test, df_testlabels, \
-                                   postprocess_dict, process_dict)
+      self._LabelFrequencyLevelizer(df_test, df_testlabels, postprocess_dict)
 
       #extract trainID
       if testID_column is not False:
