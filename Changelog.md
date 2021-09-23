@@ -4431,3 +4431,14 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - added validation in automunge for column header string conversion to confirm did not result in redundant headers (could happen if e.g. received headers included 1 and '1')
 - added validation to postmunge inversion denselabels case to confirm single label_column entry
 - fixed a snafu in privacy_encode (turned out was recording length of wrong list as part of a derivation)
+
+6.99
+- a walkthrough of the process_dict data structure
+- process_dict is initialized from assembleprocessdict and then after some preparations and validations are performed on user passed processdict the two are consolidated
+- process_dict is then populated in the postprocess_dict upon initialization
+- integration of process_dict into postprocess_dict was a deviation to support inspection of process_dict in custom_train postmunge wrapper function, which doesn't see process_dict but does see postprocess_dict
+- but had the side effect of redundant variable being passed through family processing functions as process_dict and postprocess_dict['process_dict']
+- realized it was a potential point of confusion to have the same data structure inspected in two different ways
+- which was compounded when moved the labelctgy intialization from automunge start to label processing, as labelctgy initialization in some cases edits entries to the process_dict
+- very simple solution, standardized on a single version of process_dict inspected in automunge(.) after postprocess_dict initialization as postprocess_dict['process_dict']
+- the exception is for feature importance application, which takes place prior to postprocess_dict initialization, so this still sees as process_dict 
