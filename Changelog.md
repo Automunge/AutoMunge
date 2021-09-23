@@ -4423,3 +4423,11 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - labels_column = [{'ordinal', 'categoriclabel_1', 'categoriclabel_2', 'categoriclabel_3']
 - which can then be recovered back to the form of three seperate labels in postmunge with inversion='labels'
 - updated form of postprocess_dict['labelsencoding_dict'], now with extra tiers of entries as well as entries associated with categoric consolidations
+
+6.98
+- a cleanup to strike some of the intermediate column forms from Binary returned from inverson (inversion was working, this just results in a cleaner returned set)
+- similarly, a cleanup to strike in set returned from inversion Binary columns produced from a retain consolidation in cases where inversion was originally passed as 'test' or 'labels (to be consistent with the original form)
+- added TrainLabelFreqLevel support for consolidated labels (supporting ordinal and onehot consolidations)
+- added validation in automunge for column header string conversion to confirm did not result in redundant headers (could happen if e.g. received headers included 1 and '1')
+- added validation to postmunge inversion denselabels case to confirm single label_column entry
+- fixed a snafu in privacy_encode (turned out was recording length of wrong list as part of a derivation)
