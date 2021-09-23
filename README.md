@@ -640,6 +640,7 @@ can be applied to designate that multiple categoric labels in the list may be co
 single categoric label, such as to train a single classification model for multiple classification targets,
 which form may then be recovered in a postmunge inversion='labels' operation, such as to convert the
 consoldiated form after an inference operation back to the form of seperate inferred labels.
+When passing data as numpy arrays the label column needs to be the final column (on far right of dataframe).
 
 * trainID_column:  defaults to False, user can pass a string of the column header or list of string column headers
 for columns that are to be segregated from the df_train set for return in the train_ID
@@ -664,7 +665,7 @@ in which case they are automatically given comparable treatment. Thus, the prima
 of the testID_column parameter is for cases where a df_test has ID columns 
 different from those passed with df_train. Note that an integer column index 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
-(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.)
+(When passing data as numpy arrays one should match ID partitioning between df_test and df_train.)
 
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
