@@ -24313,7 +24313,7 @@ class AutoMunge:
         
     return static_params, tune_params
 
-  def _predictinfill(self, category, df_train_filltrain, df_train_filllabel, \
+  def _predictinfill(self, column, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
                     postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = []):
     '''
@@ -24351,6 +24351,10 @@ class AutoMunge:
     #MLinfilltype distinguishes between classifier/regressor, single/multi column, ordinal/onehot/binary, etc
     #see potential values documented in assembleprocessdict function
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
+
+    #concurrent MLinfilltypes target a single column at a time, so categorylist is reset
+    if MLinfilltype in {'concurrent_nmbr', 'concurrent_act', 'concurrent_ordl'}:
+      categorylist = [column]
     
     #if a numeric target set
     if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
@@ -25136,7 +25140,7 @@ class AutoMunge:
 
       #predict infill values using defined function predictinfill(.)
       df_traininfill, df_testinfill, model, postprocess_dict = \
-      self._predictinfill(category, df_train_filltrain, df_train_filllabel, \
+      self._predictinfill(column, category, df_train_filltrain, df_train_filllabel, \
                         df_train_fillfeatures, df_test_fillfeatures, randomseed, \
                         postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = categorylist)
 
@@ -25644,14 +25648,14 @@ class AutoMunge:
                                                                    'predict' : self._predict_randomforest_classifier}, \
                                        'regression'             : {'train'   : self._train_randomforest_regressor, \
                                                                    'predict' : self._predict_randomforest_regressor}}, 
-                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon, \
-                                                                   'predict' : self._predict_autogluon}, \
-                                       'ordinalclassification'  : {'train'   : self._train_autogluon, \
-                                                                   'predict' : self._predict_autogluon}, \
-                                       'onehotclassification'   : {'train'   : self._train_autogluon, \
-                                                                   'predict' : self._predict_autogluon}, \
-                                       'regression'             : {'train'   : self._train_autogluon, \
-                                                                   'predict' : self._predict_autogluon}}, \
+                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'regression'             : {'train'   : self._train_autogluon_regressor, \
+                                                                   'predict' : self._predict_autogluon_regressor}}, \
                      'flaml'        : {'booleanclassification'  : {'train'   : self._train_flaml_classifier, \
                                                                    'predict' : self._predict_flaml_classifier}, \
                                        'ordinalclassification'  : {'train'   : self._train_flaml_classifier, \
@@ -25758,7 +25762,7 @@ class AutoMunge:
           print()
       
       #now we'll run a fit on the grid search
-      #for now won't pass any fit parameters
+      #for now won't pass any fit parameters (which means omitting the scikit option for sample_weight)
       fit_params = {}
       tuned_model.fit(df_train_filltrain, df_train_filllabel, **fit_params)    
     
@@ -25878,7 +25882,7 @@ class AutoMunge:
           print()
       
       #now we'll run a fit on the grid search
-      #for now won't pass any fit parameters
+      #for now won't pass any fit parameters (which means omitting the scikit option for sample_weight)
       fit_params = {}
       tuned_model.fit(df_train_filltrain, df_train_filllabel, **fit_params)    
     
@@ -25915,7 +25919,15 @@ class AutoMunge:
     
     return infill
 
-  def _train_autogluon(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'classification'
+    return self._train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_autogluon_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'regression'
+    return self._train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_autogluon(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
     """
     #Trains a model for ML infill using AutoGluon library
     #assumes that AutoGluon is imported external to the automunge(.) function call as
@@ -25926,6 +25938,8 @@ class AutoMunge:
     #currently applies default parameters to training operation, extended parameter support pending
     
     #same function used for both classification and regression relying on AutoGluon to infer label type
+    #classification differs by string conversion in single column labels case, based on modeltype parameter
+    #setting default as modeltype='regression' for backward compatibility preceding 7.10
     """
 
     # import autogluon.core as ag
@@ -25947,17 +25961,15 @@ class AutoMunge:
 
       if len(ag_label_column) == 1:
         ag_label_column = ag_label_column[0]
+        if modeltype == 'classification':
+          df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
       else:
-        df_train_filllabel = self._convert_onehot_to_singlecolumn(df_train_filllabel)
+        #note this scenario only occurs for classification
+        df_train_filllabel = self._convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #autogluon accepts labels as part of training set
       df_train_filltrain = pd.concat([df_train_filltrain, df_train_filllabel], axis=1)
-
-      # #now get name of columns, ag_label_column is the label, ag_trainset_columns is the other columns
-      # ag_trainset_columns = list(df_train_filltrain.columns)
-      # ag_label_column = ag_trainset_columns[-1]
-      # ag_trainset_columns.remove(ag_label_column)
 
       #apply the autogluon data set loader
       df_train_filltrain = task.Dataset(df_train_filltrain)
@@ -25989,7 +26001,15 @@ class AutoMunge:
     except ValueError:
       return False
 
-  def _predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_autogluon_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'classification'
+    return self._predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def _predict_autogluon_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'regression'
+    return self._predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def _predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
     """
     #runs and inference operation
     #on corresponding model trained in train_AutoGluon_classifier
@@ -25999,6 +26019,9 @@ class AutoMunge:
     #the categorylist parameter is used to handle an edge case
     #note that in some cases the passed categorylist may be a proxy list of equivalent length
     #such as a range of integers
+
+    #classification vs regression is based on modeltype and only differs by a string to integer conversion
+    #setting default as modeltype='regression' for backward compatibility preceding 7.10
     """
 
     # import autogluon.core as ag
@@ -26023,6 +26046,10 @@ class AutoMunge:
           infill = self._convert_singlecolumn_to_onehot(infill, categorylist)
         
     #     infill = np.array(infill)
+
+        elif modeltype == 'classification':
+
+          infill = infill.astype(int)
         
         return infill
       
@@ -26053,7 +26080,7 @@ class AutoMunge:
 
       ag_label_column = list(df_train_filllabel.columns)
 
-      #flaml accepts single column labels, these both convert to string for recognition of classification
+      #flaml accepts single column labels, string conversion not required since designating task type as classification
       if len(ag_label_column) == 1:
         ag_label_column = ag_label_column[0]
 
@@ -26226,7 +26253,7 @@ class AutoMunge:
         df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
 
       else:
-        df_train_filllabel = self._convert_onehot_to_singlecolumn(df_train_filllabel)
+        df_train_filllabel = self._convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #user can pass parameters to catboost model initialization in ML_cmnd['MLinfill_cmnd']['catboost_classifier_model']
@@ -26267,23 +26294,13 @@ class AutoMunge:
         eval_ratio = 0
 
       if eval_ratio > 0 and eval_ratio < 1:
-        #we'll shuffle entries before extracting validation set
-        df_train_filltrain = self._df_shuffle(df_train_filltrain, randomseed)
-        df_train_filllabel = self._df_shuffle(df_train_filllabel, randomseed)
+        
+        #extract validation sets
+        df_train_filltrain, df_train_filltrain_val = \
+        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
-        rowcount = df_train_filltrain.shape[0]
-        val_rowcount = int(eval_ratio * rowcount)
-
-        #edge case for very small data sets
-        if val_rowcount == 0:
-          val_rowcount += 1
-          rowcount -= 1
-
-        df_train_filltrain_val = df_train_filltrain[0:val_rowcount]
-        df_train_filltrain = df_train_filltrain[val_rowcount:]
-
-        df_train_filllabel_val = df_train_filllabel[0:val_rowcount]
-        df_train_filllabel = df_train_filllabel[val_rowcount:]
+        df_train_filllabel, df_train_filllabel_val = \
+        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
         
         train_nunique = int(df_train_filllabel.nunique())
         train_rows = int(df_train_filllabel.shape[0])
@@ -26423,23 +26440,13 @@ class AutoMunge:
         eval_ratio = 0
 
       if eval_ratio > 0 and eval_ratio < 1:
-        #we'll shuffle entries before extracting validation set
-        df_train_filltrain = self._df_shuffle(df_train_filltrain, randomseed)
-        df_train_filllabel = self._df_shuffle(df_train_filllabel, randomseed)
+        
+        #extract validation sets
+        df_train_filltrain, df_train_filltrain_val = \
+        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
-        rowcount = df_train_filltrain.shape[0]
-        val_rowcount = int(eval_ratio * rowcount)
-
-        #edge case for very small data sets
-        if val_rowcount == 0:
-          val_rowcount += 1
-          rowcount -= 1
-
-        df_train_filltrain_val = df_train_filltrain[0:val_rowcount]
-        df_train_filltrain = df_train_filltrain[val_rowcount:]
-
-        df_train_filllabel_val = df_train_filllabel[0:val_rowcount]
-        df_train_filllabel = df_train_filllabel[val_rowcount:]
+        df_train_filllabel, df_train_filllabel_val = \
+        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
 
         train_nunique = int(df_train_filllabel.nunique())
         
@@ -27069,7 +27076,7 @@ class AutoMunge:
       categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
 
       _infilla, _infillb, FSmodel, postprocess_dict = \
-      self._predictinfill(labelctgy, am_subset, am_labels, \
+      self._predictinfill(categorylist[0], labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
                          randomseed, postprocess_dict, ML_cmnd, postprocess_dict['autoMLer'], printstatus, \
                          categorylist = categorylist)
@@ -31776,10 +31783,9 @@ class AutoMunge:
     """
     
     labelscategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
-    populated_set = set(labelsencoding_dict['transforms'][labels_column_entry][labelscategory])
     
-    #if inputcolumn has a column_dict entry and not already populated in labelsencoding_dict we'll add the normalization_dict
-    if inputcolumn in postprocess_dict['column_dict'] and inputcolumn not in populated_set:
+    #if inputcolumn has a column_dict entry we'll add the normalization_dict
+    if inputcolumn in postprocess_dict['column_dict']:
       labelsnormalization_dict = postprocess_dict['column_dict'][inputcolumn]['normalization_dict']
       labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
       
@@ -33859,9 +33865,14 @@ class AutoMunge:
     
     populated_columns = []
 
-    #this supports Binary returned columns
-    Binary_sets_log = {'trainlog' : deepcopy(postprocess_dict['returned_Binary_sets']),
-                       'labellog' : deepcopy(postprocess_dict['final_returned_labelBinary_sets'])}
+    #_populate_columntype_report may be called prior to applying Binary
+    if 'returned_Binary_sets' in postprocess_dict:
+      #this supports Binary returned columns
+      Binary_sets_log = {'trainlog' : deepcopy(postprocess_dict['returned_Binary_sets']),
+                        'labellog' : deepcopy(postprocess_dict['final_returned_labelBinary_sets'])}
+    else:
+      Binary_sets_log = {'trainlog' : [],
+                        'labellog' : []}
     
     #for column in postprocess_dict['finalcolumns_train']:
     for column in target_columns:
@@ -36311,8 +36322,10 @@ class AutoMunge:
     postprocess_dict.update({'private_columntype_report' : private_columntype_report})
 
     #if privacy_encode is True, overwrite the columntype_report to the private version
+    #and erase the column_map
     if privacy_encode is True:
       postprocess_dict['columntype_report'] = private_columntype_report
+      postprocess_dict['column_map'] = {}
 
     if totalvalidationratio > 0:
 
@@ -43051,7 +43064,7 @@ class AutoMunge:
     
     return df_test_fillfeatures
 
-  def _predictpostinfill(self, category, model, df_test_fillfeatures, \
+  def _predictpostinfill(self, column, category, model, df_test_fillfeatures, \
                         postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = []):
     '''
     #predictpostinfill(category, model, df_test_fillfeatures, \
@@ -43073,6 +43086,10 @@ class AutoMunge:
     
     #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
     autoML_type = ML_cmnd['autoML_type']
+
+    #concurrent MLinfilltypes target a single column at a time, so categorylist is reset
+    if MLinfilltype in {'concurrent_nmbr', 'concurrent_act', 'concurrent_ordl'}:
+      categorylist = [column]
     
     #ony run the following if we successfuly trained a model in automunge
     if model is not False:
@@ -43220,7 +43237,7 @@ class AutoMunge:
 
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
-      self._predictpostinfill(category, model, df_test_fillfeatures, \
+      self._predictpostinfill(column, category, model, df_test_fillfeatures, \
                             postprocess_dict, postprocess_dict['ML_cmnd'], postprocess_dict['autoMLer'], \
                             printstatus, categorylist = categorylist)
 
