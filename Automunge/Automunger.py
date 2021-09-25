@@ -7591,7 +7591,7 @@ class AutoMunge:
 
     return process_dict
 
-  def _processfamily(self, df_train, df_test, column, category, origcategory, \
+  def _processfamily(self, df_train, df_test, column, origcategory, \
                     transform_dict, postprocess_dict, assign_param):
     '''
     #as automunge runs a for loop through each column in automunge, this is the master 
@@ -7607,15 +7607,15 @@ class AutoMunge:
     #final upstream transform from parents or auntsuncles is elligible for inplace
     #when a replacement transform is to be applied
     final_upstream = False
-    if len(transform_dict[category]['auntsuncles']) == 0:
-      if len(transform_dict[category]['parents']) > 0:
-        final_upstream = transform_dict[category]['parents'][-1]
+    if len(transform_dict[origcategory]['auntsuncles']) == 0:
+      if len(transform_dict[origcategory]['parents']) > 0:
+        final_upstream = transform_dict[origcategory]['parents'][-1]
     else:
-      if len(transform_dict[category]['auntsuncles']) > 0:
-        final_upstream = transform_dict[category]['auntsuncles'][-1]
+      if len(transform_dict[origcategory]['auntsuncles']) > 0:
+        final_upstream = transform_dict[origcategory]['auntsuncles'][-1]
 
     #process the siblings (with downstream, supplemental)
-    for sibling in transform_dict[category]['siblings']:
+    for sibling in transform_dict[origcategory]['siblings']:
 
       if sibling != None:
         #note we use the processparent function here
@@ -7624,7 +7624,7 @@ class AutoMunge:
                           transform_dict, postprocess_dict, assign_param)
     
     #process the cousins (no downstream, supplemental)
-    for cousin in transform_dict[category]['cousins']:
+    for cousin in transform_dict[origcategory]['cousins']:
       
       #this if statement kind of a placeholder such as for validation of primitive entry
       if cousin != None:
@@ -7635,7 +7635,7 @@ class AutoMunge:
                             transform_dict, postprocess_dict, assign_param)
 
     #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
+    for parent in transform_dict[origcategory]['parents']:
 
       if parent != None:
 
@@ -7644,7 +7644,7 @@ class AutoMunge:
                           transform_dict, postprocess_dict, assign_param)
         
     #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
+    for auntuncle in transform_dict[origcategory]['auntsuncles']:
 
       if auntuncle != None:
 
@@ -7654,9 +7654,8 @@ class AutoMunge:
                             transform_dict, postprocess_dict, assign_param)
 
     #if we had replacement transformations performed then mark column for deletion
-    #(circle of life)
-    if len(transform_dict[category]['auntsuncles']) \
-    + len(transform_dict[category]['parents']) > 0 \
+    if len(transform_dict[origcategory]['auntsuncles']) \
+    + len(transform_dict[origcategory]['parents']) > 0 \
     and inplaceperformed is False:
       #here we'll only address downstream generaitons
       if column in postprocess_dict['column_dict']:
@@ -7670,7 +7669,7 @@ class AutoMunge:
 
     return df_train, df_test, postprocess_dict
 
-  def _circleoflife(self, df_train, df_test, column, category, origcategory, \
+  def _circleoflife(self, df_train, df_test, column, category, \
                     transform_dict, postprocess_dict, templist1):
     '''
     #This function deletes source column for cases where family primitives 
@@ -8155,7 +8154,6 @@ class AutoMunge:
                              transform_dict, postprocess_dict, assign_param)
 
       #if we had replacement transformations performed then mark column for deletion
-      #(circle of life)
       if len(transform_dict[parent]['children']) \
       + len(transform_dict[parent]['coworkers']) > 0 \
       and parent_inplaceperformed is False:
@@ -10314,7 +10312,7 @@ class AutoMunge:
                                    (divisor) * multiplier + offset
       
       scalingapproach = 'mxmn'
-    
+
     #create list of columns
     nmbrcolumns = [suffixcolumn]
 
@@ -31769,6 +31767,86 @@ class AutoMunge:
       
     return check_processdict_result, check_processdict_result2
 
+  def _populate_labelsencoding_dict_support(self, labelsencoding_dict, postprocess_dict, labels_column_entry, inputcolumn):
+    """
+    #support function to populate labelsencoding_dict
+    #to ensure normalization_dict entries are included for columns not returned from transforms
+    #such as those subject to replacement
+    #which will be excluded from columnkeylist
+    """
+    
+    labelscategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
+    populated_set = set(labelsencoding_dict['transforms'][labels_column_entry][labelscategory])
+    
+    #if inputcolumn has a column_dict entry and not already populated in labelsencoding_dict we'll add the normalization_dict
+    if inputcolumn in postprocess_dict['column_dict'] and inputcolumn not in populated_set:
+      labelsnormalization_dict = postprocess_dict['column_dict'][inputcolumn]['normalization_dict']
+      labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
+      
+      #now do the same for the next inputcolumn, this will halt once the inputcolumn reaches the column passed to automunge(.)
+      inputinputcolumn = postprocess_dict['column_dict'][inputcolumn]['inputcolumn']      
+      labelsencoding_dict = self._populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, labels_column_entry, inputinputcolumn)
+    
+    return labelsencoding_dict
+
+  def _populate_labelsencoding_dict_support2(self, labelsencoding_dict, postprocess_dict, transform_dict, category, i):
+    """
+    #populates transform_dict and process_dict entries to labelsencoding_dict
+    #but only those associated with transforms applied to label sets
+    #first tier category should be basewd on root category of labels_column_entry - a label column as recieved by automunge(.)
+    #rootcategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
+    #downstream tiers will receive category entries to primitive with offspring and i>0
+    """
+
+    if 'transform_dict' not in labelsencoding_dict:
+      labelsencoding_dict.update({'transform_dict' : {}})
+      
+    if 'process_dict' not in labelsencoding_dict:
+      labelsencoding_dict.update({'process_dict' : {}})
+    
+    familytree = transform_dict[category]
+    
+    labelsencoding_dict['transform_dict'].update({category : transform_dict[category]})
+    
+    #i will be 0 for upstream primitives
+    if i == 0:
+      
+      #populate process_dict for all category entries
+      for primitive in ['parents', 'siblings', 'auntsuncles', 'cousins']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+      
+      #populate transform_dict for categories with offspring, populated by calling function recursively
+      for primitive in ['parents', 'siblings']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              i+=1
+              labelsencoding_dict, i = self._populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+              i=0
+    
+    #i will > 0 for downstream primitives
+    elif i > 0:
+      
+      #populate process_dict for all category entries
+      for primitive in ['children', 'niecesnephews', 'coworkers', 'friends']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+      
+      #populate transform_dict for categories with offspring, populated by calling function recursively
+      for primitive in ['children', 'niecesnephews']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              i+=1
+              labelsencoding_dict, i = self._populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+
+    return labelsencoding_dict, i
+
   def _check_processdict3(self, entry, processdict, postprocess_dict, transform_dict, printstatus):
     """
     The processdict 'labelctgy' entry is only really used on small part of library
@@ -33739,13 +33817,14 @@ class AutoMunge:
 
     return df, df2
   
-  def _df_shuffle(self, df, randomseed):
+  def _df_shuffle(self, df, randomseed, axis=0):
     """
     #Shuffles the rows of a dataframe
     #per seeding of randomseed
+    #pass axis = 1 to shuffle order of columns
     """
     
-    df = df.sample(frac=1, random_state=randomseed)
+    df = df.sample(frac=1, random_state=randomseed, axis=axis)
     
     return df  
   
@@ -35301,13 +35380,13 @@ class AutoMunge:
       ##
       #now process family
       df_train, df_test, postprocess_dict = \
-      self._processfamily(df_train, df_test, column, category, category, \
+      self._processfamily(df_train, df_test, column, category, \
                         transform_dict, postprocess_dict, assign_param)
 
       ##
       #now delete columns that were subject to replacement
       df_train, df_test, postprocess_dict = \
-      self._circleoflife(df_train, df_test, column, category, category, \
+      self._circleoflife(df_train, df_test, column, category, \
                         transform_dict, postprocess_dict, templist1)
       ##
       #here's another templist to support the postprocess_dict entry below
@@ -35426,12 +35505,12 @@ class AutoMunge:
 
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
-      self._processfamily(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
+      self._processfamily(df_labels, df_testlabels, labels_column_entry, labelscategory, \
                         transform_dict, postprocess_dict, assign_param)
       
       #now delete columns subject to replacement
       df_labels, df_testlabels, postprocess_dict = \
-      self._circleoflife(df_labels, df_testlabels, labels_column_entry, labelscategory, labelscategory, \
+      self._circleoflife(df_labels, df_testlabels, labels_column_entry, labelscategory, \
                         transform_dict, postprocess_dict, templist1)
 
       #here's another templist to support the postprocess_dict entry below
@@ -35466,6 +35545,14 @@ class AutoMunge:
         labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict']
         #this populates a labelsnormalization_dict as {returnedcolumn : {normalization_dict}}
         labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
+
+        #this access any upstream normalization_dict's for columns that were subject to replacement
+        inputcolumn = postprocess_dict['column_dict'][finalcolumn_label]['inputcolumn']
+        labelsencoding_dict = self._populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, labels_column_entry, inputcolumn)
+
+      #now populate any transform_dict or process_dict entries that were inspected for label transforms
+      labelsencoding_dict, _0 = \
+      self._populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, labelscategory, 0)
         
       #printout display progress
       if printstatus is True:
@@ -35979,7 +36066,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '6.99'
+    automungeversion = '7.00'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36110,14 +36197,24 @@ class AutoMunge:
     self._populate_column_map_report(postprocess_dict)
     postprocess_dict.update({'column_map' : column_map})
 
-    finalcolumns_labels = list(df_labels)
-    
-    finalcolumns_trainID = list(df_trainID)
-    finalcolumns_testID = list(df_testID)    
-    
     #now if user selects privacy preserving encodings, we'll update the headers
     #since any received integers will have been converted to string, we'll use integers
     #for privacy headers to avoid overlap
+    #and shuffle order of features in returned dataframe
+    #alternate columntype_report available as private_columntype_report
+
+    if privacy_encode is True:
+      df_train = self._df_shuffle(df_train, randomseed, axis=1)
+      df_test = self._df_shuffle(df_test, randomseed, axis=1)
+      df_labels = self._df_shuffle(df_labels, randomseed, axis=1)
+      df_testlabels = self._df_shuffle(df_testlabels, randomseed, axis=1)
+      df_trainID = self._df_shuffle(df_trainID, randomseed, axis=1)
+      df_testID = self._df_shuffle(df_testID, randomseed, axis=1)
+    
+    finalcolumns_train = list(df_train)
+    finalcolumns_labels = list(df_labels)
+    finalcolumns_trainID = list(df_trainID)
+    finalcolumns_testID = list(df_testID)    
     
     privacy_headers_train = list(range(len(finalcolumns_train)))
     
@@ -36194,6 +36291,28 @@ class AutoMunge:
     postprocess_dict.update({'privacy_headers_testID' : privacy_headers_testID})
     postprocess_dict.update({'privacy_headers_testID_dict' : privacy_headers_testID_dict})
     postprocess_dict.update({'inverse_privacy_headers_testID_dict' : inverse_privacy_headers_testID_dict})
+
+    #now generate a privacy_encoded verison of columntype_report
+    private_columntype_report = deepcopy(postprocess_dict['columntype_report'])
+    
+    for key in columntype_report:
+
+      if key not in {'onehot_sets', 'binary_sets'}:
+        self._list_replace(private_columntype_report[key], postprocess_dict['privacy_headers_train_dict'])
+        self._list_replace(private_columntype_report[key], postprocess_dict['privacy_headers_labels_dict'])
+        random.shuffle(private_columntype_report[key])
+        
+      elif key in {'onehot_sets', 'binary_sets'}:  
+        for sublist in private_columntype_report[key]:
+          self._list_replace(sublist, postprocess_dict['privacy_headers_train_dict'])
+          self._list_replace(sublist, postprocess_dict['privacy_headers_labels_dict'])
+          random.shuffle(sublist)
+
+    postprocess_dict.update({'private_columntype_report' : private_columntype_report})
+
+    #if privacy_encode is True, overwrite the columntype_report to the private version
+    if privacy_encode is True:
+      postprocess_dict['columntype_report'] = private_columntype_report
 
     if totalvalidationratio > 0:
 
@@ -36320,7 +36439,7 @@ class AutoMunge:
     df_test, df_testID, df_testlabels, \
     postprocess_dict
 
-  def _postprocessfamily(self, df_test, column, category, origcategory, \
+  def _postprocessfamily(self, df_test, column, origcategory, \
                         transform_dict, postprocess_dict, assign_param):
     '''
     #as postmunge runs a for loop through each column, this is the  
@@ -36338,15 +36457,15 @@ class AutoMunge:
     #final upstream transform from parents or auntsuncles is elligible for inplace
     #when a replacement transform is applied
     final_upstream = False
-    if len(transform_dict[category]['auntsuncles']) == 0:
-      if len(transform_dict[category]['parents']) > 0:
-        final_upstream = transform_dict[category]['parents'][-1]
+    if len(transform_dict[origcategory]['auntsuncles']) == 0:
+      if len(transform_dict[origcategory]['parents']) > 0:
+        final_upstream = transform_dict[origcategory]['parents'][-1]
     else:
-      if len(transform_dict[category]['auntsuncles']) > 0:
-        final_upstream = transform_dict[category]['auntsuncles'][-1]
+      if len(transform_dict[origcategory]['auntsuncles']) > 0:
+        final_upstream = transform_dict[origcategory]['auntsuncles'][-1]
         
     #process the siblings (with downstream, supplemental)
-    for sibling in transform_dict[category]['siblings']:
+    for sibling in transform_dict[origcategory]['siblings']:
 
   #       print("sibling = ", sibling)
 
@@ -36357,7 +36476,7 @@ class AutoMunge:
                               transform_dict, postprocess_dict, assign_param)
   
     #process the cousins (no downstream, supplemental)
-    for cousin in transform_dict[category]['cousins']:
+    for cousin in transform_dict[origcategory]['cousins']:
 
   #       print("cousin = ", cousin)
 
@@ -36368,7 +36487,7 @@ class AutoMunge:
                                 transform_dict, postprocess_dict, assign_param)
   
     #process the parents (with downstream, with replacement)
-    for parent in transform_dict[category]['parents']:
+    for parent in transform_dict[origcategory]['parents']:
 
   #       print("parent = ", parent)
 
@@ -36378,7 +36497,7 @@ class AutoMunge:
                               transform_dict, postprocess_dict, assign_param)
         
     #process the auntsuncles (no downstream, with replacement)
-    for auntuncle in transform_dict[category]['auntsuncles']:
+    for auntuncle in transform_dict[origcategory]['auntsuncles']:
 
   #       print("auntuncle = ", auntuncle)
 
@@ -36387,14 +36506,9 @@ class AutoMunge:
         self._postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, \
                                 transform_dict, postprocess_dict, assign_param)
 
-  #     #if we had replacement transformations performed then delete the original column 
-  #     #(circle of life)
-  #     if len(transform_dict[category]['auntsuncles']) + len(transform_dict[category]['parents']) > 0:
-  #       del df_test[column]
-
     return df_test
 
-  def _postcircleoflife(self, df_test, column, category, origcategory, \
+  def _postcircleoflife(self, df_test, column, category, \
                         transform_dict, postprocess_dict):
     '''
     This functino deletes source columns for family primitives that included replacement.
@@ -43786,7 +43900,7 @@ class AutoMunge:
     
       #now process family
       df_test2_temp, df_test3_temp, drift_ppd = \
-      self._processfamily(df_test2_temp, df_test3_temp, drift_column, drift_category, \
+      self._processfamily(df_test2_temp, df_test3_temp, drift_column, \
                          drift_category, drift_transform_dict, \
                          drift_ppd, drift_assign_param)
 
@@ -43925,6 +44039,11 @@ class AutoMunge:
     else:
       postprocess_dict['traindata'] = False
 
+    #printouts not generated for privacy_encode
+    if postprocess_dict['privacy_encode'] is True and printstatus is True:
+      print("privacy_encode was performed in automunge(.), printstatus reset from True to False to align")
+      printstatus = False
+
     #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
     postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
 
@@ -44037,11 +44156,11 @@ class AutoMunge:
 
       #this converts to original headers for cases where automunge originally received pandas
       #and user is passing numpy to postmunge
-      if len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
+      if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) and inversion is False:
         df_test.columns = postprocess_dict['origcolumns_all']
 
       #this is one spot where having a labelscolumn parameter would be nice, but not worth added complexity
-      if postprocess_dict['labels_column'] is not False:
+      if postprocess_dict['labels_column'] is not False and inversion is False:
         if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - len(postprocess_dict['labels_column_listofcolumns']):
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
           for labels_column_listofcolumns_entry in postprocess_dict['labels_column_listofcolumns']:
@@ -44101,9 +44220,7 @@ class AutoMunge:
       #strike temporary log from postprocess_dict
       del postprocess_dict['temp_pm_miscparameters_results']
 
-      df_test = self._inversion_numpy_support(df_test, postprocess_dict, inversion)
-
-      df_test = self._inversion_privacy_support(df_test, postprocess_dict, inversion)
+      df_test = self._inversion_header_support(df_test, postprocess_dict, inversion)
 
       df_test, recovered_list, inversion_info_dict = \
       self._inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
@@ -44385,12 +44502,12 @@ class AutoMunge:
 
       #process family
       df_test = \
-      self._postprocessfamily(df_test, column, category, category, \
+      self._postprocessfamily(df_test, column, category, \
                             transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_test = \
-      self._postcircleoflife(df_test, column, category, category, \
+      self._postcircleoflife(df_test, column, category, \
                             transform_dict, postprocess_dict)
 
       #printout display progress
@@ -44423,12 +44540,12 @@ class AutoMunge:
 
       #process family
       df_testlabels = \
-      self._postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, \
+      self._postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, \
                              transform_dict, postprocess_dict, assign_param)
 
       #delete columns subject to replacement
       df_testlabels = \
-      self._postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, labelscategory, \
+      self._postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, \
                             transform_dict, postprocess_dict)
     
       #printout display progress
@@ -44685,12 +44802,14 @@ class AutoMunge:
     #now rename columns for privacy encoding when activated
     if postprocess_dict['privacy_encode'] is True:
 
+      df_test = self._df_shuffle(df_test, postprocess_dict['randomseed'], axis=1)
       df_test = df_test.rename(columns = postprocess_dict['privacy_headers_train_dict'])
 
       if labelscolumn is not False:
-
+        df_testlabels = self._df_shuffle(df_testlabels, postprocess_dict['randomseed'], axis=1)
         df_testlabels = df_testlabels.rename(columns = postprocess_dict['privacy_headers_labels_dict'])
 
+      df_testID = self._df_shuffle(df_testID, postprocess_dict['randomseed'], axis=1)
       df_testID = df_testID.rename(columns = postprocess_dict['privacy_headers_testID_dict'])
 
     #here's a list of final column names saving here since the translation to \
@@ -45257,61 +45376,54 @@ class AutoMunge:
         
     return df
 
-  def _inversion_numpy_support(self, df, postprocess_dict, inversion):
+  def _inversion_header_support(self, df, postprocess_dict, inversion):
     """
-    #Checks if a data set passed to inversion is numpy
-    #and if so checks the column count
-    #and if it matches column count of test or testlabels set
-    #then it converts to dataframe and applies the correct headers
-    #such as to enable inversion_parent function
-    #relies on the inversion parameter for whether to 
-    #apply label column headers or test set column headers
-    #note that currently numpy is only supported for full set inverison
-    #eg by passing a full test set or a full label set
-    #if user passes a list of column headers to inversion
-    #this method assumes that list is for a test inversion
-    """
-      
-    if inversion == 'labels':
-
-      if len(df.columns) == len(postprocess_dict['finalcolumns_labels']):
-
-        if set(df.columns) != set(postprocess_dict['finalcolumns_labels']):
-
-          df.columns = postprocess_dict['finalcolumns_labels']
-
-    else:
-
-      if len(df.columns) == len(postprocess_dict['finalcolumns_train']):
-
-        if set(df.columns) != set(postprocess_dict['finalcolumns_train']):
-
-          df.columns = postprocess_dict['finalcolumns_train']
-      
-    return df
-
-  def _inversion_privacy_support(self, df, postprocess_dict, inversion):
-    """
-    #Checks if privacy_encoding option is active
-    #and if so converts df from privacy version of encodings to suffix version
-    #note that the rename function can be run even when dictionary doesn't have matches
-    #so it is ok to run this on a set that had already been converted from numpy 
-    #such as in inversion_numpy_support function
-    #note that privacy headers are integers so won't overlap with strings
-    #relies on the inversion parameter for whether to 
-    #apply label column headers or test set column headers
+    #handles cases where headers might need to be adjusted prior to inversion
+    #if privacy_encode is False only need to adjust headers for numpy array scenario
+    #if privacy encode is True also need to convert from private headers
+    #and return order of columns
     """
     
-    if postprocess_dict['privacy_encode'] is True:
+    if postprocess_dict['privacy_encode'] is False:
       
       if inversion == 'labels':
-        
-        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_labels_dict'])
+        if len(df.columns) == len(postprocess_dict['finalcolumns_labels']):
+          if set(df.columns) != set(postprocess_dict['finalcolumns_labels']):
+            #this is for data passed as numpy arrays
+            df.columns = postprocess_dict['finalcolumns_labels']
 
       else:
-
-        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_train_dict'])
+        if len(df.columns) == len(postprocess_dict['finalcolumns_train']):
+          if set(df.columns) != set(postprocess_dict['finalcolumns_train']):
+            #this is for data passed as numpy arrays
+            df.columns = postprocess_dict['finalcolumns_train']
+    
+    elif postprocess_dict['privacy_encode'] is True:
       
+      if inversion in {'labels', 'denselabels'}:
+        
+        #this is for data passed as numpy arrays
+        if len(df.columns) == len(postprocess_dict['privacy_headers_labels']):
+          df.columns = postprocess_dict['privacy_headers_labels']
+        
+        #now recover original column headers
+        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_labels_dict'])
+        
+        #now recover original order of columns prior to privacy encoding
+        df = df.reindex(columns=postprocess_dict['finalcolumns_labels'])
+
+      else:
+        
+        #this is for data passed as numpy arrays
+        if len(df.columns) == len(postprocess_dict['privacy_headers_train']):
+          df.columns = postprocess_dict['privacy_headers_train']
+
+        #now recover original column headers
+        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_train_dict'])
+        
+        #now recover original order of columns prior to privacy encoding
+        df = df.reindex(columns=postprocess_dict['finalcolumns_train'])
+
     return df
 
   def _inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
