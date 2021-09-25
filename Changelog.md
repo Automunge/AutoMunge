@@ -4442,3 +4442,17 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - which was compounded when moved the labelctgy intialization from automunge start to label processing, as labelctgy initialization in some cases edits entries to the process_dict
 - very simple solution, standardized on a single version of process_dict inspected in automunge(.) after postprocess_dict initialization as postprocess_dict['process_dict']
 - the exception is for feature importance application, which takes place prior to postprocess_dict initialization, so this still sees as process_dict 
+
+7.0
+- extensions to privacy_encode option
+- now an alternate columntype_report is returned as postprocess_dict['private_columntype_report']
+- populated with the alternate privacy encoded column headers
+- and when privacy_encode activated this replaces the original columntype_report
+- also now when privacy_encode is activated, the order of columns is shuffled prior to assigning alternate headers
+- postmunge printouts other than bug reports are now silenced in privacy_encode scenario
+- struck a redundancy in postmunge inversion associated with renaming columns which interfered now that privacy_encode shuffles order of columns
+- consolidated a redundant parameter in support functions processfamily, postprocessfamily, circleoflife, postcircleoflife
+- a little fleshing out of the returned data structure postprocess_dict['labelsencoding_dict']
+- which is intended as an alternative resource for label inversion for cases where user doesn't wish to share the entire postprocess_dict, such as for file size or privacy reasons
+- now labelsencoding_dict records any trasnform_dict and process_dict entries that were inspected as part of label processing
+- as well as recording normalization_dict entries associated with derived columns that were subject to replacement
