@@ -1917,9 +1917,9 @@ column headers of received data are anonymized. This parameter when activated sh
 replaces headers and suffixes with integers, including distinct sets of integers between train, labels,
 and ID sets. Note that conversion information is available in returned postprocess_dict under
 privacy reports (in other words, privacy can be circumvented if user has access to the postprocess_dict). 
-The returned columntype_report captures the privacy encodings. Note that when activated consistent convention 
-is applied in postmunge and inversion is supported. When privacy_encode activated postmunge(.) printstatus
-is only available as False or 'silent'.
+When activated the postprocess_dict returned columntype_report captures the privacy encodings and the column_map is erased. 
+Note that when activated consistent convention is applied in postmunge and inversion is supported. 
+When privacy_encode activated postmunge(.) printstatus is only available as False or 'silent'.
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
