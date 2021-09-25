@@ -4456,3 +4456,15 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - which is intended as an alternative resource for label inversion for cases where user doesn't wish to share the entire postprocess_dict, such as for file size or privacy reasons
 - now labelsencoding_dict records any trasnform_dict and process_dict entries that were inspected as part of label processing
 - as well as recording normalization_dict entries associated with derived columns that were subject to replacement
+
+7.10
+- performed a walkthrough of ML infill support functions
+- validated various translations applied as part of data prep for 1010 MLinfilltype and model training for libraries that that only accept single column classification labels
+- found and fixed a ML infill bug for catboost associated with accessing Binary columns in the support function to populate columntype_report
+- (catboost calls this function prior to applying Binary was reason for bug, I think this might have been associated with 6.89 updates)
+- found and fixed edge case for autogluon ML infill associated with infill targeting single column categoric feature
+- (autogluon likes categoric labels as strings to recognize the classification application)
+- replaced a validation split with shuffling performed for ML infill with catboost, now using support function _df_split
+- fixed a small bug in one of support functions rolled out in last update via negative (there was a scenario where recursion would halt too early)
+- another privacy_encode extension, now when activated the column_map is erased in returned postprocess_dict
+- found and fixed a process flaw for ML infill targeting a concurrent MLinfilltype
