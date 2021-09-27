@@ -1396,7 +1396,7 @@ Each category populated in a family tree requires its own transformdict root cat
 as well as an entry in the processdict described below for assigning associated transformation functions and data properties.
 Note that the library has an internally defined library of transformation categories prepopulated in the
 internal transform_dict which are detailed below in the Library of Transformations section of this document.
-For clarity transformdict refers to the user passed data structure which is subsequently consolidated into the internal "transform_dict" (with underscore) data structure.
+For clarity transformdict refers to the user passed data structure which is subsequently consolidated into the internal "transform_dict" (with underscore) data structure. The returned version in postprocess_dict['transform_dict'] records entries that were inspected in the associated automunge(.) call.
 
 ```
     #transform_dict is for purposes of populating
@@ -1590,6 +1590,8 @@ to the library is a corresponding processdict entry not required. However note t
 without a corresponding root category definition in transformdict, which may be used when passing a custom transformation category to a family tree primitive without offspring.
 
 We'll describe the options for processdict entries here. For clarity processdict refers to the user passed data structure which is subsequently consolidated into the internal "process_dict" (with underscore) data structure.
+The returned version in postprocess_dict['process_dict'] records entries that were inspected in the 
+associated automunge(.) call.
 
 ```
 #A user should pass either a pair of processing functions to both 
