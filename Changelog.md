@@ -4468,3 +4468,22 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - fixed a small bug in one of support functions rolled out in last update via negative (there was a scenario where recursion would halt too early)
 - another privacy_encode extension, now when activated the column_map is erased in returned postprocess_dict
 - found and fixed a process flaw for ML infill targeting a concurrent MLinfilltype
+
+7.11
+- major backward compatibility impacting update
+- meaning postprocess_dict's populated in prior versions will require re-fitting to the train set using this or a later version or running an earlier version for postmunge(.) to prepare additional data
+- this update was to align with the intent that all operations are to be channeled through the interface of two master functions: automunge(.) and postmunge(.)
+- all internal support functions other than automunge(.) and postmunge(.) are now private functions, not accessible outside of the class
+- took this backward compatibility impact as an opportunity to clean up all postmunge and postprocess operations that had dual configurations to accomodate backward compatibility 
+- also, an audit of the insertinfill function identified opportunity for a more efficient application
+- now with what was a kind of hacky pandas replace application replaced with an operation built on top of loc
+- we expect this will benefit latency of this function which is used throughout ML infill and other assigninfill options
+- struck some unused variables initialized in inversion
+- new convention: returned postprocesss_dict omits entries for transformdict and processdict which were copies of user passed parameters
+- new convention: returned postprocess_dict entries for transform_dict and process_dict only record transformation categories that were inspected as part of the automunge(.) call
+- the thought was that this will benefit privacy in scenario where user has developed their own library of custom transformations, such that if they want to publish a populated postprocess_dict publicly, it will only reveal those portions of their library that were applied in derivation
+- as further clarification on last update
+- the concurrent ML infill process flaw was associated with the categorylist passed to inference
+- although did not show up in testing since categorylist isn't inspected for default random forest implementation
+- it is inspected for other learning libraries in inference
+- was resolved by reframing categorylist passed to inference in concurrent scenario
