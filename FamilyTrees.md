@@ -19,7 +19,7 @@ For simplicity just going to copy the code directly from code base where these d
  ___ 
 ## Root Category Family Tree Definitions
 ```
-  def _assembletransformdict(self, binstransform, NArw_marker):
+  def __assembletransformdict(self, binstransform, NArw_marker):
     """
     #populates the transform_dict data structure
     #which is the internal library that is subsequently consolidated 
@@ -3617,7 +3617,7 @@ For simplicity just going to copy the code directly from code base where these d
 ## Category processdict Entries
 
 ```
-  def _assembleprocessdict(self):
+  def __assembleprocessdict(self):
     '''
     #creates a dictionary storing all of the processing functions for each
     #category. Note that the convention is that every dualprocess entry 
