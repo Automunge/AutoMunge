@@ -4487,3 +4487,17 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - although did not show up in testing since categorylist isn't inspected for default random forest implementation
 - it is inspected for other learning libraries in inference
 - was resolved by reframing categorylist passed to inference in concurrent scenario
+
+7.12
+- 7.11 introduced a bug for downloading and uploading postprocess_dict’s through pickle, which we didn’t catch in our testing since we didn’t run a backward compatibility check since it was a backward compatibility breaking update
+- resolved by recasting functions directly stored in postprocess_dict as public functions (by removing a leading underscore from function name)
+- which includes transformation functions and wrappers for training and inference
+- fully resolved
+- also, put some thought into privacy preservation associated with inversion operation
+- inversion passed as list or set specification now halts when applied in conjunction with privacy_encode
+- when privacy_encde is activated, inversion can be passed to postmunge(.) as one of {'test', 'labels', 'denselabels'}
+- new convention is that the dataframe returned from inversion only includes recovered features
+- also in process improved inversion so that the order of recovered features in the returned dataframe matches order of features as passed to automunge(.) through df_train
+- found and fixed bug for inversion passed as list or set in privacy_encode scenario
+- inversion denselabels option now preserves transformation privacy in returned headers
+- now with privacy_encode inversion the returned inversion_info_dict masks the recovery path, replacing with boolean True
