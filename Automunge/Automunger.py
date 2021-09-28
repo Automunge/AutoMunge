@@ -3846,10 +3846,10 @@ class AutoMunge:
     #to automunge
 
     #dual column functions
-    process_dict.update({'nmbr' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
@@ -3857,7 +3857,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'dxdt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3865,7 +3865,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d2dt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3873,7 +3873,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d3dt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3881,7 +3881,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d4dt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3889,7 +3889,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d5dt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3897,7 +3897,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d6dt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3905,7 +3905,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'dxd2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3913,7 +3913,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d2d2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3921,7 +3921,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d3d2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3929,7 +3929,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d4d2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3937,7 +3937,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d5d2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -3945,67 +3945,67 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'d6d2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmdx' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmdx' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd2' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmd2' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd3' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmd3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd4' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmd4' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd5' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmd5' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nmd6' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmd6' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
@@ -4013,7 +4013,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'mmdx' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4021,7 +4021,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4029,7 +4029,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4037,7 +4037,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4045,7 +4045,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4053,7 +4053,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'mmd6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4061,7 +4061,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'dddt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4069,7 +4069,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'ddd2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4077,7 +4077,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'ddd3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4085,7 +4085,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'ddd4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4093,7 +4093,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'ddd5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4101,7 +4101,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'ddd6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxdt,
+                                  'singleprocess' : self._process_dxdt,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4109,7 +4109,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dddt'}})
     process_dict.update({'dedt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4117,7 +4117,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'ded2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4125,7 +4125,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'ded3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4133,7 +4133,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'ded4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4141,7 +4141,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'ded5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4149,7 +4149,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'ded6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_dxd2,
+                                  'singleprocess' : self._process_dxd2,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -4157,9 +4157,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dedt'}})
     process_dict.update({'shft' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 1},
@@ -4167,9 +4167,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shft'}})
     process_dict.update({'shf2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 2},
@@ -4177,9 +4177,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shf2'}})
     process_dict.update({'shf3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 3},
@@ -4187,9 +4187,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'shf3'}})
     process_dict.update({'shf4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 1},
@@ -4197,9 +4197,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 2},
@@ -4207,9 +4207,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'periods' : 3},
@@ -4217,47 +4217,47 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf7' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
     process_dict.update({'shf8' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shft,
+                                  'singleprocess' : self._process_shft,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_shft,
+                                  'inverseprocess' : self._inverseprocess_shft,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'nbr2' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nbr2' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
-    process_dict.update({'nbr3' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nbr3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr3'}})
-    process_dict.update({'nbr4' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nbr4' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'zeroinfill',
@@ -4265,10 +4265,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'MADn' : {'dualprocess' : self.__process_MADn,
+    process_dict.update({'MADn' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_MADn,
-                                  'inverseprocess' : self.__inverseprocess_MADn,
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -4276,10 +4276,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MADn'}})
-    process_dict.update({'MAD2' : {'dualprocess' : self.__process_MADn,
+    process_dict.update({'MAD2' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_MADn,
-                                  'inverseprocess' : self.__inverseprocess_MADn,
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -4287,10 +4287,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MAD2'}})
-    process_dict.update({'MAD3' : {'dualprocess' : self.__process_MADn,
+    process_dict.update({'MAD3' : {'dualprocess' : self._process_MADn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_MADn,
-                                  'inverseprocess' : self.__inverseprocess_MADn,
+                                  'postprocess' : self._postprocess_MADn,
+                                  'inverseprocess' : self._inverseprocess_MADn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -4298,60 +4298,60 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'MAD3'}})
-    process_dict.update({'mnmx' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mnmx' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm2' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mnm2' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm3' : {'dualprocess' : self.__process_mnm3,
+    process_dict.update({'mnm3' : {'dualprocess' : self._process_mnm3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnm3,
-                                  'inverseprocess' : self.__inverseprocess_mnm3,
+                                  'postprocess' : self._postprocess_mnm3,
+                                  'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm3'}})
-    process_dict.update({'mnm4' : {'dualprocess' : self.__process_mnm3,
+    process_dict.update({'mnm4' : {'dualprocess' : self._process_mnm3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnm3,
-                                  'inverseprocess' : self.__inverseprocess_mnm3,
+                                  'postprocess' : self._postprocess_mnm3,
+                                  'inverseprocess' : self._inverseprocess_mnm3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm4'}})
-    process_dict.update({'mnm5' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mnm5' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mnm6' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mnm6' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'defaultparams' : {'floor' : True},
                                   'info_retention' : False,
                                   'inplace_option' : True,
@@ -4359,90 +4359,90 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnm6'}})
-    process_dict.update({'mnm7' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mnm7' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mxab' : {'dualprocess' : self.__process_mxab,
+    process_dict.update({'mxab' : {'dualprocess' : self._process_mxab,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mxab,
-                                  'inverseprocess' : self.__inverseprocess_mxab,
+                                  'postprocess' : self._postprocess_mxab,
+                                  'inverseprocess' : self._inverseprocess_mxab,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mxab'}})
-    process_dict.update({'retn' : {'dualprocess' : self.__process_retn,
+    process_dict.update({'retn' : {'dualprocess' : self._process_retn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_retn,
-                                  'inverseprocess' : self.__inverseprocess_retn,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'rtbn' : {'dualprocess' : self.__process_retn,
+    process_dict.update({'rtbn' : {'dualprocess' : self._process_retn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_retn,
-                                  'inverseprocess' : self.__inverseprocess_retn,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'rtb2' : {'dualprocess' : self.__process_retn,
+    process_dict.update({'rtb2' : {'dualprocess' : self._process_retn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_retn,
-                                  'inverseprocess' : self.__inverseprocess_retn,
+                                  'postprocess' : self._postprocess_retn,
+                                  'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'retn'}})
-    process_dict.update({'mean' : {'dualprocess' : self.__process_mean,
+    process_dict.update({'mean' : {'dualprocess' : self._process_mean,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mean,
-                                  'inverseprocess' : self.__inverseprocess_mean,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'mea2' : {'dualprocess' : self.__process_mean,
+    process_dict.update({'mea2' : {'dualprocess' : self._process_mean,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mean,
-                                  'inverseprocess' : self.__inverseprocess_mean,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'mea3' : {'dualprocess' : self.__process_mean,
+    process_dict.update({'mea3' : {'dualprocess' : self._process_mean,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mean,
-                                  'inverseprocess' : self.__inverseprocess_mean,
+                                  'postprocess' : self._postprocess_mean,
+                                  'inverseprocess' : self._inverseprocess_mean,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mean'}})
-    process_dict.update({'bnry' : {'dualprocess' : self.__process_binary,
+    process_dict.update({'bnry' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_binary,
-                                  'inverseprocess' : self.__inverseprocess_bnry,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4450,10 +4450,10 @@ class AutoMunge:
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnry'}})
-    process_dict.update({'bnr2' : {'dualprocess' : self.__process_binary,
+    process_dict.update({'bnr2' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_binary,
-                                  'inverseprocess' : self.__inverseprocess_bnry,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4461,9 +4461,9 @@ class AutoMunge:
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bnr2'}})
-    process_dict.update({'onht' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'onht' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4471,48 +4471,48 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'text' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'text' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'txt2' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'txt2' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'txt3' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'txt3' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
-    process_dict.update({'mlti' : {'dualprocess' : self.__process_mlti,
+    process_dict.update({'mlti' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mlti,
-                                  'inverseprocess' : self.__inverseprocess_mlti,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'mlto' : {'dualprocess' : self.__process_mlti,
+    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mlti,
-                                  'inverseprocess' : self.__inverseprocess_mlti,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'dtype' : 'conditionalinteger',
@@ -4521,46 +4521,46 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_ordl',
                                   'labelctgy' : 'mlto'}})
-    process_dict.update({'smt0' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'smth' : {'dualprocess' : self.__process_smth,
+    process_dict.update({'smth' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_smth,
-                                  'inverseprocess' : self.__inverseprocess_smth,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'smth'}})
-    process_dict.update({'fsm0' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'fsm0' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'fsmh'}})
-    process_dict.update({'fsmh' : {'dualprocess' : self.__process_smth,
+    process_dict.update({'fsmh' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_smth,
-                                  'inverseprocess' : self.__inverseprocess_smth,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'LSfit' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'fsmh'}})
-    process_dict.update({'GPS1' : {'custom_train' : self.__custom_train_GPS1,
+    process_dict.update({'GPS1' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4568,9 +4568,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'GPS2' : {'custom_train' : self.__custom_train_GPS1,
+    process_dict.update({'GPS2' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4578,9 +4578,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'GPS3' : {'custom_train' : self.__custom_train_GPS1,
+    process_dict.update({'GPS3' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4588,9 +4588,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'GPS4' : {'custom_train' : self.__custom_train_GPS1,
-                                  'custom_test' : self.__custom_test_GPS1,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+    process_dict.update({'GPS4' : {'custom_train' : self._custom_train_GPS1,
+                                  'custom_test' : self._custom_test_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4598,9 +4598,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'GPS5' : {'custom_train' : self.__custom_train_GPS1,
+    process_dict.update({'GPS5' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4608,9 +4608,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlto'}})
-    process_dict.update({'GPS6' : {'custom_train' : self.__custom_train_GPS1,
+    process_dict.update({'GPS6' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
-                                  'custom_inversion' : self.__custom_inversion_GPS1,
+                                  'custom_inversion' : self._custom_inversion_GPS1,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4619,7 +4619,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlto'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_lngt,
+                                  'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4627,7 +4627,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'lngm' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_lngt,
+                                  'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4635,7 +4635,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'lnlg' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_lngt,
+                                  'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4643,9 +4643,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'log0'}})
     process_dict.update({'bnst' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_bnst,
+                                  'singleprocess' : self._process_bnst,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_bnst,
+                                  'inverseprocess' : self._inverseprocess_bnst,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4653,9 +4653,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'bnst'}})
     process_dict.update({'bnso' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_bnst,
+                                  'singleprocess' : self._process_bnst,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_bnst,
+                                  'inverseprocess' : self._inverseprocess_bnst,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4663,9 +4663,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'UPCS' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4673,9 +4673,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'UPCS'}})
     process_dict.update({'Unht' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4683,9 +4683,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'onht'}})
     process_dict.update({'Utxt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4693,9 +4693,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4703,9 +4703,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Utx3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4713,9 +4713,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'text'}})
     process_dict.update({'Ucct' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4723,9 +4723,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uord' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4733,9 +4733,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'Uor2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4743,9 +4743,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'Uor3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4753,9 +4753,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'Uor6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -4763,29 +4763,29 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'U101' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'splt' : {'dualprocess' : self.__process_splt,
+    process_dict.update({'splt' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_splt,
-                                  'inverseprocess' : self.__inverseprocess_splt,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'splt'}})
-    process_dict.update({'spl2' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'spl2' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4794,10 +4794,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl5' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'spl5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4806,20 +4806,20 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl6' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'spl6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl7' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'spl7' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4829,10 +4829,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'spl8' : {'dualprocess' : self.__process_splt,
+    process_dict.update({'spl8' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_splt,
-                                  'inverseprocess' : self.__inverseprocess_splt,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4840,10 +4840,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'spl8'}})
-    process_dict.update({'spl9' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'spl9' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4852,10 +4852,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'sp10' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp10' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4864,10 +4864,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'sp11' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp11' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4876,10 +4876,10 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp12' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp12' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4888,10 +4888,10 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp13' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp13' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4900,10 +4900,10 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp14' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp14' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4912,10 +4912,10 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp15' : {'dualprocess' : self.__process_splt,
+    process_dict.update({'sp15' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_splt,
-                                  'inverseprocess' : self.__inverseprocess_splt,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4924,10 +4924,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sp15'}})
-    process_dict.update({'sp16' : {'dualprocess' : self.__process_splt,
+    process_dict.update({'sp16' : {'dualprocess' : self._process_splt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_splt,
-                                  'inverseprocess' : self.__inverseprocess_splt,
+                                  'postprocess' : self._postprocess_splt,
+                                  'inverseprocess' : self._inverseprocess_splt,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4936,10 +4936,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sp16'}})
-    process_dict.update({'sp17' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp17' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4948,10 +4948,10 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp18' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'sp18' : {'dualprocess' : self._process_spl2,
                                    'singleprocess' : None,
-                                   'postprocess' : self.__postprocess_spl2,
-                                   'inverseprocess' : self.__inverseprocess_spl2,
+                                   'postprocess' : self._postprocess_spl2,
+                                   'inverseprocess' : self._inverseprocess_spl2,
                                    'info_retention' : False,
                                    'inplace_option' : False,
                                    'defaultinfill' : 'naninfill',
@@ -4960,20 +4960,20 @@ class AutoMunge:
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'sp19' : {'dualprocess' : self.__process_sp19,
+    process_dict.update({'sp19' : {'dualprocess' : self._process_sp19,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sp19,
-                                  'inverseprocess' : self.__inverseprocess_sp19,
+                                  'postprocess' : self._postprocess_sp19,
+                                  'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp19'}})
-    process_dict.update({'sp20' : {'dualprocess' : self.__process_sp19,
+    process_dict.update({'sp20' : {'dualprocess' : self._process_sp19,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sp19,
-                                  'inverseprocess' : self.__inverseprocess_sp19,
+                                  'postprocess' : self._postprocess_sp19,
+                                  'inverseprocess' : self._inverseprocess_sp19,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4981,10 +4981,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sp20'}})
-    process_dict.update({'sbst' : {'dualprocess' : self.__process_sbst,
+    process_dict.update({'sbst' : {'dualprocess' : self._process_sbst,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sbst,
-                                  'inverseprocess' : self.__inverseprocess_sbst,
+                                  'postprocess' : self._postprocess_sbst,
+                                  'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -4992,10 +4992,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sbst'}})
-    process_dict.update({'sbs2' : {'dualprocess' : self.__process_sbst,
+    process_dict.update({'sbs2' : {'dualprocess' : self._process_sbst,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sbst,
-                                  'inverseprocess' : self.__inverseprocess_sbst,
+                                  'postprocess' : self._postprocess_sbst,
+                                  'inverseprocess' : self._inverseprocess_sbst,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5003,10 +5003,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'sbs2'}})
-    process_dict.update({'sbs3' : {'dualprocess' : self.__process_sbs3,
+    process_dict.update({'sbs3' : {'dualprocess' : self._process_sbs3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sbs3,
-                                  'inverseprocess' : self.__inverseprocess_sbs3,
+                                  'postprocess' : self._postprocess_sbs3,
+                                  'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5014,10 +5014,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sbs3'}})
-    process_dict.update({'sbs4' : {'dualprocess' : self.__process_sbs3,
+    process_dict.update({'sbs4' : {'dualprocess' : self._process_sbs3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sbs3,
-                                  'inverseprocess' : self.__inverseprocess_sbs3,
+                                  'postprocess' : self._postprocess_sbs3,
+                                  'inverseprocess' : self._inverseprocess_sbs3,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5025,17 +5025,17 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'sbs4'}})
-    process_dict.update({'hash' : {'dualprocess' : self.__process_hash,
+    process_dict.update({'hash' : {'dualprocess' : self._process_hash,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_hash,
+                                  'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hash'}})
-    process_dict.update({'hsh2' : {'dualprocess' : self.__process_hash,
+    process_dict.update({'hsh2' : {'dualprocess' : self._process_hash,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_hash,
+                                  'postprocess' : self._postprocess_hash,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'defaultparams' : {'space' : '',
@@ -5043,18 +5043,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'hsh2'}})
-    process_dict.update({'hs10' : {'dualprocess' : self.__process_hs10,
+    process_dict.update({'hs10' : {'dualprocess' : self._process_hs10,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_hs10,
+                                  'postprocess' : self._postprocess_hs10,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'hs10'}})
     process_dict.update({'Uhsh' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5062,9 +5062,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hash'}})
     process_dict.update({'Uhs2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5072,49 +5072,49 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hsh2'}})
     process_dict.update({'Uh10' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_UPCS,
+                                  'singleprocess' : self._process_UPCS,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hs10'}})
-    process_dict.update({'srch' : {'dualprocess' : self.__process_srch,
+    process_dict.update({'srch' : {'dualprocess' : self._process_srch,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_srch,
-                                  'inverseprocess' : self.__inverseprocess_srch,
+                                  'postprocess' : self._postprocess_srch,
+                                  'inverseprocess' : self._inverseprocess_srch,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'srch'}})
-    process_dict.update({'src2' : {'dualprocess' : self.__process_src2,
+    process_dict.update({'src2' : {'dualprocess' : self._process_src2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_src2,
-                                  'inverseprocess' : self.__inverseprocess_src2,
+                                  'postprocess' : self._postprocess_src2,
+                                  'inverseprocess' : self._inverseprocess_src2,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src2'}})
-    process_dict.update({'src3' : {'dualprocess' : self.__process_src3,
+    process_dict.update({'src3' : {'dualprocess' : self._process_src3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_src3,
-                                  'inverseprocess' : self.__inverseprocess_src3,
+                                  'postprocess' : self._postprocess_src3,
+                                  'inverseprocess' : self._inverseprocess_src3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_act',
                                   'labelctgy' : 'src3'}})
-    process_dict.update({'src4' : {'dualprocess' : self.__process_src4,
+    process_dict.update({'src4' : {'dualprocess' : self._process_src4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_src4,
-                                  'inverseprocess' : self.__inverseprocess_src4,
+                                  'postprocess' : self._postprocess_src4,
+                                  'inverseprocess' : self._inverseprocess_src4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5122,9 +5122,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'src4'}})
     process_dict.update({'aggt' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_aggt,
+                                  'singleprocess' : self._process_aggt,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5132,7 +5132,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strn' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_strn,
+                                  'singleprocess' : self._process_strn,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5140,9 +5140,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
     process_dict.update({'strg' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_strg,
+                                  'singleprocess' : self._process_strg,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_strg,
+                                  'inverseprocess' : self._inverseprocess_strg,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5150,9 +5150,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'strg'}})
     process_dict.update({'nmrc' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5161,9 +5161,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmrc'}})
     process_dict.update({'nmr2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5172,9 +5172,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmr3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5182,10 +5182,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmr4' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr4' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5194,10 +5194,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmr4'}})
-    process_dict.update({'nmr5' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5206,10 +5206,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr6' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr6' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5218,10 +5218,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmr7' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr7' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5230,10 +5230,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmr7'}})
-    process_dict.update({'nmr8' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5242,10 +5242,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmr9' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmr9' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5255,9 +5255,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmcm' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5266,9 +5266,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmcm'}})
     process_dict.update({'nmc2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5277,9 +5277,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmc3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5287,10 +5287,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc4' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc4' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5299,10 +5299,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmc4'}})
-    process_dict.update({'nmc5' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5311,10 +5311,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc6' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc6' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5323,10 +5323,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmc7' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc7' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5335,10 +5335,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmc7'}})
-    process_dict.update({'nmc8' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5347,10 +5347,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmc9' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmc9' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5360,9 +5360,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
     process_dict.update({'nmEU' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5371,9 +5371,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmEU'}})
     process_dict.update({'nmE2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5382,9 +5382,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
     process_dict.update({'nmE3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_nmrc,
+                                  'singleprocess' : self._process_nmrc,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5392,10 +5392,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE4' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE4' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5404,10 +5404,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmE4'}})
-    process_dict.update({'nmE5' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE5' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5416,10 +5416,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE6' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE6' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5428,10 +5428,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'nmE7' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE7' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5440,10 +5440,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmE7'}})
-    process_dict.update({'nmE8' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE8' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5452,10 +5452,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'nmE9' : {'dualprocess' : self.__process_nmr4,
+    process_dict.update({'nmE9' : {'dualprocess' : self._process_nmr4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_nmr4,
-                                  'inverseprocess' : self.__inverseprocess_nmrc,
+                                  'postprocess' : self._postprocess_nmr4,
+                                  'inverseprocess' : self._inverseprocess_nmrc,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5464,10 +5464,10 @@ class AutoMunge:
                                   'NArowtype' : 'parsenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ors7' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'ors7' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5476,10 +5476,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors5' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'ors5' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5488,10 +5488,10 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ors6' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'ors6' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5500,9 +5500,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ordl' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ordl' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5510,9 +5510,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'ord2' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ord2' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5520,18 +5520,18 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ord3' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ord3' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'ord5' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ord5' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5540,84 +5540,84 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ord5'}})
-    process_dict.update({'maxb' : {'dualprocess' : self.__process_maxb,
+    process_dict.update({'maxb' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_maxb,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
-    process_dict.update({'or3b' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'or3b' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'maxb'}})
-    process_dict.update({'matx' : {'dualprocess' : self.__process_maxb,
+    process_dict.update({'matx' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_maxb,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'or3c' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'or3c' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'ma10' : {'dualprocess' : self.__process_maxb,
+    process_dict.update({'ma10' : {'dualprocess' : self._process_maxb,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_maxb,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_maxb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'or3d' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'or3d' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'ucct' : {'dualprocess' : self.__process_ucct,
+    process_dict.update({'ucct' : {'dualprocess' : self._process_ucct,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_ucct,
+                                  'postprocess' : self._postprocess_ucct,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'ucct'}})
-    process_dict.update({'ord4' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ord4' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ors2' : {'dualprocess' : self.__process_spl2,
+    process_dict.update({'ors2' : {'dualprocess' : self._process_spl2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_spl2,
-                                  'inverseprocess' : self.__inverseprocess_spl2,
+                                  'postprocess' : self._postprocess_spl2,
+                                  'inverseprocess' : self._inverseprocess_spl2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -5626,45 +5626,45 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'ord3'}})
-    process_dict.update({'or10' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'or10' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'or11' : {'custom_train' : self.__custom_train_1010,
-                                   'custom_test' : self.__custom_test_1010,
-                                   'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'or11' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or12' : {'custom_train' : self.__custom_train_1010,
-                                   'custom_test' : self.__custom_test_1010,
-                                   'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'or12' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or13' : {'custom_train' : self.__custom_train_1010,
-                                   'custom_test' : self.__custom_test_1010,
-                                   'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'or13' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'or14' : {'custom_train' : self.__custom_train_1010,
-                                   'custom_test' : self.__custom_test_1010,
-                                   'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'or14' : {'custom_train' : self._custom_train_1010,
+                                   'custom_test' : self._custom_test_1010,
+                                   'custom_inversion' : self._custom_inversion_1010,
                                    'info_retention' : True,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5672,9 +5672,9 @@ class AutoMunge:
                                    'MLinfilltype' : '1010',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or15' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5682,9 +5682,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or16' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5692,9 +5692,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or17' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5702,9 +5702,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or18' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5712,9 +5712,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or19' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5722,9 +5722,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or20' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5732,9 +5732,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or21' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5742,9 +5742,9 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or22' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
@@ -5752,46 +5752,46 @@ class AutoMunge:
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
     process_dict.update({'or23' : {'dualprocess' : None,
-                                   'singleprocess' : self.__process_UPCS,
+                                   'singleprocess' : self._process_UPCS,
                                    'postprocess' : None,
-                                   'inverseprocess' : self.__inverseprocess_UPCS,
+                                   'inverseprocess' : self._inverseprocess_UPCS,
                                    'info_retention' : False,
                                    'inplace_option' : True,
                                    'defaultinfill' : 'naninfill',
                                    'NArowtype' : 'justNaN',
                                    'MLinfilltype' : 'totalexclude',
                                    'labelctgy' : 'ord3'}})
-    process_dict.update({'om10' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'om10' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'mmor' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'mmor' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'1010' : {'custom_train' : self.__custom_train_1010,
-                                  'custom_test' : self.__custom_test_1010,
-                                  'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'1010' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'qttf' : {'dualprocess' : self.__process_qttf,
+    process_dict.update({'qttf' : {'dualprocess' : self._process_qttf,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_qttf,
-                                  'inverseprocess' : self.__inverseprocess_qttf,
+                                  'postprocess' : self._postprocess_qttf,
+                                  'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -5799,10 +5799,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qttf'}})
-    process_dict.update({'qtt2' : {'dualprocess' : self.__process_qttf,
+    process_dict.update({'qtt2' : {'dualprocess' : self._process_qttf,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_qttf,
-                                  'inverseprocess' : self.__inverseprocess_qttf,
+                                  'postprocess' : self._postprocess_qttf,
+                                  'inverseprocess' : self._inverseprocess_qttf,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -5810,27 +5810,27 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qtt2'}})
-    process_dict.update({'bxcx' : {'dualprocess' : self.__process_bxcx,
+    process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bxcx,
+                                  'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'tmsc' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'tmsc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {},
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tmsc'}})
-    process_dict.update({'time' : {'dualprocess' : self.__process_time,
+    process_dict.update({'time' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
-                                  'inverseprocess' : self.__inverseprocess_year,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'scale' : 'year',
@@ -5840,7 +5840,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'time'}})
     process_dict.update({'tmzn' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5848,7 +5848,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'tmzn'}})
     process_dict.update({'date' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5856,7 +5856,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5864,7 +5864,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'dat3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5872,7 +5872,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5880,7 +5880,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -5888,17 +5888,17 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
     process_dict.update({'dat6' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_tmzn,
+                                  'singleprocess' : self._process_tmzn,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'year'}})
-    process_dict.update({'year' : {'dualprocess' : self.__process_time,
+    process_dict.update({'year' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
-                                  'inverseprocess' : self.__inverseprocess_year,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'scale' : 'year',
@@ -5907,10 +5907,10 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
-    process_dict.update({'yea2' : {'dualprocess' : self.__process_time,
+    process_dict.update({'yea2' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
-                                  'inverseprocess' : self.__inverseprocess_year,
+                                  'postprocess' : self._postprocess_time,
+                                  'inverseprocess' : self._inverseprocess_year,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'scale' : 'year',
@@ -5919,9 +5919,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'year'}})
-    process_dict.update({'yrsn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'yrsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -5929,9 +5929,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrsn'}})
-    process_dict.update({'yrcs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'yrcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'year',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -5939,9 +5939,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'yrcs'}})
-    process_dict.update({'mnth' : {'dualprocess' : self.__process_time,
+    process_dict.update({'mnth' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
+                                  'postprocess' : self._postprocess_time,
                                   'defaultparams' : {'scale' : 'month',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
@@ -5984,9 +5984,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdsn'}})
-    process_dict.update({'mnsn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mnsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -5994,9 +5994,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mnsn'}})
-    process_dict.update({'mncs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mncs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'month',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6004,9 +6004,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mncs'}})
-    process_dict.update({'mdsn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mdsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6014,9 +6014,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdsn'}})
-    process_dict.update({'mdcs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mdcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'monthday',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6024,9 +6024,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mdcs'}})
-    process_dict.update({'days' : {'dualprocess' : self.__process_time,
+    process_dict.update({'days' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
+                                  'postprocess' : self._postprocess_time,
                                   'defaultparams' : {'scale' : 'day',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
@@ -6062,9 +6062,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhms'}})
-    process_dict.update({'dysn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'dysn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6072,9 +6072,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dysn'}})
-    process_dict.update({'dycs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'dycs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'day',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6082,9 +6082,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dycs'}})
-    process_dict.update({'dhms' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'dhms' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6092,9 +6092,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhms'}})
-    process_dict.update({'dhmc' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'dhmc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'dayhourminute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6102,9 +6102,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'dhmc'}})
-    process_dict.update({'hour' : {'dualprocess' : self.__process_time,
+    process_dict.update({'hour' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
+                                  'postprocess' : self._postprocess_time,
                                   'defaultparams' : {'scale' : 'hour',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
@@ -6133,9 +6133,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmss'}})
-    process_dict.update({'hrsn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'hrsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6143,9 +6143,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrsn'}})
-    process_dict.update({'hrcs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'hrcs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'hour',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6153,9 +6153,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hrcs'}})
-    process_dict.update({'hmss' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'hmss' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6163,9 +6163,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmss'}})
-    process_dict.update({'hmsc' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'hmsc' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'hourminutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6173,9 +6173,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'hmsc'}})
-    process_dict.update({'mint' : {'dualprocess' : self.__process_time,
+    process_dict.update({'mint' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
+                                  'postprocess' : self._postprocess_time,
                                   'defaultparams' : {'scale' : 'minute',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
@@ -6204,9 +6204,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mssn'}})
-    process_dict.update({'misn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'misn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6214,9 +6214,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'misn'}})
-    process_dict.update({'mics' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mics' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'minute',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6224,9 +6224,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mics'}})
-    process_dict.update({'mssn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mssn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6234,9 +6234,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mssn'}})
-    process_dict.update({'mscs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'mscs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'minutesecond',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6244,9 +6244,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mscs'}})
-    process_dict.update({'scnd' : {'dualprocess' : self.__process_time,
+    process_dict.update({'scnd' : {'dualprocess' : self._process_time,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_time,
+                                  'postprocess' : self._postprocess_time,
                                   'defaultparams' : {'scale' : 'second',
                                                      'normalization' : 'zscore'},
                                   'inplace_option' : True,
@@ -6261,9 +6261,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scsn'}})
-    process_dict.update({'scsn' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'scsn' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'sin'},
                                   'inplace_option' : True,
@@ -6271,9 +6271,9 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'scsn'}})
-    process_dict.update({'sccs' : {'dualprocess' : self.__process_tmsc,
+    process_dict.update({'sccs' : {'dualprocess' : self._process_tmsc,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tmsc,
+                                  'postprocess' : self._postprocess_tmsc,
                                   'defaultparams' : {'scale' : 'second',
                                                      'function' : 'cos'},
                                   'inplace_option' : True,
@@ -6281,227 +6281,227 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sccs'}})
-    process_dict.update({'bxc2' : {'dualprocess' : self.__process_bxcx,
+    process_dict.update({'bxc2' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bxcx,
+                                  'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'bxc3' : {'dualprocess' : self.__process_bxcx,
+    process_dict.update({'bxc3' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bxcx,
+                                  'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'bxc4' : {'dualprocess' : self.__process_bxcx,
+    process_dict.update({'bxc4' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bxcx,
+                                  'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
-    process_dict.update({'bxc5' : {'dualprocess' : self.__process_bxcx,
+    process_dict.update({'bxc5' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bxcx,
+                                  'postprocess' : self._postprocess_bxcx,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
-    process_dict.update({'ntgr' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ntgr' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg2' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ntg2' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'ntg3' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ntg3' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'mnmx'}})
-    process_dict.update({'pwrs' : {'dualprocess' : self.__process_pwrs,
+    process_dict.update({'pwrs' : {'dualprocess' : self._process_pwrs,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwrs,
-                                  'inverseprocess' : self.__inverseprocess_pwr2,
+                                  'postprocess' : self._postprocess_pwrs,
+                                  'inverseprocess' : self._inverseprocess_pwr2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwrs'}})
-    process_dict.update({'pwr2' : {'dualprocess' : self.__process_pwrs,
+    process_dict.update({'pwr2' : {'dualprocess' : self._process_pwrs,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwrs,
-                                  'inverseprocess' : self.__inverseprocess_pwr2,
+                                  'postprocess' : self._postprocess_pwrs,
+                                  'inverseprocess' : self._inverseprocess_pwr2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultparams' : {'negvalues' : True},
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'pwr2'}})
-    process_dict.update({'log0' : {'dualprocess' : self.__process_log0,
+    process_dict.update({'log0' : {'dualprocess' : self._process_log0,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_log0,
-                                  'inverseprocess' : self.__inverseprocess_log0,
+                                  'postprocess' : self._postprocess_log0,
+                                  'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
-    process_dict.update({'log1' : {'dualprocess' : self.__process_log0,
+    process_dict.update({'log1' : {'dualprocess' : self._process_log0,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_log0,
-                                  'inverseprocess' : self.__inverseprocess_log0,
+                                  'postprocess' : self._postprocess_log0,
+                                  'inverseprocess' : self._inverseprocess_log0,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'log0'}})
-    process_dict.update({'logn' : {'dualprocess' : self.__process_logn,
+    process_dict.update({'logn' : {'dualprocess' : self._process_logn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_logn,
-                                  'inverseprocess' : self.__inverseprocess_logn,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'logn'}})
-    process_dict.update({'lgnm' : {'dualprocess' : self.__process_logn,
+    process_dict.update({'lgnm' : {'dualprocess' : self._process_logn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_logn,
-                                  'inverseprocess' : self.__inverseprocess_logn,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'sqrt' : {'dualprocess' : self.__process_sqrt,
+    process_dict.update({'sqrt' : {'dualprocess' : self._process_sqrt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sqrt,
-                                  'inverseprocess' : self.__inverseprocess_sqrt,
+                                  'postprocess' : self._postprocess_sqrt,
+                                  'inverseprocess' : self._inverseprocess_sqrt,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sqrt'}})
-    process_dict.update({'addd' : {'dualprocess' : self.__process_addd,
+    process_dict.update({'addd' : {'dualprocess' : self._process_addd,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_addd,
-                                  'inverseprocess' : self.__inverseprocess_addd,
+                                  'postprocess' : self._postprocess_addd,
+                                  'inverseprocess' : self._inverseprocess_addd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'addd'}})
-    process_dict.update({'sbtr' : {'dualprocess' : self.__process_sbtr,
+    process_dict.update({'sbtr' : {'dualprocess' : self._process_sbtr,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_sbtr,
-                                  'inverseprocess' : self.__inverseprocess_sbtr,
+                                  'postprocess' : self._postprocess_sbtr,
+                                  'inverseprocess' : self._inverseprocess_sbtr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sbtr'}})
-    process_dict.update({'mltp' : {'dualprocess' : self.__process_mltp,
+    process_dict.update({'mltp' : {'dualprocess' : self._process_mltp,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mltp,
-                                  'inverseprocess' : self.__inverseprocess_mltp,
+                                  'postprocess' : self._postprocess_mltp,
+                                  'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'mltp'}})
-    process_dict.update({'divd' : {'dualprocess' : self.__process_divd,
+    process_dict.update({'divd' : {'dualprocess' : self._process_divd,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_divd,
-                                  'inverseprocess' : self.__inverseprocess_divd,
+                                  'postprocess' : self._postprocess_divd,
+                                  'inverseprocess' : self._inverseprocess_divd,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'divd'}})
-    process_dict.update({'rais' : {'dualprocess' : self.__process_rais,
+    process_dict.update({'rais' : {'dualprocess' : self._process_rais,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_rais,
-                                  'inverseprocess' : self.__inverseprocess_rais,
+                                  'postprocess' : self._postprocess_rais,
+                                  'inverseprocess' : self._inverseprocess_rais,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'rais'}})
-    process_dict.update({'absl' : {'dualprocess' : self.__process_absl,
+    process_dict.update({'absl' : {'dualprocess' : self._process_absl,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_absl,
-                                  'inverseprocess' : self.__inverseprocess_absl,
+                                  'postprocess' : self._postprocess_absl,
+                                  'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'absl'}})
-    process_dict.update({'bkt1' : {'dualprocess' : self.__process_bkt1,
+    process_dict.update({'bkt1' : {'dualprocess' : self._process_bkt1,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt1,
-                                  'inverseprocess' : self.__inverseprocess_bkt1,
+                                  'postprocess' : self._postprocess_bkt1,
+                                  'inverseprocess' : self._inverseprocess_bkt1,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bkt1'}})
-    process_dict.update({'bkt2' : {'dualprocess' : self.__process_bkt2,
+    process_dict.update({'bkt2' : {'dualprocess' : self._process_bkt2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt2,
-                                  'inverseprocess' : self.__inverseprocess_bkt2,
+                                  'postprocess' : self._postprocess_bkt2,
+                                  'inverseprocess' : self._inverseprocess_bkt2,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bkt2'}})
-    process_dict.update({'bkt3' : {'dualprocess' : self.__process_bkt3,
+    process_dict.update({'bkt3' : {'dualprocess' : self._process_bkt3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt3,
-                                  'inverseprocess' : self.__inverseprocess_bkt3,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt3'}})
-    process_dict.update({'bkt4' : {'dualprocess' : self.__process_bkt4,
+    process_dict.update({'bkt4' : {'dualprocess' : self._process_bkt4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt4,
-                                  'inverseprocess' : self.__inverseprocess_bkt4,
+                                  'postprocess' : self._postprocess_bkt4,
+                                  'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -6509,7 +6509,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bkt4'}})
     process_dict.update({'wkdy' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_wkdy,
+                                  'singleprocess' : self._process_wkdy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'adjinfill',
@@ -6517,7 +6517,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'wkdy'}})
     process_dict.update({'bshr' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_bshr,
+                                  'singleprocess' : self._process_bshr,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'adjinfill',
@@ -6525,7 +6525,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'bshr'}})
     process_dict.update({'hldy' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_hldy,
+                                  'singleprocess' : self._process_hldy,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'adjinfill',
@@ -6533,7 +6533,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'hldy'}})
     process_dict.update({'wkds' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_wkds,
+                                  'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -6541,7 +6541,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
     process_dict.update({'wkdo' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_wkds,
+                                  'singleprocess' : self._process_wkds,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -6549,7 +6549,7 @@ class AutoMunge:
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
     process_dict.update({'mnts' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_mnts,
+                                  'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -6557,27 +6557,27 @@ class AutoMunge:
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'text'}})
     process_dict.update({'mnto' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_mnts,
+                                  'singleprocess' : self._process_mnts,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordl'}})
-    process_dict.update({'bins' : {'dualprocess' : self.__process_bins,
+    process_dict.update({'bins' : {'dualprocess' : self._process_bins,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bins,
-                                  'inverseprocess' : self.__inverseprocess_bins,
+                                  'postprocess' : self._postprocess_bins,
+                                  'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bins'}})
-    process_dict.update({'bint' : {'dualprocess' : self.__process_bins,
+    process_dict.update({'bint' : {'dualprocess' : self._process_bins,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bins,
-                                  'inverseprocess' : self.__inverseprocess_bins,
+                                  'postprocess' : self._postprocess_bins,
+                                  'inverseprocess' : self._inverseprocess_bins,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -6585,20 +6585,20 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bint'}})
-    process_dict.update({'bsor' : {'dualprocess' : self.__process_bsor,
+    process_dict.update({'bsor' : {'dualprocess' : self._process_bsor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bsor,
-                                  'inverseprocess' : self.__inverseprocess_bsor,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bsor'}})
-    process_dict.update({'btor' : {'dualprocess' : self.__process_bsor,
+    process_dict.update({'btor' : {'dualprocess' : self._process_bsor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bsor,
-                                  'inverseprocess' : self.__inverseprocess_bsor,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'defaultparams' : {'normalizedinput' : True},
                                   'inplace_option' : True,
@@ -6606,20 +6606,20 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'btor'}})
-    process_dict.update({'bnwd' : {'dualprocess' : self.__process_bnwd,
+    process_dict.update({'bnwd' : {'dualprocess' : self._process_bnwd,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwd,
-                                  'inverseprocess' : self.__inverseprocess_bnwd,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwd'}})
-    process_dict.update({'bnwK' : {'dualprocess' : self.__process_bnwd,
+    process_dict.update({'bnwK' : {'dualprocess' : self._process_bnwd,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwd,
-                                  'inverseprocess' : self.__inverseprocess_bnwd,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -6627,10 +6627,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwK'}})
-    process_dict.update({'bnwM' : {'dualprocess' : self.__process_bnwd,
+    process_dict.update({'bnwM' : {'dualprocess' : self._process_bnwd,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwd,
-                                  'inverseprocess' : self.__inverseprocess_bnwd,
+                                  'postprocess' : self._postprocess_bnwd,
+                                  'inverseprocess' : self._inverseprocess_bnwd,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -6638,20 +6638,20 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnwM'}})
-    process_dict.update({'bnwo' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnwo' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnwo'}})
-    process_dict.update({'bnKo' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnKo' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -6659,10 +6659,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnKo'}})
-    process_dict.update({'bnMo' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnMo' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -6670,49 +6670,49 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bnMo'}})
-    process_dict.update({'bnep' : {'dualprocess' : self.__process_bnep,
+    process_dict.update({'bnep' : {'dualprocess' : self._process_bnep,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnep,
-                                  'inverseprocess' : self.__inverseprocess_bnep,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bnep'}})
-    process_dict.update({'bne7' : {'dualprocess' : self.__process_bnep,
+    process_dict.update({'bne7' : {'dualprocess' : self._process_bnep,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnep,
-                                  'inverseprocess' : self.__inverseprocess_bnep,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultparams' : {'bincount':7},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bne7'}})
-    process_dict.update({'bne9' : {'dualprocess' : self.__process_bnep,
+    process_dict.update({'bne9' : {'dualprocess' : self._process_bnep,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnep,
-                                  'inverseprocess' : self.__inverseprocess_bnep,
+                                  'postprocess' : self._postprocess_bnep,
+                                  'inverseprocess' : self._inverseprocess_bnep,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'defaultparams' : {'bincount':9},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'bne9'}})
-    process_dict.update({'bneo' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bneo' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bneo'}})
-    process_dict.update({'bn7o' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bn7o' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
@@ -6720,10 +6720,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bn7o'}})
-    process_dict.update({'bn9o' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bn9o' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
@@ -6731,89 +6731,89 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'bn9o'}})
-    process_dict.update({'tlbn' : {'dualprocess' : self.__process_tlbn,
+    process_dict.update({'tlbn' : {'dualprocess' : self._process_tlbn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_tlbn,
-                                  'inverseprocess' : self.__inverseprocess_tlbn,
+                                  'postprocess' : self._postprocess_tlbn,
+                                  'inverseprocess' : self._inverseprocess_tlbn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'tlbn'}})
-    process_dict.update({'pwor' : {'dualprocess' : self.__process_pwor,
+    process_dict.update({'pwor' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwor,
-                                  'inverseprocess' : self.__inverseprocess_pwor,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'negvalues' : False},
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'pwor'}})
-    process_dict.update({'por2' : {'dualprocess' : self.__process_pwor,
+    process_dict.update({'por2' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwor,
-                                  'inverseprocess' : self.__inverseprocess_pwor,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'negvalues' : True},
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'por2'}})
-    process_dict.update({'por3' : {'dualprocess' : self.__process_pwor,
+    process_dict.update({'por3' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwor,
-                                  'inverseprocess' : self.__inverseprocess_pwor,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'negvalues' : True},
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bkb3' : {'dualprocess' : self.__process_bkt3,
+    process_dict.update({'bkb3' : {'dualprocess' : self._process_bkt3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt3,
-                                  'inverseprocess' : self.__inverseprocess_bkt3,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bkb4' : {'dualprocess' : self.__process_bkt4,
+    process_dict.update({'bkb4' : {'dualprocess' : self._process_bkt4,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt4,
-                                  'inverseprocess' : self.__inverseprocess_bkt4,
+                                  'postprocess' : self._postprocess_bkt4,
+                                  'inverseprocess' : self._inverseprocess_bkt4,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bsbn' : {'dualprocess' : self.__process_bsor,
+    process_dict.update({'bsbn' : {'dualprocess' : self._process_bsor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bsor,
-                                  'inverseprocess' : self.__inverseprocess_bsor,
+                                  'postprocess' : self._postprocess_bsor,
+                                  'inverseprocess' : self._inverseprocess_bsor,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnwb' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnwb' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnKb' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnKb' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000},
@@ -6821,10 +6821,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bnMb' : {'dualprocess' : self.__process_bnwo,
+    process_dict.update({'bnMb' : {'dualprocess' : self._process_bnwo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bnwo,
-                                  'inverseprocess' : self.__inverseprocess_bnwo,
+                                  'postprocess' : self._postprocess_bnwo,
+                                  'inverseprocess' : self._inverseprocess_bnwo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'width':1000000},
@@ -6832,20 +6832,20 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bneb' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bneb' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bn7b' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bn7b' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':7},
@@ -6853,10 +6853,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'bn9b' : {'dualprocess' : self.__process_bneo,
+    process_dict.update({'bn9b' : {'dualprocess' : self._process_bneo,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bneo,
-                                  'inverseprocess' : self.__inverseprocess_bneo,
+                                  'postprocess' : self._postprocess_bneo,
+                                  'inverseprocess' : self._inverseprocess_bneo,
                                   'info_retention' : False,
                                   'defaultinfill' : 'adjinfill',
                                   'defaultparams' : {'bincount':9},
@@ -6864,107 +6864,107 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'pwbn' : {'dualprocess' : self.__process_pwor,
+    process_dict.update({'pwbn' : {'dualprocess' : self._process_pwor,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_pwor,
-                                  'inverseprocess' : self.__inverseprocess_pwor,
+                                  'postprocess' : self._postprocess_pwor,
+                                  'inverseprocess' : self._inverseprocess_pwor,
                                   'info_retention' : False,
                                   'inplace_option' : False,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPn3' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'DPn3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
-    process_dict.update({'DPnb' : {'dualprocess' : self.__process_DPnb,
+    process_dict.update({'DPnb' : {'dualprocess' : self._process_DPnb,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPnb,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
-    process_dict.update({'DPm2' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'DPm2' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
-    process_dict.update({'DPmm' : {'dualprocess' : self.__process_DPmm,
+    process_dict.update({'DPmm' : {'dualprocess' : self._process_DPmm,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPmm,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPmm,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
-    process_dict.update({'DPrt' : {'dualprocess' : self.__process_DPrt,
+    process_dict.update({'DPrt' : {'dualprocess' : self._process_DPrt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPrt,
-                                  'inverseprocess' : self.__inverseprocess_retn,
+                                  'postprocess' : self._postprocess_DPrt,
+                                  'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPrt'}})
-    process_dict.update({'DLn3' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'DLn3' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
-    process_dict.update({'DLnb' : {'dualprocess' : self.__process_DPnb,
+    process_dict.update({'DLnb' : {'dualprocess' : self._process_DPnb,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPnb,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLnb'}})
-    process_dict.update({'DLm2' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'DLm2' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLmm' : {'dualprocess' : self.__process_DPmm,
+    process_dict.update({'DLmm' : {'dualprocess' : self._process_DPmm,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPmm,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPmm,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLmm'}})
-    process_dict.update({'DLrt' : {'dualprocess' : self.__process_DPrt,
+    process_dict.update({'DLrt' : {'dualprocess' : self._process_DPrt,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPrt,
-                                  'inverseprocess' : self.__inverseprocess_retn,
+                                  'postprocess' : self._postprocess_DPrt,
+                                  'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'meaninfill',
@@ -6972,101 +6972,101 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DLrt'}})
-    process_dict.update({'DPb2' : {'dualprocess' : self.__process_binary,
+    process_dict.update({'DPb2' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_binary,
-                                  'inverseprocess' : self.__inverseprocess_bnry,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPbn' : {'dualprocess' : self.__process_DPbn,
+    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPbn,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPbn,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPo4' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'DPo4' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPod' : {'dualprocess' : self.__process_DPod,
+    process_dict.update({'DPod' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPod,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPo5' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'DPo5' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DPo2' : {'dualprocess' : self.__process_DPod,
+    process_dict.update({'DPo2' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPod,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DPoh' : {'dualprocess' : self.__process_DPod,
+    process_dict.update({'DPoh' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPod,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'onht'}})
-    process_dict.update({'DP10' : {'dualprocess' : self.__process_DPod,
+    process_dict.update({'DP10' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPod,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPo6' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'DPo6' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
-    process_dict.update({'DPo3' : {'dualprocess' : self.__process_DPod,
+    process_dict.update({'DPo3' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_DPod,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
     process_dict.update({'qbt1' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_qbt1,
+                                  'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_qbt1,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
@@ -7074,9 +7074,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt1'}})
     process_dict.update({'qbt2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_qbt1,
+                                  'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_qbt1,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
@@ -7086,9 +7086,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt2'}})
     process_dict.update({'qbt3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_qbt1,
+                                  'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_qbt1,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'zeroinfill',
@@ -7098,9 +7098,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt3'}})
     process_dict.update({'qbt4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_qbt1,
+                                  'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_qbt1,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'zeroinfill',
@@ -7110,40 +7110,40 @@ class AutoMunge:
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt4'}})
-    process_dict.update({'nmqb' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmqb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
-    process_dict.update({'nmq2' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmq2' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt1'}})
-    process_dict.update({'mmqb' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mmqb' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
-    process_dict.update({'mmq2' : {'dualprocess' : self.__process_mnmx,
+    process_dict.update({'mmq2' : {'dualprocess' : self._process_mnmx,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mnmx,
-                                  'inverseprocess' : self.__inverseprocess_mnmx,
+                                  'postprocess' : self._postprocess_mnmx,
+                                  'inverseprocess' : self._inverseprocess_mnmx,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -7151,99 +7151,99 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt3'}})
     process_dict.update({'NArw' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_NArw,
+                                  'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NArw'}})
     process_dict.update({'NAr2' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_NArw,
+                                  'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NAr2'}})
     process_dict.update({'NAr3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_NArw,
+                                  'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NAr3'}})
     process_dict.update({'NAr4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_NArw,
+                                  'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'nonnegativenumeric',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NAr4'}})
     process_dict.update({'NAr5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_NArw,
+                                  'singleprocess' : self._process_NArw,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'NAr5'}})
     process_dict.update({'null' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_null,
+                                  'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : None}})
     process_dict.update({'copy' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_copy,
+                                  'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'copy'}})
     process_dict.update({'excl' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_excl,
+                                  'singleprocess' : self._process_excl,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_excl,
+                                  'inverseprocess' : self._inverseprocess_excl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'excl'}})
-    process_dict.update({'exc2' : {'dualprocess' : self.__process_exc2,
+    process_dict.update({'exc2' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc2,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc2'}})
-    process_dict.update({'exc3' : {'dualprocess' : self.__process_exc2,
+    process_dict.update({'exc3' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc2,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc3'}})
-    process_dict.update({'exc4' : {'dualprocess' : self.__process_exc2,
+    process_dict.update({'exc4' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc2,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc4'}})
-    process_dict.update({'exc5' : {'dualprocess' : self.__process_exc5,
+    process_dict.update({'exc5' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc5,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -7251,20 +7251,20 @@ class AutoMunge:
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc5'}})
-    process_dict.update({'exc6' : {'dualprocess' : self.__process_exc2,
+    process_dict.update({'exc6' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc2,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'exc6'}})
-    process_dict.update({'exc7' : {'dualprocess' : self.__process_exc5,
+    process_dict.update({'exc7' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc5,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -7272,10 +7272,10 @@ class AutoMunge:
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'exc7'}})
-    process_dict.update({'exc8' : {'dualprocess' : self.__process_exc5,
+    process_dict.update({'exc8' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc5,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -7283,10 +7283,10 @@ class AutoMunge:
                                   'NArowtype' : 'integer',
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc8'}})
-    process_dict.update({'exc9' : {'dualprocess' : self.__process_exc5,
+    process_dict.update({'exc9' : {'dualprocess' : self._process_exc5,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc5,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc5,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
@@ -7295,15 +7295,15 @@ class AutoMunge:
                                   'MLinfilltype' : 'integer',
                                   'labelctgy' : 'exc9'}})
     process_dict.update({'shfl' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_shfl,
+                                  'singleprocess' : self._process_shfl,
                                   'postprocess' : None,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'shfl'}})
-    process_dict.update({'sint' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'sint' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'sin'},
@@ -7311,8 +7311,8 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sint'}})
-    process_dict.update({'cost' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'cost' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'cos'},
@@ -7320,8 +7320,8 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'cost'}})
-    process_dict.update({'tant' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'tant' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'tan'},
@@ -7329,8 +7329,8 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'tant'}})
-    process_dict.update({'arsn' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'arsn' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'arcsin'},
@@ -7338,8 +7338,8 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'arsn'}})
-    process_dict.update({'arcs' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'arcs' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'arccos'},
@@ -7347,8 +7347,8 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'arcs'}})
-    process_dict.update({'artn' : {'custom_train' : self.__custom_train_trig,
-                                  'custom_inversion' : self.__custom_inversion_trig,
+    process_dict.update({'artn' : {'custom_train' : self._custom_train_trig,
+                                  'custom_inversion' : self._custom_inversion_trig,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'operation' : 'arctan'},
@@ -7356,47 +7356,47 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'artn'}})
-    process_dict.update({'nmbd' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'nmbd' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nmbr'}})
-    process_dict.update({'101d' : {'custom_train' : self.__custom_train_1010,
-                                  'custom_test' : self.__custom_test_1010,
-                                  'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'101d' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '101d'}})
-    process_dict.update({'ordd' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'ordd' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'ordd'}})
-    process_dict.update({'texd' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'texd' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'texd'}})
-    process_dict.update({'bnrd' : {'dualprocess' : self.__process_binary,
+    process_dict.update({'bnrd' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_binary,
-                                  'inverseprocess' : self.__inverseprocess_bnry,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -7411,44 +7411,44 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
     process_dict.update({'nuld' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_null,
+                                  'singleprocess' : self._process_null,
                                   'postprocess' : None,
                                   'inplace_option' : False,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'nuld'}})
-    process_dict.update({'lbnm' : {'dualprocess' : self.__process_exc2,
+    process_dict.update({'lbnm' : {'dualprocess' : self._process_exc2,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_exc2,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'postprocess' : self._postprocess_exc2,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'adjinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'lbnm'}})
-    process_dict.update({'lbnb' : {'dualprocess' : self.__process_numerical,
+    process_dict.update({'lbnb' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_numerical,
-                                  'inverseprocess' : self.__inverseprocess_nmbr,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'lbnb'}})
-    process_dict.update({'lb10' : {'custom_train' : self.__custom_train_1010,
-                                  'custom_test' : self.__custom_test_1010,
-                                  'custom_inversion' : self.__custom_inversion_1010,
+    process_dict.update({'lb10' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'lb10'}})
-    process_dict.update({'lbor' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'lbor' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7456,9 +7456,9 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'lbor'}})
-    process_dict.update({'lbos' : {'custom_train' : self.__custom_train_ordl,
-                                  'custom_test' : self.__custom_test_ordl,
-                                  'custom_inversion' : self.__custom_inversion_ordl,
+    process_dict.update({'lbos' : {'custom_train' : self._custom_train_ordl,
+                                  'custom_test' : self._custom_test_ordl,
+                                  'custom_inversion' : self._custom_inversion_ordl,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -7466,39 +7466,39 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'strg'}})
-    process_dict.update({'lbte' : {'custom_train' : self.__custom_train_onht,
-                                  'custom_test' : self.__custom_test_onht,
-                                  'custom_inversion' : self.__custom_inversion_onht,
+    process_dict.update({'lbte' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'lbte'}})
-    process_dict.update({'lbbn' : {'dualprocess' : self.__process_binary,
+    process_dict.update({'lbbn' : {'dualprocess' : self._process_binary,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_binary,
-                                  'inverseprocess' : self.__inverseprocess_bnry,
+                                  'postprocess' : self._postprocess_binary,
+                                  'inverseprocess' : self._inverseprocess_bnry,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'lbbn'}})
-    process_dict.update({'lbsm' : {'dualprocess' : self.__process_smth,
+    process_dict.update({'lbsm' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_smth,
-                                  'inverseprocess' : self.__inverseprocess_smth,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'exclude',
                                   'labelctgy' : 'lbsm'}})
-    process_dict.update({'lbfs' : {'dualprocess' : self.__process_smth,
+    process_dict.update({'lbfs' : {'dualprocess' : self._process_smth,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_smth,
-                                  'inverseprocess' : self.__inverseprocess_smth,
+                                  'postprocess' : self._postprocess_smth,
+                                  'inverseprocess' : self._inverseprocess_smth,
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
@@ -7513,20 +7513,20 @@ class AutoMunge:
                                   'NArowtype' : 'datetime',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'mdsn'}})
-    process_dict.update({'lgnr' : {'dualprocess' : self.__process_absl,
+    process_dict.update({'lgnr' : {'dualprocess' : self._process_absl,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_absl,
-                                  'inverseprocess' : self.__inverseprocess_absl,
+                                  'postprocess' : self._postprocess_absl,
+                                  'inverseprocess' : self._inverseprocess_absl,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'nonzeronumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
-    process_dict.update({'lgn2' : {'dualprocess' : self.__process_logn,
+    process_dict.update({'lgn2' : {'dualprocess' : self._process_logn,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_logn,
-                                  'inverseprocess' : self.__inverseprocess_logn,
+                                  'postprocess' : self._postprocess_logn,
+                                  'inverseprocess' : self._inverseprocess_logn,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -7534,9 +7534,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qbt5'}})
     process_dict.update({'qbt5' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_qbt1,
+                                  'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_qbt1,
+                                  'inverseprocess' : self._inverseprocess_qbt1,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'negzeroinfill',
@@ -7547,9 +7547,9 @@ class AutoMunge:
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'qbt5'}})
     process_dict.update({'sgn3' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_copy,
+                                  'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
@@ -7557,19 +7557,19 @@ class AutoMunge:
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
     process_dict.update({'sgn4' : {'dualprocess' : None,
-                                  'singleprocess' : self.__process_copy,
+                                  'singleprocess' : self._process_copy,
                                   'postprocess' : None,
-                                  'inverseprocess' : self.__inverseprocess_UPCS,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultparams' : {'suffix' : ''},
                                   'NArowtype' : 'exclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'sgn2'}})
-    process_dict.update({'sgn1' : {'dualprocess' : self.__process_mltp,
+    process_dict.update({'sgn1' : {'dualprocess' : self._process_mltp,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_mltp,
-                                  'inverseprocess' : self.__inverseprocess_mltp,
+                                  'postprocess' : self._postprocess_mltp,
+                                  'inverseprocess' : self._inverseprocess_mltp,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'meaninfill',
@@ -7577,10 +7577,10 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'sgn2'}})
-    process_dict.update({'sgn2' : {'dualprocess' : self.__process_bkt3,
+    process_dict.update({'sgn2' : {'dualprocess' : self._process_bkt3,
                                   'singleprocess' : None,
-                                  'postprocess' : self.__postprocess_bkt3,
-                                  'inverseprocess' : self.__inverseprocess_bkt3,
+                                  'postprocess' : self._postprocess_bkt3,
+                                  'inverseprocess' : self._inverseprocess_bkt3,
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
@@ -8932,7 +8932,7 @@ class AutoMunge:
     
     return postprocess_dict
 
-  def __process_NArw(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_NArw(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton that creates a boolean column indicating 1 for rows
     #corresponding to missing or improperly formated data in source column
@@ -8988,7 +8988,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_numerical(self, mdf_train, mdf_test, column, category, \
+  def _process_numerical(self, mdf_train, mdf_test, column, category, \
                               treecategory, postprocess_dict, params = {}):
     '''
     #process_numerical(mdf_train, mdf_test, column, category)
@@ -9174,7 +9174,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_dxdt(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_dxdt(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_dxdt(df, column, category, postprocess_dict)
     #function to translate a continues variable into a bounded variable
@@ -9285,7 +9285,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __process_dxd2(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_dxd2(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_dxd2(df, column, category, postprocess_dict)
     #function to translate a continues variable into a bounded variable
@@ -9413,7 +9413,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __process_shft(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_shft(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_shft(df, column, category, postprocess_dict)
     #function to shift a sequential set forward by one or more time steps    
@@ -9522,7 +9522,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __process_MADn(self, mdf_train, mdf_test, column, category, \
+  def _process_MADn(self, mdf_train, mdf_test, column, category, \
                               treecategory, postprocess_dict, params = {}):
     '''
     #process_MADn(mdf_train, mdf_test, column, category)
@@ -9653,7 +9653,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_mnmx(self, mdf_train, mdf_test, column, category, \
+  def _process_mnmx(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_mnmx(mdf_train, mdf_test, column, category)
@@ -9816,7 +9816,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_mnm3(self, mdf_train, mdf_test, column, category, \
+  def _process_mnm3(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_mnmx(mdf_train, mdf_test, column, category)
@@ -9968,7 +9968,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_mxab(self, mdf_train, mdf_test, column, category, \
+  def _process_mxab(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_mxab(mdf_train, mdf_test, column, category)
@@ -10078,7 +10078,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_retn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_retn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     """
     #process_retn(mdf_train, mdf_test, column, category)
     #function to scale data as follows:
@@ -10333,7 +10333,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_mean(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_mean(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_mean(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of 0 and maximum of 1 \
@@ -10507,7 +10507,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_binary(self, mdf_train, mdf_test, column, category, \
+  def _process_binary(self, mdf_train, mdf_test, column, category, \
                            treecategory, postprocess_dict, params = {}):
     '''
     #process_binary(mdf, column, missing)
@@ -10778,7 +10778,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __custom_train_onht(self, df, column, normalization_dict):
+  def _custom_train_onht(self, df, column, normalization_dict):
     """
     #a rewrite of onht transform in the custom train convention
     #note that this version combines text vs onht suffix conentions, now distinguishable by parameter
@@ -11066,7 +11066,7 @@ class AutoMunge:
     
     return df, normalization_dict
 
-  def __process_smth(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_smth(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_smth(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #intended for applicant downstream of a multirt MLinfilltype encoding (e.g. one hot encoding)
@@ -11300,7 +11300,7 @@ class AutoMunge:
 
     return latt
   
-  def __custom_train_GPS1(self, df, column, normalization_dict):
+  def _custom_train_GPS1(self, df, column, normalization_dict):
     """
     GPS1 is for converting sets of received GPS coordinates into format of two columns of lattitude and longitude
     accepts input of string GPS coordinates
@@ -11426,7 +11426,7 @@ class AutoMunge:
 
     return df, normalization_dict
 
-  def __process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_mlti(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
     #(e.g. downstream of multicolumn continuous numeric sets)
@@ -11646,7 +11646,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_lngt(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_lngt(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton that length of string for each entry
     #such as a heuristic for information content
@@ -11737,7 +11737,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_bnst(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bnst(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     intended for application downstream of a 1010, multirt, or concurrent_act MLinfilltype encoding (with boolean integer entries)
     bnst converts multicolumn categoric representations to a single column representation
@@ -11822,7 +11822,7 @@ class AutoMunge:
         
     return df, column_dict_list
   
-  def __process_UPCS(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_UPCS(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton that converts columns to uppercase strings
     #such as to allow consistnet encoding if data has upper/lower case discrepencies
@@ -11905,7 +11905,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_splt(self, mdf_train, mdf_test, column, category, \
+  def _process_splt(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_splt(mdf_train, mdf_test, column, category)
@@ -12244,7 +12244,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_spl2(self, mdf_train, mdf_test, column, category, \
+  def _process_spl2(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_spl2(mdf_train, mdf_test, column, category)
@@ -12598,7 +12598,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_sp19(self, mdf_train, mdf_test, column, category, \
+  def _process_sp19(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_splt(mdf_train, mdf_test, column, category)
@@ -13061,7 +13061,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_sbst(self, mdf_train, mdf_test, column, category, \
+  def _process_sbst(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_sbst(mdf_train, mdf_test, column, category)
@@ -13317,7 +13317,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_sbs3(self, mdf_train, mdf_test, column, category, \
+  def _process_sbs3(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_sbst(mdf_train, mdf_test, column, category)
@@ -13693,7 +13693,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_hash(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_hash(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     """
     #applies the "hashing trick" to encode categoric sets
     #returning a set of columns with integers corresponding to words from set vocabulary
@@ -14012,7 +14012,7 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_hs10(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_hs10(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     """
     #applies the "hashing trick" to encode categoric sets
     #returning a set of columns binary encoded corresponding to integers returned from hash
@@ -14203,7 +14203,7 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_srch(self, mdf_train, mdf_test, column, category, \
+  def _process_srch(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #process_srch(mdf_train, mdf_test, column, category)
@@ -14391,7 +14391,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_src2(self, mdf_train, mdf_test, column, category, \
+  def _process_src2(self, mdf_train, mdf_test, column, category, \
                         treecategory, postprocess_dict, params = {}):
     """
     #process_src2(mdf_train, mdf_test, column, category)
@@ -14664,7 +14664,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_src3(self, mdf_train, mdf_test, column, category, \
+  def _process_src3(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #process_src3(mdf_train, mdf_test, column, category)
@@ -14936,7 +14936,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_src4(self, mdf_train, mdf_test, column, category, \
+  def _process_src4(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #process_src4(mdf_train, mdf_test, column, category)
@@ -15158,7 +15158,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_aggt(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_aggt(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     #process_aggt(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -15240,7 +15240,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __process_strn(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_strn(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     #process_strn(df, column, category, postprocess_dict)
     #parses string entries and if any strings present returns longest string
@@ -15384,7 +15384,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __process_strg(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_strg(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #str function
     #accepts input of integer categoric sets, such as from an ordinal transform
@@ -15431,7 +15431,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_nmrc(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_nmrc(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     #process_nmrc(df, column, category, postprocess_dict)
     #parses string entries and if any numbers present returns numbers
@@ -15591,7 +15591,7 @@ class AutoMunge:
     
     return df, column_dict_list
 
-  def __process_nmr4(self, mdf_train, mdf_test, column, category, \
+  def _process_nmr4(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #extract numeric partitions from categoric entries, test treated differently than train
@@ -15857,7 +15857,7 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def __custom_train_ordl(self, df, column, normalization_dict):
+  def _custom_train_ordl(self, df, column, normalization_dict):
     """
     #a rewrite of ordl transform in the custom train convention
     #this should benefit latency
@@ -16131,7 +16131,7 @@ class AutoMunge:
     
     return df, normalization_dict
 
-  def __process_maxb(self, mdf_train, mdf_test, column, category, \
+  def _process_maxb(self, mdf_train, mdf_test, column, category, \
                    treecategory, postprocess_dict, params = {}):
     '''
     #process_maxb
@@ -16346,7 +16346,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_ucct(self, mdf_train, mdf_test, column, category, \
+  def _process_ucct(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_ucct(mdf_train, mdf_test, column, category)
@@ -16458,7 +16458,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __custom_train_1010(self, df, column, normalization_dict):
+  def _custom_train_1010(self, df, column, normalization_dict):
     """
     #a rewrite of 1010 transform in the custom train convention
     #since is default categoric deserves a little more attention
@@ -16745,7 +16745,7 @@ class AutoMunge:
 
     return df, normalization_dict
 
-  def __process_bshr(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bshr(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -16826,7 +16826,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_wkdy(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_wkdy(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -16897,7 +16897,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_hldy(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_hldy(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a boolean column indicating 1 for rows
@@ -16994,7 +16994,7 @@ class AutoMunge:
 
     return df, column_dict_list
   
-  def __process_wkds(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_wkds(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a categorical column 
@@ -17101,7 +17101,7 @@ class AutoMunge:
 
     return df, column_dict_list
   
-  def __process_mnts(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_mnts(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that creates a categorical column 
@@ -17218,7 +17218,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_tmzn(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_tmzn(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processing funciton depending on input format of datetime data 
     #that defaults as a passthrough
@@ -17300,7 +17300,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_tmsc(self, mdf_train, mdf_test, column, category, \
+  def _process_tmsc(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #time data segregated by time scale
@@ -17548,7 +17548,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_time(self, mdf_train, mdf_test, column, category, \
+  def _process_time(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     """
     #z-score normalized time data segregated by a particular time scale
@@ -17706,7 +17706,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_qttf(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_qttf(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     """
     Applies quantile transform
     Makes use of sklearn.preprocessing.quantile_transform
@@ -17860,7 +17860,7 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bxcx(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bxcx(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     Applies Box-Cox transform to an all-positive numerical set.
     
@@ -17995,7 +17995,7 @@ class AutoMunge:
       
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_log0(self, mdf_train, mdf_test, column, category, \
+  def _process_log0(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_log0(mdf_train, mdf_test, column, category)
@@ -18104,7 +18104,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_logn(self, mdf_train, mdf_test, column, category, \
+  def _process_logn(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_logn(mdf_train, mdf_test, column, category)
@@ -18213,7 +18213,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_sqrt(self, mdf_train, mdf_test, column, category, \
+  def _process_sqrt(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_sqrt(mdf_train, mdf_test, column, category)
@@ -18322,7 +18322,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_addd(self, mdf_train, mdf_test, column, category, \
+  def _process_addd(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_addd(.)
@@ -18420,7 +18420,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_sbtr(self, mdf_train, mdf_test, column, category, \
+  def _process_sbtr(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_sbtr(.)
@@ -18518,7 +18518,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_mltp(self, mdf_train, mdf_test, column, category, \
+  def _process_mltp(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_mltp(.)
@@ -18616,7 +18616,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_divd(self, mdf_train, mdf_test, column, category, \
+  def _process_divd(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_divd(.)
@@ -18717,7 +18717,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_rais(self, mdf_train, mdf_test, column, category, \
+  def _process_rais(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_rais(.)
@@ -18813,7 +18813,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_absl(self, mdf_train, mdf_test, column, category, \
+  def _process_absl(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #process_absl(.)
@@ -18903,7 +18903,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_pwrs(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_pwrs(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins corresponding to powers
     #of ten in one hot encoded columns
@@ -19196,7 +19196,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_pwor(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_pwor(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in ordinal encoded columns
@@ -19502,7 +19502,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bins(self, mdf_train, mdf_test, column, category, \
+  def _process_bins(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #bins processes a numerical set by creating bins coresponding to post z score
@@ -19678,7 +19678,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bsor(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bsor(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #bins processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -19864,7 +19864,7 @@ class AutoMunge:
     
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_bnwd(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bnwd(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating equal width bins coresponding to 
     #parameter 'width' which defaults to 1
@@ -20010,7 +20010,7 @@ class AutoMunge:
        
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bnwo(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bnwo(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating equal width bins coresponding to 
     #parameter 'width' which defaults to 1
@@ -20159,7 +20159,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bnep(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bnep(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 5
@@ -20351,7 +20351,7 @@ class AutoMunge:
        
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_bneo(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bneo(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 5
@@ -20548,7 +20548,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_tlbn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_tlbn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 9
@@ -20823,7 +20823,7 @@ class AutoMunge:
        
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_bkt1(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bkt1(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -20980,7 +20980,7 @@ class AutoMunge:
        
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_bkt2(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bkt2(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -21132,7 +21132,7 @@ class AutoMunge:
        
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_bkt3(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bkt3(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -21297,7 +21297,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_bkt4(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_bkt4(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -21473,7 +21473,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_DPnb(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_DPnb(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_DPnb(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -21591,7 +21591,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_DPmm(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_DPmm(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_DPmm(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -21741,7 +21741,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_DPrt(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_DPrt(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     """
     #process_DPrt 
     #function to scale data as follows:
@@ -22093,7 +22093,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_DPbn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_DPbn(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_DPbn(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -22180,7 +22180,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_DPod(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_DPod(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #process_DPod(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -22297,7 +22297,7 @@ class AutoMunge:
         
     return mdf_train, mdf_test, column_dict_list
 
-  def __process_qbt1(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_qbt1(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     #translates numerical entries to Q notation
     #which is a kind of binary encoding
@@ -22512,7 +22512,7 @@ class AutoMunge:
       
     return df, column_dict_list
   
-  def __process_null(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_null(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #this is placeholder for columns given a null deletion operation
     #(such as is default for training sets containing all nan values)
@@ -22546,7 +22546,7 @@ class AutoMunge:
 
     return df, column_dict_list
   
-  def __process_copy(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_copy(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #copy function
     #accepts parameter 'suffix' for suffix appender
@@ -22603,7 +22603,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_excl(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_excl(self, df, column, category, treecategory, postprocess_dict, params = {}):
     """
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -22676,7 +22676,7 @@ class AutoMunge:
 
     return df, column_dict_list
 
-  def __process_exc2(self, mdf_train, mdf_test, column, category, \
+  def _process_exc2(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
@@ -22747,7 +22747,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_exc5(self, mdf_train, mdf_test, column, category, \
+  def _process_exc5(self, mdf_train, mdf_test, column, category, \
                          treecategory, postprocess_dict, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
@@ -22860,7 +22860,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
   
-  def __process_shfl(self, df, column, category, treecategory, postprocess_dict, params = {}):
+  def _process_shfl(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
     #function to shuffle data in a column
     #non-numeric entries allowed
@@ -22933,7 +22933,7 @@ class AutoMunge:
         
     return df, column_dict_list
 
-  def __custom_train_trig(self, df, column, normalization_dict):
+  def _custom_train_trig(self, df, column, normalization_dict):
     """
     single process function in custom_train convention 
     for use to apply trigometric transformations to a numeric feature
@@ -25607,42 +25607,42 @@ class AutoMunge:
     
     autoMLer = {}
     
-    autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self.__train_randomforest_classifier, \
-                                                                   'predict' : self.__predict_randomforest_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self.__train_randomforest_classifier, \
-                                                                   'predict' : self.__predict_randomforest_classifier}, \
-                                       'onehotclassification'   : {'train'   : self.__train_randomforest_classifier, \
-                                                                   'predict' : self.__predict_randomforest_classifier}, \
-                                       'regression'             : {'train'   : self.__train_randomforest_regressor, \
-                                                                   'predict' : self.__predict_randomforest_regressor}}, 
-                     'autogluon'    : {'booleanclassification'  : {'train'   : self.__train_autogluon_classifier, \
-                                                                   'predict' : self.__predict_autogluon_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self.__train_autogluon_classifier, \
-                                                                   'predict' : self.__predict_autogluon_classifier}, \
-                                       'onehotclassification'   : {'train'   : self.__train_autogluon_classifier, \
-                                                                   'predict' : self.__predict_autogluon_classifier}, \
-                                       'regression'             : {'train'   : self.__train_autogluon_regressor, \
-                                                                   'predict' : self.__predict_autogluon_regressor}}, \
-                     'flaml'        : {'booleanclassification'  : {'train'   : self.__train_flaml_classifier, \
-                                                                   'predict' : self.__predict_flaml_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self.__train_flaml_classifier, \
-                                                                   'predict' : self.__predict_flaml_classifier}, \
-                                       'onehotclassification'   : {'train'   : self.__train_flaml_classifier, \
-                                                                   'predict' : self.__predict_flaml_classifier}, \
-                                       'regression'             : {'train'   : self.__train_flaml_regressor, \
-                                                                   'predict' : self.__predict_flaml_regressor}}, \
-                     'catboost'     : {'booleanclassification'  : {'train'   : self.__train_catboost_classifier, \
-                                                                   'predict' : self.__predict_catboost_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self.__train_catboost_classifier, \
-                                                                   'predict' : self.__predict_catboost_classifier}, \
-                                       'onehotclassification'   : {'train'   : self.__train_catboost_classifier, \
-                                                                   'predict' : self.__predict_catboost_classifier}, \
-                                       'regression'             : {'train'   : self.__train_catboost_regressor, \
-                                                                   'predict' : self.__predict_catboost_regressor}}})
+    autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self._train_randomforest_classifier, \
+                                                                   'predict' : self._predict_randomforest_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_randomforest_classifier, \
+                                                                   'predict' : self._predict_randomforest_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_randomforest_classifier, \
+                                                                   'predict' : self._predict_randomforest_classifier}, \
+                                       'regression'             : {'train'   : self._train_randomforest_regressor, \
+                                                                   'predict' : self._predict_randomforest_regressor}}, 
+                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_autogluon_classifier, \
+                                                                   'predict' : self._predict_autogluon_classifier}, \
+                                       'regression'             : {'train'   : self._train_autogluon_regressor, \
+                                                                   'predict' : self._predict_autogluon_regressor}}, \
+                     'flaml'        : {'booleanclassification'  : {'train'   : self._train_flaml_classifier, \
+                                                                   'predict' : self._predict_flaml_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_flaml_classifier, \
+                                                                   'predict' : self._predict_flaml_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_flaml_classifier, \
+                                                                   'predict' : self._predict_flaml_classifier}, \
+                                       'regression'             : {'train'   : self._train_flaml_regressor, \
+                                                                   'predict' : self._predict_flaml_regressor}}, \
+                     'catboost'     : {'booleanclassification'  : {'train'   : self._train_catboost_classifier, \
+                                                                   'predict' : self._predict_catboost_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_catboost_classifier, \
+                                                                   'predict' : self._predict_catboost_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_catboost_classifier, \
+                                                                   'predict' : self._predict_catboost_classifier}, \
+                                       'regression'             : {'train'   : self._train_catboost_regressor, \
+                                                                   'predict' : self._predict_catboost_regressor}}})
     
     return autoMLer
 
-  def __train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #performs tuning if appropriate based on ML_cmnd
     #initializes model
@@ -25752,7 +25752,7 @@ class AutoMunge:
 
       return model
 
-  def __predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
@@ -25766,7 +25766,7 @@ class AutoMunge:
     
     return infill
 
-  def __train_randomforest_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_randomforest_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #performs tuning if appropriate based on ML_cmnd
     #initializes model
@@ -25872,7 +25872,7 @@ class AutoMunge:
 
       return model
 
-  def __predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in train_randomforest_classifier
@@ -25886,11 +25886,11 @@ class AutoMunge:
     
     return infill
 
-  def __train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     modeltype = 'classification'
     return self.__train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
 
-  def __train_autogluon_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_autogluon_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     modeltype = 'regression'
     return self.__train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
 
@@ -25967,11 +25967,11 @@ class AutoMunge:
     except ValueError:
       return False
 
-  def __predict_autogluon_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_autogluon_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     modeltype = 'classification'
     return self.__predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
 
-  def __predict_autogluon_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_autogluon_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     modeltype = 'regression'
     return self.__predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
 
@@ -26028,7 +26028,7 @@ class AutoMunge:
       
       return infill
 
-  def __train_flaml_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_flaml_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #Trains a model for ML infill using flaml classifier
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
@@ -26090,7 +26090,7 @@ class AutoMunge:
     except:
       return False
 
-  def __predict_flaml_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_flaml_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in flaml_classifier
@@ -26119,7 +26119,7 @@ class AutoMunge:
       
       return infill
 
-  def __train_flaml_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_flaml_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #Trains a model for ML infill using flaml regressor
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
@@ -26166,7 +26166,7 @@ class AutoMunge:
     except:
       return False
 
-  def __predict_flaml_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_flaml_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in flaml_regressor
@@ -26187,7 +26187,7 @@ class AutoMunge:
       
       return infill
 
-  def __train_catboost_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_catboost_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #Trains a model for ML infill using catboost classifier
     #accepts parameters to model initialization as ML_cmnd['MLinfill_cmnd']['catboost_classifier_model']
@@ -26319,7 +26319,7 @@ class AutoMunge:
     except ValueError:
       return False
 
-  def __predict_catboost_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_catboost_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in catboost_classifier
@@ -26348,7 +26348,7 @@ class AutoMunge:
       
       return infill
 
-  def __train_catboost_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+  def _train_catboost_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
     #Trains a model for ML infill using catboost regressor
     #accepts parameters to model initialization as ML_cmnd['MLinfill_cmnd']['catboost_regressor_model']
@@ -26462,7 +26462,7 @@ class AutoMunge:
     except ValueError:
       return False
 
-  def __predict_catboost_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+  def _predict_catboost_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
     #runs and inference operation
     #on corresponding model trained in catboost_regressor
@@ -33128,27 +33128,27 @@ class AutoMunge:
     if Binary in {True, 'retain'}:
       
       df_train, Binary_dict = \
-      self.__custom_train_1010(df_train, Binary_column, {'null_activation' : 'Binary'})
+      self._custom_train_1010(df_train, Binary_column, {'null_activation' : 'Binary'})
     
       df_test = \
-      self.__custom_test_1010(df_test, Binary_column, Binary_dict)
+      self._custom_test_1010(df_test, Binary_column, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
       
       df_train, Binary_dict = \
-      self.__custom_train_ordl(df_train, Binary_column, {'null_activation' : 'Binary'})
+      self._custom_train_ordl(df_train, Binary_column, {'null_activation' : 'Binary'})
     
       df_test = \
-      self.__custom_test_ordl(df_test, Binary_column, Binary_dict)
+      self._custom_test_ordl(df_test, Binary_column, Binary_dict)
 
     if Binary in {'onehot', 'onehotretain'}:
       
       df_train, Binary_dict = \
-      self.__custom_train_onht(df_train, Binary_column, {'null_activation' : 'Binary',
+      self._custom_train_onht(df_train, Binary_column, {'null_activation' : 'Binary',
                                                         'suffix_convention' : 'onht'})
     
       df_test = \
-      self.__custom_test_onht(df_test, Binary_column, Binary_dict)
+      self._custom_test_onht(df_test, Binary_column, Binary_dict)
       
     returned_columns = set(df_train)
     
@@ -33233,17 +33233,17 @@ class AutoMunge:
     if Binary in {True, 'retain'}:
 
       df_test = \
-      self.__custom_test_1010(df_test, Binary_column, Binary_dict)
+      self._custom_test_1010(df_test, Binary_column, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
 
       df_test = \
-      self.__custom_test_ordl(df_test, Binary_column, Binary_dict)
+      self._custom_test_ordl(df_test, Binary_column, Binary_dict)
 
     if Binary in {'onehot', 'onehotretain'}:
 
       df_test = \
-      self.__custom_test_onht(df_test, Binary_column, Binary_dict)
+      self._custom_test_onht(df_test, Binary_column, Binary_dict)
     
     #we won't delete the origin columns if Binary passed as 'retain'
     #(such that the binary encoding is a supplement instead of a replacement)
@@ -33383,21 +33383,21 @@ class AutoMunge:
       inputcolumn = Binary_root + '_1010'
     
       df= \
-      self.__custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
+      self._custom_inversion_1010(df, Binary_columns, inputcolumn, Binary_dict)
       
     if Binary in {'ordinal', 'ordinalretain'}:
       
       inputcolumn = Binary_root + '_ord3'
       
       df = \
-      self.__custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
+      self._custom_inversion_ordl(df, Binary_columns, inputcolumn, Binary_dict)
 
     if Binary in {'onehot', 'onehotretain'}:
       
       inputcolumn = Binary_root + '_onht'
       
       df = \
-      self.__custom_inversion_onht(df, Binary_columns, inputcolumn, Binary_dict)
+      self._custom_inversion_onht(df, Binary_columns, inputcolumn, Binary_dict)
       
     return df, inputcolumn
   
@@ -36024,7 +36024,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.11'
+    automungeversion = '7.12'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36926,7 +36926,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_numerical(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_numerical(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_numerical(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data to mean of 0 and standard deviation of 1 from training distribution
@@ -37024,7 +37024,7 @@ class AutoMunge:
 
     return mdf_test
     
-  def __postprocess_MADn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_MADn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_MADn(mdf_test, column, postprocess_dict, columnkey)
     #function to normalize data to mean of 0 and mean absolute deviation of 1 from training distribution
@@ -37107,7 +37107,7 @@ class AutoMunge:
 
     return mdf_test
     
-  def __postprocess_mnmx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mnmx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mnmx(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -37192,7 +37192,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_mnm3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mnm3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mnmx(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -37277,7 +37277,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_mxab(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mxab(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_mxab(mdf_train, mdf_test, column, category)
     #function to scale data to minimum of -1 and maximum of 1 \
@@ -37338,7 +37338,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_retn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_retn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_retn(mdf_train, mdf_test, column, category)
     #function to scale data as follows:
@@ -37458,7 +37458,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_mean(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mean(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mean(mdf_test, column, postprocess_dict, columnkey)
     #function to scale data to minimum of 0 and maximum of 1 based on training distribution
@@ -37547,7 +37547,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_binary(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_binary(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_binary(mdf, column, postprocess_dict, columnkey)
     #converts binary classification values to 0 or 1
@@ -37637,7 +37637,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __custom_test_onht(self, df, column, normalization_dict):
+  def _custom_test_onht(self, df, column, normalization_dict):
     """
     #rewrite of the onht trasnform
     #corresponding to _custom_train_onht
@@ -37691,7 +37691,7 @@ class AutoMunge:
     
     return df
 
-  def __postprocess_smth(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_smth(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_smth(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #preprocess column with one hot encoding
@@ -37760,7 +37760,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __custom_test_GPS1(self, df, column, normalization_dict):
+  def _custom_test_GPS1(self, df, column, normalization_dict):
     """
     #corresponding to _custom_train_GPS1
 
@@ -37823,7 +37823,7 @@ class AutoMunge:
     
     return df
 
-  def __postprocess_mlti(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mlti(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #intended for applicant downstream of a concurrent_nmbr MLinfilltype encoding 
     #coresponds to _process_mlti
@@ -37976,7 +37976,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_splt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_splt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -38098,7 +38098,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_spl2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_spl2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_spl2(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -38242,7 +38242,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_sp19(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_sp19(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_splt(mdf_test, column, postprocess_dict, category)
     #preprocess column with categorical entries as strings
@@ -38430,7 +38430,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_sbst(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_sbst(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_sbst(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -38554,7 +38554,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_sbs3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_sbs3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_sbst(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -38742,7 +38742,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_hash(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_hash(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #applies the "hashing trick" to encode categoric sets
     #returning a set of columns with integers corresponding to words from set vocabulary
@@ -38962,7 +38962,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_hs10(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_hs10(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #applies the "hashing trick" to encode categoric sets
     #returning a set of columns binary encoded corresponding to integers returned from hash
@@ -39077,7 +39077,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def __postprocess_srch(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_srch(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_srch(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -39186,7 +39186,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_src2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_src2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_src2(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -39348,7 +39348,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_src3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_src3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_src3(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -39511,7 +39511,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_src4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_src4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_srch(mdf_train, mdf_test, column, category)
     #preprocess column with categorical entries as strings
@@ -39654,7 +39654,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_nmr4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_nmr4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #extract numeric partitions from categoric entries, test treated differently than train
     #accepts parameters
@@ -39800,7 +39800,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __custom_test_ordl(self, df, column, normalization_dict):
+  def _custom_test_ordl(self, df, column, normalization_dict):
     """
     #rewrite of the ordl trasnform
     #corresponding to _custom_train_ordl
@@ -39838,7 +39838,7 @@ class AutoMunge:
     
     return df
 
-  def __postprocess_maxb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_maxb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_maxb(mdf_test, column, postprocess_dict, columnkey)
     #simpler than dualprocess version
@@ -39910,7 +39910,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_ucct(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_ucct(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_ucct(mdf_train, mdf_test, column, category)
     #preprocess column with categories into unique class count sets
@@ -39986,7 +39986,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __custom_test_1010(self, df, column, normalization_dict):
+  def _custom_test_1010(self, df, column, normalization_dict):
     """
     #rewrite of the 1010 trasnform
     #corresponding to _custom_train_1010
@@ -40039,7 +40039,7 @@ class AutoMunge:
     
     return df
 
-  def __postprocess_tmsc(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_tmsc(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #time data segregated by time scale
     #with sin or cos applied to address periodicity
@@ -40194,7 +40194,7 @@ class AutoMunge:
       
     return mdf_test
 
-  def __postprocess_time(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_time(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #z-score normalized time data segregated by a particular time scale
     #accepts parameter 'scale' to distinguish between year/month/day/hour/minute/second
@@ -40270,7 +40270,7 @@ class AutoMunge:
       
     return mdf_test
 
-  def __postprocess_qttf(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_qttf(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     Corresponds to _process_qttf
     '''
@@ -40320,7 +40320,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_bxcx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bxcx(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     Applies box-cox method within postmunge function.
     '''
@@ -40401,7 +40401,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_log0(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_log0(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
         
     '''
     #function to apply logatrithmic transform
@@ -40471,7 +40471,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_logn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_logn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
         
     '''
     #function to apply natural logatrithmic transform
@@ -40541,7 +40541,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_sqrt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_sqrt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
         
     '''
     #function to apply square root transform
@@ -40611,7 +40611,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_addd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_addd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_addd(.)
     #function to apply addition transform
@@ -40671,7 +40671,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_sbtr(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_sbtr(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_sbtr(.)
     #function to apply subtraction transform
@@ -40731,7 +40731,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_mltp(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_mltp(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_mltp(.)
     #function to apply multiplication transform
@@ -40791,7 +40791,7 @@ class AutoMunge:
 
     return mdf_test
     
-  def __postprocess_divd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_divd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_divd(.)
     #function to apply division transform
@@ -40849,7 +40849,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_rais(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_rais(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_rais(.)
     #function to apply raise to a power transform
@@ -40907,7 +40907,7 @@ class AutoMunge:
 
     return mdf_test
     
-  def __postprocess_absl(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_absl(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #postprocess_absl(.)
     #function to apply absolute transform
@@ -40963,7 +40963,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_pwrs(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_pwrs(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins corresponding to powers
     #of ten in one hot encoded columns
@@ -41133,7 +41133,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_pwor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_pwor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating bins coresponding to powers
     #of ten in ordinal encoded columns
@@ -41310,7 +41310,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_bins(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bins(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #bins processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -41394,7 +41394,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_bsor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bsor(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #bins processes a numerical set by creating bins coresponding to post z score
     #normalization of <-2, -2-1, -10, 01, 12, >2 in one hot encoded columns
@@ -41485,7 +41485,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_bnwd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bnwd(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating equal width bins coresponding to 
     #parameter 'width' which defaults to 1
@@ -41563,7 +41563,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_bnwo(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bnwo(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating equal width bins coresponding to 
     #parameter 'width' which defaults to 1
@@ -41639,7 +41639,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_bnep(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bnep(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 5
@@ -41720,7 +41720,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_bneo(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bneo(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 5
@@ -41803,7 +41803,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def __postprocess_tlbn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_tlbn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating equal population bins coresponding to 
     #parameter 'bincount' which defaults to 9
@@ -41931,7 +41931,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_bkt1(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bkt1(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -42001,7 +42001,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_bkt2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bkt2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -42071,7 +42071,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def __postprocess_bkt3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bkt3(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -42150,7 +42150,7 @@ class AutoMunge:
     
     return mdf_test
   
-  def __postprocess_bkt4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_bkt4(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #processes a numerical set by creating custom bins coresponding to 
     #parameter 'buckets' which defaults to [0,1]
@@ -42234,7 +42234,7 @@ class AutoMunge:
     
     return mdf_test
 
-  def __postprocess_DPnb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_DPnb(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_DPnb(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -42309,7 +42309,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_DPmm(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_DPmm(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_DPmm(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -42421,7 +42421,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_DPrt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_DPrt(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     """
     #process_DPrt 
     #function to scale data as follows:
@@ -42622,7 +42622,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_DPbn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_DPbn(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_DPbn(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -42686,7 +42686,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_DPod(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_DPod(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #process_DPod(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
     #function to inject noise to training data, such as for differential privacy purposes
@@ -42768,7 +42768,7 @@ class AutoMunge:
 
     return mdf_test
 
-  def __postprocess_exc2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_exc2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -42819,7 +42819,7 @@ class AutoMunge:
 
     return mdf_test
   
-  def __postprocess_exc5(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+  def _postprocess_exc5(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
     #here we'll address any columns that returned a 'excl' category
     #note this is a. singleprocess transform
@@ -45300,7 +45300,7 @@ class AutoMunge:
     
     elif postprocess_dict['privacy_encode'] is True:
       
-      if inversion in {'labels', 'denselabels'}:
+      if inversion == 'labels' or inversion == 'denselabels':
         
         #this is for data passed as numpy arrays
         if len(df.columns) == len(postprocess_dict['privacy_headers_labels']):
@@ -45326,7 +45326,7 @@ class AutoMunge:
 
     return df
 
-  def __inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_numerical 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45350,7 +45350,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_year(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_year(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_year 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45373,7 +45373,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_mean(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mean(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mean 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45397,7 +45397,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_MADn(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_MADn(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_MADn 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45424,7 +45424,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_MAD3(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_MAD3(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_MAD3 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45446,7 +45446,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_mnmx(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mnmx(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mnmx 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45468,7 +45468,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_mnm3(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mnm3(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mnmx 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45490,7 +45490,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_mxab(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mxab(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mxab 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45508,7 +45508,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_retn(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_retn(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_retn 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45544,7 +45544,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_shft(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_shft(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_shft 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45564,7 +45564,7 @@ class AutoMunge:
         
     return df, inputcolumn
 
-  def __inverseprocess_qttf(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_qttf(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to _process_qttf
     #assumes any relevant parameters were saved in normalization_dict
@@ -45590,7 +45590,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_log0(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_log0(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_log0 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45605,7 +45605,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_logn(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_logn(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_logn 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45635,7 +45635,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_addd(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_addd(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_addd 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45653,7 +45653,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_sbtr(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_sbtr(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sbtr 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45671,7 +45671,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_mltp(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mltp(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mltp 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45689,7 +45689,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_divd(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_divd(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_divd 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45707,7 +45707,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_rais(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_rais(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_rais 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45725,7 +45725,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_absl(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_absl(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_absl 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45745,7 +45745,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_sqrt(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_sqrt(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sqrt 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45760,7 +45760,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_bnst(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bnst(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bnst
     #assumes any relevant parameters were saved in normalization_dict
@@ -45793,7 +45793,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_UPCS(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_UPCS(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_UPCS 
     #is simply a pass-through function, original character cases not retained
@@ -45808,7 +45808,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_excl(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_excl(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_excl 
     #is simply a pass-through function, original character cases not retained
@@ -45830,7 +45830,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_pwr2(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_pwr2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_pwr2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45881,7 +45881,7 @@ class AutoMunge:
         
     return df, inputcolumn
   
-  def __inverseprocess_pwor(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_pwor(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_por2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45930,7 +45930,7 @@ class AutoMunge:
 
     return df, inputcolumn
 
-  def __inverseprocess_bins(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bins(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bins 
     #assumes any relevant parameters were saved in normalization_dict
@@ -45986,7 +45986,7 @@ class AutoMunge:
       
     return df, inputcolumn
 
-  def __inverseprocess_bsor(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bsor(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bsor 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46034,7 +46034,7 @@ class AutoMunge:
 
     return df, inputcolumn
   
-  def __inverseprocess_bnwd(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bnwd(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bnwd 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46078,7 +46078,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bnwo(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bnwo(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bnwo 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46110,7 +46110,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bnep(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bnep(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bnep 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46160,7 +46160,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bneo(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bneo(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bneo 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46210,7 +46210,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_tlbn(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_tlbn(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_tlbn
     #assumes any relevant parameters were saved in normalization_dict
@@ -46269,7 +46269,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bkt1(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bkt1(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bkt1 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46325,7 +46325,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bkt2(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bkt2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bkt2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46369,7 +46369,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bkt3(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bkt3(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bkt3 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46422,7 +46422,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bkt4(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bkt4(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bkt4 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46466,7 +46466,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __custom_inversion_onht(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+  def _custom_inversion_onht(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     #rewrite of the onht inverison
     #corresponding to _custom_train_onht
@@ -46487,7 +46487,7 @@ class AutoMunge:
 
     return df
 
-  def __inverseprocess_smth(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_smth(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_smth
     #assumes any relevant parameters were saved in normalization_dict
@@ -46529,7 +46529,7 @@ class AutoMunge:
     #this returns an arbitrary one of the input columns which is fine
     return df, inputcolumn
 
-  def __custom_inversion_GPS1(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+  def _custom_inversion_GPS1(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     #corresponding to _custom_train_GPS1
     #recovers form of comma seperated entries
@@ -46642,7 +46642,7 @@ class AutoMunge:
 
     return df
 
-  def __inverseprocess_mlti(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_mlti(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_mlti
     #assumes any relevant parameters were saved in normalization_dict
@@ -46709,7 +46709,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+  def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     #rewrite of the ordl inverison
     #corresponding to _custom_train_ordl
@@ -46732,7 +46732,7 @@ class AutoMunge:
 
     return df
 
-  def __inverseprocess_strg(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_strg(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_strg 
     #converts strings back to integers
@@ -46750,7 +46750,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_bnry(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_bnry(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_bnry 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46774,7 +46774,7 @@ class AutoMunge:
       
     return df, inputcolumn
 
-  def __custom_inversion_1010(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+  def _custom_inversion_1010(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     #rewrite of the 1010 trasnform
     #corresponding to _custom_train_1010
@@ -46808,7 +46808,7 @@ class AutoMunge:
 
     return df
 
-  def __inverseprocess_splt(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_splt(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sp1t 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46863,7 +46863,7 @@ class AutoMunge:
 
     return df, inputcolumn
   
-  def __inverseprocess_spl2(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_spl2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_spl2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46895,7 +46895,7 @@ class AutoMunge:
   
     return df, inputcolumn
 
-  def __inverseprocess_sp19(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_sp19(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sp19 
     #assumes any relevant parameters were saved in normalization_dict
@@ -46986,7 +46986,7 @@ class AutoMunge:
 
     return df, inputcolumn
 
-  def __inverseprocess_sbst(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_sbst(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sbst 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47040,7 +47040,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_sbs3(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_sbs3(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_sbs3 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47131,7 +47131,7 @@ class AutoMunge:
 
     return df, inputcolumn
   
-  def __inverseprocess_srch(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_srch(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_srch 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47171,7 +47171,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_src2(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_src2(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_src2 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47212,7 +47212,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_src3(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_src3(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_src3 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47253,7 +47253,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_src4(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_src4(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_src4 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47296,7 +47296,7 @@ class AutoMunge:
     
     return df, inputcolumn
   
-  def __inverseprocess_nmrc(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_nmrc(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_nmrc 
     #assumes any relevant parameters were saved in normalization_dict
@@ -47330,7 +47330,7 @@ class AutoMunge:
     
     return df, inputcolumn
 
-  def __inverseprocess_qbt1(self, df, categorylist, postprocess_dict):
+  def _inverseprocess_qbt1(self, df, categorylist, postprocess_dict):
     """
     #inverse transform corresponding to process_qbt1 
     #returns floats
@@ -47385,7 +47385,7 @@ class AutoMunge:
       
     return df, inputcolumn
 
-  def __custom_inversion_trig(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
+  def _custom_inversion_trig(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     inversion fucntion in the custom_train convention
     corresponding to custom_train_trig
@@ -47663,6 +47663,17 @@ class AutoMunge:
       inversion_info_dict.update({source_column : {'best_path' : best_path, \
                                                    'fullcategorylistforinversion' : fullcategorylistforinversion,
                                                    'info_retention' : info_retention_marker}})
+
+      #great we've selected our path for this source column's inversion
+      #we'll return that path in inversion_info_dict as False if no path, as string if path identified, 
+      #or as True if privacy_encode is active and path identified
+      reported_best_path = best_path
+      if postprocess_dict['privacy_encode'] is True and reported_best_path is not False:
+        reported_best_path = True
+
+      inversion_info_dict.update({source_column : {'best_path' : reported_best_path, \
+                                                   'fullcategorylistforinversion' : fullcategorylistforinversion,
+                                                   'info_retention' : info_retention_marker}})
       
       #now let's apply our inversion transforms
       #if best_path is not False and callable(postprocess_dict['process_dict'][postprocess_dict['column_dict'][best_path]['category']]['inverseprocess']):
@@ -47728,6 +47739,15 @@ class AutoMunge:
         print("user can pass partial list of columns to inversion parameter instead")
         print()
       inversion = False
+
+    inversion_setlist_privacyencode_valresult = False
+    if postprocess_dict['privacy_encode'] is True and isinstance(inversion, (list, set)):
+      inversion_setlist_privacyencode_valresult = True
+      if printstatus != 'silent':
+        print("inversion list or set specification not supported in conjunction with privacy_encode")
+        print("inverison halted.")
+      return
+    pm_miscparameters_results.update({'inversion_setlist_privacyencode_valresult' : inversion_setlist_privacyencode_valresult})
 
     #accomodate excl suffix convention by adding suffix back on
     if postprocess_dict['excl_suffix'] is False:
@@ -47821,10 +47841,21 @@ class AutoMunge:
 
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, postprocess_dict['origtraincolumns'], postprocess_dict, printstatus)
+      
+      final_recovered_list = []
+      recovered_set = set(recovered_list)
+
+      #this puts recoverd columns in order as passed to automunge(.) in df_train
+      for entry in postprocess_dict['origtraincolumns']:
+        if entry in recovered_set:
+          final_recovered_list.append(entry)
+
+      #this matches order of columns as well as drops columns that weren't recovered
+      df_test = df_test.reindex(columns=final_recovered_list)
 
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
-        print(recovered_list)
+        print(final_recovered_list)
         print()
 
       inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
@@ -47833,7 +47864,7 @@ class AutoMunge:
 
         df_test = df_test.to_numpy()
 
-      return df_test, recovered_list, inversion_info_dict
+      return df_test, final_recovered_list, inversion_info_dict
 
     if inversion == 'labels':
 
@@ -47903,10 +47934,21 @@ class AutoMunge:
 
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
+      
+      final_recovered_list = []
+      recovered_set = set(recovered_list)
 
+      #this puts recoverd columns in order as passed to automunge(.) in df_train
+      for entry in postprocess_dict['labels_column_listofcolumns']:
+        if entry in recovered_set:
+          final_recovered_list.append(entry)
+
+      #this matches order of columns as well as drops columns that weren't recovered
+      df_test = df_test.reindex(columns=final_recovered_list)
+      
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
-        print(recovered_list)
+        print(final_recovered_list)
         print()
 
       inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
@@ -47915,7 +47957,7 @@ class AutoMunge:
 
         df_test = df_test.to_numpy()
 
-      return df_test, recovered_list, inversion_info_dict
+      return df_test, final_recovered_list, inversion_info_dict
 
     #denselabels is for case where downstream model simultaneously predicts multiple labels
     #such as when a label column presented in multiple configurations
@@ -47998,10 +48040,13 @@ class AutoMunge:
           #we'll rename the returned source column as (source column) + '_' + (denselabel_column)
           if postprocess_dict['labels_column'] in df_test_denseinvert:
 
-            #edge case for column overlap, just add random integers as suffix until no longer an overlap
+            if postprocess_dict['privacy_encode'] is True:
+              denselabel_column = str(postprocess_dict['privacy_headers_labels_dict'][denselabel_column])
+
+            #edge case for column overlap, just add '_z' character as suffix until no longer an overlap
             for i in range(111):
               if postprocess_dict['labels_column'] + '_' + denselabel_column in df_test:
-                denselabel_column += str(random.randint(0,9))
+                denselabel_column += '_z'
               else:
                 break
 
@@ -48078,10 +48123,21 @@ class AutoMunge:
 
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
+      
+      final_recovered_list = []
+      recovered_set = set(recovered_list)
+
+      #this puts recoverd columns in order as passed to automunge(.) in df_train
+      for entry in postprocess_dict['origtraincolumns']:
+        if entry in recovered_set:
+          final_recovered_list.append(entry)
+
+      #this matches order of columns as well as drops columns that weren't recovered
+      df_test = df_test.reindex(columns=final_recovered_list)
 
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
-        print(recovered_list)
+        print(final_recovered_list)
         print()
 
       inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
@@ -48090,7 +48146,7 @@ class AutoMunge:
 
         df_test = df_test.to_numpy()
 
-      return df_test, recovered_list, inversion_info_dict
+      return df_test, final_recovered_list, inversion_info_dict
 
     #the set case is for when user wants to specify a specific target for inversion path
     #and convention is set case accepts a single entry
@@ -48139,9 +48195,20 @@ class AutoMunge:
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, [origcolumn], postprocess_dict, printstatus, manual_path = inversion)
       
+      final_recovered_list = []
+      recovered_set = set(recovered_list)
+
+      #this puts recoverd columns in order as passed to automunge(.) in df_train
+      for entry in postprocess_dict['origtraincolumns']:
+        if entry in recovered_set:
+          final_recovered_list.append(entry)
+
+      #this matches order of columns as well as drops columns that weren't recovered
+      df_test = df_test.reindex(columns=final_recovered_list)
+
       if printstatus is True:
         print("Inversion succeeded in recovering original form for columns:")
-        print(recovered_list)
+        print(final_recovered_list)
         print()
 
       inversion_info_dict['pm_miscparameters_results'].update(pm_miscparameters_results)
@@ -48150,4 +48217,4 @@ class AutoMunge:
 
         df_test = df_test.to_numpy()
 
-      return df_test, recovered_list, inversion_info_dict
+      return df_test, final_recovered_list, inversion_info_dict
