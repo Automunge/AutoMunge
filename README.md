@@ -772,7 +772,7 @@ reverse sorting of columns by count of missing entries in the df_train set.
 ML infill without preprocessing transformations, can pass in conjunction parameter 
 powertransform = 'infill')
 
-To bidirectionally exclude particular features from eachother's imputation model bases
+To bidirectionally exclude particular features from each other's imputation model bases
 (such as may be desired in expectation of data leakage), a user can designate via
 entries to ML_cmnd['leakage_sets'], documented further below with ML_cmnd parameter.
 Or to unidirectionally exclude features from another's basis, a user can designate
@@ -803,8 +803,8 @@ output (as automunge(.) will train separate models on each iteration and
 postmunge will just apply the final model on each iteration). 
 
 Please note that early stopping is available for infilliterate based on a comparison
-on imputations of a current iteration to the preceding, in comparison to
-seperate tolerances associated with numeric features in aggregate and categoric
+on imputations of a current iteration to the preceding, with a halt when reaching both
+of tolerances associated with numeric features in aggregate and categoric
 features in aggregate. Early stopping evaluation can be activated by passing to ML_cmnd
 ML_cmnd['halt_iterate']=True. The tolerances can be updated from the shown defaults
 as ML_cmnd['categoric_tol']=0.05 and ML_cmnd['numeric_tol']=0.01. Further detail
@@ -1092,16 +1092,16 @@ an ML_cmnd entry as a float to ML_cmnd['stochastic_impute_categoric_flip_prob'].
 with infilliterate early stopping criteria associated with ML_cmnd['halt_iterate'] documented
 above with the infilliterate parameter.)
 
-To bidirectionally exclude particular features from eachother's imputation model bases
+To bidirectionally exclude particular features from each other's imputation model bases
 (such as may be desired in expectation of data leakage), a user can designate via
 entries to ML_cmnd['leakage_sets'], which accepts entry of a list of column headers
 or as a list of lists of column headers, where for each list of column headers, 
-entry's will be excluded from eachother's imputation model basis. We suggest 
+entries will be excluded from each other's imputation model basis. We suggest 
 populating with column headers in form of data passed to automunge(.) (before suffix
 appenders) although specific returned column headers can also be included if desired.
 
-To unidirectionally exclude particular features from anotehr feature's imputation model basis, 
-a user can designate via entries to ML_cmnd['leakage_dict'], which accepts entry of a dicitonary
+To unidirectionally exclude particular features from another feature's imputation model basis, 
+a user can designate via entries to ML_cmnd['leakage_dict'], which accepts entry of a dictionary
 with target feature keys and values of a set of features to exclude from the target feature's
 basis. This also accepts headers in either of input or returned convention.
 
@@ -2203,7 +2203,7 @@ or test data returned from an automunge or postmunge call), and passing inversio
 with passing df_test = test_labels (where test_labels is a dataframe of labels or test_labels returned from an 
 automunge or postmunge call). When inversion is passed as a list, accepts list of source column or returned column 
 headers for inversion targets. When inversion is passed as a set, accepts a set with single entry of a returned 
-column header serving as a custom target for the inversion path. 'denselabels' is for label set inversion in which 
+column header serving as a custom target for the inversion path. (inversion list or set specification not supported when the automunge(.) privacy_encode option was activated.) 'denselabels' is for label set inversion in which 
 labels were prepared in multiple formats, such as to recover the original form on each basis for comparison (currently supported for single labels_column case).
 The inversion operation is supported by the optional process_dict entry 'info_retention' and required for inversion process_dict entry 
 'inverseprocess' (or 'custom_inversion'). Note that columns are only recovered for those sets in which a path of 
