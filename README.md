@@ -19,6 +19,7 @@
 * [Default Transformations](https://github.com/Automunge/AutoMunge#default-transformations)
 * [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
 * [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
+* [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions)
  ___ 
 * [Conclusion](https://github.com/Automunge/AutoMunge#conclusion)
  ___ 
@@ -196,6 +197,9 @@ import pickle
 with open('filename.pickle', 'rb') as handle:
   postprocess_dict = pickle.load(handle)
 
+#Please note that if you included externally initialized functions in an automunge(.) call
+#like for custom_train transformation functions or custom autoMLer functions
+#they will need to be reinitialized prior to uploading the postprocess_dict with pickle.
 ```
 We can then apply the postprocess_dict saved from a prior application of automunge
 for consistent processing of additional data.
@@ -530,7 +534,7 @@ demonstrated with the pickle library above.
 
 A few useful entries in the postprocess_dict include:
 - postprocess_dict['finalcolumns_train']: list of returned column headers for train set including suffix appenders
-- postprocess_dict['columntype_report']: a report classifying the returned column types
+- postprocess_dict['columntype_report']: a report classifying the returned column types, including lists of all categoric and all numeric returned columns
 - postprocess_dict['column_map']:  a report mapping the input columns to their associated returned columns (excluding those consolidated as part of a dimensionality reduction). May be useful to inspect sets returned for a specific feature e.g. train[postprocess_dict['column_map']['input_column_header']]
 - postprocess_dict['FS_sorted]: sorted results of feature importance evaluation if elected
 - postprocess_dict['miscparameters_results']: reporting results of validation tests performed on parameters and passed data
@@ -4584,7 +4588,7 @@ The family tree definitions reference documentation are now recorded in a sepera
 
 ## Custom Transformation Functions
 
-Ok final item on the agenda, we're going to demonstrate methods to create custom
+Ok another item on the agenda, we're going to demonstrate methods to create custom
 transformation functions, such that a user may customize the feature engineering
 while building on all of the extremely useful built in features of automunge such
 as infill methods including ML infill, feature importance, dimensionality reduction,
@@ -4668,7 +4672,8 @@ The test data can then be prepared with the custom_test we'll demonstrate next
 will be prepared with the same custom_train function).
 
 Now we'll define the function. (Note that if defining for the internal library 
-an additional self parameter required as first argument.)
+an additional self parameter required as first argument.) Note that pandas is available 
+as pd and numpy as np.
 ```
 def custom_train_template(df, column, normalization_dict):
   """
@@ -4884,6 +4889,160 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
 
   return df
 ```
+Please note that if you included externally initialized functions in an automunge(.) call, 
+like for custom_train transformation functions or custom autoMLer functions, they will need 
+to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
+in a new notebook. (This was a design decision for security considerations.)
+
+ ___ 
+
+## Custom ML Infill Functions
+
+Ok final item on the agenda, we're going to demonstrate methods to create custom
+ML infill functions for model training and inference, such that a user may integrate their
+own machine learning algorithms into the platform. We have tried to balance our options
+for alternate learning libraries form the default random forest, but recognize that
+sophisticate hyperparameter tuning is not our forte, so want to leave the option
+open for users to integrate their own implementations, such as may be for example built on 
+top of XGBoost or other learning libraries.
+
+We'll demonstrate here templates for defining training and inference functions for
+classification and regression. These functions can be initialized externally and 
+applied for ML infill and feature importance. Please note that if you included externally 
+initialized functions in an automunge(.) call, like for custom_train transformation functions 
+or these custom autoMLer functions, they will need to be reinitialized by user prior to 
+uploading an externally saved postprocess_dict with pickle in a new notebook. These demonstrations
+are shown with scikit Random Forest models for simplicity.
+
+```
+def customML_train_classifier(labels, features, columntype_report, commands, randomseed):
+  """
+  #Template for integrating user defined ML classificaiton training into ML infill
+  
+  #labels for classification are received as a single column pandas dataframe with header of integer 1
+  #and entries of str(int) type (i.e. string representations of integers like '0', '1')
+  #if user prefers numeric labels, they can apply labels = labels.astype(int)
+  
+  #features is received as a numerically encoded pandas dataframe
+  #with categoric entries as boolean integer or ordinal integer
+  #and may include binarized features
+  #headers match the returned convention with suffix appenders
+  
+  #columntype_report is a dictionary reporting properties of the columns found in features
+  #a list of categoric features is available as columntype_report['all_categoric']
+  #a list of of numeric features is available as columntype_report['all_numeric']
+  #and columntype_report also contains more granular information such as feature set groupings and types
+  #consistent with the form returned in postprocess_dict['columntype_report']
+  
+  #commands is received per user specification passed to automunge(.) 
+  #in ML_cmnd['MLinfill_cmnd']['customClassifier']
+  
+  #such as could be a dictionary populated as {'parameter' : value}
+  #and then could be passed to model training as **commands
+  #this is the same dictionary received for the corresponding predict function
+  #so if user intends to pass different commands to both operations they could structure as e.g.
+  #{'train' : {'parameter1' : value1}, 'predict' : {'parameter2' : value2}}
+  #and then pass to model training as **commands['train']
+  
+  #randomseed is received as a randomly sampled integer 
+  
+  #the returned model is saved in postprocess_dict
+  #and accessed to impute missing data in automunge and again in postmunge
+  #as channeled through the corresponding customML_predict_classifier
+  #if model training not successful user can return model as False
+  #if the function returns a ValueError model will automatically populate as False
+  """
+
+  model = RandomForestClassifier(**commands)
+
+  #labels are received as str(int), for this demonstration will convert to integer
+  labels = labels.astype(int)
+
+  model.fit(features, labels)
+
+  return model
+
+def customML_train_regressor(labels, features, columntype_report, commands, randomseed):
+  """
+  #Template for integrating user defined ML regression training into ML infill
+  
+  #labels for regression are received as a single column pandas dataframe with header of integer 0
+  #and entries of float type
+  
+  #commands is received per user specification passed to automunge(.) 
+  #in ML_cmnd['MLinfill_cmnd']['customRegressor']
+  
+  #features, columntype_report, randomseed
+  #are comparable in form to those documented for the classification template
+  
+  #the returned model is saved in postprocess_dict
+  #and accessed to impute missing data in automunge and again in postmunge
+  #as channeled through the corresponding customML_predict_regressor
+  #if model training not successful user can return model as False
+  
+  #Note that if user only wishes to define a single function
+  #they can use the labels header convention (0/1) to distinguish between 
+  #whether data is served for classification or regression
+  """
+  
+  model = RandomForestRegressor(**commands)
+
+  model.fit(features, labels)
+
+  return model
+
+def customML_predict_classifier(features, model, commands):
+  """
+  #Template for integrating user defined ML classification inference into ML infill
+  
+  #features is comparable in form to those features received in the corresponding training operation
+  #model is the model returned from the corresponding training operation
+  #commands is the same as received in the corresponding training operation
+  
+  #infill should be returned as single column numpy array, pandas dataframe, or series (column header is ignored)
+  
+  #returned infill entry types should either be str(int) or int
+  """
+
+  infill = model.predict(features)
+
+  return infill
+
+def customML_predict_regressor(features, model, commands):
+  """
+  #Template for integrating user defined ML classification inference into ML infill
+  
+  #features is comparable in form to those features received in the corresponding training operation
+  #model is the model returned from the corresponding training operation
+  #commands is the same as received in the corresponding training operation
+  
+  #infill should be returned as single column numpy array, pandas dataframe, or series (column header is ignored)
+  
+  #returned infill entry types should be floats or integers
+  """
+
+  infill = model.predict(features)
+
+  return infill
+```
+
+Having defined our custom functions, we can then pass them to an automunge(.) call through the ML_cmnd parameter.
+We can activate their use by setting ML_cmnd['autoML_type'] = 'customML'. We can pass parameters to our functions
+through ML_cmnd['autoML_type']['MLinfill_cmnd']. And we can pass our defined functions through 
+ML_cmnd['autoML_type']['customML'].
+
+```
+ML_cmnd = {'autoML_type' : 'customML',
+           'MLinfill_cmnd' : {'customClassifier':{'parameter1' : value1},
+                              'customRegressor' :{'parameter2' : value2}},
+           'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
+                         'customML_Classifier_predict': customML_predict_classifier, 
+                         'customML_Regressor_train'   : customML_train_regressor, 
+                         'customML_Regressor_predict' : customML_predict_regressor}}
+```
+And thus ML infill can run with any tabular learning library or algorithm. BYOML.
+
+ ___ 
 
 ## Conclusion
 
