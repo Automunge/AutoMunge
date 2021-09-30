@@ -953,7 +953,7 @@ Note that 'excl' can be cast as the default category under automation to columns
 The ML_cmnd allows a user to set options or pass parameters to model training
 operations associated with ML infill, feature importance, or PCA. ML_cmnd is passed
 as a dictionary with first tier valid keys of:
-{'autoML_type', 'MLinfill_cmnd', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
+{'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
 'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
 'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
@@ -962,11 +962,11 @@ When a user passed ML_cmnd as an empty dictionary, any default values are popula
 
 The most relevant entries here are 'autoML_type' to choose the autoML framework for predictive
 models, and ML_cmnd to pass parameters to the models. The default option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
-Forest implementation, other options are supported as one of {'randomforest', 
-'autogluon', 'catboost', 'flaml'}, each discussed further below.
+Forest implementation, other options are supported as one of {'randomforest', 'customML',
+'autogluon', 'catboost', 'flaml'}, each discussed further below. The customML scenario is for user defined
+machine learning algorithms, and documented seperately later in this document in the section [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions).
 
-(Other options are also documented later 
-in this section, like for early stopping thorugh iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc). 
+(Other ML_cmnd options beside autoML_type, like for early stopping thorugh iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc, are documented a few paragraphs down after discussing the autoML_type scenarios.)
 
 Here is an example of the core components of specification, which include the 
 autoML_type to specify the learning library, the MLinfill_cmnd to pass parameters
@@ -4935,7 +4935,7 @@ def customML_train_classifier(labels, features, columntype_report, commands, ran
   #consistent with the form returned in postprocess_dict['columntype_report']
   
   #commands is received per user specification passed to automunge(.) 
-  #in ML_cmnd['MLinfill_cmnd']['customClassifier']
+  #in ML_cmnd['MLinfill_cmnd']['customML_Classifier']
   
   #such as could be a dictionary populated as {'parameter' : value}
   #and then could be passed to model training as **commands
@@ -4970,7 +4970,7 @@ def customML_train_regressor(labels, features, columntype_report, commands, rand
   #and entries of float type
   
   #commands is received per user specification passed to automunge(.) 
-  #in ML_cmnd['MLinfill_cmnd']['customRegressor']
+  #in ML_cmnd['MLinfill_cmnd']['customML_Regressor']
   
   #features, columntype_report, randomseed
   #are comparable in form to those documented for the classification template
@@ -5033,8 +5033,8 @@ ML_cmnd['autoML_type']['customML'].
 
 ```
 ML_cmnd = {'autoML_type' : 'customML',
-           'MLinfill_cmnd' : {'customClassifier':{'parameter1' : value1},
-                              'customRegressor' :{'parameter2' : value2}},
+           'MLinfill_cmnd' : {'customML_Classifier':{'parameter1' : value1},
+                              'customML_Regressor' :{'parameter2' : value2}},
            'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
                          'customML_Classifier_predict': customML_predict_classifier, 
                          'customML_Regressor_train'   : customML_train_regressor, 
