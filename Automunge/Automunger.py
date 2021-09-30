@@ -7662,7 +7662,7 @@ class AutoMunge:
         postprocess_dict['column_dict'][column]['deletecolumn'] = True
       else:
         if column not in postprocess_dict['orig_noinplace']:
-          postprocess_dict['orig_noinplace'].append(column)  
+          postprocess_dict['orig_noinplace'] = postprocess_dict['orig_noinplace'] | {column}
     elif inplaceperformed is True:
       if column in postprocess_dict['column_dict']:
         postprocess_dict['column_dict'][column]['deletecolumn'] = 'inplace'
@@ -8163,7 +8163,7 @@ class AutoMunge:
             postprocess_dict['column_dict'][parentcolumn_categorylist_entry]['deletecolumn'] = True
         else:
           if parentcolumn not in postprocess_dict['orig_noinplace']:
-            postprocess_dict['orig_noinplace'].append(parentcolumn)
+            postprocess_dict['orig_noinplace'] = postprocess_dict['orig_noinplace'] | {parentcolumn}
       elif parent_inplaceperformed is True:
         if parentcolumn in postprocess_dict['column_dict']:
           for parentcolumn_categorylist_entry in postprocess_dict['column_dict'][parentcolumn]['categorylist']:
@@ -25607,40 +25607,74 @@ class AutoMunge:
     
     autoMLer = {}
     
-    autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self._train_randomforest_classifier, \
-                                                                   'predict' : self._predict_randomforest_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self._train_randomforest_classifier, \
-                                                                   'predict' : self._predict_randomforest_classifier}, \
-                                       'onehotclassification'   : {'train'   : self._train_randomforest_classifier, \
-                                                                   'predict' : self._predict_randomforest_classifier}, \
-                                       'regression'             : {'train'   : self._train_randomforest_regressor, \
-                                                                   'predict' : self._predict_randomforest_regressor}}, 
-                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon_classifier, \
-                                                                   'predict' : self._predict_autogluon_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self._train_autogluon_classifier, \
-                                                                   'predict' : self._predict_autogluon_classifier}, \
-                                       'onehotclassification'   : {'train'   : self._train_autogluon_classifier, \
-                                                                   'predict' : self._predict_autogluon_classifier}, \
-                                       'regression'             : {'train'   : self._train_autogluon_regressor, \
-                                                                   'predict' : self._predict_autogluon_regressor}}, \
-                     'flaml'        : {'booleanclassification'  : {'train'   : self._train_flaml_classifier, \
-                                                                   'predict' : self._predict_flaml_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self._train_flaml_classifier, \
-                                                                   'predict' : self._predict_flaml_classifier}, \
-                                       'onehotclassification'   : {'train'   : self._train_flaml_classifier, \
-                                                                   'predict' : self._predict_flaml_classifier}, \
-                                       'regression'             : {'train'   : self._train_flaml_regressor, \
-                                                                   'predict' : self._predict_flaml_regressor}}, \
-                     'catboost'     : {'booleanclassification'  : {'train'   : self._train_catboost_classifier, \
-                                                                   'predict' : self._predict_catboost_classifier}, \
-                                       'ordinalclassification'  : {'train'   : self._train_catboost_classifier, \
-                                                                   'predict' : self._predict_catboost_classifier}, \
-                                       'onehotclassification'   : {'train'   : self._train_catboost_classifier, \
-                                                                   'predict' : self._predict_catboost_classifier}, \
-                                       'regression'             : {'train'   : self._train_catboost_regressor, \
+    autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self._train_randomforest_classifier,
+                                                                   'predict' : self._predict_randomforest_classifier},
+                                       'ordinalclassification'  : {'train'   : self._train_randomforest_classifier,
+                                                                   'predict' : self._predict_randomforest_classifier},
+                                       'onehotclassification'   : {'train'   : self._train_randomforest_classifier,
+                                                                   'predict' : self._predict_randomforest_classifier},
+                                       'regression'             : {'train'   : self._train_randomforest_regressor,
+                                                                   'predict' : self._predict_randomforest_regressor}},
+                     'customML'     : {'booleanclassification'  : {'train'   : self._train_customML_classifier,
+                                                                   'predict' : self._predict_customML_classifier},
+                                       'ordinalclassification'  : {'train'   : self._train_customML_classifier,
+                                                                   'predict' : self._predict_customML_classifier},
+                                       'onehotclassification'   : {'train'   : self._train_customML_classifier,
+                                                                   'predict' : self._predict_customML_classifier},
+                                       'regression'             : {'train'   : self._train_customML_regressor,
+                                                                   'predict' : self._predict_customML_regressor}},
+                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon_classifier,
+                                                                   'predict' : self._predict_autogluon_classifier},
+                                       'ordinalclassification'  : {'train'   : self._train_autogluon_classifier,
+                                                                   'predict' : self._predict_autogluon_classifier},
+                                       'onehotclassification'   : {'train'   : self._train_autogluon_classifier,
+                                                                   'predict' : self._predict_autogluon_classifier},
+                                       'regression'             : {'train'   : self._train_autogluon_regressor,
+                                                                   'predict' : self._predict_autogluon_regressor}},
+                     'flaml'        : {'booleanclassification'  : {'train'   : self._train_flaml_classifier,
+                                                                   'predict' : self._predict_flaml_classifier},
+                                       'ordinalclassification'  : {'train'   : self._train_flaml_classifier,
+                                                                   'predict' : self._predict_flaml_classifier},
+                                       'onehotclassification'   : {'train'   : self._train_flaml_classifier,
+                                                                   'predict' : self._predict_flaml_classifier},
+                                       'regression'             : {'train'   : self._train_flaml_regressor,
+                                                                   'predict' : self._predict_flaml_regressor}},
+                     'catboost'     : {'booleanclassification'  : {'train'   : self._train_catboost_classifier,
+                                                                   'predict' : self._predict_catboost_classifier},
+                                       'ordinalclassification'  : {'train'   : self._train_catboost_classifier,
+                                                                   'predict' : self._predict_catboost_classifier},
+                                       'onehotclassification'   : {'train'   : self._train_catboost_classifier,
+                                                                   'predict' : self._predict_catboost_classifier},
+                                       'regression'             : {'train'   : self._train_catboost_regressor,
                                                                    'predict' : self._predict_catboost_regressor}}})
     
     return autoMLer
+
+  def __autoMLer_cleanup(self, postprocess_dict, postprocess_assigninfill_dict, ML_cmnd):
+    """
+    strikes entries in the returned postprocess_dict['autoMLer']
+    that won't be inspected in postmunge
+    """
+    
+    if 'autoML_type' not in ML_cmnd:
+      ML_cmnd.update({'autoML_type' : 'randomforest'})
+    
+    if len(postprocess_assigninfill_dict['MLinfill']) == 0:
+      postprocess_dict['autoMLer'] = {}
+      
+    else:
+      
+      autoMLtype = ML_cmnd['autoML_type']
+      
+      autoMLer_keys_to_delete = list(postprocess_dict['autoMLer'])
+      
+      autoMLer_keys_to_delete.remove(autoMLtype)
+      
+      for autoMLer_key_to_delete in autoMLer_keys_to_delete:
+        
+        del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
+        
+    return postprocess_dict
 
   def _train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
@@ -25886,6 +25920,228 @@ class AutoMunge:
     
     return infill
 
+  def _train_customML_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'classification'
+    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_customML_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'regression'
+    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+  
+  def __train_customML(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
+    """
+    #wrapper for custom defined autoMLer training functions 
+    #either for classification or regression, which this function distinguishes with modeltype parameter
+    
+    #which custom defined functions are accepted in the form
+    #def customML_train_template(labels, features, columntype_report, commands, randomseed):
+    #  return model
+    
+    #where labels for classification are passed to the custom function 
+    #as a pandas dataframe with single column with header of integer 1 with str(int) entries
+    #and if user prefers labels as integers instead of string can apply in their function: labels = labels.astype(int)
+    
+    #and labels for regression are passed to the custom function 
+    #as a pandas dataframe with single column with header of integer 0 with continuous float entries
+    
+    #and features is recieved as a pandas dataframe numerically encoded, 
+    #with categoric entries as integers, and headers matching the returned suffix convention
+
+    #columntype_report is a dictionary reporting properties of the columns found in features
+    #a list of categoric features is available as columntype_report['all_categoric']
+    #a list of of numeric features is available as columntype_report['all_numeric']
+    #and columntype_report also contains more granular information such as feature set groupings and types
+
+    #commands is received as a dictionary as passed by user 
+    #for classifier in ML_cmnd['MLinfill_cmnd']['customClassifier]
+    #or for regression in ML_cmnd['MLinfill_cmnd']['customRegressor]
+    #randomseed is the randomseed associated with the automunge(.) call
+    #the returned model is saved in postprocess_dict
+    #and accessed to impute missing data in automunge and again in postmunge
+    #if model training not successful user can return model as False
+    
+    #note that pandas is available as pd and numpy as np
+    
+    #we'll have convention that if custom function returns a ValueError
+    #will not halt operation and instead just return model as False 
+    #meaning imputaitons will defer to the defaultinfill applied with transformation function
+    
+    #any required imports can either be conducted externally when defining the function
+    #or internal to the template
+    
+    #note that if user wishes to conduct a validation split as part of their function
+    #am._df_split is avilable, as documented in code base
+    
+    #the custom_autoMLer_train_template will be passed to an automunge call in ML_cmnd as
+    #ML_cmnd = {'autoML_type':'customML',
+    #           'MLinfill_cmnd':{'customClassifier':{},
+    #                            'customRegressor':{}},
+    #           'customML':{'customML_Classifier_train'  :function, 
+    #                       'customML_Classifier_predict':function, 
+    #                       'customML_Regressor_train'   :function, 
+    #                       'customML_Regressor_predict' :function}}
+    """
+    
+    columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+    
+    #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
+    df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+    df_train_filllabel = df_train_filllabel.reset_index(drop=True)
+    
+    df_train_filltrain = df_train_filltrain.reset_index(drop=True)
+    
+    ML_label_columns = list(df_train_filllabel.columns)
+
+    if len(ML_label_columns) == 1:
+      #this will be ML_label_column = integer 0
+      ML_label_column = ML_label_columns[0]
+
+      if modeltype == 'classification':
+        df_train_filllabel[ML_label_column] = df_train_filllabel[ML_label_column].astype(str)
+
+    else:
+      #note this scenario only occurs for classification
+      #returns a single column with str(int) entries encoding each distinct activation set
+      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
+      ML_label_column = list(df_train_filllabel.columns)[0]
+    
+    if modeltype == 'classification':
+      #convention is that regression will return labels with header of integer 0, classification with header of integer 1
+      df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
+      ML_label_column = 1
+    
+    #note that we know that ML_label_column won't overlap with df_train_filltrain headers
+    #because df_train_filltrain headers are strings in suffix convention which include an underscore character
+    #and labels header is integer 0
+    #so if user wants to concatinate labels onto training set in their function it is ok
+    
+    #access any user passed parameters
+    commands = {}
+    if modeltype == 'classification':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'customClassifier' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customClassifier']
+    if modeltype == 'regression':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'customRegressor' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customRegressor']
+    
+    #train the model
+    model = False
+    if modeltype == 'classification':
+      function_address = 'customML_Classifier_train'
+    elif modeltype == 'regression':
+      function_address = 'customML_Regressor_train'
+      
+    if 'customML' in ML_cmnd:
+      if function_address in ML_cmnd['customML']:
+        if callable(ML_cmnd['customML'][function_address]):
+          try:
+            model = \
+            ML_cmnd['customML'][function_address](df_train_filltrain, 
+                                                  df_train_filllabel, 
+                                                  columntype_report,
+                                                  commands, 
+                                                  randomseed)
+          except ValueError:
+            pass
+            
+    return model
+
+  def _predict_customML_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'classification'
+    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def _predict_customML_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'regression'
+    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def __predict_customML(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
+    """
+    #wrapper for custom defined autoMLer inference functions 
+    #either for classification or regression, which this function distinguishes with modeltype parameter
+    
+    #which custom defined functions are accepted in the form
+    #def customML_predict_template(features, model):
+    #  return infill
+    
+    #where features is a pandas dataframe matching the form of features passed to the corresponding training operation
+    #and features will have at least one row
+    #model is the model returned forom the corresponding training operation
+    #(the model == False scenario won't call the custom function)
+    
+    #and the expectation is that infill will be derived by passing features to a model inference operation
+    #and infill should be returned as either a single column pandas dataframe (column header is ignored)
+    #or infill can also be returned as single column numpy array
+    
+    #where for the regression application the infill entries should be returned as float type
+    #and for the classification application the infill entries can be returned as either int type or str(int) type
+    #and more granular data type management will be conducted externally
+    
+    #note that pandas is available as pd and numpy as np
+    #if imports were performed internal to customML_train_template they will need to be reinitilized in customML_predict_template
+    """
+    
+    if model is not False:
+      
+      fillfeatures = fillfeatures.reset_index(drop=True)
+
+      #access any user passed parameters
+      commands = {}
+      if modeltype == 'classification':
+        if 'MLinfill_cmnd' in ML_cmnd:
+          if 'customClassifier' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customClassifier']
+      if modeltype == 'regression':
+        if 'MLinfill_cmnd' in ML_cmnd:
+          if 'customRegressor' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customRegressor']
+      
+      if modeltype == 'classification':
+        function_address = 'customML_Classifier_predict'
+      elif modeltype == 'regression':
+        function_address = 'customML_Regressor_predict'
+      
+      if 'customML' in ML_cmnd:
+        if function_address in ML_cmnd['customML']:
+          if callable(ML_cmnd['customML'][function_address]):
+            try:
+              infill = \
+              ML_cmnd['customML'][function_address](fillfeatures, 
+                                                    model,
+                                                    commands)
+            except ValueError:
+              infill = np.zeros(shape=(fillfeatures.shape[0],1))
+              
+      #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
+      #we'll convert to a flattened array for common form
+      if type(infill) == type(pd.DataFrame()) or type(infill) == type(pd.Series([1])):
+        infill = infill.to_numpy()
+        
+      infill = infill.ravel()
+              
+      if modeltype == 'classification':
+        
+        #returned values from inference are accepted as either type int or type str(int)
+        #categorylist is a list of headers corresponding to onehot form, where if this is a 1010 set will be list before converting back to binarized
+        if len(categorylist) > 1:
+          
+          #this will return a onehot encoded array with 0/1 integer entries
+          infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+        
+        else:
+          
+          #else for single column case if entries are str(int) we'll convert to int
+          #so this could result in a boolean integer set or ordinal integer set depending on label composition
+          infill = infill.astype(int)
+        
+    elif model is False:
+      
+      #note that infill is not inserted when model is False
+      infill = np.zeros(shape=(1,len(categorylist)))
+      
+    return infill
+
   def _train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     modeltype = 'classification'
     return self.__train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
@@ -25915,11 +26171,10 @@ class AutoMunge:
     try:
       
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      #I'm not sure why simply renaming columns to integers doesn't work here
-      # df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
-      # df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
-      df_train_filltrain = pd.DataFrame(df_train_filltrain.to_numpy())
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
+      df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
+      df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+      df_train_filltrain = df_train_filltrain.reset_index(drop=True)
+      df_train_filllabel = df_train_filllabel.reset_index(drop=True)
 
       df_train_filltrain.columns = ['train_' + str(x) for x in list(df_train_filltrain.columns)]
       
@@ -25995,8 +26250,9 @@ class AutoMunge:
     
     if model is not False:
       
-      # fillfeatures.columns = list(range(len(list(fillfeatures.columns))))
-      fillfeatures = pd.DataFrame(fillfeatures.to_numpy())
+      #reset headers to integers
+      fillfeatures.columns = list(range(len(list(fillfeatures.columns))))
+      fillfeatures = fillfeatures.reset_index(drop=True)
 
       fillfeatures.columns = ['train_' + str(x) for x in list(fillfeatures.columns)]
 
@@ -26041,7 +26297,8 @@ class AutoMunge:
     # if True is True:
 
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
+      df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+      df_train_filllabel = df_train_filllabel.reset_index(drop=True)
 
       ag_label_column = list(df_train_filllabel.columns)
 
@@ -26208,7 +26465,8 @@ class AutoMunge:
       + columntypes['onehot'] + columntypes['binary']
 
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      df_train_filllabel = pd.DataFrame(df_train_filllabel.to_numpy())
+      df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+      df_train_filllabel = df_train_filllabel.reset_index(drop=True)
 
       ag_label_column = list(df_train_filllabel.columns)
 
@@ -26262,10 +26520,10 @@ class AutoMunge:
         
         #extract validation sets
         df_train_filltrain, df_train_filltrain_val = \
-        self.__df_split(df_train_filltrain, eval_ratio, True, randomseed)
+        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
         df_train_filllabel, df_train_filllabel_val = \
-        self.__df_split(df_train_filllabel, eval_ratio, True, randomseed)
+        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
         
         train_nunique = int(df_train_filllabel.nunique())
         train_rows = int(df_train_filllabel.shape[0])
@@ -26408,10 +26666,10 @@ class AutoMunge:
         
         #extract validation sets
         df_train_filltrain, df_train_filltrain_val = \
-        self.__df_split(df_train_filltrain, eval_ratio, True, randomseed)
+        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
         df_train_filllabel, df_train_filllabel_val = \
-        self.__df_split(df_train_filllabel, eval_ratio, True, randomseed)
+        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
 
         train_nunique = int(df_train_filllabel.nunique())
         
@@ -31348,7 +31606,7 @@ class AutoMunge:
                               printstatus, 
                               check_ML_cmnd_result,
                               default='randomforest', 
-                              valid_entries={'randomforest', 'autogluon', 'flaml', 'catboost'},
+                              valid_entries={'randomforest', 'customML', 'autogluon', 'flaml', 'catboost'},
                               valid_type=str)
     
     ML_cmnd, check_ML_cmnd_result = \
@@ -32861,6 +33119,7 @@ class AutoMunge:
           returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
 
         else:
+          set_Binary_column_valresult = False
           Binary_sublist_dict = {'categoric_column_tuple' : ([], [], []),
                                  'ordinal_width_dict' : {},
                                  'column_dict' : {},
@@ -32897,7 +33156,8 @@ class AutoMunge:
           postprocess_dict['temp_miscparameters_results'].update({'set_Binary_column_valresult' : set_Binary_column_valresult})
 
         #_(2)_
-        Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
+        if Binary_sublist_dict['returned_Binary_columns'] != []:
+          Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
         
         if printstatus is True:
           print("Returned Binary columns:")
@@ -33658,7 +33918,7 @@ class AutoMunge:
                 
     return df
 
-  def __df_split(self, df, ratio, shuffle_param, randomseed):
+  def _df_split(self, df, ratio, shuffle_param, randomseed):
     """
     #performs a split of passed dataframe df
     #based on proportions of ratio where 0<ratio<1
@@ -33789,7 +34049,9 @@ class AutoMunge:
                          'onehot_sets' : [], \
                          'binary' : [], \
                          'binary_sets' : [], \
-                         'passthrough' : []}
+                         'passthrough' : [],
+                         'all_categoric':[],
+                         'all_numeric':[]}
     
     populated_columns = []
 
@@ -33955,6 +34217,15 @@ class AutoMunge:
             columntype_report['passthrough'].append(column)
             
             populated_columns.append(column)
+
+    #now aggregate all numeric and seperately all categoric columns into single lists
+
+    columntype_report['all_numeric'] = \
+    columntype_report['continuous'] + columntype_report['integer']
+
+    columntype_report['all_categoric'] = \
+    columntype_report['boolean'] + columntype_report['ordinal'] + \
+    columntype_report['onehot'] + columntype_report['binary']
             
     return columntype_report
 
@@ -35032,11 +35303,11 @@ class AutoMunge:
 
       #we'll wait to split out the validation labels
       df_train, df_validation1 = \
-      self.__df_split(df_train, totalvalidationratio, shuffle_param, randomseed)
+      self._df_split(df_train, totalvalidationratio, shuffle_param, randomseed)
 
       if trainID_column is not False:
         df_trainID, df_validationID1 = \
-        self.__df_split(df_trainID, totalvalidationratio, shuffle_param, randomseed)
+        self._df_split(df_trainID, totalvalidationratio, shuffle_param, randomseed)
 
       else:
         df_trainID = pd.DataFrame()
@@ -35199,7 +35470,7 @@ class AutoMunge:
     postprocess_dict = {'column_dict' : {},
                         'columnkey_dict' : {},
                         'origcolumn' : {},
-                        'orig_noinplace' : [],
+                        'orig_noinplace' : set(),
                         'temp_miscparameters_results' : {},
                         'process_dict' : process_dict,
                         'mlti_categories' : set(),
@@ -35560,6 +35831,10 @@ class AutoMunge:
                         masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
 
     miscparameters_results.update(infill_validations)
+
+    #now a cleanup to the postprocess_dict['autoMLer'] data structure to only record entries that were inspected for infill
+    postprocess_dict = \
+    self.__autoMLer_cleanup(postprocess_dict, postprocess_assigninfill_dict, ML_cmnd)
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
@@ -43328,10 +43603,10 @@ class AutoMunge:
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
-      self.__df_split(am_train, totalvalidation, False, randomseed)
+      self._df_split(am_train, totalvalidation, False, randomseed)
 
       am_labels, am_validationlabels1 = \
-      self.__df_split(am_labels, totalvalidation, False, randomseed)
+      self._df_split(am_labels, totalvalidation, False, randomseed)
 
       #__
       
