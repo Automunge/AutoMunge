@@ -24939,9 +24939,13 @@ class AutoMunge:
           
           leakage_dict_converted.update({key_returned : leakage_dict_orig[key]})
           
-      else:
+      elif key in postprocess_dict['column_dict']:
         
         leakage_dict_converted.update({key : leakage_dict_orig[key]})
+
+      else:
+        #scenario where leakage_dict included an incorrectly specified key not found in set
+        pass
       
     #next we add keys and values associated with leakage_dict_derived which will be received in inputcolumn form
     for key in leakage_dict_derived:
@@ -25974,8 +25978,8 @@ class AutoMunge:
     
     #the custom_autoMLer_train_template will be passed to an automunge call in ML_cmnd as
     #ML_cmnd = {'autoML_type':'customML',
-    #           'MLinfill_cmnd':{'customClassifier':{},
-    #                            'customRegressor':{}},
+    #           'MLinfill_cmnd':{'customML_Classifier':{},
+    #                            'customML_Regressor':{}},
     #           'customML':{'customML_Classifier_train'  :function, 
     #                       'customML_Classifier_predict':function, 
     #                       'customML_Regressor_train'   :function, 
@@ -26019,12 +26023,12 @@ class AutoMunge:
     commands = {}
     if modeltype == 'classification':
       if 'MLinfill_cmnd' in ML_cmnd:
-        if 'customClassifier' in ML_cmnd['MLinfill_cmnd']:
-          commands = ML_cmnd['MLinfill_cmnd']['customClassifier']
+        if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
     if modeltype == 'regression':
       if 'MLinfill_cmnd' in ML_cmnd:
-        if 'customRegressor' in ML_cmnd['MLinfill_cmnd']:
-          commands = ML_cmnd['MLinfill_cmnd']['customRegressor']
+        if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
     
     #train the model
     model = False
@@ -26090,12 +26094,12 @@ class AutoMunge:
       commands = {}
       if modeltype == 'classification':
         if 'MLinfill_cmnd' in ML_cmnd:
-          if 'customClassifier' in ML_cmnd['MLinfill_cmnd']:
-            commands = ML_cmnd['MLinfill_cmnd']['customClassifier']
+          if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
       if modeltype == 'regression':
         if 'MLinfill_cmnd' in ML_cmnd:
-          if 'customRegressor' in ML_cmnd['MLinfill_cmnd']:
-            commands = ML_cmnd['MLinfill_cmnd']['customRegressor']
+          if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
       
       if modeltype == 'classification':
         function_address = 'customML_Classifier_predict'
@@ -33074,6 +33078,15 @@ class AutoMunge:
           temp_Binary = True
           Btype = '1010'
         
+        #record valresult if Binary specification included columns not found in data
+        if 'Binary_columnspresent_valresult' not in postprocess_dict['temp_miscparameters_results']:
+          postprocess_dict['temp_miscparameters_results'].update({'Binary_columnspresent_valresult' : False})
+        if len(set(Binary_sublist) - (set(df_train) | set(postprocess_dict['origcolumn']))) > 0:
+          postprocess_dict['temp_miscparameters_results']['Binary_columnspresent_valresult' ] = True
+          if printstatus != 'silent':
+            print("Binary specification included at least one column header not found in the data.")
+            print()
+
         #for Binary need returned columns
         Binary_sublist = \
         self.__column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
@@ -36299,7 +36312,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.12'
+    automungeversion = '7.14'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
