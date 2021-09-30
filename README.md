@@ -4901,7 +4901,7 @@ in a new notebook. (This was a design decision for security considerations.)
 Ok final item on the agenda, we're going to demonstrate methods to create custom
 ML infill functions for model training and inference, such that a user may integrate their
 own machine learning algorithms into the platform. We have tried to balance our options
-for alternate learning libraries form the default random forest, but recognize that
+for alternate learning libraries from the default random forest, but recognize that
 sophisticate hyperparameter tuning is not our forte, so want to leave the option
 open for users to integrate their own implementations, such as may be for example built on 
 top of XGBoost or other learning libraries.
@@ -5010,7 +5010,7 @@ def customML_predict_classifier(features, model, commands):
 
 def customML_predict_regressor(features, model, commands):
   """
-  #Template for integrating user defined ML classification inference into ML infill
+  #Template for integrating user defined ML regression inference into ML infill
   
   #features is comparable in form to those features received in the corresponding training operation
   #model is the model returned from the corresponding training operation
