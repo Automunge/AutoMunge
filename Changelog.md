@@ -4514,3 +4514,11 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - new entries returned in postprocess_dict['columntype_report'] as postprocess_dict['columntype_report']['all_categoric'] and postprocess_dict['columntype_report']['all_numeric']
 - these are list aggregations of all returned numeric features and all returned categoric features
 - (columntype_report already included more granular detail such specific feature types and groupings)
+
+7.14
+- updated the ML_cmnd address to pass parameters to customML training and inference from ML_cmnd['MLinfill_cmnd']['customClassifier'] to ML_cmnd['MLinfill_cmnd']['customML_Classifier']
+and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']['customML_Regressor']
+- this was to better align on terminology by referring to custom ML operations as "customML"
+- new validation result returned with Binary application as postprocess_dict['miscparameters_results']['Binary_columnspresent_valresult']
+- Binary_columnspresent_valresult activates when a Binary specification includes a column header not found in the input or returned sets
+- added a mitigation to leakage_dict specification for cases where was specified with key not found in set
