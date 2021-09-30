@@ -4501,3 +4501,16 @@ ML_cmnd = {'stochastic_impute_numeric': False,
 - found and fixed bug for inversion passed as list or set in privacy_encode scenario
 - inversion denselabels option now preserves transformation privacy in returned headers
 - now with privacy_encode inversion the returned inversion_info_dict masks the recovery path, replacing with boolean True
+
+7.13
+- new option for ML infill, user can now define and integrate custom functions for model training and inference
+- documented in read me in section Custom ML Infill Functions (final section before conclusion)
+- trying to clean up postprocess_dict a little bit
+- new convention is postprocess_dict['autoMLer'] only returns entries that will be inspected in postmunge
+- meaning if custom ML infill functions are passed they only need to be reinitialized prior to uploading postprocess_dict when they were applied
+- postprocess_dict['orig_noinplace'] recast from a list to a set which should slightly benefit postmunge latency
+- found and mitigated a remote Binary edge case associated with improper specification
+- replaced an operation to reset column headers from use of numpy conversion to a pandas method in a few of autoML training functions
+- new entries returned in postprocess_dict['columntype_report'] as postprocess_dict['columntype_report']['all_categoric'] and postprocess_dict['columntype_report']['all_numeric']
+- these are list aggregations of all returned numeric features and all returned categoric features
+- (columntype_report already included more granular detail such specific feature types and groupings)
