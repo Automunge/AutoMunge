@@ -4522,3 +4522,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - new validation result returned with Binary application as postprocess_dict['miscparameters_results']['Binary_columnspresent_valresult']
 - Binary_columnspresent_valresult activates when a Binary specification includes a column header not found in the input or returned sets
 - added a mitigation to leakage_dict specification for cases where was specified with key not found in set
+
+7.15
+- new option for privacy_encode parameter as 'private'
+- previously privacy_encode accepted boolean defaulting to False, when True the column names and order of columns are anonymized, as well as some of returned data structures like columntype_report
+- in the new 'private' option, these measures are supplemented by also activating that all datasets in automunge and postmunge will have their rows shuffled, consistent with what is otherwise available with the shuffletrain parameter
+- additionially, as measures to further anonymize, inversion not supported for privacy_encode=='private', dataframe indexes are reset, and index columns retruned in ID sets are reset
+- we recommend privacy_encode=='private' primarily as a resource for unsupervised learning applications
+- or otherwise for scenarios of allowing model training / hyperparameter experiments by external party without needing to pair resulting inferences to specific input rows
+- note that if you want to match the privacy_encode form in a seperate automunge(.) call with correpsonding data, you can do so by matching the automunge(.) randomseed
+- and if you want to retain a row identifier without sharing with external party you can populate your own ID set
+- we thought about some additional measures, like having postmunge require a minimum number of unique rows in order to prepare additional data, but for now since running postmunge means user has access to postprocess_dict there is no added benefit
