@@ -30165,7 +30165,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat):
+                             trainID_column, testID_column, evalcat, privacy_encode):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -30578,6 +30578,24 @@ class AutoMunge:
         print("evalcat allowable values are False or as a callable function per READ ME.")
       
     miscparameters_results.update({'evalcat_valresult' : evalcat_valresult})
+
+    #check privacy_encode
+    privacy_encode_valresult = False
+    if privacy_encode not in {True, False, 'private'}:
+      privacy_encode_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for privacy_encode parameter.")
+        print("Acceptable values are one of {True, False, 'private'}")
+        print()
+    elif privacy_encode not in {'private'} \
+    and not isinstance(privacy_encode, bool):
+      privacy_encode_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for privacy_encode parameter.")
+        print("Acceptable values are one of {True, False, 'private'}")
+        print()
+      
+    miscparameters_results.update({'privacy_encode_valresult' : privacy_encode_valresult})
     
     return miscparameters_results
     
@@ -34813,7 +34831,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat)
+                                 trainID_column, testID_column, evalcat, privacy_encode)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -35303,13 +35321,13 @@ class AutoMunge:
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
     #note that a shuffle operation to df_train is performed as part of _df_split based on shuffletrain and randomseed
-    #otherwise if shuffletrain not activated validation split based on bottom sequential rows
+    #otherwise if shuffletrain not activated (and privacy_encode is not 'private') validation split based on bottom sequential rows
     #an additional shuffle operation may be conducted later in the workflow for df_train and/or df_test based on shuffletrain
     totalvalidationratio = valpercent
 
     if isinstance(totalvalidationratio, float) and totalvalidationratio > 0.0:
       
-      if shuffletrain in {True, 'traintest'}:
+      if shuffletrain in {True, 'traintest'} or privacy_encode == 'private':
         shuffle_param=True
       else:
         shuffle_param=False
@@ -35325,17 +35343,12 @@ class AutoMunge:
       else:
         df_trainID = pd.DataFrame()
         df_validationID1 = pd.DataFrame()
-
-      # df_train = df_train.reset_index(drop=True)
-      # df_validation1 = df_validation1.reset_index(drop=True)
-      # df_trainID = df_trainID.reset_index(drop=True)
-      # df_validationID1 = df_validationID1.reset_index(drop=True)
       
     elif isinstance(totalvalidationratio, tuple) and len(totalvalidationratio) == 2:
       
       totalvalidationratio = valpercent[1] - valpercent[0]
       
-      if shuffletrain in {True, 'traintest'}:
+      if shuffletrain in {True, 'traintest'} or privacy_encode == 'private':
         shuffle_param=True
       else:
         shuffle_param=False
@@ -36182,7 +36195,7 @@ class AutoMunge:
         print("")
 
     #then if shuffle was elected perform here
-    if shuffletrain is True or shuffletrain == 'traintest':
+    if shuffletrain is True or shuffletrain == 'traintest' or privacy_encode == 'private':
       
       #shuffle training set and labels
       df_train = self.__df_shuffle(df_train, randomseed)
@@ -36193,7 +36206,7 @@ class AutoMunge:
       if trainID_column is not False:
         df_trainID = self.__df_shuffle(df_trainID, randomseed)
       
-    if shuffletrain == 'traintest':
+    if shuffletrain == 'traintest' or privacy_encode == 'private':
       
       df_test = self.__df_shuffle(df_test, randomseed)
       
@@ -36312,7 +36325,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.14'
+    automungeversion = '7.15'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36449,7 +36462,7 @@ class AutoMunge:
     #and shuffle order of features in returned dataframe
     #alternate columntype_report available as private_columntype_report
 
-    if privacy_encode is True:
+    if privacy_encode is not False:
       df_train = self.__df_shuffle(df_train, randomseed, axis=1)
       df_test = self.__df_shuffle(df_test, randomseed, axis=1)
       df_labels = self.__df_shuffle(df_labels, randomseed, axis=1)
@@ -36512,7 +36525,7 @@ class AutoMunge:
     
     del len_privacy_headers_train, len_privacy_headers_labels, len_privacy_headers_trainID
     
-    if privacy_encode is True:
+    if privacy_encode is not False:
       
       df_train = df_train.rename(columns = privacy_headers_train_dict)
       df_test = df_test.rename(columns = privacy_headers_train_dict)
@@ -36556,11 +36569,32 @@ class AutoMunge:
 
     postprocess_dict.update({'private_columntype_report' : private_columntype_report})
 
-    #if privacy_encode is True, overwrite the columntype_report to the private version
+    #if privacy_encode is not False, overwrite the columntype_report to the private version
     #and erase the column_map
-    if privacy_encode is True:
+    if privacy_encode is not False:
       postprocess_dict['columntype_report'] = private_columntype_report
       postprocess_dict['column_map'] = {}
+
+    #for the privacy_encode == 'private' scenario, row shuffling will have already been performed at shuffletrain application
+    #now we'll reset index and reset Automunge_index in the ID set
+    if privacy_encode == 'private':
+      
+      #this resets the dataframe index
+      df_train = df_train.reset_index(drop=True)
+      df_trainID = df_trainID.reset_index(drop=True)
+      df_labels = df_labels.reset_index(drop=True)
+      df_test = df_test.reset_index(drop=True)
+      df_testID = df_testID.reset_index(drop=True)
+      df_testlabels = df_testlabels.reset_index(drop=True)
+
+      df_validation1 = df_validation1.reset_index(drop=True)
+      df_validationID1 = df_validationID1.reset_index(drop=True)
+
+      #this resets the Automunge_index column returned in ID sets
+      df_trainID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_trainID.shape[0])})
+      df_testID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_testID.shape[0])})
+      if totalvalidationratio > 0:
+        df_validationID1[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_validationID1.shape[0])})
 
     if totalvalidationratio > 0:
 
@@ -44245,10 +44279,13 @@ class AutoMunge:
     else:
       postprocess_dict['traindata'] = False
 
-    #printouts not generated for privacy_encode
-    if postprocess_dict['privacy_encode'] is True and printstatus is True:
+    #a few special conventions for privacy_encode
+    if postprocess_dict['privacy_encode'] is not False and printstatus is True:
       print("privacy_encode was performed in automunge(.), printstatus reset from True to False to align")
       printstatus = False
+    if postprocess_dict['privacy_encode'] == 'private' and inversion is not False:
+      print("privacy_encode == 'private' was performed in automunge(.), inversion not supported")
+      return
 
     #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
     postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
@@ -44933,7 +44970,7 @@ class AutoMunge:
 
     #if shuffletrain passed to postmunge it takes place here
     #(postmunge does not default to consistent shuffle as train set, relies on parameter)
-    if shuffletrain is True:
+    if shuffletrain is True or postprocess_dict['privacy_encode'] == 'private':
       #shuffle training set and labels
       df_test = self.__df_shuffle(df_test, postprocess_dict['randomseed'])
       df_testlabels = self.__df_shuffle(df_testlabels, postprocess_dict['randomseed'])
@@ -44987,8 +45024,8 @@ class AutoMunge:
         self.__list_replace(df_testlabels_columns, postprocess_dict['excl_suffix_inversion_dict'])
         df_testlabels.columns = df_testlabels_columns
 
-    #now rename columns for privacy encoding when activated
-    if postprocess_dict['privacy_encode'] is True:
+    #now rename columns and shuffle order of columns for privacy encoding when activated
+    if postprocess_dict['privacy_encode'] is not False:
 
       df_test = self.__df_shuffle(df_test, postprocess_dict['randomseed'], axis=1)
       df_test = df_test.rename(columns = postprocess_dict['privacy_headers_train_dict'])
@@ -44999,6 +45036,17 @@ class AutoMunge:
 
       df_testID = self.__df_shuffle(df_testID, postprocess_dict['randomseed'], axis=1)
       df_testID = df_testID.rename(columns = postprocess_dict['privacy_headers_testID_dict'])
+
+    if postprocess_dict['privacy_encode'] == 'private':
+      
+      #this resets the dataframe index
+      df_test = df_test.reset_index(drop=True)
+      df_testID = df_testID.reset_index(drop=True)
+      if labelscolumn is not False:
+        df_testlabels = df_testlabels.reset_index(drop=True)
+
+      #this resets the Automunge_index column returned in ID sets
+      df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
@@ -45569,6 +45617,7 @@ class AutoMunge:
     #handles cases where headers might need to be adjusted prior to inversion
     #if privacy_encode is False only need to adjust headers for numpy array scenario
     #if privacy encode is True also need to convert from private headers
+    #note that inversion is not supported for privacy_encode == 'private'
     #and return order of columns
     """
     
