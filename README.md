@@ -700,7 +700,7 @@ validation data will be randomly sampled and shuffled, or when shuffletrain is
 deactivated validation data will be based on a partiion of sequential rows from 
 the bottom of the train set. Note that row correspondance with shuffling is
 maintained between train / ID / label sets. Note that we recommend deactivating 
-shuffletrain for sequential (time-series) data. 
+shuffletrain for sequential (time-series) data.
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -1917,15 +1917,20 @@ applied to columns not assigned in assigncat. (Note that columns assigned to 'ev
 in assigncat will be passed to this function for evaluation with powertransform = False / True
 respectively.) Note that function currently uses python collections library and datetime as dt.
 
-* privacy_encode: a boolean marker _{True, False}_ defaults to False. For cases where sets 
+* privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
-column headers of received data are anonymized. This parameter when activated shuffles the order of columns and 
+column headers of received data are anonymized. This parameter when activated as True shuffles the order of columns and 
 replaces headers and suffixes with integers, including distinct sets of integers between train, labels,
 and ID sets. Note that conversion information is available in returned postprocess_dict under
 privacy reports (in other words, privacy can be circumvented if user has access to the postprocess_dict). 
 When activated the postprocess_dict returned columntype_report captures the privacy encodings and the column_map is erased. 
 Note that when activated consistent convention is applied in postmunge and inversion is supported. 
 When privacy_encode activated postmunge(.) printstatus is only available as False or 'silent'.
+The 'private' option also activates shuffling of rows in train and test data for both automunge(.) and postmunge(.)
+and resets the dataframe indexes and the Automunge_index column returned in the ID set.
+We recommend reserving the 'private' option for unsupervised learning applications since it otherwise
+may interfere with row identification for inference. Note that if you want to dupplicate the resulting 
+anonymized form in a seperate automunge(.) call with corresponding data you can do so by matching the automunge(.) randomseed.
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
