@@ -30165,7 +30165,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat, privacy_encode):
+                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -30596,12 +30596,26 @@ class AutoMunge:
         print()
       
     miscparameters_results.update({'privacy_encode_valresult' : privacy_encode_valresult})
+
+    #check encrypt_key
+    encrypt_key_valresult = False
+    if not isinstance(encrypt_key, (int, bytes, bool)) \
+    or isinstance(encrypt_key, int) and encrypt_key not in {False, 16, 24, 32} \
+    or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
+      encrypt_key_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for encrypt_key parameter.")
+        print("Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
+        print("When passed as a bytes object the length can be one of {16, 24, 32}")
+        print()
+
+    miscparameters_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
     
     return miscparameters_results
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                               dupl_rows, featureeval, driftreport, inplace, \
-                              returnedsets, shuffletrain, inversion, traindata, testID_column):
+                              returnedsets, shuffletrain, inversion, traindata, testID_column, encrypt_key):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -30764,6 +30778,19 @@ class AutoMunge:
         print("testID_column allowable values are boolean False, string, or list.")
 
     pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
+
+    #check encrypt_key
+    encrypt_key_valresult = False
+    if not isinstance(encrypt_key, (bytes, bool)) \
+    or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
+      encrypt_key_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for encrypt_key parameter.")
+        print("Acceptable values are one of {False, or a bytes object}")
+        print("When passed as a bytes object the length can be one of {16, 24, 32}")
+        print()
+
+    pm_miscparameters_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
     
     return pm_miscparameters_results
 
@@ -34714,6 +34741,136 @@ class AutoMunge:
             translatedcolumns_list += [inputcolumn]
             
     return translatedcolumns_list
+
+  def __encrypt_postprocess_dict(self, postprocess_dict, encrypt_key, privacy_encode, printstatus):
+    """
+    replaces the postprocess_dict with a public version
+    with entries contengent on the privacy_encode parameter
+    
+    when privacy_encode is True, includes
+    ['encryption', 'encrypted', 'columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict']
+    when privacy_encode is False, includes those and also 'FS_sorted'
+    when privacy encode is 'private', only includes
+    ['encryption', 'encrypted']
+    
+    #encrypt_key is passed by user, can be either boolean False, an integer {16, 24, 32}, 
+    #or can be a bytes object of one of those lengths
+    #note block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit
+    #default of boolean False deactivates
+    #integer case is treated as the block size and used to derive a key returned in printouts
+    #bytes case is treated as a user specified key with block size based on that length
+
+    #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
+    #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
+    """
+        
+    #we'll populate public_dict to replace postprocess_dict
+    public_dict = {'encryption' : True}
+    
+    public_entries = ['column_map', 'columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict']
+    #column_map reports origination of features
+    #columntype_report report types and groupings of features
+    #privacy_encode is value of privacy_encode as passed to automunge(.) for reference
+    #automungeversion is version number of the automugne(.) call
+    #labelsencoding_dict is a resource for label inversion without decrypting
+
+    if privacy_encode is False:
+      #FS_sorted is results of feature importance evaluation if elected
+      public_entries = public_entries + ['FS_sorted']
+    
+    #public_dict doesn't populate these in privacy_encode == 'private' scenario
+    if privacy_encode in {True, False}:
+      
+      for public_entry in public_entries:
+        public_dict.update({public_entry : postprocess_dict[public_entry]})
+        
+    #now we'll convert our postprocess_dict to a bytes representation with pickle
+    import pickle
+    postprocess_dict = pickle.dumps(postprocess_dict)
+    
+    #now we'll encrypt that bytes representionation, which we'll then store the encryption in the public_dict
+    
+    #we'll use the AES package from pycrypto
+    #note that we recomend installing pycrypto with conda vs pip
+    from Crypto.Cipher import AES
+
+    #for encryption we'll format data as base64
+    import base64
+    
+    #encrypt_key is passed by user, can be either boolean False, an integer {16, 24, 32}, 
+    #or can be a bytes object of one of those lengths
+    #default of boolean False deactivates
+    #integer case is treated as the block size and used to derive a key returned in printouts
+    #bytes case is treated as a user specified key with block size based on that length
+      
+    #note block size of 16 aligns with 128 bit, 32 aligns with 256 bit
+    if isinstance(encrypt_key, int) and encrypt_key in {16, 24, 32}:
+
+      block_size = encrypt_key
+
+      #os is a native python module used to access operating system functionality
+      #as used here, the urandom module's source of randomness 
+      #may differ between operating systems e.g. linux/mac/windows
+      from os import urandom
+      encrypt_key = urandom(block_size)
+
+      print("_______________________________________________________")
+      print("_______________________________________________________")
+      print("*******************************************************")
+      print("*******************************************************")
+      print()
+      print("Derived encrypt_key:")
+      print()
+      print(encrypt_key)
+      print()
+      print("Please copy and save this key for use with the postmunge(.) encrypt_key parameter")
+      print("You will need this key to prepare additional data in postmunge(.)")
+      print()
+      print("*******************************************************")
+      print("*******************************************************")
+      print("_______________________________________________________")
+      print("_______________________________________________________")
+
+    elif isinstance(encrypt_key, bytes):
+
+      block_size = len(encrypt_key)
+      
+      if printstatus is True:
+        print("_______________________________________________________")
+        print("_______________________________________________________")
+        print("*******************************************************")
+        print("*******************************************************")
+        print()
+        print("User passed a custom encrypt_key to automunge(.)")
+        print("Please remember to save your key for use with the postmunge(.) encrypt_key parameter")
+        print("You will need this key to prepare additional data in postmunge(.)")
+        print()
+        print("*******************************************************")
+        print("*******************************************************")
+        print("_______________________________________________________")
+        print("_______________________________________________________")
+      
+    #now create the cypher object
+    cipher = AES.new(encrypt_key)
+
+    #we'll use the b'{' character for padding to ensure value is always a multiple of block size
+    padding = b'{'
+
+    #here is the function to pad (pads characters on the right side of string)
+    #hat tip pythonprogramming.net
+    pad = lambda s: s + (block_size - len(s) % block_size) * padding
+
+    #here is the function to encode
+    #hat tip pythonprogramming.net
+    EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+
+    #now we can code the pickled dicitonary
+    postprocess_dict = EncodeAES(cipher, postprocess_dict)
+    
+    #we'll then save that encryption in the public_dict
+    public_dict.update({'encrypted' : postprocess_dict})
+    
+    return public_dict
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
@@ -34765,7 +34922,7 @@ class AutoMunge:
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False,
-                privacy_encode = False, printstatus = True):
+                privacy_encode = False, encrypt_key = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
@@ -34831,7 +34988,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat, privacy_encode)
+                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -36325,7 +36482,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.15'
+    automungeversion = '7.16'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36413,6 +36570,9 @@ class AutoMunge:
                              'application_number' : application_number,
                              'application_timestamp' : application_timestamp,
                              'version_combined' : version_combined})
+
+    #note that encrypt_key value is not stored, when encryption performed final returned postprocess_dict records encryption as True
+    postprocess_dict.update({'encryption' : False})
     
     #consolidate miscparameters_results and temp_miscparameters_results
     postprocess_dict['miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
@@ -36558,21 +36718,36 @@ class AutoMunge:
 
       if key not in {'onehot_sets', 'binary_sets'}:
         self.__list_replace(private_columntype_report[key], postprocess_dict['privacy_headers_train_dict'])
-        self.__list_replace(private_columntype_report[key], postprocess_dict['privacy_headers_labels_dict'])
         random.shuffle(private_columntype_report[key])
         
       elif key in {'onehot_sets', 'binary_sets'}:  
         for sublist in private_columntype_report[key]:
           self.__list_replace(sublist, postprocess_dict['privacy_headers_train_dict'])
-          self.__list_replace(sublist, postprocess_dict['privacy_headers_labels_dict'])
           random.shuffle(sublist)
 
     postprocess_dict.update({'private_columntype_report' : private_columntype_report})
 
-    #if privacy_encode is not False, overwrite the columntype_report to the private version
+    #now generate a privacy_encoded verison of label_columntype_report
+    private_label_columntype_report = deepcopy(label_columntype_report)
+
+    for key in private_label_columntype_report:
+
+      if key not in {'onehot_sets', 'binary_sets'}:
+        self.__list_replace(private_label_columntype_report[key], postprocess_dict['privacy_headers_labels_dict'])
+        random.shuffle(private_label_columntype_report[key])
+
+      elif key in {'onehot_sets', 'binary_sets'}:  
+        for sublist in private_label_columntype_report[key]:
+          self.__list_replace(sublist, postprocess_dict['privacy_headers_labels_dict'])
+          random.shuffle(sublist)
+
+    postprocess_dict.update({'private_label_columntype_report' : private_label_columntype_report})
+
+    #if privacy_encode is not False, overwrite the columntype_report and label_columntype_report to the private version
     #and erase the column_map
     if privacy_encode is not False:
       postprocess_dict['columntype_report'] = private_columntype_report
+      postprocess_dict['label_columntype_report'] = private_label_columntype_report
       postprocess_dict['column_map'] = {}
 
     #for the privacy_encode == 'private' scenario, row shuffling will have already been performed at shuffletrain application
@@ -36590,11 +36765,11 @@ class AutoMunge:
       df_validation1 = df_validation1.reset_index(drop=True)
       df_validationID1 = df_validationID1.reset_index(drop=True)
 
-      #this resets the Automunge_index column returned in ID sets
-      df_trainID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_trainID.shape[0])})
-      df_testID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_testID.shape[0])})
-      if totalvalidationratio > 0:
-        df_validationID1[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_validationID1.shape[0])})
+      # #this resets the Automunge_index column returned in ID sets 
+      # df_trainID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_trainID.shape[0])})
+      # df_testID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_testID.shape[0])})
+      # if totalvalidationratio > 0:
+      #   df_validationID1[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_validationID1.shape[0])})
 
     if totalvalidationratio > 0:
 
@@ -36708,6 +36883,11 @@ class AutoMunge:
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
     postprocess_dict = self.__suffix_overlap_final_aggregation_and_printouts(postprocess_dict)
+
+    #perform postprocess_dict encryption if elected by encrypt_key
+    if encrypt_key is not False:
+      postprocess_dict = \
+      self.__encrypt_postprocess_dict(postprocess_dict, encrypt_key, privacy_encode, printstatus)
 
     #printout display progress
     if printstatus is True:
@@ -44250,13 +44430,76 @@ class AutoMunge:
       
     return drift_ppd, drift_report
 
+  def __decrypt_postprocess_dict(self, postprocess_dict, encrypt_key, printstatus):
+    """
+    this funciton applied at start of postmunge
+    postprocess_dict is as returned from an automunge(.) call with encryption
+    and includes an entry 'encrypted' containing the encrypted full postprocess_dict
+    
+    encrypt_key is intended to be passed as a bytes object matching the automunge encryption key
+    where in automunge encrypt_key will either have been generated and returned in printouts
+    (when automunge encrypt_key was passed as one of True / 16 / 24 / 32 a key is generated,
+    or when automunge encrypt_key was passed as a bytes object with length 16/24/32 that is treated as the key)
+    
+    this function decodes and returns the encrypted full postprocess_dict
+    
+    #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
+    #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
+    """
+
+    decode_valresult = False
+    
+    if not (isinstance(encrypt_key, bytes) and len(encrypt_key) in {16, 24, 32}):
+      
+      decode_valresult = True
+      
+      if printstatus != 'silent':
+        print("error: encryption was performed in automunge(.) without specifying the key in postmunge encrypt_key parameter")
+        print("encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+        print("encrypt_key was either returned in printouts of corresponding automunge(.) call")
+        print("or was designated by user through the automugne(.) encrypt_key parameter")
+        print()
+      
+    if 'encrypted' not in postprocess_dict:
+      
+      decode_valresult = True
+      
+      if printstatus != 'silent':
+        print("error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+      
+    from Crypto.Cipher import AES
+    import base64
+    import pickle
+
+    padding = b'{'
+
+    #here is the function to decode
+    #hat tip pythonprogramming.net
+    DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(padding)
+
+    #encrypt_key is passed by user to postmunge
+    #and needs to match the generated encrypt_key bytes either passed to automunge
+    #or generated by automunge and returned in printouts when encrypt_key was passed to automunge as integer
+
+    cipher = AES.new(encrypt_key)
+
+    #this gives a pickled representation, then can convert that to a dictionary
+    postprocess_dict = DecodeAES(cipher, postprocess_dict['encrypted'])
+    
+    #note that if this causes error it may be because user has not first initialized custom functions saved in the dictionary (e.g. for custom_train or customML)
+    #or user may have entered an incorrect encrypt_key value
+    postprocess_dict = pickle.loads(postprocess_dict)
+    
+    return postprocess_dict, decode_valresult
+
   def postmunge(self, postprocess_dict, df_test,
                 testID_column = False, pandasoutput = True, 
                 printstatus = True, inplace = False,
                 dupl_rows = False, TrainLabelFreqLevel = False, 
                 featureeval = False, traindata = False,
                 driftreport = False, inversion = False,
-                returnedsets = True, shuffletrain = False):
+                returnedsets = True, shuffletrain = False,
+                encrypt_key = False):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
@@ -44272,6 +44515,17 @@ class AutoMunge:
     # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #which are both reset after use
 
+    #if postprocess_dict contained encrypted entries then we decode them here
+    decode_valresult = False
+    if 'encryption' in postprocess_dict and postprocess_dict['encryption'] is True:
+
+      postprocess_dict = deepcopy(postprocess_dict)
+
+      postprocess_dict, decode_valresult = \
+      self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
+
+      #decode_valresult saved after initializing pm_miscparameters_results below
+
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
     if traindata is True:
@@ -44286,6 +44540,12 @@ class AutoMunge:
     if postprocess_dict['privacy_encode'] == 'private' and inversion is not False:
       print("privacy_encode == 'private' was performed in automunge(.), inversion not supported")
       return
+    if postprocess_dict['privacy_encode'] is not False and featureeval is not False:
+      print("privacy_encode was performed in automunge(.), featureeval reset to False to align")
+      featureeval = False
+    if postprocess_dict['privacy_encode'] is not False and driftreport is not False:
+      print("privacy_encode was performed in automunge(.), driftreport reset to False to align")
+      driftreport = False
 
     #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
     postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
@@ -44308,11 +44568,13 @@ class AutoMunge:
     pm_miscparameters_results = \
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
-                                returnedsets, shuffletrain, inversion, traindata, testID_column)
+                                returnedsets, shuffletrain, inversion, traindata, testID_column, encrypt_key)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
     pm_miscparameters_results.update({'check_df_test_type_result' : check_df_test_type_result})
+
+    pm_miscparameters_results.update({'decode_valresult' : decode_valresult})
     
     #printout display progress
     if printstatus is True:
@@ -45045,8 +45307,8 @@ class AutoMunge:
       if labelscolumn is not False:
         df_testlabels = df_testlabels.reset_index(drop=True)
 
-      #this resets the Automunge_index column returned in ID sets
-      df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
+      # #this resets the Automunge_index column returned in ID sets
+      # df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
@@ -45127,6 +45389,14 @@ class AutoMunge:
     #consolide validation results and strike temporary log from postprocess_dict
     postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_pm_miscparameters_results'])
     del postprocess_dict['temp_pm_miscparameters_results']
+
+    #a few anonymizations for privacy_encode in returned postreports_dict
+    if postprocess_dict['privacy_encode'] is not False:
+      del postreports_dict['featureimportance']
+      del postreports_dict['FS_sorted']
+      del postreports_dict['driftreport']
+      del postreports_dict['rowcount_basis']
+      del postreports_dict['sourcecolumn_drift']
 
     #printout display progress
     if printstatus is True:
