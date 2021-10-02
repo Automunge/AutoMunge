@@ -177,7 +177,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False,
-             privacy_encode = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -213,9 +213,10 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True,
              dupl_rows = False, TrainLabelFreqLevel = False,
-	     featureeval = False, traindata = False,
+             featureeval = False, traindata = False,
              driftreport = False, inversion = False,
-             returnedsets = True, shuffletrain = False)
+             returnedsets = True, shuffletrain = False,
+             encrypt_key = False)
 ```
 
 The functions depend on pandas dataframe formatted train and test data
@@ -406,7 +407,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False,
-             privacy_encode = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
 Or for the postmunge function:
@@ -444,7 +445,8 @@ am.postmunge(postprocess_dict, df_test,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
-             returnedsets = True, shuffletrain = False)
+             returnedsets = True, shuffletrain = False,
+             encrypt_key = False
 ```
 
 Note that the only required argument to the automunge function is the
@@ -598,7 +600,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False,
-             privacy_encode = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
@@ -1927,10 +1929,13 @@ When activated the postprocess_dict returned columntype_report captures the priv
 Note that when activated consistent convention is applied in postmunge and inversion is supported. 
 When privacy_encode activated postmunge(.) printstatus is only available as False or 'silent'.
 The 'private' option also activates shuffling of rows in train and test data for both automunge(.) and postmunge(.)
-and resets the dataframe indexes and the Automunge_index column returned in the ID set.
-We recommend reserving the 'private' option for unsupervised learning applications since it otherwise
-may interfere with row identification for inference. Note that if you want to dupplicate the resulting 
-anonymized form in a seperate automunge(.) call with corresponding data you can do so by matching the automunge(.) randomseed.
+and resets the dataframe indexes (although retains the Automunge_index column returned in the ID set).
+Thus prepared data in the 'private' option can be kept row-wise anonymous by not sharing the returned ID set.
+We recomend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
+privacy_encode is activated postmunge options for featureeval and driftreport are not available to avoid data leakage channel.
+
+* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32)
+defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a diciotnary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted'] - where FS_sorted is ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or basecd on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. Thus privacy_encode may now be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. 
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
@@ -1973,7 +1978,8 @@ am.postmunge(postprocess_dict, df_test,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
-             returnedsets = True, shuffletrain = False)
+             returnedsets = True, shuffletrain = False,
+             encrypt_key = False
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -2100,9 +2106,10 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-	     featureeval = False, traindata = False,
+             featureeval = False, traindata = False,
              driftreport = False, inversion = False,
-             returnedsets = True, shuffletrain = False)
+             returnedsets = True, shuffletrain = False,
+             encrypt_key = False
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -2232,7 +2239,7 @@ Here is an example of a postmunge call with inversion.
 ```
 df_invert, recovered_list, inversion_info_dict = \
 am.postmunge(postprocess_dict, test_labels, inversion='labels',
-             pandasoutput=True, printstatus=True)
+             pandasoutput=True, printstatus=True, encrypt_key = False)
 ```
 
 Here is an example of a process_dict entry with the optional inversion entries included, such 
@@ -2279,8 +2286,9 @@ postprocess_dict['finalcolumns_trainID']
 ```
 
 * shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
-the returned sets will be (consistently) shuffled. This value defaults to False. 
+the returned sets will be (consistently) shuffled. This value defaults to False.
 
+* encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32.
 
 ## Default Transformations
 
