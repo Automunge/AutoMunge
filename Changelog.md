@@ -4533,3 +4533,29 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - note that if you want to match the privacy_encode form in a seperate automunge(.) call with correpsonding data, you can do so by matching the automunge(.) randomseed
 - and if you want to retain a row identifier without sharing with external party you can populate your own ID set
 - we thought about some additional measures, like having postmunge require a minimum number of unique rows in order to prepare additional data, but for now since running postmunge means user has access to postprocess_dict there is no added benefit
+
+7.16
+- new encrypt_key parameter now available for automunge(.) and postmunge(.)
+- automunge(.) accepts encrypt_key as one of {False, 16, 24, 32, bytes}
+- where bytes means a bytes type object with length of 16, 24, or 32
+- encrypt_key defaults to False, other scenarios all result in an encryption of the returned postprocess_dict
+- 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit
+- when encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts
+- this returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter
+- in other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict
+- when encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts
+- when data is encrypted, the postprocess_dict returned from automunge(.) is still a diciotnary that can be downloaded and uploaded with pickle
+- and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted']
+- where FS_sorted is ommitted when privacy_encode is not False
+- and all public entries are omitted when privacy_encode = 'private'
+- the encryption key, as either returned in printouts or basecd on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data
+- thus privacy_encode may now be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key
+- small deviation for privacy_encode == 'private' scenario
+- we are keeping convention that train and test data have their rows shuffled and dataframe index reset
+- decided that would be better to have some channel to recover index position in private scneario if needed
+- so in the private scenario, the Automunge_index column returned in the ID sets is retained
+- since ID sets are returned as a seperate datframe, if user wishes data to remain fully row wise anonymous they can share just the train/test/labels data but keep the ID sets private
+- found a oversight in the privacy encoded versions of columntype_report, had thought columntype_report contained both training features and labels, forgot that labels are broken out into seperate label_columntype_report, now both are anonymized for privacy_encode
+- found an oversight for privacy_encode associated with information channels in postmunge
+- postmunge returned postreports_dict now omits entries ['featureimportance', 'FS_sorted', 'driftreport',  'rowcount_basis', 'sourcecolumn_drift']
+- postmunge no longer supports non default entries for following parameters when privacy_encode was activated in postmunge: [featureeval, driftreport]
