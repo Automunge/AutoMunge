@@ -7695,7 +7695,7 @@ class AutoMunge:
     #this one is for columns replaced as part of inplace operation
     if len(newcolumns) > 0:
       anewcolumn = list(newcolumns)[0]
-      temp_columnslist = postprocess_dict['column_dict'][anewcolumn]['columnslist'].copy()
+      temp_columnslist = deepcopy(postprocess_dict['column_dict'][anewcolumn]['columnslist'])
       for newcolumn in temp_columnslist:
         if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] == 'inplace':
           for newcolumn2 in temp_columnslist:
@@ -21511,7 +21511,7 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal' or 'laplace'
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
       
     if 'testnoise' in params:
@@ -21530,10 +21530,15 @@ class AutoMunge:
     self.__df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #first we'll derive our sampled noise for injection
-    if noisedistribution == 'normal':
+    if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
       normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-    elif noisedistribution == 'laplace':
+    elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
       normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+
+    if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      normal_samples = abs(normal_samples)
+    if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      normal_samples = (-1) * abs(normal_samples)
       
     binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
     
@@ -21548,10 +21553,15 @@ class AutoMunge:
     
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      if noisedistribution == 'normal':
+      if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      elif noisedistribution == 'laplace':
+      elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+
+      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        normal_samples = abs(normal_samples)
+      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        normal_samples = (-1) * abs(normal_samples)
 
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
@@ -21632,7 +21642,7 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal' or 'laplace'
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
       
     if 'testnoise' in params:
@@ -21653,12 +21663,18 @@ class AutoMunge:
     
     def _injectmmnoise(df, DPmm_column, DPmm_column_temp1):
       #support function for noise injection
-      
+
       #first we'll derive our sampled noise for injection
-      if noisedistribution == 'normal':
+      if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
-      elif noisedistribution == 'laplace':
+      elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        normal_samples = abs(normal_samples)
+      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        normal_samples = (-1) * abs(normal_samples)
+
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
       df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
@@ -21824,7 +21840,7 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal' or 'laplace'
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
       
     if 'testnoise' in params:
@@ -21980,12 +21996,17 @@ class AutoMunge:
     
     def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2):
       #support function for DPrt noise injection
-    
+
       #first we'll derive our sampled noise for injection
-      if noisedistribution == 'normal':
+      if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
-      elif noisedistribution == 'laplace':
+      elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        normal_samples = abs(normal_samples)
+      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        normal_samples = (-1) * abs(normal_samples)
 
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
@@ -24373,16 +24394,16 @@ class AutoMunge:
           df_testinfill = np.array([0])
 
       #convert infill values to dataframe
-      df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
-      df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+      df_traininfill = pd.DataFrame(df_traininfill, columns = categorylist)
+      df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
 
       # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
       # #as concurrent_nmbr is intended as a resource for more than just tlbn
       # if MLinfilltype == 'concurrent_nmbr':
         # df_traininfill = \
-        # self.__autowhere(df_traininfill, 'infill', df_traininfill['infill'] < 0, -1, specified='replacement')
+        # self.__autowhere(df_traininfill, column, df_traininfill[column] < 0, -1, specified='replacement')
         # df_testinfill = \
-        # self.__autowhere(df_testinfill, 'infill', df_testinfill['infill'] < 0, -1, specified='replacement')
+        # self.__autowhere(df_testinfill, column, df_testinfill[column] < 0, -1, specified='replacement')
 
       if MLinfilltype == 'integer':
 
@@ -24426,8 +24447,8 @@ class AutoMunge:
           df_testinfill = np.array([0])
 
       #convert infill values to dataframe
-      df_traininfill = pd.DataFrame(df_traininfill, columns = ['infill'])
-      df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+      df_traininfill = pd.DataFrame(df_traininfill, columns = categorylist)
+      df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
       
     #if target is multi column categoric (onehot encoded) / (binary encoded handled seperately)
     if MLinfilltype in {'multirt'}:
@@ -24534,8 +24555,8 @@ class AutoMunge:
       #an extension of this method would be to implement a comparable infill \
       #method for the time category, based on the columns output from the \
       #preprocessing
-      df_traininfill = pd.DataFrame({'infill' : [0]}) 
-      df_testinfill = pd.DataFrame({'infill' : [0]}) 
+      df_traininfill = pd.DataFrame({column : [0]}) 
+      df_testinfill = pd.DataFrame({column : [0]}) 
 
       model = False
     
@@ -24680,7 +24701,7 @@ class AutoMunge:
     return df_train_filltrain, df_train_filllabel, df_train_fillfeatures, df_test_fillfeatures
 
   def __insertinfill(self, df, column, infill, category, NArows, postprocess_dict, \
-                   columnslist = [], categorylist = [], singlecolumncase = False):
+                     columnslist = [], categorylist = [], singlecolumncase = False):
     '''
     #uses the boolean indicators for presence of infill in NArows to apply infill
     #passed in infill dataframe to df[column]
@@ -24789,11 +24810,11 @@ class AutoMunge:
       self.__column_convert_support(MLinfill_targets, postprocess_dict, convert_to='input')
       
       #as received this includes label sets
-      origcolumns = list(postprocess_dict['origcolumn'])
+      origcolumns = deepcopy(list(postprocess_dict['origcolumn']))
     
       #remove the label entry
       labelcolumn = False
-      for entry in origcolumns:
+      for entry in list(postprocess_dict['origcolumn']):
         if postprocess_dict['origcolumn'][entry]['type'] == 'label':
           origcolumns.remove(entry)
 
@@ -25127,7 +25148,7 @@ class AutoMunge:
 
         #apply _stochastic_impute to train data imputations based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
         df_traininfill, postprocess_dict = \
-        self.__stochastic_impute(ML_cmnd, df_traininfill, column, postprocess_dict, df_train=df_train)
+        self.__stochastic_impute(ML_cmnd, df_traininfill, column, postprocess_dict, df_train=df_train_filllabel)
 
         #apply the function insertinfill(.) to insert missing value predictions
         df_train = self.__insertinfill(df_train, column, df_traininfill, category, \
@@ -25135,10 +25156,7 @@ class AutoMunge:
                               postprocess_dict, columnslist = columnslist, \
                               categorylist = categorylist)
 
-        #if we don't train the train set model on any features, that we won't be able 
-        #to apply the model to predict the test set infill. 
-
-        if any(x == True for x in masterNArows_train[origcolumn+'_NArows']):
+        if masterNArows_test[origcolumn+'_NArows'].astype(bool).any():
 
           #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
           df_testinfill, postprocess_dict = \
@@ -25431,7 +25449,7 @@ class AutoMunge:
     ML_cmnd['stochastic_impute_numeric_mu'] = 0
     ML_cmnd['stochastic_impute_numeric_sigma'] = 0.03
     ML_cmnd['stochastic_impute_numeric_flip_prob'] = 0.06
-    ML_cmnd['stochastic_impute_numeric_noisedistribution'] = 'normal' (also accepts 'laplace')
+    ML_cmnd['stochastic_impute_numeric_noisedistribution'] = 'normal' (also accepts 'laplace', 'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace')
     
     Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
     
@@ -25525,13 +25543,17 @@ class AutoMunge:
 
       #the default will sample noise from a normal distribution, 
       #this will return both + and - values centered to mu and scaled to sigma
-      if noisedistribution == 'normal':
+      if noisedistribution in {'normal', 'absnormal', 'negabsnormal'}:
         normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
-      
       #or if user specified laplace to ML_cmnd['stochastic_impute_numeric_noisedistribution']
       #(laplace has a higher prevalence of outliers, remember seeing discussions somewhere that may be preferred for differential privacy for instance)
-      elif noisedistribution == 'laplace':
+      elif noisedistribution in {'laplace', 'abslaplace', 'negabslaplace'}:
         normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+      if noisedistribution in {'absnormal', 'abslaplace'}:
+        normal_samples = abs(normal_samples)
+      if noisedistribution in {'negabsnormal', 'negabslaplace'}:
+        normal_samples = (-1) * abs(normal_samples)
 
       #binomial samples are returned as 1 for rows of imputation set to be targets for injections, else 0
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
@@ -25987,6 +26009,8 @@ class AutoMunge:
     """
     
     columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+
+    df_train_filllabel = df_train_filllabel.copy()
     
     #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
     df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
@@ -26049,7 +26073,7 @@ class AutoMunge:
                                                   randomseed)
           except ValueError:
             pass
-            
+
     return model
 
   def _predict_customML_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
@@ -26173,6 +26197,8 @@ class AutoMunge:
     from autogluon import TabularPrediction as task
 
     try:
+
+      df_train_filllabel = df_train_filllabel.copy()
       
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
       df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
@@ -26299,6 +26325,8 @@ class AutoMunge:
     
     try:
     # if True is True:
+
+      df_train_filllabel = df_train_filllabel.copy()
 
       #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
       df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
@@ -26461,6 +26489,8 @@ class AutoMunge:
     from catboost import CatBoostClassifier
     
     try:
+
+      df_train_filllabel = df_train_filllabel.copy()
 
       #catboost takes specification of categoric columns
       columntypes = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
@@ -28038,8 +28068,16 @@ class AutoMunge:
     #- insert any missing keys needed for apply_am_infill
     #- return postprocess_assigninfill_dict
     """
+
+    #this just makes searching a little more efficient
+    infillcolumns_list = set(infillcolumns_list)
+    columns_train = set(columns_train)
     
-    #- received spec'd assigninfill (which may include both pre-suf and w/-suf)
+    #received spec'd assigninfill may include both pre-suffix and w/-suffix
+
+    #instead of converting all specs to returned form, we'll segregate returned suffix columns from returned input columns
+    #and then convert the input columns to the returned column convention
+    #and for cases of redundant specification, between specified input and specified returned convention, the returned one takes precedent
     
     #- aggregate just spec'd w/-suf into mirror spec assigninfill_withsuffix
     assigninfill_withsuffix = {}
@@ -28096,7 +28134,8 @@ class AutoMunge:
     for key in assigninfill_withsuffix:
       all_specd_withsuffix += assigninfill_withsuffix[key]
     for key in assigninfill_sourcecolumn_converted:
-      for entry in assigninfill_sourcecolumn_converted[key]:
+      assigninfill_sourcecolumn_converted_key_copy = deepcopy(assigninfill_sourcecolumn_converted[key])
+      for entry in assigninfill_sourcecolumn_converted_key_copy:
         if entry in all_specd_withsuffix:
           assigninfill_sourcecolumn_converted[key].remove(entry)
           
@@ -28490,7 +28529,7 @@ class AutoMunge:
                 df_traininfill_rowcount = df_traininfill.shape[0]
 
                 #consolidate multicolumn infill into a single column of strings with header column
-                #convention is df_traininfill will have header 'infill' in single column case otherwise headers consistent with target columns
+                #convention is df_traininfill will have headers consistent with target columns
                 #note that for concurrent_nmbr and concurrent_act MLinfilltype this will be a single column
                 #this is not further applied as infill, it's just used in this form to evaluate halting criteria
                 df_traininfill = \
@@ -28580,9 +28619,9 @@ class AutoMunge:
       #now rename the target column
       df_traininfill.rename(columns = {tempcolumn : column}, inplace = True)
       
-    elif 'infill' in df_traininfill:
+    # elif 'infill' in df_traininfill:
         
-      df_traininfill.rename(columns = {'infill' : column}, inplace = True)
+    #   df_traininfill.rename(columns = {'infill' : column}, inplace = True)
     
     return df_traininfill
 
@@ -28604,7 +28643,7 @@ class AutoMunge:
         
         ratio = sumofinequal / quantity
         
-        categoric_tuple = (sumofinequal, quantity, ratio)
+        categoric_tuple = (sumofinequal, quantity, ratio, column)
         
         halt_dict[iteration]['categoric_tuple_list'].append(categoric_tuple)
         
@@ -28618,7 +28657,7 @@ class AutoMunge:
         
         quantity = df_traininfill_rowcount
         
-        numeric_tuple = (maxabsdelta, meanabs, quantity)
+        numeric_tuple = (maxabsdelta, meanabs, quantity, column)
         
         halt_dict[iteration]['numeric_tuple_list'].append(numeric_tuple)
     
@@ -28976,7 +29015,7 @@ class AutoMunge:
     #naninfill is performed after ML infill to avoid interference
     for column in postprocess_assigninfill_dict['naninfill']:
       
-      if process_dict[postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
       not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
               
         #naninfill
@@ -29060,9 +29099,8 @@ class AutoMunge:
   def __negzeroinfillfunction(self, df, column, postprocess_dict, \
                              masterNArows):
 
-    #copy the datatype to ensure returned set is consistent
-    df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
-    
+    # #copy the datatype to ensure returned set is consistent
+    # df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
     #create infill dataframe of all neg zeros with number of rows corepsonding to the
     #number of 1's found in masterNArows
@@ -29085,6 +29123,13 @@ class AutoMunge:
                            pd.DataFrame(masterNArows[NArw_columnname]), \
                            postprocess_dict, columnslist = columnslist, \
                            categorylist = categorylist, singlecolumncase=True)
+
+    #for negzeroinfill we'll convert to float in case __insertinfill returns as pandas object dtype
+    #note that negzero requires float data type to represent
+    #note this may result in float sets not converted by floatprecision parameter when negzero infill applied to a categoric feature, 
+    #so recomend reserving negzeroinfill to continuous numeric features
+    df[column] = \
+    df[column].astype(float)
 
     #reset data type to ensure returned data is consistent with what was passed
     #(we won't do this for naninfill since nan may be different data type)
@@ -29199,7 +29244,7 @@ class AutoMunge:
     
     del tempdf
 
-    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = pd.DataFrame(np.zeros((NAcount, 1)), columns=[column])
     infill = infill.replace(0, median)
 
     category = postprocess_dict['column_dict'][column]['category']
@@ -29233,7 +29278,7 @@ class AutoMunge:
     
     median = median
 
-    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = pd.DataFrame(np.zeros((NAcount, 1)), columns=[column])
     infill = infill.replace(0, median)
 
     category = postprocess_dict['column_dict'][column]['category']
@@ -29278,7 +29323,7 @@ class AutoMunge:
     
     del tempdf
 
-    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = pd.DataFrame(np.zeros((NAcount, 1)), columns=[column])
     infill = infill.replace(0, mean)
 
     category = postprocess_dict['column_dict'][column]['category']
@@ -29312,7 +29357,7 @@ class AutoMunge:
     
     mean = mean
 
-    infill = pd.DataFrame(np.zeros((NAcount, 1)))
+    infill = pd.DataFrame(np.zeros((NAcount, 1)), columns=[column])
     infill = infill.replace(0, mean)
 
     category = postprocess_dict['column_dict'][column]['category']
@@ -32715,6 +32760,7 @@ class AutoMunge:
         #using the source column or the derived column serving as input to the transform
         #in case both are present the dervied column specifciation takes precedence
           
+        #derived column specification with suffix takes precendence over input column specification
         if column in assign_param[category]:
 
           #key are parameters
@@ -32722,7 +32768,7 @@ class AutoMunge:
 
             params.update({key : assign_param[category][column][key]})
 
-        #we won't use the source column entry if a derived column entry was specfied
+        #we won't use a specified source column entry if the derived column was already specfied
         elif column in postprocess_dict['column_dict'] \
         and postprocess_dict['column_dict'][column]['origcolumn'] in assign_param[category]:
 
@@ -34762,12 +34808,15 @@ class AutoMunge:
 
     #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
     #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
+
+    Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library 
+    which requires installation in order to run (we found there were installations available via conda install). 
     """
         
     #we'll populate public_dict to replace postprocess_dict
     public_dict = {'encryption' : True}
     
-    public_entries = ['column_map', 'columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict']
+    public_entries = ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict']
     #column_map reports origination of features
     #columntype_report report types and groupings of features
     #privacy_encode is value of privacy_encode as passed to automunge(.) for reference
@@ -34776,7 +34825,7 @@ class AutoMunge:
 
     if privacy_encode is False:
       #FS_sorted is results of feature importance evaluation if elected
-      public_entries = public_entries + ['FS_sorted']
+      public_entries = public_entries + ['column_map', 'FS_sorted']
     
     #public_dict doesn't populate these in privacy_encode == 'private' scenario
     if privacy_encode in {True, False}:
@@ -35990,6 +36039,7 @@ class AutoMunge:
 
     #This assembles the assignments of posttransform column headers for each infill type
     #(user is able to assign column headers in assigninfill without or without suffix appenders)
+    #as used here columns_train is input columns, list(df_train) includes suffix appenders
     postprocess_assigninfill_dict = \
     self.__assemblepostprocess_assigninfill(assigninfill, list(df_train), \
                                           columns_train, postprocess_dict, MLinfill)
@@ -36482,7 +36532,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.16'
+    automungeversion = '7.17'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36625,10 +36675,10 @@ class AutoMunge:
     if privacy_encode is not False:
       df_train = self.__df_shuffle(df_train, randomseed, axis=1)
       df_test = self.__df_shuffle(df_test, randomseed, axis=1)
+
+    if privacy_encode == 'private':
       df_labels = self.__df_shuffle(df_labels, randomseed, axis=1)
       df_testlabels = self.__df_shuffle(df_testlabels, randomseed, axis=1)
-      df_trainID = self.__df_shuffle(df_trainID, randomseed, axis=1)
-      df_testID = self.__df_shuffle(df_testID, randomseed, axis=1)
     
     finalcolumns_train = list(df_train)
     finalcolumns_labels = list(df_labels)
@@ -36658,43 +36708,13 @@ class AutoMunge:
       privacy_headers_labels_dict = {}
       inverse_privacy_headers_labels_dict = {}
     
-    #at a minimum ID sets will contain automunge index column
-    privacy_headers_trainID = list(range(len(finalcolumns_trainID)))
-    len_privacy_headers_trainID = len(privacy_headers_trainID)
-    privacy_headers_trainID = \
-    [x + len_privacy_headers_train + len_privacy_headers_labels for x in privacy_headers_trainID]
-    
-    privacy_headers_trainID_dict = dict(zip(finalcolumns_trainID, privacy_headers_trainID))
-    inverse_privacy_headers_trainID_dict = {value:key for key,value in privacy_headers_trainID_dict.items()}
-    
-    if finalcolumns_testID == finalcolumns_trainID:
-      
-      privacy_headers_testID = privacy_headers_trainID
-      privacy_headers_testID_dict = deepcopy(privacy_headers_trainID_dict)
-      inverse_privacy_headers_testID_dict = deepcopy(inverse_privacy_headers_trainID_dict)
-      
-    else:
-      
-      privacy_headers_testID = list(range(len(finalcolumns_testID)))
-      privacy_headers_testID = \
-      [x + len_privacy_headers_train + len_privacy_headers_labels + len_privacy_headers_trainID \
-       for x in privacy_headers_testID]
-      
-      privacy_headers_testID_dict = dict(zip(finalcolumns_testID, privacy_headers_testID))
-      inverse_privacy_headers_testID_dict = {value:key for key,value in privacy_headers_testID_dict.items()}
-    
-    del len_privacy_headers_train, len_privacy_headers_labels, len_privacy_headers_trainID
-    
     if privacy_encode is not False:
-      
       df_train = df_train.rename(columns = privacy_headers_train_dict)
       df_test = df_test.rename(columns = privacy_headers_train_dict)
       
+    if privacy_encode == 'private':
       df_labels = df_labels.rename(columns = privacy_headers_labels_dict)
       df_testlabels = df_testlabels.rename(columns = privacy_headers_labels_dict)
-      
-      df_trainID = df_trainID.rename(columns = privacy_headers_trainID_dict)
-      df_testID = df_testID.rename(columns = privacy_headers_testID_dict)
       
     #now record privacy encoding conventions in postprocess_dict
     postprocess_dict.update({'privacy_encode' : privacy_encode})
@@ -36704,12 +36724,6 @@ class AutoMunge:
     postprocess_dict.update({'privacy_headers_labels' : privacy_headers_labels})
     postprocess_dict.update({'privacy_headers_labels_dict' : privacy_headers_labels_dict})
     postprocess_dict.update({'inverse_privacy_headers_labels_dict' : inverse_privacy_headers_labels_dict})
-    postprocess_dict.update({'privacy_headers_trainID' : privacy_headers_trainID})
-    postprocess_dict.update({'privacy_headers_trainID_dict' : privacy_headers_trainID_dict})
-    postprocess_dict.update({'inverse_privacy_headers_trainID_dict' : inverse_privacy_headers_trainID_dict})
-    postprocess_dict.update({'privacy_headers_testID' : privacy_headers_testID})
-    postprocess_dict.update({'privacy_headers_testID_dict' : privacy_headers_testID_dict})
-    postprocess_dict.update({'inverse_privacy_headers_testID_dict' : inverse_privacy_headers_testID_dict})
 
     #now generate a privacy_encoded verison of columntype_report
     private_columntype_report = deepcopy(postprocess_dict['columntype_report'])
@@ -36747,14 +36761,17 @@ class AutoMunge:
     #and erase the column_map
     if privacy_encode is not False:
       postprocess_dict['columntype_report'] = private_columntype_report
-      postprocess_dict['label_columntype_report'] = private_label_columntype_report
       postprocess_dict['column_map'] = {}
+    if privacy_encode == 'private':
+      postprocess_dict['label_columntype_report'] = private_label_columntype_report
 
     #for the privacy_encode == 'private' scenario, row shuffling will have already been performed at shuffletrain application
     #now we'll reset index and reset Automunge_index in the ID set
     if privacy_encode == 'private':
       
       #this resets the dataframe index
+      #note we are resetting the ID index as well so that it will match the feature and label indexes, 
+      #with the ID set Automugne_index column available for original index information
       df_train = df_train.reset_index(drop=True)
       df_trainID = df_trainID.reset_index(drop=True)
       df_labels = df_labels.reset_index(drop=True)
@@ -42780,12 +42797,17 @@ class AutoMunge:
       traindata = postprocess_dict['traindata']
       
       if traindata is True or testnoise is True:
-        
+
         #first we'll derive our sampled noise for injection
-        if noisedistribution == 'normal':
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-        elif noisedistribution == 'laplace':
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+
+        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+          normal_samples = abs(normal_samples)
+        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+          normal_samples = (-1) * abs(normal_samples)
           
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
         
@@ -42859,11 +42881,17 @@ class AutoMunge:
       traindata = postprocess_dict['traindata']
       
       if traindata is True or testnoise is True:
-        
-        if noisedistribution == 'normal':
+
+        #first we'll derive our sampled noise for injection
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-        elif noisedistribution == 'laplace':
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+
+        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+          normal_samples = abs(normal_samples)
+        if noisedistribution in {'abs_normal', 'negabs_laplace'}:
+          normal_samples = (-1) * abs(normal_samples)
         
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
@@ -43049,14 +43077,18 @@ class AutoMunge:
       
       #if this is train data we'll inject noise
       if traindata is True or testnoise is True:
-        
+
         #first we'll derive our sampled noise for injection
-        
-        if noisedistribution == 'normal':
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-        elif noisedistribution == 'laplace':
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-        
+
+        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+          normal_samples = abs(normal_samples)
+        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+          normal_samples = (-1) * abs(normal_samples)
+
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
         mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
@@ -43509,13 +43541,13 @@ class AutoMunge:
           df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
 
         # #this might be useful for tlbn, leaving out or now since don't want to clutter mlinfilltypes
         # #as concurrent_nmbr is intended as a resource for more than just tlbn
         # if MLinfilltype == 'concurrent_nmbr':
         #   df_testinfill = \
-        #   self.__autowhere(df_testinfill, 'infill', df_testinfill['infill'] < 0, -1, specified='replacement')
+        #   self.__autowhere(df_testinfill, column, df_testinfill[column] < 0, -1, specified='replacement')
 
         if MLinfilltype == 'integer':
           df_testinfill = df_testinfill.round()
@@ -43535,7 +43567,7 @@ class AutoMunge:
           df_testinfill = np.array([0])
 
         #convert infill values to dataframe
-        df_testinfill = pd.DataFrame(df_testinfill, columns = ['infill'])
+        df_testinfill = pd.DataFrame(df_testinfill, columns = categorylist)
         
       #if target category is multi-column categoric (one hot encoding) / (binary encoded sets handled sepreately)
       if MLinfilltype in {'multirt'}:
@@ -43578,7 +43610,7 @@ class AutoMunge:
       if MLinfilltype in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
 
         #create empty sets
-        df_testinfill = pd.DataFrame({'infill' : [0]}) 
+        df_testinfill = pd.DataFrame({column : [0]}) 
 
     #else if we didn't have a trained model let's create some plug values
     else:
@@ -43590,7 +43622,6 @@ class AutoMunge:
 
   def __postMLinfillfunction(self, df_test, column, postprocess_dict, \
                             masterNArows_test, printstatus):
-
     '''
     #new function ML infill, generalizes the MLinfill application
     #def __MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -43645,7 +43676,8 @@ class AutoMunge:
                             printstatus, categorylist = categorylist)
 
       #if model is not False:
-      if postprocess_dict['column_dict'][column]['infillmodel'] is not False:
+      if postprocess_dict['column_dict'][column]['infillmodel'] is not False \
+      and masterNArows_test[origcolumn + '_NArows'].astype(bool).any():
 
         #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
         df_testinfill, postprocess_dict = \
@@ -44445,6 +44477,9 @@ class AutoMunge:
     
     #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
     #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
+
+    Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library 
+    which requires installation in order to run (we found there were installations available via conda install). 
     """
 
     decode_valresult = False
@@ -44517,6 +44552,7 @@ class AutoMunge:
 
     #if postprocess_dict contained encrypted entries then we decode them here
     decode_valresult = False
+
     if 'encryption' in postprocess_dict and postprocess_dict['encryption'] is True:
 
       postprocess_dict = deepcopy(postprocess_dict)
@@ -44537,9 +44573,6 @@ class AutoMunge:
     if postprocess_dict['privacy_encode'] is not False and printstatus is True:
       print("privacy_encode was performed in automunge(.), printstatus reset from True to False to align")
       printstatus = False
-    if postprocess_dict['privacy_encode'] == 'private' and inversion is not False:
-      print("privacy_encode == 'private' was performed in automunge(.), inversion not supported")
-      return
     if postprocess_dict['privacy_encode'] is not False and featureeval is not False:
       print("privacy_encode was performed in automunge(.), featureeval reset to False to align")
       featureeval = False
@@ -45292,12 +45325,10 @@ class AutoMunge:
       df_test = self.__df_shuffle(df_test, postprocess_dict['randomseed'], axis=1)
       df_test = df_test.rename(columns = postprocess_dict['privacy_headers_train_dict'])
 
+    if postprocess_dict['privacy_encode'] == 'private':
       if labelscolumn is not False:
         df_testlabels = self.__df_shuffle(df_testlabels, postprocess_dict['randomseed'], axis=1)
         df_testlabels = df_testlabels.rename(columns = postprocess_dict['privacy_headers_labels_dict'])
-
-      df_testID = self.__df_shuffle(df_testID, postprocess_dict['randomseed'], axis=1)
-      df_testID = df_testID.rename(columns = postprocess_dict['privacy_headers_testID_dict'])
 
     if postprocess_dict['privacy_encode'] == 'private':
       
