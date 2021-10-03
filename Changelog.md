@@ -4559,3 +4559,28 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - found an oversight for privacy_encode associated with information channels in postmunge
 - postmunge returned postreports_dict now omits entries ['featureimportance', 'FS_sorted', 'driftreport',  'rowcount_basis', 'sourcecolumn_drift']
 - postmunge no longer supports non default entries for following parameters when privacy_encode was activated in postmunge: [featureeval, driftreport]
+
+7.17
+- quality control audit / walkthrough of: ML infill, stochastic impute, halting criteria, leakage tolerance, parameter assignment precedences, infill assignments
+- found a process flaw for noise injections to ML infill imputations for categoric features, resolved by replacing a passed dataframe df_train with df_train_filllabel
+- and also some consolidation to a single convention for infill and label headers returned from predictinfill
+- so basically the new convention is derived infill, in all scenarios and all infill types, now is passed to insertinfill with a consistent column header(s) to the target feature
+- added a copy operation to df_train_filllabel received by a few of the autoML wrappers to ensure column header retention outside of function
+- updated column header convention for infill returned from predictinfill and predictpostinfill, resulting in now headers of returned infill match headers of labels which are matched to the categorylist (or adjusted categorylist for concurrent)
+- this resolves a newly identified issue with recently revised insertinfill being applied to inferred onehot categoric imputations
+- updated derived infill header for meaninfill and medianinfill
+- fixed a variable address bug for naninfill in postmunge
+- found a few cases of running for loops in lists that were editing, replaced with a deep copy, better python practice
+- (deepcopy and .copy() for lists are a little different, is kind of grey area when list is a list derived from dictionary keys, went ahead with a deepcopy as a precautionary measure)
+- new noise distribution options supported for DP family of transforms targeting numeric sets, including DPnb, DPmm, DPrt, DLnb, DLmm, DLrt, available by passing parameter noisedistribution as one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
+- this may be suitable for some applications
+- comparable noise distribution options also added for stochastic_impute, available by specification to ML_cmnd['stochastic_impute_numeric_noisedistribution']
+- lifted restriction that inversion not supported with privacy_encode='private', now that we have encryption available user has avenue to restrict inversion as needed
+- updated the convention for privacy_encode, now returned ID sets do not receive anonymization, only row shuffling and index reset is applied to match other sets with privacy scenario
+- removing anonymization for ID sets which makes sense for a few reasons. First because inversion is not available for ID sets. Second is that it allows a channel for recovering row information that wouldn't otherwise have ability to recover even with inversion, with information in a seperate set from the returned features and labels. So if row anonymization is desired user can withhold the ID sets. It also makes sense since ID columns specified for automunge may be different than ID columns specified for postmunge. I like this convention.
+- update to convention for privacy_encode, now label anonymization is only performed for the privacy_encode='private' scenario
+- basically distinction between privacy_encode=True and 'private' is with respect to private has row shuffling, index reset, and label anonymization, and when encryption is performed, the True scenario returns a public resource for label inversion while the private scenario only allows inversion with the encryption key
+- gradually honing in on a cohesive strategy for privacy_encode
+- a correction to automunge ML infill targeting test data to have infil be conditional on test NArw instead of train NArw (this was a relic from earlier iterations where we didn't train a ML infill model when train set didn't have missing data, our current convention is when ML infill activated we train an imputation model for all features with supported MLinfilltypes
+- a tweak to postmunge ML infill stochastic impute flow to better align with test data in automunge
+- updated the writeup for encryption options rolled out in last update for clarity that it is built on top of the pycrypto library
