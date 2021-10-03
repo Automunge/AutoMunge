@@ -1085,7 +1085,7 @@ min/max scaled representation of the imputations. Parameters can be configured b
 ML_cmnd entries as floats to ML_cmnd['stochastic_impute_numeric_mu'], 
 ML_cmnd['stochastic_impute_numeric_sigma'], 
 ML_cmnd['stochastic_impute_numeric_flip_prob'] or as a string to 
-ML_cmnd['stochastic_impute_numeric_noisedistribution'] as one of {'normal', 'laplace'}.
+ML_cmnd['stochastic_impute_numeric_noisedistribution'] as one of {'normal', 'laplace', 'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}.
 
 Categoric noise injections sample from a uniform random draw from the set of unique
 activation sets in the training data (as may include one or more columns for 
@@ -1922,20 +1922,18 @@ respectively.) Note that function currently uses python collections library and 
 * privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
 column headers of received data are anonymized. This parameter when activated as True shuffles the order of columns and 
-replaces headers and suffixes with integers, including distinct sets of integers between train, labels,
-and ID sets. Note that conversion information is available in returned postprocess_dict under
-privacy reports (in other words, privacy can be circumvented if user has access to the postprocess_dict). 
+replaces headers and suffixes with integers. ID sets are not anonymized. Label sets are only anonymized in the 'private' scenario. Note that conversion information is available in returned postprocess_dict under
+privacy reports (in other words, privacy can be circumvented if user has access to an unencrypted postprocess_dict). 
 When activated the postprocess_dict returned columntype_report captures the privacy encodings and the column_map is erased. 
 Note that when activated consistent convention is applied in postmunge and inversion is supported. 
-When privacy_encode activated postmunge(.) printstatus is only available as False or 'silent'.
+When privacy_encode is activated postmunge(.) printstatus is only available as False or 'silent'.
 The 'private' option also activates shuffling of rows in train and test data for both automunge(.) and postmunge(.)
 and resets the dataframe indexes (although retains the Automunge_index column returned in the ID set).
 Thus prepared data in the 'private' option can be kept row-wise anonymous by not sharing the returned ID set.
 We recomend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
 privacy_encode is activated postmunge options for featureeval and driftreport are not available to avoid data leakage channel.
 
-* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32)
-defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a diciotnary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted'] - where FS_sorted is ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or basecd on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. Thus privacy_encode may now be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. 
+* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or basecd on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. Thus privacy_encode may now be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
@@ -2288,7 +2286,7 @@ postprocess_dict['finalcolumns_trainID']
 * shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False.
 
-* encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32.
+* encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
 
 ## Default Transformations
 
@@ -3608,7 +3606,7 @@ on flip_prob parameter.
   - default NArowtype: numeric
   - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.06
@@ -3626,7 +3624,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
   - default NArowtype: numeric
   - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.03
@@ -3645,7 +3643,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - assignparam parameters accepted: 
     - parameters comparable to retn divisor / offset / multiplier / 
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defaults to 0.03
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
@@ -3655,7 +3653,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
-* DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but applies laplace distributed noise instead of gaussian
+* DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but defaults to laplace distributed noise instead of gaussian (normal)
 with same parameters accepted (where mu is center of noise, sigma is scale, and flip-prob is ratio)
 and with same default parameter values
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
