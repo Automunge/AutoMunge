@@ -216,7 +216,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
-             encrypt_key = False)
+             randomseed = False, encrypt_key = False)
 ```
 
 The functions depend on pandas dataframe formatted train and test data
@@ -446,7 +446,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
-             encrypt_key = False
+             randomseed = False, encrypt_key = False
 ```
 
 Note that the only required argument to the automunge function is the
@@ -824,9 +824,11 @@ categoric features to a categoric tolerance value. Early stopping is applied as 
 the tolerances are met for both numeric and categoric features. If early stopping criteria 
 is not reached the specified infilliterate will serve as the maximum number of iterations.
 
-* randomseed: a positive integer used as a seed for randomness throughout 
-such as for repeatable data set shuffling, ML infill, and feature importance algorithms. 
-This defaults to False indicating a random random seed will be applied (sampled between 0:2^32).
+* randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, 
+randomseed is based on a uniform randomly sampled integer within that range.
+Can be manually specified such as for repeatable data set shuffling, feature importance, and other algorithms.
+Although ML infill by default samples a new random seed with each model training, to apply this random seed
+to all model training operations can set a ML_cmnd entry as ML_cmnd['stochastic_training_seed']=False.
 
 * eval_ratio: a 0-1 float or integer for number of rows, defaults to 0.5, serves
 to reduce the overhead of the category evaluation functions under automation by only
@@ -1977,7 +1979,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
-             encrypt_key = False
+             randomseed = False, encrypt_key = False
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -2107,7 +2109,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
-             encrypt_key = False
+             randomseed = False, encrypt_key = False
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -2285,6 +2287,9 @@ postprocess_dict['finalcolumns_trainID']
 
 * shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False.
+
+* randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, randomseed is based on a uniform randomly sampled integer within that range.
+This value is used as the postmunge(.) seed of randomness for operations that don't required matched random seeding to automunge(.).
 
 * encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
 
