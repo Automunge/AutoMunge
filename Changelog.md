@@ -4595,3 +4595,12 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - found a snafu with feature selection originating from 7.13 autoMLer cleanup in returned set (because feature selection calls automunge without ML infill it resulted in a returned postprocess_dict without autoMLer entries, updated convention so that an autoMLer entry is recored aligned with the autoMLtype (defaulting to random forest when not specified) even for cases where no ML infill was performed.)
 - fixed a bug for postmunge feature selection when naninfill was performed in automunge (just turned off naninfill for the postmunge postmunge call)
 - added a few code comments here and there for clarity
+
+7.19
+- struck the entry for 'privacy_headers_labels' from labelsencoding_dict since it reveals information about how many features are in train set
+- fixed an edge case for public label inversion associated with excl suffix convention
+- updated printouts for randomseed parameter validation
+- new postmunge parameter randomseed, defaults to False, accepts integers within 0:2**32-1
+- postmunge randomseed is now used for postmunge seeds that don't need to match automunge
+- including row shuffling for privacy encode, which otherwise could have served as a channel for information recovery
+- we still have order of column shuffling maintained between automunge and postmunge, is needed for ML
