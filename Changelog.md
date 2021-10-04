@@ -4584,3 +4584,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - a correction to automunge ML infill targeting test data to have infil be conditional on test NArw instead of train NArw (this was a relic from earlier iterations where we didn't train a ML infill model when train set didn't have missing data, our current convention is when ML infill activated we train an imputation model for all features with supported MLinfilltypes
 - a tweak to postmunge ML infill stochastic impute flow to better align with test data in automunge
 - updated the writeup for encryption options rolled out in last update for clarity that it is built on top of the pycrypto library
+
+7.18
+- public labels inversion now supported for encrypted postprocess_dict without encryption key when privacy_encode != 'private'
+- (basically that just means the entries needed for label inversion are not encrypted)
+- this aligns with convention that labels are only anonymized for privacy_encode = 'private'
+- in the process sort of a reorg of labelsencoding_dict returned in postprocess_dict, previous keys for 'transforms' and 'consolidations' are now omitted with information stored elsewhere
+- reordered a few of the postmunge early operations to result in fewer postprocess_dict inspections prior to inversion and for clarity
+- struck an unused postmunge variable testID_column_orig
+- found a snafu with feature selection originating from 7.13 autoMLer cleanup in returned set (because feature selection calls automunge without ML infill it resulted in a returned postprocess_dict without autoMLer entries, updated convention so that an autoMLer entry is recored aligned with the autoMLtype (defaulting to random forest when not specified) even for cases where no ML infill was performed.)
+- fixed a bug for postmunge feature selection when naninfill was performed in automunge (just turned off naninfill for the postmunge postmunge call)
+- added a few code comments here and there for clarity
