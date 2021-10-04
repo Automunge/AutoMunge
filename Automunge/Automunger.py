@@ -22915,8 +22915,12 @@ class AutoMunge:
       
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
-    #we've introduced that randomseed is now accessible throughout in the postprocess_dict
-    random = postprocess_dict['randomseed']
+    #randomseed is accessible in the postprocess_dict
+    #where if this function is being applied in postmunge we'll give precedence to postmunge randomseed
+    if 'postmunge_randomseed' in postprocess_dict:
+      random = postprocess_dict['postmunge_randomseed']
+    else:
+      random = postprocess_dict['randomseed']
     
     #uses support function
     df = self.__df_shuffle_series(df, suffixcolumn, random)
@@ -30373,23 +30377,17 @@ class AutoMunge:
     
     #check randomseed
     randomseed_valresult = False
-    if not isinstance(randomseed, (int)):
+    if not isinstance(randomseed, (int)) or randomseed is True:
       randomseed_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for randomseed parameter.")
-        print("Acceptable values are integers >= 0 or False")
+        print("Acceptable values are integers within 0:2**32-1 or False")
         print()
-    elif randomseed < 0 :
+    elif randomseed < 0 or randomseed > 4294967295:
       randomseed_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for randomseed parameter.")
-        print("Acceptable values are integers >= 0 or False")
-        print()
-    elif randomseed is True :
-      randomseed_valresult = True
-      if printstatus != 'silent':
-        print("Error: invalid entry passed for randomseed parameter.")
-        print("Acceptable values are integers >= 0 or False")
+        print("Acceptable values are integers within 0:2**32-1 or False")
         print()
       
     miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
@@ -30654,8 +30652,9 @@ class AutoMunge:
     return miscparameters_results
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
-                              dupl_rows, featureeval, driftreport, inplace, \
-                              returnedsets, shuffletrain, inversion, traindata, testID_column, encrypt_key):
+                                dupl_rows, featureeval, driftreport, inplace, \
+                                returnedsets, shuffletrain, inversion, traindata, \
+                                testID_column, randomseed, encrypt_key):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -30818,6 +30817,23 @@ class AutoMunge:
         print("testID_column allowable values are boolean False, string, or list.")
 
     pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
+
+    #check randomseed
+    randomseed_valresult = False
+    if not isinstance(randomseed, (int)) or randomseed is True:
+      randomseed_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers within 0:2**32-1 or False")
+        print()
+    elif randomseed < 0 or randomseed > 4294967295:
+      randomseed_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers within 0:2**32-1 or False")
+        print()
+      
+    pm_miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
 
     #check encrypt_key
     encrypt_key_valresult = False
@@ -32169,8 +32185,8 @@ class AutoMunge:
     labelsencoding_dict['origcolumn'] = {}
     labelsencoding_dict['excl_suffix'] = postprocess_dict['excl_suffix']
     labelsencoding_dict['excl_suffix_conversion_dict'] = {}
+    labelsencoding_dict['excl_suffix_inversion_dict'] = {}
     labelsencoding_dict['privacy_encode'] = postprocess_dict['privacy_encode']
-    labelsencoding_dict['privacy_headers_labels'] = postprocess_dict['privacy_headers_labels']
     labelsencoding_dict['finalcolumns_train'] = []
     labelsencoding_dict['finalcolumns_labels'] = postprocess_dict['finalcolumns_labels']
     labelsencoding_dict['labels_column'] = postprocess_dict['labels_column']
@@ -32185,6 +32201,7 @@ class AutoMunge:
 
           if labelsencoding_dict['column_dict'][derivedcolumn]['category'] == 'excl':
             labelsencoding_dict['excl_suffix_conversion_dict'].update({labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn'] : derivedcolumn})
+            labelsencoding_dict['excl_suffix_inversion_dict'].update({derivedcolumn : labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn']})
 
           if rootcategory in labelsencoding_dict['inverse_categorytree']:
             labelsencoding_dict['inverse_categorytree'][rootcategory].update({derivedcolumn : postprocess_dict['inverse_categorytree'][rootcategory][derivedcolumn]})
@@ -33909,7 +33926,15 @@ class AutoMunge:
     #including stochastic and range injections
     #as documented further in assignnan_inject function
     if 'injections' in assignnan:
-      df = self.__assignnan_inject(df, column, assignnan, postprocess_dict['randomseed'], postprocess_dict['printstatus'])
+
+      #randomseed is accessible in the postprocess_dict
+      #where if this function is being applied in postmunge we'll give precedence to postmunge randomseed
+      if 'postmunge_randomseed' in postprocess_dict:
+        random = postprocess_dict['postmunge_randomseed']
+      else:
+        random = postprocess_dict['randomseed']
+
+      df = self.__assignnan_inject(df, column, assignnan, random, postprocess_dict['printstatus'])
     
     return df
 
@@ -36585,7 +36610,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.18'
+    automungeversion = '7.19'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36638,7 +36663,6 @@ class AutoMunge:
                              'returned_Binary_sets' : final_returned_Binary_sets,
                              'labelBinary' : labelBinary,
                              'labelBinary_orig' : labelBinary_orig,
-                            #  'labels_Binary_dict' : labels_Binary_dict, populated at derivation
                              'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
                              'final_returned_labelBinary_sets' : final_returned_labelBinary_sets,
                              'PCA_applied' : PCA_applied,
@@ -36655,9 +36679,7 @@ class AutoMunge:
                              'inverse_assigncat' : inverse_assigncat,
                              'final_assigncat' : final_assigncat,
                              'assigninfill' : assigninfill,
-                            #  'transformdict' : transformdict, any inspected entries included in mirror_dict
                              'transform_dict' : mirror_dict['transform_dict'],
-                            #  'processdict' : processdict, any inspected entries included in mirror_dict
                              'process_dict' : mirror_dict['process_dict'],
                              'postprocess_assigninfill_dict' : postprocess_assigninfill_dict,
                              'assignparam' : assignparam,
@@ -43895,7 +43917,7 @@ class AutoMunge:
       FSpostprocess_dict['ML_cmnd']['PCA_type'] = 'off'
       FSpostprocess_dict['assigninfill'] = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}
-      randomseed = FSpostprocess_dict['randomseed']
+      randomseed = FSpostprocess_dict['postmunge_randomseed']
       process_dict = FSpostprocess_dict['process_dict']
       ML_cmnd = FSpostprocess_dict['ML_cmnd']
       FSpostprocess_dict['postprocess_assigninfill_dict']['naninfill'] = []
@@ -44593,7 +44615,7 @@ class AutoMunge:
                 featureeval = False, traindata = False,
                 driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False,
-                encrypt_key = False):
+                randomseed = False, encrypt_key = False):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
@@ -44607,6 +44629,7 @@ class AutoMunge:
     # #- to track infill status 
     # #- setting traindata setting based on traindata parameter
     # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
+    # #- passing postmunge specific randomseed parameter through postmunge_randomseed
     # #which are both reset after use
 
     #if postprocess_dict contained encrypted entries then we decode them here
@@ -44628,6 +44651,15 @@ class AutoMunge:
         self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
 
         #decode_valresult saved after initializing pm_miscparameters_results below
+
+    #initialize randomseed for default configuration of random random seed
+    #this is used in row shuffling and other random seeds that don't need to match automunge random seed
+    if randomseed is False:
+      #pandas sample accepts between 0:2**32-1
+      randomseed = random.randint(0,4294967295)
+
+    #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
+    postprocess_dict.update({'postmunge_randomseed' : randomseed})
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
@@ -44664,8 +44696,9 @@ class AutoMunge:
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
     pm_miscparameters_results = \
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
-                                dupl_rows, featureeval, driftreport, inplace, \
-                                returnedsets, shuffletrain, inversion, traindata, testID_column, encrypt_key)
+                                  dupl_rows, featureeval, driftreport, inplace, \
+                                  returnedsets, shuffletrain, inversion, traindata, \
+                                  testID_column, randomseed, encrypt_key)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
@@ -44789,6 +44822,7 @@ class AutoMunge:
       postprocess_dict['traindata'] = False
       #strike temporary log from postprocess_dict
       del postprocess_dict['temp_pm_miscparameters_results']
+      del postprocess_dict['postmunge_randomseed']
 
       df_test = self.__inversion_header_support(df_test, postprocess_dict, inversion)
 
@@ -45331,13 +45365,14 @@ class AutoMunge:
 
     #if shuffletrain passed to postmunge it takes place here
     #(postmunge does not default to consistent shuffle as train set, relies on parameter)
+    #row shuffling uses postmunge randomseed
     if shuffletrain is True or postprocess_dict['privacy_encode'] == 'private':
       #shuffle training set and labels
-      df_test = self.__df_shuffle(df_test, postprocess_dict['randomseed'])
-      df_testlabels = self.__df_shuffle(df_testlabels, postprocess_dict['randomseed'])
+      df_test = self.__df_shuffle(df_test, postprocess_dict['postmunge_randomseed'])
+      df_testlabels = self.__df_shuffle(df_testlabels, postprocess_dict['postmunge_randomseed'])
 
       if testID_column is not False:
-        df_testID = self.__df_shuffle(df_testID, postprocess_dict['randomseed'])
+        df_testID = self.__df_shuffle(df_testID, postprocess_dict['postmunge_randomseed'])
 
     #now we'll apply the floatprecision transformation
     floatcolumns_test = list(df_test)
@@ -45386,6 +45421,7 @@ class AutoMunge:
         df_testlabels.columns = df_testlabels_columns
 
     #now rename columns and shuffle order of columns for privacy encoding when activated
+    #column shuffling uses automunge random seed
     if postprocess_dict['privacy_encode'] is not False:
 
       df_test = self.__df_shuffle(df_test, postprocess_dict['randomseed'], axis=1)
@@ -45482,6 +45518,7 @@ class AutoMunge:
 
     #reset traindata entry in postprocess_dict to avoid overwrite of external
     postprocess_dict['traindata'] = False
+    del postprocess_dict['postmunge_randomseed']
 
     #consolide validation results and strike temporary log from postprocess_dict
     postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_pm_miscparameters_results'])
