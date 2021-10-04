@@ -25676,7 +25676,7 @@ class AutoMunge:
     
     return autoMLer
 
-  def __autoMLer_cleanup(self, postprocess_dict, postprocess_assigninfill_dict, ML_cmnd):
+  def __autoMLer_cleanup(self, postprocess_dict, ML_cmnd):
     """
     strikes entries in the returned postprocess_dict['autoMLer']
     that won't be inspected in postmunge
@@ -25684,21 +25684,16 @@ class AutoMunge:
     
     if 'autoML_type' not in ML_cmnd:
       ML_cmnd.update({'autoML_type' : 'randomforest'})
+      
+    autoMLtype = ML_cmnd['autoML_type']
     
-    if len(postprocess_assigninfill_dict['MLinfill']) == 0:
-      postprocess_dict['autoMLer'] = {}
+    autoMLer_keys_to_delete = list(postprocess_dict['autoMLer'])
+    
+    autoMLer_keys_to_delete.remove(autoMLtype)
+    
+    for autoMLer_key_to_delete in autoMLer_keys_to_delete:
       
-    else:
-      
-      autoMLtype = ML_cmnd['autoML_type']
-      
-      autoMLer_keys_to_delete = list(postprocess_dict['autoMLer'])
-      
-      autoMLer_keys_to_delete.remove(autoMLtype)
-      
-      for autoMLer_key_to_delete in autoMLer_keys_to_delete:
-        
-        del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
+      del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
         
     return postprocess_dict
 
@@ -32081,8 +32076,10 @@ class AutoMunge:
     
     #if inputcolumn has a column_dict entry we'll add the normalization_dict
     if inputcolumn in postprocess_dict['column_dict']:
-      labelsnormalization_dict = postprocess_dict['column_dict'][inputcolumn]['normalization_dict']
-      labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
+      #this data strucutre is converted in __populate_labelsencoding_dict_support3 to column_dict entries
+      #so don't need to populate the entire normalization_dict
+      labelsnormalization_dict_key = list(postprocess_dict['column_dict'][inputcolumn]['normalization_dict'])[0]
+      labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({labelsnormalization_dict_key:{}})
       
       #now do the same for the next inputcolumn, this will halt once the inputcolumn reaches the column passed to automunge(.)
       inputinputcolumn = postprocess_dict['column_dict'][inputcolumn]['inputcolumn']      
@@ -32092,10 +32089,16 @@ class AutoMunge:
 
   def __populate_labelsencoding_dict_support2(self, labelsencoding_dict, postprocess_dict, transform_dict, category, i):
     """
-    #populates transform_dict and process_dict entries to labelsencoding_dict
-    #but only those associated with transforms applied to label sets
-    #first tier category should be basewd on root category of labels_column_entry - a label column as recieved by automunge(.)
-    #rootcategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
+    #populates transform_dict and process_dict entries to mirror_dict or labelsencoding_dict
+    #but only those associated with applied transforms
+    #where mirror_dict is the returned form for postprocess_dict['transform_dict'] and postprocess_dict['process_dict']
+    #which serves the purpose of omitting transform_dict and process_dict entries not inspected for derivations
+    #which benefits privacy
+
+    #the recieved category is a root category applied to an input feature or input label
+    #e.g. root category = postprocess_dict['origcolumn'][labels_column_entry]['category']
+
+    #the family tree of that root category is inspected and upstream primitives are inspected with i=0
     #downstream tiers will receive category entries to primitive with offspring and i>0
     """
 
@@ -32148,6 +32151,54 @@ class AutoMunge:
               labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
 
     return labelsencoding_dict, i
+
+  def __populate_labelsencoding_dict_support3(self, labelsencoding_dict, postprocess_dict):
+    """
+    populates labelsencoding_dict with entries inspected for label inversion
+    used when privacy_encode = True and encryption performed via encrypt_key parameter
+    this results in 'column_dict' entries replacing the corresponding 'transforms' entries populated in __populate_labelsencoding_dict_support
+
+    basically all that's happening here is we're mirroring label records from postprocess_dict
+    into the labelsencoding_dict
+    which will be returned as a public entry when encryption performed with encrypt_key and privacy_encode != 'private'
+    for use to allow label inversion without the need for an encryption key
+    """
+    
+    labelsencoding_dict['column_dict'] = {}
+    labelsencoding_dict['inverse_categorytree'] = {}
+    labelsencoding_dict['origcolumn'] = {}
+    labelsencoding_dict['excl_suffix'] = postprocess_dict['excl_suffix']
+    labelsencoding_dict['excl_suffix_conversion_dict'] = {}
+    labelsencoding_dict['privacy_encode'] = postprocess_dict['privacy_encode']
+    labelsencoding_dict['privacy_headers_labels'] = postprocess_dict['privacy_headers_labels']
+    labelsencoding_dict['finalcolumns_train'] = []
+    labelsencoding_dict['finalcolumns_labels'] = postprocess_dict['finalcolumns_labels']
+    labelsencoding_dict['labels_column'] = postprocess_dict['labels_column']
+    labelsencoding_dict['labels_column_listofcolumns'] = postprocess_dict['labels_column_listofcolumns']
+    labelsencoding_dict['madethecut'] = []
+
+    for inputcolumn in labelsencoding_dict['transforms']:
+      for rootcategory in labelsencoding_dict['transforms'][inputcolumn]:
+        for derivedcolumn in labelsencoding_dict['transforms'][inputcolumn][rootcategory]:
+
+          labelsencoding_dict['column_dict'].update({derivedcolumn : postprocess_dict['column_dict'][derivedcolumn]})
+
+          if labelsencoding_dict['column_dict'][derivedcolumn]['category'] == 'excl':
+            labelsencoding_dict['excl_suffix_conversion_dict'].update({labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn'] : derivedcolumn})
+
+          if rootcategory in labelsencoding_dict['inverse_categorytree']:
+            labelsencoding_dict['inverse_categorytree'][rootcategory].update({derivedcolumn : postprocess_dict['inverse_categorytree'][rootcategory][derivedcolumn]})
+          else:
+            labelsencoding_dict['inverse_categorytree'].update({rootcategory : {derivedcolumn : postprocess_dict['inverse_categorytree'][rootcategory][derivedcolumn]}})
+
+    for origcolumn in postprocess_dict['labels_column_listofcolumns']:
+      labelsencoding_dict['origcolumn'].update({origcolumn : postprocess_dict['origcolumn'][origcolumn]})
+
+    labelsencoding_dict['excl_columns_without_suffix'] = list(labelsencoding_dict['excl_suffix_conversion_dict'])
+    
+    del labelsencoding_dict['transforms']
+    
+    return labelsencoding_dict
 
   def __check_processdict3(self, entry, processdict, postprocess_dict, transform_dict, mirror_dict, printstatus):
     """
@@ -35859,7 +35910,8 @@ class AutoMunge:
                                                        'columnkeylist' : columnkeylist, \
                                                        'columnkey' : columnkey}})
 
-      #populate mirror_dict
+      #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
+      #mirror_dict is used so that user preserves privacy of custom entries that were not inspected
       mirror_dict, _1 = \
       self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, category, 0)
 
@@ -35986,20 +36038,21 @@ class AutoMunge:
                                                                     'columnkeylist' : columnkeylist, \
                                                                     'columnkey' : columnkey}})
 
-      #populate mirror_dict
+      #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
+      #mirror_dict is used so that user preserves privacy of custom entries that were not inspected
       mirror_dict, _1 = \
       self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, labelscategory, 0)
 
       #labelsencoding_dict is returned in postprocess_dict
       #this is redundant with information stored in postprocess_dict['column_dict']
-      #for normalization_dict's of replaced columns refer to column_dict
-      #(this was included as a resource for label inversion before we had inversion in postmunge, 
-      #the recommended resource is postmunge inversion)
+      #labelsencoding_dict is used for public label inversion without encryption key
+      #first we'll populate some entries and then final aggregations performed after fully populating postprocess_dict
       labelsencoding_dict['transforms'].update({labels_column_entry : {labelscategory:{}}})
       for finalcolumn_label in columnkeylist:
-        labelsnormalization_dict = postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict']
-        #this populates a labelsnormalization_dict as {returnedcolumn : {normalization_dict}}
-        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update(labelsnormalization_dict)
+        labelsnormalization_dict_key = list(postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict'])[0]
+        #this populates a labelsnormalization_dict as {returnedcolumn : {}}
+        #which later in the workflow are translated to column_dict entries in __populate_labelsencoding_dict_support3
+        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({labelsnormalization_dict_key : {}})
 
         #this access any upstream normalization_dict's for columns that were subject to replacement
         inputcolumn = postprocess_dict['column_dict'][finalcolumn_label]['inputcolumn']
@@ -36067,7 +36120,7 @@ class AutoMunge:
 
     #now a cleanup to the postprocess_dict['autoMLer'] data structure to only record entries that were inspected for infill
     postprocess_dict = \
-    self.__autoMLer_cleanup(postprocess_dict, postprocess_assigninfill_dict, ML_cmnd)
+    self.__autoMLer_cleanup(postprocess_dict, ML_cmnd)
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
@@ -36300,10 +36353,10 @@ class AutoMunge:
                                          '1010' : [],
                                          'onht' : [],
                                          'ord3' : []}
-    labelsencoding_dict.update({'consolidations' : {'labels_Binary_dict' : labels_Binary_dict,
-                                                    'labelBinary_orig' : labelBinary_orig,
-                                                    'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
-                                                    'final_returned_labelBinary_sets' : final_returned_labelBinary_sets}})
+    labelsencoding_dict.update({'labels_Binary_dict' : labels_Binary_dict,
+                                'labelBinary_orig' : labelBinary_orig,
+                                'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
+                                'final_returned_labelBinary_sets' : final_returned_labelBinary_sets})
 
     #store labels_Binary_dict in p[ostprocess_dict to support _LabelFrequencyLevelizer
     postprocess_dict.update({'labels_Binary_dict' : labels_Binary_dict})
@@ -36532,7 +36585,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.17'
+    automungeversion = '7.18'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -36570,7 +36623,6 @@ class AutoMunge:
                              'numbercategoryheuristic' : numbercategoryheuristic,
                              'pandasoutput' : pandasoutput,
                              'NArw_marker' : NArw_marker,
-                             'labelsencoding_dict' : labelsencoding_dict,
                              'featureselection' : featureselection,
                              'featurethreshold' : featurethreshold,
                              'FSmodel' : FSmodel,
@@ -36787,6 +36839,12 @@ class AutoMunge:
       # df_testID[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_testID.shape[0])})
       # if totalvalidationratio > 0:
       #   df_validationID1[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_validationID1.shape[0])})
+
+    #final labelsencoding_dict prep to support label inverison when other entries encrypted
+    labelsencoding_dict = \
+    self.__populate_labelsencoding_dict_support3(labelsencoding_dict, postprocess_dict)
+
+    postprocess_dict.update({'labelsencoding_dict' : labelsencoding_dict})
 
     if totalvalidationratio > 0:
 
@@ -43840,6 +43898,7 @@ class AutoMunge:
       randomseed = FSpostprocess_dict['randomseed']
       process_dict = FSpostprocess_dict['process_dict']
       ML_cmnd = FSpostprocess_dict['ML_cmnd']
+      FSpostprocess_dict['postprocess_assigninfill_dict']['naninfill'] = []
 
       #totalvalidation = valpercent
 
@@ -44551,16 +44610,24 @@ class AutoMunge:
     # #which are both reset after use
 
     #if postprocess_dict contained encrypted entries then we decode them here
+    #if encryption was performed in automunge the encryption key was either user specified or returned in automunge(.) printouts
     decode_valresult = False
-
     if 'encryption' in postprocess_dict and postprocess_dict['encryption'] is True:
+      
+      #label inversion is available without encryption key unless privacy_encode = 'private'
+      if inversion in {'labels', 'denselabels'} and encrypt_key is False and postprocess_dict['privacy_encode'] != 'private':
 
-      postprocess_dict = deepcopy(postprocess_dict)
+        postprocess_dict = deepcopy(postprocess_dict['labelsencoding_dict'])
 
-      postprocess_dict, decode_valresult = \
-      self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
+      #otherwise we'll use an encryption key passed through postmunge encrypt_key parameter to decode
+      else:
 
-      #decode_valresult saved after initializing pm_miscparameters_results below
+        postprocess_dict = deepcopy(postprocess_dict)
+
+        postprocess_dict, decode_valresult = \
+        self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
+
+        #decode_valresult saved after initializing pm_miscparameters_results below
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
@@ -44568,6 +44635,9 @@ class AutoMunge:
       postprocess_dict['traindata'] = True
     else:
       postprocess_dict['traindata'] = False
+
+    #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
+    postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
 
     #a few special conventions for privacy_encode
     if postprocess_dict['privacy_encode'] is not False and printstatus is True:
@@ -44579,12 +44649,6 @@ class AutoMunge:
     if postprocess_dict['privacy_encode'] is not False and driftreport is not False:
       print("privacy_encode was performed in automunge(.), driftreport reset to False to align")
       driftreport = False
-
-    #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
-    postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
-
-    indexcolumn = postprocess_dict['indexcolumn']
-    testID_column_orig = testID_column
 
     #copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
@@ -44694,11 +44758,11 @@ class AutoMunge:
 
       #this converts to original headers for cases where automunge originally received pandas
       #and user is passing numpy to postmunge
-      if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) and inversion is False:
+      if inversion is False and len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
         df_test.columns = postprocess_dict['origcolumns_all']
 
       #this is one spot where having a labelscolumn parameter would be nice, but not worth added complexity
-      if postprocess_dict['labels_column'] is not False and inversion is False:
+      if inversion is False and postprocess_dict['labels_column'] is not False:
         if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - len(postprocess_dict['labels_column_listofcolumns']):
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
           for labels_column_listofcolumns_entry in postprocess_dict['labels_column_listofcolumns']:
@@ -44716,6 +44780,24 @@ class AutoMunge:
     for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
+
+    #_______
+    #here is where inversion is performed if selected
+    if inversion is not False:
+
+      #reset traindata entry in postprocess_dict to avoid overwrite of external
+      postprocess_dict['traindata'] = False
+      #strike temporary log from postprocess_dict
+      del postprocess_dict['temp_pm_miscparameters_results']
+
+      df_test = self.__inversion_header_support(df_test, postprocess_dict, inversion)
+
+      df_test, recovered_list, inversion_info_dict = \
+      self.__inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
+                            pandasoutput, pm_miscparameters_results)
+      
+      return df_test, recovered_list, inversion_info_dict
+    #_______
   
     #labels_column with underscore is the automunge train set labels
     labels_column = False
@@ -44744,24 +44826,6 @@ class AutoMunge:
     process_dict = postprocess_dict['process_dict']
       
     assign_param = postprocess_dict['assign_param']
-
-    #_______
-    #here is where inversion is performed if selected
-    if inversion is not False:
-
-      #reset traindata entry in postprocess_dict to avoid overwrite of external
-      postprocess_dict['traindata'] = False
-      #strike temporary log from postprocess_dict
-      del postprocess_dict['temp_pm_miscparameters_results']
-
-      df_test = self.__inversion_header_support(df_test, postprocess_dict, inversion)
-
-      df_test, recovered_list, inversion_info_dict = \
-      self.__inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
-                            pandasoutput, pm_miscparameters_results)
-      
-      return df_test, recovered_list, inversion_info_dict
-    #_______
 
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set
@@ -44809,6 +44873,8 @@ class AutoMunge:
       df_test = df_test.reset_index(drop=False)
 
     #here we derive a range integer index for inclusion in the test ID sets
+    indexcolumn = postprocess_dict['indexcolumn']
+
     tempIDlist = []
     df_test_tempID = pd.DataFrame({indexcolumn:range(0,df_test.shape[0])})
 
@@ -45936,21 +46002,9 @@ class AutoMunge:
             #this is for data passed as numpy arrays
             df.columns = postprocess_dict['finalcolumns_train']
     
-    elif postprocess_dict['privacy_encode'] is True:
-      
-      if inversion == 'labels' or inversion == 'denselabels':
-        
-        #this is for data passed as numpy arrays
-        if len(df.columns) == len(postprocess_dict['privacy_headers_labels']):
-          df.columns = postprocess_dict['privacy_headers_labels']
-        
-        #now recover original column headers
-        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_labels_dict'])
-        
-        #now recover original order of columns prior to privacy encoding
-        df = df.reindex(columns=postprocess_dict['finalcolumns_labels'])
+    if postprocess_dict['privacy_encode'] in {True, 'private'}:
 
-      else:
+      if inversion not in {'labels', 'denselabels'}:
         
         #this is for data passed as numpy arrays
         if len(df.columns) == len(postprocess_dict['privacy_headers_train']):
@@ -45961,6 +46015,20 @@ class AutoMunge:
         
         #now recover original order of columns prior to privacy encoding
         df = df.reindex(columns=postprocess_dict['finalcolumns_train'])
+
+    if postprocess_dict['privacy_encode'] == 'private':
+      
+      if inversion in {'labels', 'denselabels'}:
+        
+        #this is for data passed as numpy arrays
+        if len(df.columns) == len(postprocess_dict['privacy_headers_labels']):
+          df.columns = postprocess_dict['privacy_headers_labels']
+        
+        #now recover original column headers
+        df = df.rename(columns = postprocess_dict['inverse_privacy_headers_labels_dict'])
+        
+        #now recover original order of columns prior to privacy encoding
+        df = df.reindex(columns=postprocess_dict['finalcolumns_labels'])
 
     return df
 
@@ -48354,7 +48422,7 @@ class AutoMunge:
     for column in source_columns:
       if column not in recovered_list \
       and column in postprocess_dict['excl_columns_without_suffix'] \
-      and column in postprocess_dict['finalcolumns_train']:
+      and (column in postprocess_dict['finalcolumns_train'] or column in postprocess_dict['finalcolumns_labels']):
         recovered_list.append(column)
 
     # pm_miscparameters_results
@@ -48402,9 +48470,9 @@ class AutoMunge:
     
     #now consider whether Binary dimensionality reduction was performed
     
-    if inversion != 'labels':
+    if inversion not in  {'labels', 'denselabels'}:
       meta_Binary_dict = postprocess_dict['Binary_dict']
-    elif inversion == 'labels':
+    else:
       meta_Binary_dict = postprocess_dict['labels_Binary_dict']
     
     retain_Binary_present = False
@@ -48678,7 +48746,7 @@ class AutoMunge:
           #we'll rename the returned source column as (source column) + '_' + (denselabel_column)
           if postprocess_dict['labels_column'] in df_test_denseinvert:
 
-            if postprocess_dict['privacy_encode'] is True:
+            if postprocess_dict['privacy_encode'] == 'private':
               denselabel_column = str(postprocess_dict['privacy_headers_labels_dict'][denselabel_column])
 
             #edge case for column overlap, just add '_z' character as suffix until no longer an overlap
