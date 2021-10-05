@@ -7597,6 +7597,8 @@ class AutoMunge:
     #as automunge runs a for loop through each column in automunge, this is the master 
     #processing function applied which runs through the different family primitives
     #populated in the transform_dict by assembletransformdict
+    #processfamily is only called with column as an inputcolumn and origcategory as a root category
+    #downstream generations are applied within processparent
     
     #we will run in order of
     #siblings, cousins, parents, auntsuncles
@@ -7653,19 +7655,12 @@ class AutoMunge:
         self.__processcousin(df_train, df_test, column, auntuncle, origcategory, final_upstream, \
                             transform_dict, postprocess_dict, assign_param)
 
-    #if we had replacement transformations performed then mark column for deletion
+    #if a replacement primitive was applied and inplace wasn't performed register the column to orig_noinplace
     if len(transform_dict[origcategory]['auntsuncles']) \
     + len(transform_dict[origcategory]['parents']) > 0 \
     and inplaceperformed is False:
-      #here we'll only address downstream generaitons
-      if column in postprocess_dict['column_dict']:
-        postprocess_dict['column_dict'][column]['deletecolumn'] = True
-      else:
-        if column not in postprocess_dict['orig_noinplace']:
-          postprocess_dict['orig_noinplace'] = postprocess_dict['orig_noinplace'] | {column}
-    elif inplaceperformed is True:
-      if column in postprocess_dict['column_dict']:
-        postprocess_dict['column_dict'][column]['deletecolumn'] = 'inplace'
+      if column not in postprocess_dict['orig_noinplace']:
+        postprocess_dict['orig_noinplace'] = postprocess_dict['orig_noinplace'] | {column}
 
     return df_train, df_test, postprocess_dict
 
@@ -7886,7 +7881,8 @@ class AutoMunge:
 
     else:
 
-
+      #_____the following 40 rows is a validation result aggregation for cases where processdict was speciifed without a callable trasnformation function
+      #since we populate results with unique integer identifier performing here a little dictionary munging
       if postprocess_dict['printstatus'] != 'silent':
         
         print('Please note that a tree category was accessed as category ', cousin)
@@ -7929,6 +7925,7 @@ class AutoMunge:
       postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'].update(
         treecategory_with_empty_processing_functions_valresult
         )
+      #_____
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -8030,6 +8027,7 @@ class AutoMunge:
 
     else:
 
+      #_____aggregating validaiton results for non callable functions in processdict entry
       if postprocess_dict['printstatus'] != 'silent':
 
         print('Please note that a tree category was accessed as category ', parent)
@@ -8072,6 +8070,7 @@ class AutoMunge:
       postprocess_dict['temp_miscparameters_results']['treecategory_with_empty_processing_functions_valresult'].update(
         treecategory_with_empty_processing_functions_valresult
         )
+      #_____
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
     for column_dict in column_dict_list:
@@ -22236,6 +22235,11 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+
+    if 'weighted' in params:
+      weighted = params['weighted']
+    else:
+      weighted = False
       
     DPod_column = column + '_' + suffix
     DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
@@ -22251,7 +22255,15 @@ class AutoMunge:
       
     #first we'll derive our sampled noise for injection
     mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
-    mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
+
+    weights = []
+    if weighted is False:
+      mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
+    elif weighted is True:
+      for entry in ord_encodings:
+        weight = (mdf_train[mdf_train[column] == entry].shape[0]) / mdf_train.shape[0]
+        weights.append(weight)
+      mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
     
     #now inject noise
     #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -22294,6 +22306,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
                                              'ord_encodings' : ord_encodings, \
+                                             'weighted' : weighted, \
+                                             'weights' : weights, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise}}
 
@@ -25324,6 +25338,13 @@ class AutoMunge:
         flip_prob = ML_cmnd['stochastic_impute_categoric_flip_prob']
       else:
         flip_prob = 0.03
+
+      #Future extension, intended as similar use as DPod weighted parameter, 
+      #since stochastic_impute_categoric may target multicolumn sets need to give it some thought
+      # if 'stochastic_impute_categoric_weighted' in ML_cmnd:
+      #   weighted = ML_cmnd['stochastic_impute_categoric_weighted']
+      # else:
+      #   weighted = False
 
       #now consolidate redundant rows in df_unique before saving to stochastic_imputation_dict
       
@@ -28628,6 +28649,9 @@ class AutoMunge:
     """
     Appends entries to halt_dict associated with the current target column
     """
+
+    #in an alternate configuration, the entries to categoric_tuple_list and numeric_tuple_list could be instead populated as rows to dataframes for this purpose
+    #which would make the derivations in __calc_stop_result a little more efficient
 
     if iteration > 0:
       
@@ -32368,6 +32392,7 @@ class AutoMunge:
     """
 
     check_processdict4_valresult = False
+    check_processdict4_valresult2 = False
 
     checked_slots = ['dualprocess', 'singleprocess', 'postprocess', 'inverseprocess', \
                      'custom_train', 'custom_test', 'custom_inversion']
@@ -32390,7 +32415,22 @@ class AutoMunge:
               print("a processing function was entered in slot for ", checked_slot)
               print("which was not callable or passed as None")
 
-    return check_processdict4_valresult
+      #also validate that if a custom_train was not populated and a callable dualprocess was, a callable postprocess is available
+      if not ('custom_train' in processdict[category] and callable(processdict[category]['custom_train'])):
+        if 'dualprocess' in processdict[category] and callable(processdict[category]['dualprocess']):
+          if 'postprocess' not in processdict[category] or 'postprocess' in processdict[category] and not callable(processdict[category]['postprocess']):
+
+            check_processdict4_valresult2 = True
+
+            print("warning of channel for postmunge error")
+            print("for processdict entry associated with category ", category)
+            print("a prioritized callable processing function was entered in slot for 'dualprocess'")
+            #prioritized means that a custom_train funciton wasn't also entered which would otherwise take precedence
+            print("without a corresponding callable processing function in slot for 'postprocess")
+            print("this scenario will result in postmunge error")
+            print("Note that if a common function is desired for both train and test data user can instead pass a function in the 'custom_train' or 'singleprocess' convention")
+
+    return check_processdict4_valresult, check_processdict4_valresult2
 
   def __grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict, process_dict, \
                                             i, check_functionpointer_result, printstatus):
@@ -35201,9 +35241,10 @@ class AutoMunge:
                                      'check_processdict_result2': check_processdict_result2})
 
       #this function ensures any populated processing functions are either callable or None
-      check_processdict4_valresult = \
+      check_processdict4_valresult, check_processdict4_valresult2 = \
       self.__check_processdict4(processdict, printstatus)
-      miscparameters_results.update({'check_processdict4_valresult' : check_processdict4_valresult})
+      miscparameters_results.update({'check_processdict4_valresult' : check_processdict4_valresult,
+                                     'check_processdict4_valresult2' : check_processdict4_valresult2})
 
       #now consolidate user passed entries from processdict and internal library in process_dict
       process_dict.update(processdict)
@@ -36610,7 +36651,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.19'
+    automungeversion = '7.20'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43334,6 +43375,15 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       ord_encodings = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['ord_encodings']
+      if 'weighted' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        weighted = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['weighted']
+        weights = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['weights']
+      else:
+        #backward compatibility preceding 7.20
+        weighted = False
+        weights = []
 
       DPod_column = column + '_' + suffix
       DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
@@ -43346,7 +43396,11 @@ class AutoMunge:
         
         #now we'll derive our sampled noise for injection
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+
+        if weighted is False:
+          mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+        elif weighted is True:
+          mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
         #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
