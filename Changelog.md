@@ -4604,3 +4604,17 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - postmunge randomseed is now used for postmunge seeds that don't need to match automunge
 - including row shuffling for privacy encode, which otherwise could have served as a channel for information recovery
 - we still have order of column shuffling maintained between automunge and postmunge, is needed for ML
+
+7.20
+- new parameter accepted to DPod transform for categoric noise injection as 'weighted'
+- weighted accepts boolean defaulting to False
+- default False is consistent with prior configuration where noise injections are by a uniform random draw from the set of unique entries
+- in weighted=True scneario, the draw is weighted based on frequency of unique entries as found in the training data
+- this operation is built on top of the np.random.choice p parameter after calculating weights based on the training data
+- we're leaving the unform sampling as our default since per numpy documentation it runs more efficently
+- a small cleanup to processfmaily funciton reseulting in fewer lines of code with comparable functionality
+- (basically some of the if/else scenarios were associated with derived columns as per a similar operation in processparent, column as passed to processfamily is always an input column, so just eliminated to irrelevant scenarios)
+- new validation result reported as check_processdict4_valresult2 which checks for a chhanel of postmugne error when user specified processdict contains a prioritized dualprocess convention callable transformation function without a coresponding callable singleprocess trasnfomation function
+- (prioritized just means that a callable custom_train wasn't also entered which would otherwise take precedence)
+- note that if a common function is desired for both train and test data user can instead pass a function in the 'custom_train' or 'singleprocess' convention
+- a few code comments related to potential future extensions
