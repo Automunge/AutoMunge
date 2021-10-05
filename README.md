@@ -3603,6 +3603,7 @@ data augmentation, or also for model perturbation in assembly of ensembles.
 Note that if desired to treat data passed to postmunge as a train set can apply the traindata
 parameter to postmunge. Note that when passing parameters to these functions, the transformation
 category associated with the transformation function may be different than the root category.
+Noise sampling is built on top of numpy.random which uses an algorithm called Mersenne twister as a pseudo random number generator.
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
@@ -3685,6 +3686,8 @@ on number of activations)
   - suffix appender: '_DPo4_DPod'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
+    noise sampling is weighted per distribution of unique entries as found in train data.
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3702,6 +3705,8 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
   - suffix appender: '\DPo5\DPo2\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
+    noise sampling is weighted per distribution of unique entries as found in train data.
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3719,6 +3724,8 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
   - suffix appender: '\DPo6\DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
+    noise sampling is weighted per distribution of unique entries as found in train data.
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
