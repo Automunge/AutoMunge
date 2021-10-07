@@ -4618,3 +4618,22 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - (prioritized just means that a callable custom_train wasn't also entered which would otherwise take precedence)
 - note that if a common function is desired for both train and test data user can instead pass a function in the 'custom_train' or 'singleprocess' convention
 - a few code comments related to potential future extensions
+
+7.21
+- updated defaults for categoric noise injections applied in DP family of transforms
+- the new default is that noise injections are weighted by distribution of activations found in train data
+- (making use of the weighted parameter from last update)
+- based on numpy.random.choice documentation we expect there may be a small tradeoff with respect to latency for weighted sampling, we expect benefit to model performance may offset
+- prior configuration still available by setting weighted parameter as False in assignparam
+- comparable update made to categoric noise injections for ML infill, which now default to weighted injections per distribution of activations found in the train data
+- weighted sampling can be deactivated for ML infill by setting ML_cmnd['stochastic_impute_categoric_weighted'] as False
+- slight reconfiguration for halting criteria associated with ML_cmnd['halt_iterate']
+- replaced an aggregation of tuples with a pandas operation
+- (expect will benefit latency associated with summing entries by using pandas instead of iterating through tuples)
+- running some empiracal inspections of halting criteria for infilliterate via ML_cmnd['halt_iterate']
+- finding that particularly for the numeric tolerance criteria, the use of max delta in the halting formula is not a stable convergence criteria, as can fluctuate with single imputation entry
+- so decided to revise the formula from to replace max(abs(delta)) with mean(abs(delta))
+- now: "comparing for each numeric feature the ratio of mean(abs(delta)) between imputation iterations to the mean(abs(entries)) of the current iteration, which are then weighted between features by the quantity of imputations associated with each feature and compared to a numeric tolerance value"
+- also based on similar empiracle inspections decided to raise the tolerance threshold for numeric halting criteria from 0.01 to 0.03
+- can be reverted to prior value with ML_cmnd['numeric_tol']
+- will update the associated appendix in paper Missing Data Infill with Automunge
