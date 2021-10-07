@@ -22239,7 +22239,7 @@ class AutoMunge:
     if 'weighted' in params:
       weighted = params['weighted']
     else:
-      weighted = False
+      weighted = True
       
     DPod_column = column + '_' + suffix
     DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
@@ -25330,6 +25330,8 @@ class AutoMunge:
       #access parameter from entries recorded with train data
       flip_prob = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['flip_prob']
       df_unique = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['df_unique']
+      weighted = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['weighted']
+      weights = postprocess_dict['stochastic_imputation_dict'][targetcolumn]['weights']
 
     #train data case (in train data case user needs to pass entries for df_unique)
     elif targetcolumn not in postprocess_dict['stochastic_imputation_dict']:
@@ -25339,12 +25341,14 @@ class AutoMunge:
       else:
         flip_prob = 0.03
 
-      #Future extension, intended as similar use as DPod weighted parameter, 
-      #since stochastic_impute_categoric may target multicolumn sets need to give it some thought
-      # if 'stochastic_impute_categoric_weighted' in ML_cmnd:
-      #   weighted = ML_cmnd['stochastic_impute_categoric_weighted']
-      # else:
-      #   weighted = False
+      if 'stochastic_impute_categoric_weighted' in ML_cmnd:
+        weighted = ML_cmnd['stochastic_impute_categoric_weighted']
+      else:
+        weighted = True
+        
+      if weighted is True:
+        #for weighted we'll create a temporary backup of df_unique used to derive weights
+        df_unique_backup = df_unique.copy()
 
       #now consolidate redundant rows in df_unique before saving to stochastic_imputation_dict
       
@@ -25361,6 +25365,20 @@ class AutoMunge:
 
       #reset index in df_unique to a range index
       df_unique = df_unique.reset_index(drop=True)
+      
+      weights = []
+      if weighted is True:
+        #for each unique row in the consolidated df_unique calculate a weight
+        #by count of that row in df_unique_backup
+        #note this is applied in same order as unique_range fed to np.random.choice
+        for i in range(df_unique.shape[0]):
+          #to derive, we'll create a comparably shaped dataframe with all same row for comparison to df_unique_backup
+          df_allonerow = pd.concat([df_unique[i:i+1]]*df_unique_backup.shape[0], axis=0)
+          df_allonerow.index = df_unique_backup.index
+          count = ((df_unique_backup == df_allonerow).sum(axis=1) == df_unique_backup.shape[1]).sum()
+          weight = count / df_unique_backup.shape[0]
+          weights.append(weight)
+        del df_unique_backup
 
       #store parameters for use with test data
       postprocess_dict['stochastic_imputation_dict'].update({
@@ -25368,6 +25386,8 @@ class AutoMunge:
           'type' : 'categoric',
           'flip_prob' : flip_prob,
           'df_unique' : df_unique,
+          'weighted' : weighted,
+          'weights' : weights,
         }
       })
 
@@ -25406,9 +25426,12 @@ class AutoMunge:
 
       #DPod_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
       df[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
-
-      #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-      df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+      
+      if weighted is False:
+        #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
+        df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+      elif weighted is True:
+        df[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
 
       #now we'll populate another dataframe df_unique2 with index translated 
       #so that rows are in order of sampled index numbers in df[DPod_tempcolumn2]
@@ -28291,8 +28314,8 @@ class AutoMunge:
         'stop_result' : False, 
         'numeric_result' : False,
         'categoric_result' : False,
-        'categoric_tuple_list' : [],
-        'numeric_tuple_list' : [],
+        'categoric_tuple_df' : pd.DataFrame({'sumofinequal':[], 'quantity':[], 'ratio':[], 'column':[]}),
+        'numeric_tuple_df' : pd.DataFrame({'meanabsdelta':[], 'meanabs':[], 'quantity':[], 'column':[]}),
       }}
 
       halt_dict.update(halt_dict_entry)
@@ -28650,9 +28673,6 @@ class AutoMunge:
     Appends entries to halt_dict associated with the current target column
     """
 
-    #in an alternate configuration, the entries to categoric_tuple_list and numeric_tuple_list could be instead populated as rows to dataframes for this purpose
-    #which would make the derivations in __calc_stop_result a little more efficient
-
     if iteration > 0:
       
       #if set is categoric
@@ -28666,23 +28686,31 @@ class AutoMunge:
         
         ratio = sumofinequal / quantity
         
-        categoric_tuple = (sumofinequal, quantity, ratio, column)
+        categoric_tuple_df_row = pd.DataFrame({'sumofinequal':[sumofinequal], 
+                                               'quantity':[quantity],
+                                               'ratio':[ratio],
+                                               'column':[column]})
         
-        halt_dict[iteration]['categoric_tuple_list'].append(categoric_tuple)
+        #now concat that row onto the categoric_tuple_df stored in halt_dict for this iteration
+        halt_dict[iteration]['categoric_tuple_df'] = pd.concat([halt_dict[iteration]['categoric_tuple_df'], categoric_tuple_df_row], axis=0)
         
       #if set is numeric
       if MLinfilltype in {'numeric', 'integer', 'concurrent_nmbr'}:
         
         #this is the max value found in absolute value of deltas between iterations
-        maxabsdelta = (df_infill_iplus[column][:df_traininfill_rowcount] - df_infill_i[column][:df_traininfill_rowcount]).abs().max()
+        meanabsdelta = (df_infill_iplus[column][:df_traininfill_rowcount] - df_infill_i[column][:df_traininfill_rowcount]).abs().mean()
         
         meanabs = df_infill_iplus[column][:df_traininfill_rowcount].abs().mean()
         
         quantity = df_traininfill_rowcount
         
-        numeric_tuple = (maxabsdelta, meanabs, quantity, column)
+        numeric_tuple_df_row = pd.DataFrame({'meanabsdelta':[meanabsdelta], 
+                                             'meanabs':[meanabs],
+                                             'quantity':[quantity],
+                                             'column':[column]})
         
-        halt_dict[iteration]['numeric_tuple_list'].append(numeric_tuple)
+        #now concat that row onto the numeric_tuple_df stored in halt_dict for this iteration
+        halt_dict[iteration]['numeric_tuple_df'] = pd.concat([halt_dict[iteration]['numeric_tuple_df'], numeric_tuple_df_row], axis=0)
     
     return halt_dict
 
@@ -28693,7 +28721,7 @@ class AutoMunge:
     #note that the categoric stopping criteria was partly inspired by review of MissForest stopping criteria
     #although there are some fundamental differences in place for each
     #receives tolerances in ML_cmnd as ML_cmnd['numeric_tol'] and ML_cmnd['categoric_tol']
-    #and when these entries are not populated defaults to numeric_tol = 0.01, categoric_tol = 0.05
+    #and when these entries are not populated defaults to numeric_tol = 0.03, categoric_tol = 0.05
     #(these defaults are for the moment somewhat arbitrary and may be further refined in future update)
     
     #Please note that the stop_result is only returned as True 
@@ -28711,7 +28739,7 @@ class AutoMunge:
     if 'numeric_tol' in ML_cmnd:
       numeric_tol = ML_cmnd['numeric_tol']
     else:
-      numeric_tol = 0.01
+      numeric_tol = 0.03
     
     if iteration > 0:
       
@@ -28719,63 +28747,70 @@ class AutoMunge:
       
       #first calculate categoric result based on aggregation of all categoric imputations
       
-      categoric_tuple_list = halt_dict[iteration]['categoric_tuple_list']
-      
-      if len(categoric_tuple_list) == 0:
+      categoric_tuple_df = halt_dict[iteration]['categoric_tuple_df']
+
+      if categoric_tuple_df.shape[0] == 0:
         categoric_result = True
       else:
         
         #result is based on whether sum(sumofinequal)/sum(quantity) < categoric_tol
         categoric_result = False
         
-        sum_sumofinequal = 0
-        sum_quantity = 0
-        
-        for categoric_tuple in categoric_tuple_list:
-
-          #note categoric_tuple = (sumofinequal, quantity, ratio)
-          
-          sum_sumofinequal += categoric_tuple[0]
-          sum_quantity += categoric_tuple[1]
+        sum_sumofinequal = categoric_tuple_df['sumofinequal'].sum()
+        sum_quantity = categoric_tuple_df['quantity'].sum()
 
         if sum_sumofinequal / sum_quantity < categoric_tol:
           
           categoric_result = True
+
+        # #validation printouts
+        # print("categoric: sum_sumofinequal / sum_quantity")
+        # print(sum_sumofinequal / sum_quantity)
+        # print("categoric_tol = ", categoric_tol)
+        # print("categoric_result = ", categoric_result)
+        # print()
           
       #now calculate numeric result based on aggregation of all numeric imputations
       
-      numeric_tuple_list = halt_dict[iteration]['numeric_tuple_list']
+      numeric_tuple_df = halt_dict[iteration]['numeric_tuple_df']
       
-      if len(numeric_tuple_list) == 0:
+      if numeric_tuple_df.shape[0] == 0:
         numeric_result = True
       else:
         
-        #result is based on weighted average of ratio maxabsdelta/meanabs < numeric_tol
+        #result is based on weighted average of ratio meanabsdelta/meanabs < numeric_tol
+        #where we'll derive quantity_times_ratio_sum and quantity_sum
+        #and halt when quantity_times_ratio_sum / quantity_sum < numeric_tol
+        
         #(weighted by quantity of imputations associated with the ratio)
         numeric_result = False
         
-        quantity_times_ratio_sum = 0
-        quantity_sum = 0
+        #quantity_times_ratio_sum = quantity * ratio
+        #ratio = meanabsdelta / meanabs
         
-        for numeric_tuple in numeric_tuple_list:
+        #this is for an edge case where inferred infill is all 0, would interfere with division
+        numeric_tuple_df = numeric_tuple_df.loc[numeric_tuple_df['meanabs'] != 0]
 
-          #note numeric_tuple = (maxabsdelta, meanabs, quantity)
-          
-          quantity = numeric_tuple[2]
-
-          if numeric_tuple[1] != 0:
-            ratio = numeric_tuple[0] / numeric_tuple[1]
-          
-            quantity_times_ratio_sum += quantity * ratio
-            
-            quantity_sum += quantity
+        quantity_times_ratio_sum = (numeric_tuple_df['quantity'] * \
+                                   numeric_tuple_df['meanabsdelta'] / \
+                                   numeric_tuple_df['meanabs']).sum()
+        
+        #for consistency of quantity basis we'll derive quantity_sum after extracting all zero infill edge case
+        quantity_sum = numeric_tuple_df['quantity'].sum()
           
         if quantity_sum == 0:
           numeric_result = True
           
         elif quantity_times_ratio_sum / quantity_sum < numeric_tol:
           numeric_result = True
-      
+
+        # #validation printouts
+        # print("numeric: quantity_times_ratio_sum / quantity_sum")
+        # print(quantity_times_ratio_sum / quantity_sum)
+        # print("numeric_tol = ", numeric_tol)
+        # print("numeric_result = ", numeric_result)
+        # print()
+
       #_(1)_
       stop_result = False
       
@@ -31961,7 +31996,7 @@ class AutoMunge:
                               'numeric_tol', 
                               printstatus,  
                               check_ML_cmnd_result,
-                              default=0.01, 
+                              default=0.03, 
                               valid_entries=False,
                               valid_type=float)
 
