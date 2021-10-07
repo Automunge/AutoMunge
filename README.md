@@ -811,11 +811,12 @@ postmunge will just apply the final model on each iteration).
 Please note that early stopping is available for infilliterate based on a comparison
 on imputations of a current iteration to the preceding, with a halt when reaching both
 of tolerances associated with numeric features in aggregate and categoric
-features in aggregate. Early stopping evaluation can be activated by passing to ML_cmnd
+features in aggregate. 
+Early stopping evaluation can be activated by passing to ML_cmnd
 ML_cmnd['halt_iterate']=True. The tolerances can be updated from the shown defaults
-as ML_cmnd['categoric_tol']=0.05 and ML_cmnd['numeric_tol']=0.01. Further detail
+as ML_cmnd['categoric_tol']=0.05 and ML_cmnd['numeric_tol']=0.03. Further detail
 on early stopping criteria is that the numeric halting criteria is based on comparing 
-for each numeric feature the ratio of max(abs(delta)) between imputation iterations to 
+for each numeric feature the ratio of mean(abs(delta)) between imputation iterations to 
 the mean(abs(entries)) of the current iteration, which are then weighted between features 
 by the quantity of imputations associated with each feature and compared to a numeric 
 tolerance value, and the categoric halting criteria is based on comparing the ratio of 
@@ -823,6 +824,9 @@ number of inequal imputations between iterations to the total number of imputati
 categoric features to a categoric tolerance value. Early stopping is applied as soon as
 the tolerances are met for both numeric and categoric features. If early stopping criteria 
 is not reached the specified infilliterate will serve as the maximum number of iterations.
+(Be aware that stochastic noise from stochastic_impute_numeric 
+and stochastic_impute_categoric has potential to interfere with early stopping criteria.
+Each of these can be deactivated in ML_cmnd if desired.) 
 
 * randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, 
 randomseed is based on a uniform randomly sampled integer within that range.
@@ -960,7 +964,7 @@ as a dictionary with first tier valid keys of:
 {'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
 'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
-'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
+'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
 
 When a user passed ML_cmnd as an empty dictionary, any default values are populated internally.
 
@@ -1095,6 +1099,8 @@ categoric representations), such that for a ratio of a feature's set's imputatio
 the flip_prob (defaulting to 0.03 for categoric), each target imputation activation set is replaced with 
 the randomly drawn activation set. Parameter can be configured by passing 
 an ML_cmnd entry as a float to ML_cmnd['stochastic_impute_categoric_flip_prob'].
+Categoric noise injections by default weight injections per distribution of activations as found in train set.
+This can be deactivated by setting ML_cmnd['stochastic_impute_categoric_weighted'] as False.
 
 (Please note that we suspect stochastic injections to imputations may have potential to interfere
 with infilliterate early stopping criteria associated with ML_cmnd['halt_iterate'] documented
@@ -3686,8 +3692,8 @@ on number of activations)
   - suffix appender: '_DPo4_DPod'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
-    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
-    noise sampling is weighted per distribution of unique entries as found in train data.
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3705,8 +3711,8 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
   - suffix appender: '\DPo5\DPo2\_onht\_#' where # is integer for each categoric entry
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
-    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
-    noise sampling is weighted per distribution of unique entries as found in train data.
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3724,8 +3730,8 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
   - suffix appender: '\DPo6\DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
-    - 'weighted' boolean defaults to False for uniform noise sampling from set of unique entries in train data. When True 
-    noise sampling is weighted per distribution of unique entries as found in train data.
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
