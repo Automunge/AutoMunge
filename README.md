@@ -730,7 +730,7 @@ train and test sets or be passed as _'test'_ to only apply levelizing to test se
 will be based on the first categoric / binned set (either one-hot or ordinal)
 based on order of columns.)
 
-* powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2')_, defaults to False.
+* powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2'/'DP1'/'DP2')_, defaults to False.
 The powertransform parameter is used to select between options for derived
 category assignments under automation based on received feature set properties.
   - Under the default scenario, category assignments under automation are consistent with section
@@ -755,6 +755,9 @@ category assignments under automation based on received feature set properties.
   includes support for NArw aggregation with NArw_marker parameter.
   - The 'infill2' scenario is similar to the 'infill' scenario, with added allowance for inclusion of
   non-numeric sets, which are given an excl pass-through and excluded from ML infill basis. (May return sets not suitable for direct application of ML.)
+DP1 and DP2 are used for defaulting to noise injection for numeric and (non-hashed) categoric
+  - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, and binary with DPbn
+  - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, and binary with DPbn
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -2369,7 +2372,8 @@ or 'exc2', where for 'excl' columns not explicitly assigned to a root category i
 will be left untouched, or for 'exc2' columns not explicitly assigned to a root category in 
 assigncat will be forced to numeric and subject to default modeinfill. (These two excl 
 arguments may be useful if a user wants to experiment with specific transforms on a subset of 
-the columns without incurring processing time of an entire set for instance.)
+the columns without incurring processing time of an entire set for instance.) To default to
+noise injection to numeric and (non-hashed) categoric, can apply 'DP1' or 'DP2'.
 
 - floatprecision: parameter indicates the precision of floats in returned sets (16/32/64)
 such as for memory considerations.
