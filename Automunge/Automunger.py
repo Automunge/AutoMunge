@@ -23071,6 +23071,8 @@ class AutoMunge:
     when powertransform = 'infill' If the data is already numerically encoded with NaN entries for missing data, ML infill can be applied without further preprocessing transformations by passing
     when powertransform = 'infill2' data is treated comparable to infill scenario with allowance for passthrough of nonnumeric data
     when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, MAD3, nmbr, mnmx.
+    when powertrasnform = 'DP1', default numerical replaced with DPnb, categoric with DP10 and binary with DPbn
+    when powertrasnform = 'DP2', default numerical replaced with DPrt, categoric with DPod and binary with DPbn
     
     note that labels = True also changes the defaults to align with conventions for label sets
     which replaces the default transformations from powertransform=False to following
@@ -23193,34 +23195,56 @@ class AutoMunge:
       
       #here are the default categories to be returned based on the evaluation
       #note that these defaults are potentially substituted at close of this function when labels = True
-      
-      #default categorical
-      #defaultcategorical = 'text'
-      defaultcategorical = '1010'
-      
-      #defaultbnry is for categoric sets with nunique <= 2
-      defaultbnry = 'bnry'
-      
-      #defaultordinal applied when unique values exceeds numbercategoryheuristic
-      #defaultordinal = 'ord3'
-      defaultordinal = 'hsh2'
-      
-      #defaultordinal replaced with defaultordinal_allunique when nunique > 0.75*shape[0]
-      defaultordinal_allunique = 'hash'
 
-      #defaultnumerical is the default normalization to numeric sets
-      defaultnumerical = 'nmbr'
-      
-      #defaultdatetime is the default encoding to datetime sets
-      defaultdatetime = 'dat6'
-      
-      #defaultnull is for sets with all missing data
-      defaultnull = 'null'
+      if powertransform == 'DP1':
 
-      #not rolling this scenario out in interest of simplicity, if there is a need for it let me know
-      #(it is not the default because it may result in returned sets not suitable for direct application of ML)
-      # if powertransform == 'excl_null':
-      #   defaultnull = 'excl'
+        defaultcategorical = 'DP10'
+        defaultbnry = 'DPbn'
+        defaultordinal = 'hsh2'
+        defaultordinal_allunique = 'hash'
+        defaultnumerical = 'DPnb'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      elif powertransform == 'DP2':
+
+        defaultcategorical = 'DPod'
+        defaultbnry = 'DPbn'
+        defaultordinal = 'hsh2'
+        defaultordinal_allunique = 'hash'
+        defaultnumerical = 'DPrt'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      else:
+      
+        #default categorical
+        #defaultcategorical = 'text'
+        defaultcategorical = '1010'
+        
+        #defaultbnry is for categoric sets with nunique <= 2
+        defaultbnry = 'bnry'
+        
+        #defaultordinal applied when unique values exceeds numbercategoryheuristic
+        #defaultordinal = 'ord3'
+        defaultordinal = 'hsh2'
+        
+        #defaultordinal replaced with defaultordinal_allunique when nunique > 0.75*shape[0]
+        defaultordinal_allunique = 'hash'
+
+        #defaultnumerical is the default normalization to numeric sets
+        defaultnumerical = 'nmbr'
+        
+        #defaultdatetime is the default encoding to datetime sets
+        defaultdatetime = 'dat6'
+        
+        #defaultnull is for sets with all missing data
+        defaultnull = 'null'
+
+        #not rolling this scenario out in interest of simplicity, if there is a need for it let me know
+        #(it is not the default because it may result in returned sets not suitable for direct application of ML)
+        # if powertransform == 'excl_null':
+        #   defaultnull = 'excl'
       
       #____
       
@@ -23386,7 +23410,7 @@ class AutoMunge:
       
       #we'll overwrite to the label defaults when this is a labels set as would be designated by labels parameter
       if labels is True \
-      and powertransform in {True, False}:
+      and powertransform in {True, False, 'DP1', 'DP2'}:
 
         #(defaultnumerical = 'nmbr')
         if category == defaultnumerical:
@@ -23406,8 +23430,8 @@ class AutoMunge:
         if category == defaultordinal_allunique:
           category = 'lbor'
           
-        if category == 'text':
-          category = 'lbor'
+        # if category == 'text':
+        #   category = 'lbor'
           
         if category == defaultbnry:
           category = 'lbbn'
@@ -30378,18 +30402,18 @@ class AutoMunge:
     
     #check powertransform
     powertransform_valresult = False
-    if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2'}:
+    if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}:
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}")
         print()
-    elif powertransform not in {'excl', 'exc2', 'infill', 'infill2'} \
+    elif powertransform not in {'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}")
         print()
       
     miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
@@ -31366,10 +31390,7 @@ class AutoMunge:
     """
     #Here we'll do a quick check for any entries in the user passed
     #transformdict which don't have at least one replacement column specified
-    #and if not found apply a cousins excl transform
-    
-    #we'll also do a test for excl tranfsorms as replacement primitives
-    #and if found move to a corresponding supplement primitive
+    #and if not found apply an auntsuncles excl transform
     """
     
     result1 = False
@@ -31396,7 +31417,7 @@ class AutoMunge:
       transformdict[transformkey]['auntsuncles'].append('excl')
       transformdict[transformkey]['auntsuncles'].remove('excl')
 
-    return result1, result2, transformdict
+    return result1, transformdict
   
   def __check_transformdict2(self, transformdict, printstatus):
     """
@@ -32262,17 +32283,18 @@ class AutoMunge:
             labelsencoding_dict['excl_suffix_conversion_dict'].update({labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn'] : derivedcolumn})
             labelsencoding_dict['excl_suffix_inversion_dict'].update({derivedcolumn : labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn']})
 
-          if rootcategory in labelsencoding_dict['inverse_categorytree']:
-            labelsencoding_dict['inverse_categorytree'][rootcategory].update({derivedcolumn : postprocess_dict['inverse_categorytree'][rootcategory][derivedcolumn]})
-          else:
-            labelsencoding_dict['inverse_categorytree'].update({rootcategory : {derivedcolumn : postprocess_dict['inverse_categorytree'][rootcategory][derivedcolumn]}})
-
+    del labelsencoding_dict['transforms']
+            
     for origcolumn in postprocess_dict['labels_column_listofcolumns']:
       labelsencoding_dict['origcolumn'].update({origcolumn : postprocess_dict['origcolumn'][origcolumn]})
 
     labelsencoding_dict['excl_columns_without_suffix'] = list(labelsencoding_dict['excl_suffix_conversion_dict'])
     
-    del labelsencoding_dict['transforms']
+    #this data structure supports inversion path selection
+    labels_inverse_categorytree = \
+    self.__populate_inverse_categorytree(postprocess_dict, labelscase=True)
+    
+    labelsencoding_dict['inverse_categorytree'] = labels_inverse_categorytree
     
     return labelsencoding_dict
 
@@ -35228,11 +35250,10 @@ class AutoMunge:
       miscparameters_results.update({'check_transformdict0_result' : check_transformdict0_result})
       
       #handling for family trees without replacement primitive entries (add an excl transform)
-      check_transformdict_result1, check_transformdict_result2, transformdict = \
+      check_transformdict_result1, transformdict = \
       self.__check_transformdict(transformdict, printstatus)
 
-      miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1, \
-                                     'check_transformdict_result2' : check_transformdict_result2})
+      miscparameters_results.update({'check_transformdict_result1' : check_transformdict_result1})
       
       #ensure no redundant specifications in adjacent primitives
       check_transformdict2_result1, check_transformdict2_result2 = \
@@ -36686,7 +36707,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.21'
+    automungeversion = '7.22'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44715,7 +44736,7 @@ class AutoMunge:
     # #as in some scenarios postprocess_dict can be a large file)
     # postprocess_dict = deepcopy(postprocess_dict)
     # #The only edits made to postproces_dict in postmunge are:
-    # #- to track infill status 
+    # #- to track infill status (via column_dict infillcomplete marker)
     # #- setting traindata setting based on traindata parameter
     # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #- passing postmunge specific randomseed parameter through postmunge_randomseed
@@ -45834,7 +45855,7 @@ class AutoMunge:
         
     return categorylist
       
-  def __populate_inverse_categorytree(self, postprocess_dict):
+  def __populate_inverse_categorytree(self, postprocess_dict, labelscase=False):
     """
     #So this is similar to the categorytree in that we are mirror the transformations
     #in a populated data structure
@@ -45859,11 +45880,18 @@ class AutoMunge:
                                              {'__root__': {'Age': ['__root__','__root__','__root__',\
                                                                    '__root__', 1 , False , False, \
                                                                     {}]}}]}}]}
+
+    labelscase=True is used to populated an additional version specific to labels in labelsencoding_dict
     """
     
     #all returned columns including labels
     returned_columns = \
     postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['pre_dimred_finalcolumns_labels']
+
+    if labelscase is True:
+      #if this inverse_categorytree is meant for the lablesencoding_dict we'll only populate for labels
+      returned_columns = \
+      postprocess_dict['pre_dimred_finalcolumns_labels']
 
     #convert returned_columns to returned suffix convention for excl edge case
     self.__list_replace(returned_columns, postprocess_dict['excl_suffix_conversion_dict'])
