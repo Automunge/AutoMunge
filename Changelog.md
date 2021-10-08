@@ -4637,3 +4637,11 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - also based on similar empiracle inspections decided to raise the tolerance threshold for numeric halting criteria from 0.01 to 0.03
 - can be reverted to prior value with ML_cmnd['numeric_tol']
 - will update the associated appendix in paper Missing Data Infill with Automunge
+
+7.22
+- found and fixed a bug for multi-generation label sets originating from data structure populating (for public label inversion with encryption) rolled out in 7.18
+- labels back to supporting full library including multi generations applied for noise injection
+- some new powertransform scenarios now supported to support defaulting to noise injection under automation
+- when powertrasnform = 'DP1', default numerical replaced with DPnb, categoric with DP10, and binary with DPbn
+- when powertrasnform = 'DP2', default numerical replaced with DPrt, categoric with DPod, and binary with DPbn
+- struck an unused validation result (check_transformdict_result2)
