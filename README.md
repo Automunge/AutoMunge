@@ -756,8 +756,8 @@ category assignments under automation based on received feature set properties.
   - The 'infill2' scenario is similar to the 'infill' scenario, with added allowance for inclusion of
   non-numeric sets, which are given an excl pass-through and excluded from ML infill basis. (May return sets not suitable for direct application of ML.)
 DP1 and DP2 are used for defaulting to noise injection for numeric and (non-hashed) categoric
-  - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, and binary with DPbn
-  - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, and binary with DPbn
+  - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, binary with DPbn, hash with DPhs, hsh2 with DPh2
+  - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, binary with DPbn, hash with DPhs, hsh2 with DPh2
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -3680,14 +3680,16 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - suffix appender: '_DPb2_DPbn'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
-    - parameters should be passed to 'DPbn' transformation category from family tree
+    - noise injection parameters should be passed to 'DPbn' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
 * DPod: applies an ordinal encoding (ord3) followed by a noise injection to train data which
-flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations)
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
@@ -3699,13 +3701,13 @@ on number of activations)
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
-    - parameters should be passed to 'DPod' transformation category from family tree
+    - noise injection parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes
 * DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
-flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a one-hot encoding. Note that assignparam for noise injection
 can be passed to the intermediate category DPo2 which applies the DPod trasnform.
@@ -3718,29 +3720,84 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
-    - parameters should be passed to 'DPo2' transformation category from family tree
+    - noise injection parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
   - returned datatype: int8
   - inversion available: yes
 * DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
-flips the activations per parameter flip_prob which defaults to 0.03 to a random draw from the
+flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a 1010 binary encoding.  Note that assignparam for noise injection
 can be passed to the intermediate category DPo3 which applies the DPod trasnform.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo6) cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo6\DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\DPo6\_DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
-    - parameters should be passed to 'DPo3' transformation category from family tree
+    - noise injection parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - returned datatype: int8
+  - inversion available: yes
+* DPh1: applies a multi column hash binarization via hs10 followed by a multi column categoric noise injection via DPmc,  which
+flips the activation sets per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
+set of activation sets (including the current activation set so actual flip percent is < flip_prob based
+on number of activations).  Note that assignparam for noise injection
+can be passed to the intermediate category DPo3 which applies the DPod trasnform. Defaults to weighted sampling.
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '\DPh1\_#\_DPmc' where # is integer for each column which collectively encode categoric entries
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - noise injection parameters should be passed to 'DPmc' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
+  - driftreport postmunge metrics: hs10 metrics
+  - returned datatype: int8
+  - inversion available: yes
+* DPhs: applies a multi column hash binarization via hash followed by a multi column categoric noise injection via mlhs, which
+flips the activations in each column individually per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
+set of activations (including the current activation so actual flip percent is < flip_prob based
+on number of activations).
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '\DPhs\_mlhs\_DPod' where # is integer for each column which collectively encode categoric entries
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embeeded in a dicionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
+    - 'suffix': to change suffix appender (leading underscore added internally)
+  - driftreport postmunge metrics: hash metrics
+  - returned datatype: conditional integer based on hasing vocab size
+  - inversion available: yes
+* DPh2: applies a single column hash binarization via hsh2 followed by a single column categoric noise injection via DPod funstion (as DPo7), which
+flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
+set of activations (including the current activation so actual flip percent is < flip_prob based
+on number of activations).
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '\DPh2\_DPo7' where # is integer for each column which collectively encode categoric entries
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - noise injection parameters should be passed to 'DPo7' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
+  - driftreport postmunge metrics: hash metrics
+  - returned datatype: conditional integer based on hasing vocab size
   - inversion available: yes
 
 ### Misc. Functions
@@ -3824,7 +3881,7 @@ unless an additional transform is applied downstream.)
   - driftreport postmunge metrics: none
   - returned datatype: consistent with input
   - inversion available: no
-* mlti: mlti is a category available for inclusion in family trees that takes as input a set of one or more columns returned from a concurrent_nmbr MLinfilltype trasnform containing multiple columns of continous numeric entries. mlti applies a normalization to each of the columns on an independant basis. The normalization defaults to z-score via nmbr or alternate trasnforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.) mlti is defined in process_dict based on concurrent_nmbr MLinfilltype
+* mlti: mlti is a category that may take as input a set of one or more columns returned from a concurrent_nmbr MLinfilltype trasnform containing multiple columns of continous numeric entries (or otherwise take a single column input when applied to an upstream primitive). mlti applies a normalization to each of the columns on an independant basis. The normalization defaults to z-score via nmbr or alternate trasnforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.) mlti is defined in process_dict based on concurrent_nmbr MLinfilltype. mlti may be use to apply an arbitrary trasnformation category to each column from a set of columns returned from a trasnform (such as for a concurrent MLinfilltype).
   - useful for: normalizing a set of numeric features returned from an upstream transform
   - default infill: consistent with the type of normalization selected
   - default NArowtype: justNaN
@@ -3832,7 +3889,7 @@ unless an additional transform is applied downstream.)
   - assignparam parameters accepted:
     - 'norm_category': defaults to 'nmbr', used to specify type of normalizaiton applied to each column. Used to access transformation functions from process_dict.
     - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}
-    - 'dtype': accepts one of {'float', 'conditionalinteger'}, defaults to float. conditionalinteger is for use with mto
+    - 'dtype': accepts one of {'float', 'conditionalinteger', 'mlhs'}, defaults to float. conditionalinteger is for use with mlto. 'mlhs' is for use with mlhs.
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
@@ -3844,7 +3901,7 @@ unless an additional transform is applied downstream.)
   - assignparam parameters accepted:
     - 'norm_category': defaults to 'ord3', used to specify type of ordinal encoding applied to each column. Used to access transformation functions from process_dict.
     - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}
-    - 'dtype': accepts one of {'float', 'conditionalinteger'}, defaults to conditionalinteger.
+    - 'dtype': accepts one of {'float', 'conditionalinteger', 'mlhs'}, defaults to conditionalinteger.
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: based on normalization transform inversion (if norm_category does not support inversion a passthrough inversion is applied)
@@ -4217,7 +4274,11 @@ avoid unintentional duplication.
 - 'DP10',
 - 'DPb2',
 - 'DPbn',
+- 'DPh1',
+- 'DPh2',
+- 'DPhs',
 - 'DPm2',
+- 'DPmc',
 - 'DPmm',
 - 'DPn2',
 - 'DPn3',
@@ -4228,6 +4289,7 @@ avoid unintentional duplication.
 - 'DPo4',
 - 'DPo5',
 - 'DPo6',
+- 'DPo7',
 - 'DPod',
 - 'DPoh',
 - 'DPrt',
@@ -4401,6 +4463,7 @@ avoid unintentional duplication.
 - 'min4',
 - 'mint',
 - 'misn',
+- 'mlhs',
 - 'mlti',
 - 'mlto',
 - 'mltp',
