@@ -4985,10 +4985,10 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
 
   return df
 ```
-Please note that if you included externally initialized functions in an automunge(.) call, 
-like for custom_train transformation functions or custom autoMLer functions, they will need 
-to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
-in a new notebook. (This was a design decision for security considerations.)
+Please note that if you included externally initialized custom_train / custom_test / custom_inversion 
+functions in an automunge(.) call, they will need to be reinitialized by user prior to uploading an 
+externally saved postprocess_dict with pickle in a new notebook. (This was a design decision for 
+security considerations.)
 
  ___ 
 
@@ -5005,10 +5005,10 @@ top of XGBoost or other learning libraries.
 We'll demonstrate here templates for defining training and inference functions for
 classification and regression. These functions can be initialized externally and 
 applied for ML infill and feature importance. Please note that if you included externally 
-initialized functions in an automunge(.) call, like for custom_train transformation functions 
-or these custom autoMLer functions, they will need to be reinitialized by user prior to 
-uploading an externally saved postprocess_dict with pickle in a new notebook. These demonstrations
-are shown with scikit Random Forest models for simplicity.
+initialized customML functions in an automunge(.) call, the inference functions will need 
+to be reinitialized by user prior to uploading an externally saved postprocess_dict with 
+pickle in a new notebook. These demonstrations are shown with scikit Random Forest models 
+for simplicity.
 
 ```
 def customML_train_classifier(labels, features, columntype_report, commands, randomseed):
