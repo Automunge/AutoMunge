@@ -3211,6 +3211,62 @@ class AutoMunge:
                                      'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPh1' : {'parents'       : ['DPh1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPmc'],
+                                     'friends'       : []}})
+
+    #DPmc primarily intended for use as a downstream tree category
+    transform_dict.update({'DPmc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPo7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPo7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPhs' : {'parents'       : ['DPhs'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlhs'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPh2' : {'parents'       : ['DPh2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPo7'],
+                                     'friends'       : []}})
+
+    #mlhs primarily intended for use as a downstream tree category
+    transform_dict.update({'mlhs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'qbt1' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['qbt1'],
@@ -6982,9 +7038,9 @@ class AutoMunge:
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
+    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPbn,
+                                  'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
@@ -7063,6 +7119,69 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
+    process_dict.update({'DPh1' : {'dualprocess' : self._process_hs10,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hs10,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
+                                  'labelctgy' : 'DPmc'}})
+    #if DPmc to be applied downstream of multirt or 1010 MLinfilltype recommend recasting MLinfilltype to match
+    process_dict.update({'DPmc' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
+                                  'labelctgy' : 'DPmc'}})
+    process_dict.update({'DPo7' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'upstream_hsh2' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
+                                  'labelctgy' : 'DPo7'}})
+    process_dict.update({'DPhs' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'mlhs'}})
+    process_dict.update({'DPh2' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'space' : '',
+                                                     'excluded_characters' : []},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'DPod'}})
+    #note that the default norm_category DPod is intended for use as a downstream tree category
+    process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'mlhs',
+                                                     'norm_params' : {'flip_prob' : 0.03,
+                                                                      'testnoise' : False,
+                                                                      'weighted' : True},
+                                                     'norm_category' : 'DPod'},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'mlhs'}})
     process_dict.update({'qbt1' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
@@ -11457,9 +11576,10 @@ class AutoMunge:
     else:
       norm_params = {}
 
-    #dtype accepts one of {'float', 'conditionalinteger'}
+    #dtype accepts one of {'float', 'conditionalinteger', 'mlhs'}
     #where 'float' is for use with mlti applied with concurrent_nmbr MLinfilltype
     #and 'conditionalinteger' is for use with concurrent_ordl MLinfilltype
+    #and 'hash' is for use when upstream trasnform is an ordinal hashing (uses different method to identify encoding space for conditional type)
     #(may be needed for transforms in custom_trian convention, otherwise can just leave as 'float' to defer to transform basis)
     #note conditionalinteger is only applied when processdict[norm_category]['dtype_convert'] is not False
     if 'dtype' in params:
@@ -11488,7 +11608,12 @@ class AutoMunge:
     #this function is intended to be applied donstream of a multirt encoding
     #meaning there may be multiple columns serving as target
     #we'll access the upstream categorylist stored in postprocess_dict
-    inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    #or otherwise if this is an upstream trasnform just apply to the received column
+    if column in postprocess_dict['column_dict']:
+      inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    else:
+      #origcolumn scenario when not applied as downstream transform
+      inputtextcolumns = [column]
     
     #the returned columns will each have consistent suffix appending
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
@@ -11534,11 +11659,11 @@ class AutoMunge:
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
       and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-        del mdf_train[textcolumns]
-        del mdf_test[textcolumns]
+        for textcolumn in textcolumns:
+          del mdf_train[textcolumn]
+          del mdf_test[textcolumn]
 
     #elif this is a dual process function
     elif 'dualprocess' in postprocess_dict['process_dict'][norm_category] \
@@ -11554,11 +11679,11 @@ class AutoMunge:
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
       and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-        del mdf_train[textcolumns]
-        del mdf_test[textcolumns]
+        for textcolumn in textcolumns:
+          del mdf_train[textcolumn]
+          del mdf_test[textcolumn]
     
     #else if this is a single process function process train and test seperately
     elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
@@ -11578,11 +11703,11 @@ class AutoMunge:
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
-      if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-      or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+      if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
       and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-        del mdf_train[textcolumns]
-        del mdf_test[textcolumns]
+        for textcolumn in textcolumns:
+          del mdf_train[textcolumn]
+          del mdf_test[textcolumn]
     
     final_returned_columns = []
     for norm_column_dict_list_entry in norm_column_dict_list:
@@ -11590,7 +11715,7 @@ class AutoMunge:
 
     #if this is an ordinal encoded set returned form transform in custom_train convention we may need to apply dtype convert
     max_encoding_for_dtype_convert_dict = {}
-    if dtype in {'conditionalinteger'}:
+    if dtype in {'conditionalinteger', 'mlhs'}:
 
       if 'dtype_convert' not in postprocess_dict['process_dict'][norm_category] \
       or 'dtype_convert' in postprocess_dict['process_dict'][norm_category] \
@@ -11599,6 +11724,14 @@ class AutoMunge:
         for final_returned_column in final_returned_columns:
 
           max_encoding_for_dtype_convert = mdf_train[final_returned_column].max()
+
+          #max encoding space for dtype = mlhs scnenario assumes upstream hashing and norm_category that retains size of encoding space
+          if dtype == 'mlhs':
+
+            if column in postprocess_dict['column_dict'] \
+            and column in postprocess_dict['column_dict'][column]['normalization_dict'] \
+            and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+              max_encoding_for_dtype_convert = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
 
           #save the max encoding with key of final_returned_column for use in postmunge
           max_encoding_for_dtype_convert_dict.update({final_returned_column : max_encoding_for_dtype_convert})
@@ -22122,6 +22255,7 @@ class AutoMunge:
     #the noise properties may be customized with parameter 'flip_prob'
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
+    #unless testnoise is activated which applies test noise injection in both automunge and postmunge
     #note this assumes clean data as input since this will be intended for downstream applicaiton
     #in family trees, so no infill is performed
     #note that for postprocess function in postmunge, determination of whether to treat
@@ -22211,6 +22345,7 @@ class AutoMunge:
     #(including potenitally the current encoding for no flip)
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
+    #unless testnoise is activated which applies test noise injection in both automunge and postmunge
     #note this assumes clean data as input since this will be intended for downstream applicaiton
     #in family trees, so no infill is performed
     #note that for postprocess function in postmunge, determination of whether to treat
@@ -22240,6 +22375,11 @@ class AutoMunge:
       weighted = params['weighted']
     else:
       weighted = True
+
+    if 'upstream_hsh2' in params:
+      upstream_hsh2 = params['upstream_hsh2']
+    else:
+      upstream_hsh2 = False
       
     DPod_column = column + '_' + suffix
     DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
@@ -22252,6 +22392,13 @@ class AutoMunge:
     
     #we'll want to know the set of activations present in column, for automunge this is unique values
     ord_encodings = mdf_train[column].unique()
+
+    if upstream_hsh2 is True:
+      if column in postprocess_dict['column_dict'] \
+      and column in postprocess_dict['column_dict'][column]['normalization_dict'] \
+      and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+        vocab_size = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
+        ord_encodings = list(range(vocab_size))
       
     #first we'll derive our sampled noise for injection
     mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
@@ -22330,6 +22477,256 @@ class AutoMunge:
 
       column_dict_list.append(column_dict)
         
+    return mdf_train, mdf_test, column_dict_list
+
+  def _process_DPmc(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    '''
+    #process_DPmc(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to categoric training data, such as for differential privacy purposes
+    #similar to DPod in that it is intended for application downstream of categoric trasnforms
+    #but adds support for direct application downstream of categoric transforms returning multi-column sets
+    #whereas DPod relies on feature being ordinally encoded
+    
+    #ratio of entries receiving injection is based on flip_prob parameter
+    #which is used as a ratio for Bernoulli sampling
+    
+    #noise injection results in flipping to a randomly sampled alternate distribution set
+    #(including potenitally the current set for no flip)
+    #weighted by distribution of unique activation sets found in the training data
+    #weighting can be deactivated with the weighted parameter to sample from uniform distribution
+    
+    #note that the noise is only injected into the designated training data of df_train
+    #for test data this is a pass-through transform
+    #unless testnoise is activated which applies test noise injection in both automunge and postmunge
+    
+    #note this assumes clean data as input since this will be intended for downstream application
+    #in family trees, so no infill is performed
+
+    #for distinguishing between test noise injection as on/off in postmunge can use postmunge traindata parameter
+    #such that for postprocess function in postmunge, determination of whether to treat
+    #df_test as train or test data is based on the traindata entry in postprocess_dict
+    #in automunge df_test is treated as test data by default
+
+    #consistent with other DP trasnforms DPmc is intended for downstream use
+    #and so assumes data already integer encoded with infill
+    '''
+    
+    suffixoverlap_results = {}
+    
+    #initialize parameters
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      flip_prob = 0.03
+      
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+
+    if 'weighted' in params:
+      weighted = params['weighted']
+    else:
+      weighted = True
+      
+    #max encoding for conditional data type inspects upstream hs10 hashing vocab_size when selected
+    if 'upstream_hs10' in params:
+      upstream_hs10 = params['upstream_hs10']
+    else:
+      upstream_hs10 = False
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
+    #this function is intended to be applied donstream of a potentially multi column non current encoding 
+    #(e.g. muiltirt, 1010) - (for concurrent scenario we recomend applying noise injection through mlti)
+    #meaning there may be multiple columns serving as target
+    #we'll access the upstream categorylist stored in postprocess_dict
+    #or otherwise if this is an upstream trasnform just apply to the received column
+    if column in postprocess_dict['column_dict']:
+      inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    else:
+      #origcolumn scenario when not applied as downstream transform
+      inputtextcolumns = [column]
+    
+    #the returned columns will each have consistent suffix appending
+    textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
+    
+    #this maps between received and returned columns
+    textlabelsdict = dict(zip(inputtextcolumns, textcolumns))
+    
+    #we don't offer inplace support for most DP transforms since they usually involve support columns
+    #we might be able to make inplace work for this one
+    
+    #check suffixoverlap before copying
+    suffixoverlap_results = \
+    self.__df_check_suffixoverlap(mdf_train, textcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
+    
+    if inplace is not True:
+      
+      for inputtextcolumn in inputtextcolumns:
+        
+        mdf_train[textlabelsdict[inputtextcolumn]] = mdf_train[inputtextcolumn].copy()
+        mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
+    
+    else:
+      
+      mdf_train.rename(columns = textlabelsdict, inplace = True)
+      mdf_test.rename(columns = textlabelsdict, inplace = True)
+      
+    #subsequent data type conversion relies on max encoding, we'll apply this before noise injection
+    maxencodings = {}
+    if upstream_hs10 is False:
+      for textcolumn in textcolumns:
+        maxencoding = mdf_train[textcolumn].max()
+        maxencodings.update({textcolumn : maxencoding})
+    elif upstream_hs10 is True:
+      
+      if column in postprocess_dict['column_dict'] \
+      and column in postprocess_dict['column_dict'][column]['normalization_dict'] \
+      and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+        maxencoding = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
+      else:
+        maxencoding = mdf_train[column].max()
+      
+      for textcolumn in textcolumns:
+        maxencodings.update({textcolumn : maxencoding})
+      
+    #now we'll create a support dataframe df_unique from df_train
+    #which we'll consolidate redundant rows in df_unique before saving to normalization_dict
+    df_unique = mdf_train[textcolumns].copy()
+    
+    #first we derive a mask based on presence of duplicate rows
+    mask = pd.DataFrame(df_unique.duplicated())
+    
+    #this operation inverts True and False in the mask for next operation
+    mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
+    
+    #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
+    #which may be much fewer rows than received df_unique 
+    df_unique = df_unique.iloc[mask.to_numpy()]
+    
+    #reset index in df_unique to a range index
+    df_unique = df_unique.reset_index(drop=True)
+    
+    weights = []
+    if weighted is True:
+      #for each unique row in the consolidated df_unique calculate a weight
+      #by count of that row in mdf_train[textcolumns]
+      #note this is applied in same order as unique_range fed to np.random.choice
+      for i in range(df_unique.shape[0]):
+        #to derive, we'll create a comparably shaped dataframe with all same row for comparison to mdf_train[textcolumns]
+        df_allonerow = pd.concat([df_unique[i:i+1]]*mdf_train.shape[0], axis=0)
+        df_allonerow.index = mdf_train.index
+        count = ((mdf_train[textcolumns] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
+        weight = count / mdf_train.shape[0]
+        weights.append(weight)
+    
+    def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights):
+      """
+      common support function used to inject noise to either mdf_train or mdf_test when applicable
+      """
+      
+      unique_count = df_unique.shape[0]
+      unique_range = list(range(unique_count))
+    
+      #df_noise is support dataframe for noise injection to data
+      df_noise = pd.DataFrame(index = df.index)
+      df_noise_tempcolumn1 = 1
+      df_noise_tempcolumn2 = 2
+
+      #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+      df_noise[df_noise_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+
+      if weighted is False:
+        #df_noise_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
+        df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+      elif weighted is True:
+        df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+
+      #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
+      df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
+      df_unique2.index = df.index
+
+      #now we can carry the values from df_unique2 to replace entries in df associated with noise injection
+      #for cases where df_noise[df_noise_tempcolumn1] was sampled as 1
+      #here the columns in df_unique2 match the columns in df[textcolumns]
+      for textcolumn in textcolumns:
+
+        #setting to dataframe for single column case
+        df = \
+        self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
+      
+      return df
+    
+    #inject noise to mdf_train
+    mdf_train = \
+    _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
+    
+    #inspect testnoise for determination of whether to inject noise to mdf_test
+    if testnoise is True:
+      
+      #inject noise to mdf_test
+      mdf_test = \
+      _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+    
+    #now apply data type conversion, this should align with received data types, just applying in case of drift
+    for textcolumn in textcolumns:
+
+      max_encoding_for_dtype_convert = maxencodings[textcolumn]
+
+      if max_encoding_for_dtype_convert <= 255:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint8)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
+      elif max_encoding_for_dtype_convert <= 65535:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint16)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
+      else:
+        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint32)
+        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
+      
+    column_dict_list = []
+    
+    for textcolumn in textcolumns:
+      
+      #in case it is a large object, we'll only save df_unique in the first entry for memory conservation
+      if textcolumn != textcolumns[0]:
+        df_unique = False
+      
+      normalization_dict = {textcolumn : {'inputtextcolumns' : inputtextcolumns, \
+                                          'textcolumns' : textcolumns, \
+                                          'textlabelsdict' : textlabelsdict, \
+                                          'flip_prob' : flip_prob, \
+                                          'testnoise' : testnoise, \
+                                          'weighted' : weighted, \
+                                          'weights' : weights, \
+                                          'df_unique' : df_unique, \
+                                          'suffix' : suffix, \
+                                          'maxencodings' : maxencodings, \
+                                          'upstream_hs10' : upstream_hs10, \
+                                          'inplace' : inplace}}
+    
+      column_dict = {textcolumn : {'category' : treecategory, \
+                                   'origcategory' : category, \
+                                   'normalization_dict' : normalization_dict, \
+                                   'origcolumn' : column, \
+                                   'inputcolumn' : column, \
+                                   'columnslist' : textcolumns, \
+                                   'categorylist' : textcolumns, \
+                                   'infillmodel' : False, \
+                                   'infillcomplete' : False, \
+                                   'suffixoverlap_results' : suffixoverlap_results, \
+                                   'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict)
+    
     return mdf_train, mdf_test, column_dict_list
 
   def _process_qbt1(self, df, column, category, treecategory, postprocess_dict, params = {}):
@@ -23200,8 +23597,8 @@ class AutoMunge:
 
         defaultcategorical = 'DP10'
         defaultbnry = 'DPbn'
-        defaultordinal = 'hsh2'
-        defaultordinal_allunique = 'hash'
+        defaultordinal = 'DPh2'
+        defaultordinal_allunique = 'DPhs'
         defaultnumerical = 'DPnb'
         defaultdatetime = 'dat6'
         defaultnull = 'null'
@@ -23210,8 +23607,8 @@ class AutoMunge:
 
         defaultcategorical = 'DPod'
         defaultbnry = 'DPbn'
-        defaultordinal = 'hsh2'
-        defaultordinal_allunique = 'hash'
+        defaultordinal = 'DPh2'
+        defaultordinal_allunique = 'DPhs'
         defaultnumerical = 'DPrt'
         defaultdatetime = 'dat6'
         defaultnull = 'null'
@@ -25436,12 +25833,12 @@ class AutoMunge:
       if list(df.columns) != list(df_unique.columns) and set(df.columns) != set(df_unique.columns):
         df.columns = df_unique.columns
 
-      #we'll have support columns of DPod_column_temp1 = 'tmp1' and DPod_column_temp2 = 'tmp2'
+      #we'll have support columns of DPod_column_temp1 = 1 and DPod_column_temp2 = 2
       #and returned set will delete support columns and retain original received column naming conventions
       #(using DPod naming as a shortcut so can repurpose code associated with DPod)
-      #don't have to worry about suffix overlap since columns in df will have returned columns with '_' + suffix
-      DPod_tempcolumn1 = 'tmp1'
-      DPod_tempcolumn2 = 'tmp2'
+      #don't have to worry about suffix overlap since columns in df will be strings
+      DPod_tempcolumn1 = 1
+      DPod_tempcolumn2 = 2
 
       unique_count = df_unique.shape[0]
       unique_range = list(range(unique_count))
@@ -25766,6 +26163,13 @@ class AutoMunge:
     for autoMLer_key_to_delete in autoMLer_keys_to_delete:
       
       del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
+    
+    #for customML scenario, we'll only store the inference function so user doesn't have to reintialize trainer for postmunge
+    #tradeoff is that postmunge feature importance will need to apply a different model type
+    if autoMLtype == 'customML':
+      #modeltarget is e.g. booleanclassification, ordinalclassification, etc
+      for modeltarget in postprocess_dict['autoMLer'][autoMLtype]:
+        del postprocess_dict['autoMLer'][autoMLtype][modeltarget]['train']
         
     return postprocess_dict
 
@@ -36707,7 +37111,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.22'
+    automungeversion = '7.23'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38589,10 +38993,10 @@ class AutoMunge:
           mdf_test = \
           self.__custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params)
 
-        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-          del mdf_test[textcolumns]
+          for textcolumn in textcolumns:
+            del mdf_test[textcolumn]
         
       #elif this is a dual process function
       elif 'postprocess' in postprocess_dict['process_dict'][norm_category] \
@@ -38611,10 +39015,10 @@ class AutoMunge:
           postprocess_dict['process_dict'][norm_category]['postprocess'](mdf_test, inputcolumn, norm_postprocess_dict, \
                                                                          columnkey_list, norm_params)
 
-        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-          del mdf_test[textcolumns]
+          for textcolumn in textcolumns:
+            del mdf_test[textcolumn]
           
       #else if this is a single process function
       elif 'singleprocess' in postprocess_dict['process_dict'][norm_category] \
@@ -38638,12 +39042,12 @@ class AutoMunge:
           postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, origcategory, \
                                                                            norm_category, norm_postprocess_dict, norm_params)
 
-        if 'inplace_option' not in postprocess_dict['process_dict'][norm_category] \
-        or 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
+        if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
-          del mdf_test[textcolumns]
+          for textcolumn in textcolumns:
+            del mdf_test[textcolumn]
 
-      if dtype in {'conditionalinteger'}:
+      if dtype in {'conditionalinteger', 'mlhs'}:
 
         if 'dtype_convert' not in postprocess_dict['process_dict'][norm_category] \
         or 'dtype_convert' in postprocess_dict['process_dict'][norm_category] \
@@ -38668,7 +39072,14 @@ class AutoMunge:
         inplace = False
 
       if inplace is True:
-        del mdf_test[column]
+        if column in postprocess_dict['column_dict']:
+          inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+        else:
+          #origcolumn scenario when not applied as downstream transform
+          inputtextcolumns = [column]
+
+        for inputtextcolumn in inputtextcolumns:
+          del mdf_test[inputtextcolumn]
     
     return mdf_test
 
@@ -43342,6 +43753,7 @@ class AutoMunge:
     #the noise properties may be customized with parameter 'flip_prob'
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
+    #unless testnoise is activated which applies test noise injection in both automunge and postmunge
     #note this assumes clean data as input since this will be intended for downstream applicaiton
     #in family trees, so no infill is performed
     #note that for postprocess function in postmunge, determination of whether to treat
@@ -43408,6 +43820,7 @@ class AutoMunge:
     #(including potenitally the current encoding for no flip)
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
+    #unless testnoise is activated which applies test noise injection in both automunge and postmunge
     #note this assumes clean data as input since this will be intended for downstream applicaiton
     #in family trees, so no infill is performed
     #note that for postprocess function in postmunge, determination of whether to treat
@@ -43490,6 +43903,129 @@ class AutoMunge:
       if inplace is True:
         del mdf_test[column]
 
+    return mdf_test
+
+  def _postprocess_DPmc(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess correpsonding to _process_DPmc
+    #in addition to assignparam testnoise parameter
+    #noise injection may be performed based on postmunge traindata parameter
+    #otherwise this is a passthrough transform
+    '''
+    
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      inputtextcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+      textcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+      textlabelsdict = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      weighted = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['weighted']
+      weights = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['weights']
+      #df_unique only saved for first textcolumn
+      df_unique = \
+      postprocess_dict['column_dict'][textcolumns[0]]['normalization_dict'][textcolumns[0]]['df_unique']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      maxencodings = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['maxencodings']
+      inplace = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      
+      if inplace is not True:
+        for inputtextcolumn in inputtextcolumns:
+          mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
+      else:
+        mdf_test.rename(columns = textlabelsdict, inplace = True)
+        
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
+      
+      def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights):
+        """
+        common support function used to inject noise to either mdf_train or mdf_test when applicable
+        """
+
+        unique_count = df_unique.shape[0]
+        unique_range = list(range(unique_count))
+
+        #df_noise is support dataframe for noise injection to data
+        df_noise = pd.DataFrame(index = df.index)
+        df_noise_tempcolumn1 = 1
+        df_noise_tempcolumn2 = 2
+
+        #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+        df_noise[df_noise_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+
+        if weighted is False:
+          #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
+          df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+        elif weighted is True:
+          df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+
+        #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
+        df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
+        df_unique2.index = df.index
+
+        #now we can carry the values from df_unique2 to replace entries in df associated with noise injection
+        #for cases where df_noise[df_noise_tempcolumn1] was sampled as 1
+        #here the columns in df_unique2 match the columns in df[textcolumns]
+        for textcolumn in textcolumns:
+
+          #setting to dataframe for single column case
+          df = \
+          self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
+
+        return df
+      
+      if traindata is True or testnoise is True:
+        
+        #inject noise to mdf_test
+        mdf_test = \
+        _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+        
+      #now apply data type conversion, this should align with received data types, just applying in case of drift
+      for textcolumn in textcolumns:
+
+        max_encoding_for_dtype_convert = maxencodings[textcolumn]
+
+        if max_encoding_for_dtype_convert <= 255:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
+        elif max_encoding_for_dtype_convert <= 65535:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
+        else:
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
+      
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        if column in postprocess_dict['column_dict']:
+          inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+        else:
+          #origcolumn scenario when not applied as downstream transform
+          inputtextcolumns = [column]
+          
+        for inputtextcolumn in inputtextcolumns:
+          del mdf_test[inputtextcolumn]
+    
     return mdf_test
 
   def _postprocess_exc2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
@@ -44031,6 +44567,28 @@ class AutoMunge:
       process_dict = FSpostprocess_dict['process_dict']
       ML_cmnd = FSpostprocess_dict['ML_cmnd']
       FSpostprocess_dict['postprocess_assigninfill_dict']['naninfill'] = []
+
+      #turn off assigninfill for postmunge applied for feature select
+      FSpostprocess_dict['postprocess_assigninfill_dict'] = \
+      {'stdrdinfill' : FSpostprocess_dict['pre_dimred_finalcolumns_train'],
+      'MLinfill' : [],
+      'zeroinfill' : [],
+      'oneinfill' : [],
+      'adjinfill' : [],
+      'meaninfill' : [],
+      'medianinfill' : [],
+      'negzeroinfill' : [],
+      'modeinfill' : [],
+      'lcinfill' : [],
+      'naninfill' : [],
+      'unspecified' : []}
+
+      #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
+      if ML_cmnd['autoML_type'] == 'customML':
+        autoMLer = self.__assemble_autoMLer()
+        FSpostprocess_dict['autoMLer'] = autoMLer
+        ML_cmnd['autoML_type'] = 'randomforest'
+        FSpostprocess_dict['ML_cmnd']['autoML_type'] = 'randomforest'
 
       #totalvalidation = valpercent
 
@@ -48187,6 +48745,36 @@ class AutoMunge:
                       ((df[normkey] == extract).astype(int) + (df[inputcolumn].isna()).astype(int)) == 2, 
                       key, 
                       specified='replacement')
+    
+    return df, inputcolumn
+
+  def _inverseprocess_DPmc(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_DPmc
+    #is simply a pass-through function, original character cases not retained
+    #does not perform infill, assumes clean data
+    #translations are for column renaming purposes
+    """
+    
+    normkey = categorylist[0]
+    
+    textcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textcolumns']
+    textlabelsdict = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['textlabelsdict']
+    
+    #apply a passthrough inversion
+    df[textcolumns] = df[categorylist]
+      
+    #this gives us recovered columns in the form of textcolumns, now rename to inputtextcolumns
+    
+    #inverse_textlabelsdict maps {textcolumn : inputtextcolumn}
+    inverse_textlabelsdict = {value:key for key,value in textlabelsdict.items()}
+    
+    df.rename(columns = inverse_textlabelsdict, inplace = True)
+      
+    #this returns an arbitrary one of the input columns which is fine
+    inputcolumn = list(textlabelsdict)[0]
     
     return df, inputcolumn
 
