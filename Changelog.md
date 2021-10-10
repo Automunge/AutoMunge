@@ -4645,3 +4645,29 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - when powertrasnform = 'DP1', default numerical replaced with DPnb, categoric with DP10, and binary with DPbn
 - when powertrasnform = 'DP2', default numerical replaced with DPrt, categoric with DPod, and binary with DPbn
 - struck an unused validation result (check_transformdict_result2)
+
+7.23
+- added upstream primitive entry support for mlti
+- corrected empty set scenario inplace accomodation for mlti postprocess 
+- corrected mlti norm_category inplace_option inspection to align with convention that unspecified inplace_option in process_dict is interpreted as True
+- found and fixed an edge case for mlti transform associated with norm_category without inplace support
+- new noise injection transforms for intended use as downstream tree categories
+  mlhs: for categoric noise injection targeting multicolumn sets with concurrent MLinfilltype (e.g. for use downstream of concurrent_act or concurrent_ordl)
+  DPmc: for categoric noise injection targeting multicolumn sets (e.g. for use downstream of multirt and 1010)
+- note that DPmc differs from DPod in that it doesn't require an ordinal encoded feature as input
+- new root categories for noise injection to hashing transforms
+  DPhs: hash with downstream noise injection (with support for multicolumn hashing with word extraction)
+  DPh2: hsh2 with dowstream noise injection (single column case comparable to hsh2)
+  DPh1: hs10 with downstream noise injection
+- update to conventions for powertransform scenarios of 'DP1' and 'DP2', replacing hash and hsh2 scenarios with DPhs and DPh2 respectively
+- new DPod parameter upstream_hsh2 for use when DPod is applied downstream of a hashing transform
+- new mlti dtype parameter scenario mlhs for use when mlti applied downstream of a multicolumn hashing
+- update to customML convention, now only the inference functions are stored in postprocess_dict for access in postmunge
+- benefit of this convention is that if user downloads postprocess_dict with pickle and wants to upload in a new notebook, now the only need to reinitialize the inference functions
+- which especially makes sense for QML
+- which benefits privacy for special training configurations when postprocess_dict is shared publicly
+- only tradeoff is lose access to cusotmML for training postmunge feature importance, compromise is we appy the default autoML_type instead
+- small tweak to stochastic_impute_categoric for a better temp support column convention as integers to ensure no overlap with otherwise string column headers
+- updated convention for DPbn root category, now noise is injected with DPod function instead of DPbn function
+- previously they would have been equivalent, but now that DPod supported weighted samples is a better resource 
+- in other words, DPbn now supports weighted sampling for noise injection
