@@ -4671,3 +4671,15 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - updated convention for DPbn root category, now noise is injected with DPod function instead of DPbn function
 - previously they would have been equivalent, but now that DPod supported weighted samples is a better resource 
 - in other words, DPbn now supports weighted sampling for noise injection
+
+7.24
+- alternate autoML libraries are now given a conditional import instead applying import by default
+- since imports are conducted internal to their support function, the import requires reinitialization with each ML infill model training etc. By conducting a conditional import, user now has option to perform associated imports external to automunge(.) or postmunge(.) (instead of an automated import with each function call), which in some cases will benefit latency. Or when external import omitted support functions conduct internal exports as prior.
+- update to evalcategory, now majority numeric data with nunique == 2 defaults to bnry instead of nmbr root category (usefule in scenario where numeric labels may be a classificaiotn target which is not uncommon)
+- added note to the customML writeup in read me for customML_train_classifier template: "label entries will be non-negative str(int) with possible exception for the string '-1'"
+- realized last update claim of "only need to reinitialize the inference functions" was not sufficiently validated, had missed that customML funcitons are also saved in ML_cmnd postprocess_dict entry, now resolved
+- update to customML convention, now library has a suite of internally defined inference functions for a range of libraries, including {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}
+- this was inspired by realization that since we only needed to reinitialize customML inferance functions in new notebook prior to pickle upload of postprocess_dict, and since most libraries inference operations are fairly simple and common, by giving option of an internally defined inference function user can now apply customML and share the postprocess_dict publicly without a need to parallel distribute the custom inference function
+- user defined customML inference functions are specified through ML_cmnd['customML']['customML_Classifier_predict'] and ML_cmnd['customML']['customML_Regressor_predict']
+- user can now alternatively populate these entries as a string of one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'} to apply the default inference function associated with that library
+- Please note we do not yet consider these default inference functions fully audited - pending further validations. As implemented is intended as a proof of concept.
