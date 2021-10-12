@@ -853,7 +853,8 @@ for returned pandas dataframe. If set to _True_ returns pandas dataframes
 (note that index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
 corresponding to the order of rows as they were passed to function). If set to _False_
-returns numpy arrays instead of dataframes.
+returns numpy arrays instead of dataframes. Note that the dataframes will have column
+specific data types, or returned numpy arrays will have a single data type.
 
 * NArw_marker: a boolean identifier _(True/False)_ which indicates if the
 returned sets will include columns with markers for source column entries subject to 
@@ -1078,6 +1079,7 @@ ML_cmnd = {'autoML_type':'flaml',
            'MLinfill_cmnd' : {'flaml_classifier_fit'   : {'time_budget' : 15 },
                               'flaml_regressor_fit'    : {'time_budget' : 15}}}
 ```
+Note that when applying one of these alternate autoML_type libraries, a user can perform library imports external to the automunge(.) or postmunge(.) call to benefit latency.
 
 Please note that model training by default incorporates a random random seed with each application,
 as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
@@ -2160,7 +2162,9 @@ for returned pandas dataframes. If set to _True_ returns pandas dataframes
 (note that index is not preserved, non-range indexes are extracted 
 to the ID sets, and automunge(.) generates an application specific range 
 integer index in ID sets corresponding to the order of rows as they were 
-passed to function). If set to _False_ returns numpy arrays instead of dataframes.
+passed to function). If set to _False_ returns numpy arrays instead of dataframes. 
+Note that the dataframes will have column specific data types, or returned numpy 
+arrays will have a single data type.
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
@@ -2313,15 +2317,16 @@ binstransform parameter was activated this will be supplemented by a collection
 of bins indicating number of standard deviations from the mean. Note that deafult infill
 performed prior to ML infill is imputation with negative zero. The exception is for
 numeric data received in a column with pandas 'categoric' data type, which are instead binarized 
-consistent to categoric sets (as 1010 or bnry).
+consistent to categoric sets (as 1010 or bnry). Note that numerical sets with 2 unique values in train
+set default to bnry.
 - 1010: for categorical data excluding special cases described following, columns are 
 subject to binarization encoding via '1010'. If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
 (which defaults to 255), the encoding will instead be by hashing. Note that for default 
 infill missing data has a distinct representation in the encoding space.
 - bnry: for categorical data of <=2 unique values excluding infill (e.g. NaN), the 
-column is encoded to 0/1. Note that numerical sets with <= 2 unique values in train
-set default to bnry.
+column is encoded to 0/1. Note that numerical sets with 2 unique values in train
+set also default to bnry.
 - hsh2: for categorical data, if the number of unique entries in the column exceeds 
 the parameter 'numbercategoryheuristic' (which defaults to 255), the encoding will 
 instead be by 'hsh2' which is an ordinal (integer) encoding based on hashing.
@@ -4985,10 +4990,10 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
 
   return df
 ```
-Please note that if you included externally initialized custom_train / custom_test / custom_inversion 
-functions in an automunge(.) call, they will need to be reinitialized by user prior to uploading an 
-externally saved postprocess_dict with pickle in a new notebook. (This was a design decision for 
-security considerations.)
+Please note that if you included externally initialized functions in an automunge(.) call, 
+like for custom_train transformation functions, they will need 
+to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
+in a new notebook. (This was a design decision for security considerations.)
 
  ___ 
 
@@ -5005,10 +5010,10 @@ top of XGBoost or other learning libraries.
 We'll demonstrate here templates for defining training and inference functions for
 classification and regression. These functions can be initialized externally and 
 applied for ML infill and feature importance. Please note that if you included externally 
-initialized customML functions in an automunge(.) call, the inference functions will need 
-to be reinitialized by user prior to uploading an externally saved postprocess_dict with 
-pickle in a new notebook. These demonstrations are shown with scikit Random Forest models 
-for simplicity.
+initialized functions in an automunge(.) call, like for customML inference functions 
+(but not customML training functions), they will need to be reinitialized by user prior to 
+uploading an externally saved postprocess_dict with pickle in a new notebook. These demonstrations
+are shown with scikit Random Forest models for simplicity.
 
 ```
 def customML_train_classifier(labels, features, columntype_report, commands, randomseed):
@@ -5018,6 +5023,7 @@ def customML_train_classifier(labels, features, columntype_report, commands, ran
   #labels for classification are received as a single column pandas dataframe with header of integer 1
   #and entries of str(int) type (i.e. string representations of integers like '0', '1')
   #if user prefers numeric labels, they can apply labels = labels.astype(int)
+  #label entries will be non-negative str(int) with possible exception for the string '-1'
   
   #features is received as a numerically encoded pandas dataframe
   #with categoric entries as boolean integer or ordinal integer
@@ -5136,6 +5142,24 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : customML_predict_regressor}}
 ```
+Note that the library has an internal suite of inference fucntions for different ML libraries 
+that can optionally be used in place of a user defined customML inference function. These can
+be activated by passing a string to entries for 'customML_Classifier_predict' or  'customML_Regressor_predict'
+as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}. Use of the
+internally defined inference functions allows a user to upload a postprocess_dict in a seperate notebook
+without needing to first reinitialize the customML inference functions. Note that when applying one of these default inference functions, a user can perform library imports external to the automunge(.) or postmunge(.) call to benefit latency. For example, to apply a
+default inference function for the XGBoost library could apply:
+```
+ML_cmnd = {'autoML_type' : 'customML',
+           'MLinfill_cmnd' : {'customML_Classifier':{'parameter1' : value1},
+                              'customML_Regressor' :{'parameter2' : value2}},
+           'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
+                         'customML_Classifier_predict': 'xgboost', 
+                         'customML_Regressor_train'   : customML_train_regressor, 
+                         'customML_Regressor_predict' : 'xgboost'}}
+```
+Please note we do not yet consider these default inference functions fully audited - pending further validations. As implemented is intended as a proof of concept.
+
 And thus ML infill can run with any tabular learning library or algorithm. BYOML.
 
  ___ 
