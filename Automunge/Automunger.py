@@ -55,6 +55,9 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
+#these imports are only conducted when user has not previously conducted imports externally
+#sys used to check for prior external imports for these function specific imports
+import sys
 # from autogluon import TabularPrediction as task
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
@@ -23619,7 +23622,7 @@ class AutoMunge:
         #defaultcategorical = 'text'
         defaultcategorical = '1010'
         
-        #defaultbnry is for categoric sets with nunique <= 2
+        #defaultbnry is for categoric or numeric sets with nunique <= 2
         defaultbnry = 'bnry'
         
         #defaultordinal applied when unique values exceeds numbercategoryheuristic
@@ -23726,7 +23729,7 @@ class AutoMunge:
 
       #now for categoric sets (where most common is string or we recieved column with pandas dtype of 'category')
       #we have four scenarios
-      if mostcommon_type == 'string':
+      if mostcommon_type == 'string' or mostcommon_type == 'number' and nunique == 2:
         
         #base configuration is defaultcategorical (binarization)
         category = defaultcategorical
@@ -23746,7 +23749,8 @@ class AutoMunge:
       
       #now for numeric sets we default to z-score normalziation
       #note this may be overwritten below based on powertransform parameter
-      elif mostcommon_type == 'number':
+      elif mostcommon_type == 'number' \
+      and nunique != 2:
         
         category = defaultnumerical
         
@@ -26170,8 +26174,15 @@ class AutoMunge:
       #modeltarget is e.g. booleanclassification, ordinalclassification, etc
       for modeltarget in postprocess_dict['autoMLer'][autoMLtype]:
         del postprocess_dict['autoMLer'][autoMLtype][modeltarget]['train']
+
+    #we'll also strike any populated customML training functions passed to ML_cmnd['customML']
+    if 'customML' in ML_cmnd:
+      if 'customML_Classifier_train' in ML_cmnd['customML']:
+        ML_cmnd['customML']['customML_Classifier_train'] = True
+      if 'customML_Regressor_train' in ML_cmnd['customML']:
+        ML_cmnd['customML']['customML_Regressor_train'] = True
         
-    return postprocess_dict
+    return postprocess_dict, ML_cmnd
 
   def _train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
@@ -26579,6 +26590,15 @@ class AutoMunge:
     
     #note that pandas is available as pd and numpy as np
     #if imports were performed internal to customML_train_template they will need to be reinitilized in customML_predict_template
+    
+    #defaulttype is associated with use of internal default inference fucntions as alternate to user defined
+    #and is accessed when user passes to ML_cmnd a string for the custon predict functions
+           'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
+                         'customML_Classifier_predict': '(defaulttype)', 
+                         'customML_Regressor_train'   : customML_train_regressor, 
+                         'customML_Regressor_predict' : '(defaulttype)'}}
+    #where the string '(defaulttype)' may be one of
+    #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}
     """
     
     if model is not False:
@@ -26601,16 +26621,31 @@ class AutoMunge:
       elif modeltype == 'regression':
         function_address = 'customML_Regressor_predict'
       
-      if 'customML' in ML_cmnd:
-        if function_address in ML_cmnd['customML']:
-          if callable(ML_cmnd['customML'][function_address]):
-            try:
-              infill = \
-              ML_cmnd['customML'][function_address](fillfeatures, 
-                                                    model,
-                                                    commands)
-            except ValueError:
-              infill = np.zeros(shape=(fillfeatures.shape[0],1))
+      #ML_cmnd['customML'][function_address] will either be populated with a function or a string
+      #when populated with a string it is passed to defaulttype and used to access one of internal defined inference functions
+      defaulttype = False
+      if not callable(ML_cmnd['customML'][function_address]):
+        defaulttype = ML_cmnd['customML'][function_address]
+        
+      #defaulttype is associated with use of internal default inference functions as alternate to user defined
+      if defaulttype in {'tensorflow', 'xgboost', 'catboost', 
+                         'flaml', 'autogluon', 'randomforest'}:
+        
+        infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands)
+        
+      #otherwise this is scenario when a string defaulttype was not defined, meaning we call the custom function
+      elif defaulttype is False:
+        
+        if 'customML' in ML_cmnd:
+          if function_address in ML_cmnd['customML']:
+            if callable(ML_cmnd['customML'][function_address]):
+              try:
+                infill = \
+                ML_cmnd['customML'][function_address](fillfeatures, 
+                                                      model,
+                                                      commands)
+              except ValueError:
+                infill = np.zeros(shape=(fillfeatures.shape[0],1))
               
       #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
       #we'll convert to a flattened array for common form
@@ -26663,9 +26698,10 @@ class AutoMunge:
     #classification differs by string conversion in single column labels case, based on modeltype parameter
     """
 
-    # import autogluon.core as ag
-    # from autogluon.tabular import TabularPrediction as task
-    from autogluon import TabularPrediction as task
+    #user can conduct this import externally to speed up this function
+    module = 'autogluon.utils.tabular'
+    if module not in sys.modules:
+      from autogluon import TabularPrediction as task
 
     try:
 
@@ -26745,9 +26781,10 @@ class AutoMunge:
     #classification vs regression is based on modeltype and only differs by a string to integer conversion
     """
 
-    # import autogluon.core as ag
-    # from autogluon.tabular import TabularPrediction as task
-    from autogluon import TabularPrediction as task
+    #user can conduct this import externally to speed up this function
+    module = 'autogluon.utils.tabular'
+    if module not in sys.modules:
+      from autogluon import TabularPrediction as task
     
     if model is not False:
       
@@ -26792,7 +26829,10 @@ class AutoMunge:
     #converts multi column one hot sets to ordinal (no string conversion required)
     """
 
-    from flaml import AutoML
+    #user can conduct this import externally to speed up this function
+    module = 'flaml.automl'
+    if module not in sys.modules:
+      from flaml import AutoML
     
     try:
     # if True is True:
@@ -26861,7 +26901,10 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    from flaml import AutoML
+    #user can conduct this import externally to speed up this function
+    module = 'flaml.automl'
+    if module not in sys.modules:
+      from flaml import AutoML
     
     if model is not False:
       
@@ -26885,7 +26928,10 @@ class AutoMunge:
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
     """
 
-    from flaml import AutoML
+    #user can conduct this import externally to speed up this function
+    module = 'flaml.automl'
+    if module not in sys.modules:
+      from flaml import AutoML
     
     try:
     # if True is True:
@@ -26933,7 +26979,10 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    from flaml import AutoML
+    #user can conduct this import externally to speed up this function
+    module = 'flaml.automl'
+    if module not in sys.modules:
+      from flaml import AutoML
     
     if model is not False:
       
@@ -26957,7 +27006,10 @@ class AutoMunge:
     #note that early stopping may cause issues in ML infill when all instances of label carried into validation set
     """
 
-    from catboost import CatBoostClassifier
+    #user can conduct this import externally to speed up this function
+    module = 'catboost'
+    if module not in sys.modules:
+      from catboost import CatBoostClassifier
     
     try:
 
@@ -27093,7 +27145,10 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    from catboost import CatBoostClassifier
+    #user can conduct this import externally to speed up this function
+    module = 'catboost'
+    if module not in sys.modules:
+      from catboost import CatBoostClassifier
     
     if model is not False:
       
@@ -27120,7 +27175,10 @@ class AutoMunge:
     #ML_cmnd['MLinfill_cmnd']['catboost_classifier_fit']['eval_ratio'] = 0
     """
 
-    from catboost import CatBoostRegressor
+    #user can conduct this import externally to speed up this function
+    module = 'catboost'
+    if module not in sys.modules:
+      from catboost import CatBoostRegressor
     
     try:
 
@@ -27232,7 +27290,10 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    from catboost import CatBoostRegressor
+    #user can conduct this import externally to speed up this function
+    module = 'catboost'
+    if module not in sys.modules:
+      from catboost import CatBoostRegressor
     
     if model is not False:
       
@@ -27245,6 +27306,202 @@ class AutoMunge:
       infill = np.zeros(shape=(1,len(categorylist)))
       
       return infill
+
+  #__FunctionBlock_00x customML default inference functions
+
+  def __call_default_function(self, defaulttype, modeltype, fillfeatures, model, commands):
+    """
+    support function called in __predict_customML
+    associated with cases where user passed ML_cmnd['customML'][function_address]
+    as a string instead of a function
+    this function uses that string (received as defaulttype) 
+    to access one of the internal defined inference functions 
+    which is applied to derive infill
+    modeltype is expected as one of {'classification', 'regression'}
+    """
+        
+    if defaulttype == 'tensorflow':
+      if modeltype == 'classification':
+        try:
+          infill = \
+          self.__customML_tensorflow_defaultpredict_classification(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+      if modeltype == 'regression':
+        try:
+          infill = \
+          self.__customML_tensorflow_defaultpredict_regression(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+
+    if defaulttype == 'xgboost':
+      if modeltype in {'classification', 'regression'}:
+        try:
+          infill = \
+          self.__customML_xgboost_defaultpredict(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+
+    if defaulttype == 'catboost':
+      if modeltype in {'classification', 'regression'}:
+        try:
+          infill = \
+          self.__customML_catboost_defaultpredict(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+
+    if defaulttype == 'flaml':
+      if modeltype in {'classification', 'regression'}:
+        try:
+          infill = \
+          self.__customML_flaml_defaultpredict(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+
+    if defaulttype == 'autogluon':
+      if modeltype in {'classification', 'regression'}:
+        try:
+          infill = \
+          self.__customML_autogluon_defaultpredict(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+
+    if defaulttype == 'randomforest':
+      if modeltype in {'classification', 'regression'}:
+        try:
+          infill = \
+          self.__customML_randomforest_defaultpredict(fillfeatures, model, commands)
+        except ValueError:
+          infill = np.zeros(shape=(fillfeatures.shape[0],1))
+          
+    return infill
+
+  def __customML_tensorflow_defaultpredict_classification(self, features, model, commands):
+    """
+    #based on tensorflow, including conversion to tensor
+    """
+    
+    #need to validate
+
+    #user can conduct this import externally to speed up this function
+    module = 'tensorflow'
+    if module not in sys.modules:
+      import tensorflow as tf
+    
+    features = tf.convert_to_tensor(features.to_numpy())
+    
+    infill = model.predict(features)
+    
+    if len(infill.shape) == 0:
+      pass
+    
+    elif len(infill.shape) == 1 or len(infill.shape) > 1 and infill.shape[1] == 1:
+      #this works for binary classificaiton
+      infill = np.rint(infill)
+    
+    else:
+      #for multi label classificiton, assumes infill.shape[1] > 1 and len(infill.shape) == 2:
+      
+      #convert max entry in row to 1, other entries to 0
+      infill2 = np.where(infill == np.max(infill, axis=1).reshape(-1,1), 1, 0)
+
+      #for rows where the original derivation had all zeros recover that form
+      infill2 = np.where(infill.sum(axis=1).reshape(-1,1) == 0, 0, infill2)
+      
+      #this translates to a single column with entries correpsonding to column index number of activation
+      #as str(int) type and entry '-1' for rows without activation
+      #e.g. first column activations populated as '0', second as '1', etc. No activations populated as '-1'
+      #for rows where 1 is populated in every column (as would be case when all entries in row are nonzero and equal), 
+      #the rightmost column is treated as the activation
+      
+      infill = self.__convert_onehot_to_singlecolumn(pd.DataFrame(infill2))
+    
+    return infill
+
+  def __customML_tensorflow_defaultpredict_regression(self, features, model, commands):
+    """
+    #based on tensorflow, including conversion to tensor
+    """
+    
+    #need to validate
+
+    #user can conduct this import externally to speed up this function
+    module = 'tensorflow'
+    if module not in sys.modules:
+      import tensorflow as tf
+    
+    features = tf.convert_to_tensor(features.to_numpy())
+    
+    infill = model.predict(features)
+    
+    return infill
+
+  def __customML_xgboost_defaultpredict(self, features, model, commands):
+    """
+    #based on xgboost XGBClassifier or XGBRegressor
+    """
+    
+    #user can conduct this import externally to speed up this function
+    module = 'xgboost'
+    if module not in sys.modules:
+      from xgboost import XGBClassifier
+      from xgboost import XGBRegressor
+      
+    infill = model.predict(features)
+
+    return infill
+
+  def __customML_catboost_defaultpredict(self, features, model, commands):
+    """
+    #based on catboost CatBoostClassifier or CatBoostRegressor
+    """
+    
+    #user can conduct this import externally to speed up this function
+    module = 'catboost'
+    if module not in sys.modules:
+      from catboost import CatBoostClassifier
+      from catboost import CatBoostRegressor
+      
+    infill = model.predict(features)
+
+    return infill
+
+  def __customML_flaml_defaultpredict(self, features, model, commands):
+    """
+    #based on flaml AutoML
+    """
+    
+    #user can conduct this import externally to speed up this function
+    module = 'flaml.automl'
+    if module not in sys.modules:
+      from flaml import AutoML
+      
+    infill = model.predict(features)
+
+    return infill
+
+  def __customML_autogluon_defaultpredict(self, features, model, commands):
+    """
+    #based on autogluon TabularPrediction
+    """
+    
+    #user can conduct this import externally to speed up this function
+    module = 'autogluon.utils.tabular'
+    if module not in sys.modules:
+      from autogluon import TabularPrediction as task
+    
+    infill = model.predict(features)
+
+    return infill
+
+  def __customML_randomforest_defaultpredict(self, features, model, commands):
+    """
+    #scikit random forest classifier and regressor already imported
+    """
+
+    infill = model.predict(features)
+
+    return infill
 
   def __convert_onehot_to_singlecolumn(self, df, stringtype = True):
     """
@@ -36645,7 +36902,7 @@ class AutoMunge:
     miscparameters_results.update(infill_validations)
 
     #now a cleanup to the postprocess_dict['autoMLer'] data structure to only record entries that were inspected for infill
-    postprocess_dict = \
+    postprocess_dict, ML_cmnd = \
     self.__autoMLer_cleanup(postprocess_dict, ML_cmnd)
 
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
@@ -37111,7 +37368,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.23'
+    automungeversion = '7.24'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37438,7 +37695,7 @@ class AutoMunge:
         print(list(df_labels))
         print("")
           
-    #else set output to numpy arrays
+    #else set output to numpy arrays, using dtype='object' to retain column dtype distinctions between integer and float
     if pandasoutput is False:
 
       df_train = df_train.to_numpy()
@@ -46152,8 +46409,7 @@ class AutoMunge:
     else:
       df_testlabels = pd.DataFrame()
 
-    #else output numpy arrays
-    #else:
+    #else output numpy arrays, using dtype='object' to retain column dtype distinctions between integer and float
     if pandasoutput is False:
       #global processing to test set including conversion to numpy array
       df_test = df_test.to_numpy()
