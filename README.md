@@ -32,8 +32,8 @@ methods, or may also assign to distinct columns custom feature engineering
 transformations, custom sets (e.g. "family trees") of feature engineering 
 transformations, and select from options for missing data infill. The feature 
 engineering transformations may be accessed from the internal library (aka a 
-"feature transformation store"), or may also be externally user defined with minimal 
-requirements of simple data structures. The tool includes options for automated feature 
+"feature transformation store"), or may also be custom defined using a very simple template. 
+The tool includes options for automated feature 
 importance evaluation, automated "ML infill" for derivation of missing data inputation 
 using machine learning models trained on the set, automated 
 preparation for oversampling for labels class imbalance, automated dimensionality 
@@ -63,7 +63,7 @@ agregation to sin and cos transforms (with bins for business hours, weekdays,
 and holidays), and more (full documentation below); assigning distinct column 
 feature engineering methods using a built-in library of feature engineering 
 transformations; or alternatively the passing of user-defined custom 
-transformation functions incorporating simple data structures such as to allow 
+transformation functions from a simple template such as to allow 
 custom methods to each column while still making use of all of the built-in 
 features of the tool (such as ML infill, feature importance, dimensionality 
 reduction, and most importantly the simplest way for the consistent preparation 
