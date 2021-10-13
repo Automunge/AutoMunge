@@ -4683,3 +4683,20 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - user defined customML inference functions are specified through ML_cmnd['customML']['customML_Classifier_predict'] and ML_cmnd['customML']['customML_Regressor_predict']
 - user can now alternatively populate these entries as a string of one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'} to apply the default inference function associated with that library
 - Please note we do not yet consider these default inference functions fully audited - pending further validations. As implemented is intended as a proof of concept.
+
+7.25
+- today's theme was all about improved clarity of code
+- we performed a full codebase walkthrough for purposes of aggregating navigation support
+- we've introduced convention that each set of function defintions are grouped by theme
+- which in most cases was already in place, in a handful of cases we moved a few functions around to better align with this grouping coherence
+- we've introduced kind of a table of contents at the start of the AutoMunge class definition
+- listing  what we're referring to as "FunctionBlock" entries
+- which are basically a title for the theme of a set of function definitions, each including in the table the list of associated functions
+- code base navigation can now more easily be performed by using these FunctionBlock titles as a key for a control F search
+- similarly, we performed a more detailed walkthrough of the two master functions for interface: automunge(.) and postmunge(.)
+- and for each introduced a kind of table of contents with what we're referring to as "WorkflowBlock" entries
+- the WorkflowBlocks are for cataloging segments of the lines of code by key themes
+- which also can be navigated by a control F search
+- and their entry in the code include codee comments of high level summary of key operations for the block
+- we expect this update will significantly benefit code navigation
+- which since we group everything in a single file was probably long overdue
