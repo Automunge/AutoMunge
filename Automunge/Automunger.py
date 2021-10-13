@@ -62,11 +62,539 @@ import sys
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
 # from catboost import CatBoostRegressor
+# import tensorflow as tf
+# from xgboost import XGBClassifier
+# from xgboost import XGBRegressor
 
 class AutoMunge:
+  """
+  The AutoMunge class defined functions are broadly organized as:
+  #01 - automunge(.) related Function Blocks
+  #02 - postmunge(.) related Function Blocks
+  #03 - inversion related Function Blocks
+
+  Under each of these headers, we've aggregated function definitions by theme
+  Where each of these "Function Blocks" can be navigated to by a control F search
+
+  Listed here are all of these Function Blocks with names of included functions
+
+  #________________________________________________
+  #01 - automunge(.) related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: FamilyTrees (transform_dict)
+  __assembletransformdict
+
+  #__FunctionBlock: category definitions (process_dict)
+  __assembleprocessdict
+
+  #__FunctionBlock: automunge process family functions
+  __processfamily
+  __circleoflife
+  __dictupdate
+  __populate_columnkey_dict
+  __processcousin
+  __processparent
+  __grab_params
+  __custom_process_wrapper
+
+  #__FunctionBlock: suffix overlap and defaultinfill support functions
+  __apply_defaultinfill
+  __set_indexcolumn
+  __set_Binary_column
+  __set_PCA_column
+  __df_copy_train
+  __df_check_suffixoverlap
+  __suffix_overlap_final_aggregation_and_printouts
+
+  #__FunctionBlock: automunge dualprocess, singleprocess, and custom_train functions
+  _process_NArw
+  _process_numerical
+  _process_dxdt
+  _process_dxd2
+  _process_shft
+  _process_MADn
+  _process_mnmx
+  _process_mnm3
+  _process_mxab
+  _process_retn
+  _process_mean
+  _process_binary
+  _custom_train_onht
+  _process_smth
+  __GPS_parse
+  _custom_train_GPS1
+  _process_mlti
+  _process_lngt
+  _process_bnst
+  _process_UPCS
+  _process_splt
+  _process_spl2
+  _process_sp19
+  _process_sbst
+  _process_sbs3
+  _process_hash
+  _process_hs10
+  _process_srch
+  _process_src2
+  _process_src3
+  _process_src4
+  _process_aggt
+  _process_strn
+  _process_strg
+  _process_nmrc
+  _process_nmr4
+  _custom_train_ordl
+  _process_maxb
+  _process_ucct
+  _custom_train_1010
+  _process_bshr
+  _process_wkdy
+  _process_hldy
+  _process_wkds
+  _process_mnts
+  _process_tmzn
+  _process_tmsc
+  _process_time
+  _process_qttf
+  _process_bxcx
+  _process_log0
+  _process_logn
+  _process_sqrt
+  _process_addd
+  _process_sbtr
+  _process_mltp
+  _process_divd
+  _process_rais
+  _process_absl
+  _process_pwrs
+  _process_pwor
+  _process_bins
+  _process_bsor
+  _process_bnwd
+  _process_bnwo
+  _process_bnep
+  _process_bneo
+  _process_tlbn
+  _process_bkt1
+  _process_bkt2
+  _process_bkt3
+  _process_bkt4
+  _process_DPnb
+  _process_DPmm
+  _process_DPrt
+  _process_DPbn
+  _process_DPod
+  _process_DPmc
+  _process_qbt1
+  _process_null
+  _process_copy
+  _process_excl
+  _process_exc2
+  _process_exc5
+  _process_shfl
+  _custom_train_trig
+
+  #__FunctionBlock: evalcategory and NArows
+  __evalcategory
+  __getNArows
+  __assemble_excluded_from_postmunge_getNArows
+
+  #__FunctionBlock: parsing support functions
+  __parsedate
+  __is_number
+  __is_number_comma
+  __is_number_EU
+  __parsenumeric
+
+  #__FunctionBlock: ML infill
+  __MLinfillfunction
+  __predictinfill
+  __createMLinfillsets
+  __insertinfill
+  __inspect_ML_cmnd
+  __assemble_param_sets
+
+  #__FunctionBlock: halting criteria support functions
+  __consolidate_multicolumn
+  __populate_halt_dict
+  __calc_stop_result
+
+  #__FunctionBlock: ML infill leakage support
+  __check_for_leakage
+  __append_full_exclude
+  __convert_leakage_dict
+  __convert_leakage_sets
+
+  #__FunctionBlock: ML infill stochastic impute support
+  __stochastic_impute
+  __stochastic_impute_categoric
+  __stochastic_impute_numeric
+
+  #__FunctionBlock: ML infill autoML training, inference, and support
+  __assemble_autoMLer
+  __autoMLer_cleanup
+  __populateMLinfilldefaults
+  __initRandomForestClassifier
+  __initRandomForestRegressor
+  _train_randomforest_classifier
+  _predict_randomforest_classifier
+  _train_randomforest_regressor
+  _predict_randomforest_regressor
+  _train_autogluon_classifier
+  _train_autogluon_regressor
+  __train_autogluon
+  _predict_autogluon_classifier
+  _predict_autogluon_regressor
+  __predict_autogluon
+  _train_flaml_classifier
+  _predict_flaml_classifier
+  _train_flaml_regressor
+  _predict_flaml_regressor
+  _train_catboost_classifier
+  _predict_catboost_classifier
+  _train_catboost_regressor
+  _predict_catboost_regressor
+
+  #__FunctionBlock: customML support functions
+  _train_customML_classifier
+  _train_customML_regressor
+  __train_customML
+  _predict_customML_classifier
+  _predict_customML_regressor
+  __predict_customML
+  __call_default_function
+
+  #__FunctionBlock: customML default inference functions
+  __customML_tensorflow_defaultpredict_classification
+  __customML_tensorflow_defaultpredict_regression
+  __customML_xgboost_defaultpredict
+  __customML_catboost_defaultpredict
+  __customML_flaml_defaultpredict
+  __customML_autogluon_defaultpredict
+  __customML_randomforest_defaultpredict
+
+  #__FunctionBlock: data translations support
+  __convert_onehot_to_singlecolumn
+  __convert_singlecolumn_to_onehot
+  __convert_1010_to_onehot
+  __convert_onehot_to_1010
+  __onehot_support
+
+  #__FunctionBlock: oversampling support
+  __LabelSetGenerator
+  __LabelFrequencyLevelizer
+
+  #__FunctionBlock: automunge feature importance
+  __trainFSmodel
+  __createFSsets
+  __createFSsets2
+  __shuffleaccuracy
+  __assemblemadethecut
+  __featureselect
+
+  #__FunctionBlock: assigninfill support functions
+  __assemblepostprocess_assigninfill
+  __assemble_sorted_columns_by_NaN_dict
+  __apply_am_infill
+  __apply_pm_infill
+  __zeroinfillfunction
+  __oneinfillfunction
+  __negzeroinfillfunction
+  __naninfillfunction
+  __adjinfillfunction
+  __train_medianinfillfunction
+  __test_medianinfillfunction
+  __train_meaninfillfunction
+  __test_meaninfillfunction
+  __train_modeinfillfunction
+  __test_modeinfillfunction
+  __train_lcinfillfunction
+
+  #__FunctionBlock: PCA support functions
+  __populatePCAdefaults
+  __evalPCA
+  __initSparsePCA
+  __initKernelPCA
+  __initPCA
+  __boolexcl
+  __createPCAsets
+  __PCAfunction
+
+  #__FunctionBlock: validation functions
+  __check_am_miscparameters
+  __check_pm_miscparameters
+  __check_df_type
+  __check_np_shape
+  __check_ML_infill
+  __check_ML_infill_2
+  __validate_allvalidnumeric
+  __check_assigncat
+  __check_assigncat2
+  __check_assigncat3
+  __create_inverse_assigncat
+  __check_assigninfill
+  __check_transformdict000
+  __check_transformdict00
+  __check_transformdict0
+  __check_transformdict
+  __check_transformdict2
+  __check_transform_dict_roots
+  __check_haltingproblem
+  __check_offspring
+  __check_assignnan
+  __check_assignnan_injections
+  __check_ML_cmnd
+  __check_assignparam
+  __check_columnheaders
+  __check_processdict
+  __check_processdict3
+  __check_processdict3_support
+  __check_processdict4
+
+  #__FunctionBlock: functionpointer support
+  __grab_functionpointer_entries_support
+  __grab_functionpointer_entries
+
+  #__FunctionBlock: column assignments string conversion
+  __assigncat_str_convert
+  __assigninfill_str_convert
+  __parameter_str_convert
+  __assignparam_str_convert
+  __assignnan_str_convert
+  __assignnan_list_convert
+
+  #__FunctionBlock: label smoothing support
+  __apply_LabelSmoothing
+  __postapply_LabelSmoothing
+
+  #__FunctionBlock: Binary categoric consolidations support
+  __BinaryConsolidate
+  __postBinaryConsolidate
+  __Binary_convert
+  __postBinary_convert
+  __masterBinaryinvert
+  __meta_inverseprocess_Binary
+  __inverseprocess_Binary
+
+  #__FunctionBlock: data type management
+  __floatprecision_transform
+  __convert_to_nan
+  __assignnan_convert
+  __assignnan_inject
+
+  #__FunctionBlock: data set partitioning and shuffling
+  _df_split
+  __df_split_specified
+  __df_shuffle
+  __df_shuffle_series
+  __dupl_rows_consolidate
+
+  #__FunctionBlock: populate returned reports
+  __populate_columntype_report
+  __populate_column_map_report
+
+  #__FunctionBlock: various automunge utility functions
+  __list_replace
+  __list_sorting
+  __autowhere
+  __column_convert_support
+
+  #__FunctionBlock: encryption utility functions
+  __encrypt_postprocess_dict
+  __decrypt_postprocess_dict
+
+  #__FunctionBlock: automunge(.) definition
+  automunge
+
+  #________________________________________________
+  #02 - postmunge(.) related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: postmunge process family functions
+  __postprocessfamily
+  __postcircleoflife
+  __postprocesscousin
+  __postprocessparent
+  __custom_postprocess_wrapper
+
+  #__FunctionBlock: postmunge postprocess and custom_test functions
+  _postprocess_numerical
+  _postprocess_MADn
+  _postprocess_mnmx
+  _postprocess_mnm3
+  _postprocess_mxab
+  _postprocess_retn
+  _postprocess_mean
+  _postprocess_binary
+  _custom_test_onht
+  _postprocess_smth
+  _custom_test_GPS1
+  _postprocess_mlti
+  _postprocess_splt
+  _postprocess_spl2
+  _postprocess_sp19
+  _postprocess_sbst
+  _postprocess_sbs3
+  _postprocess_hash
+  _postprocess_hs10
+  _postprocess_srch
+  _postprocess_src2
+  _postprocess_src3
+  _postprocess_src4
+  _postprocess_nmr4
+  _custom_test_ordl
+  _postprocess_maxb
+  _postprocess_ucct
+  _custom_test_1010
+  _postprocess_tmsc
+  _postprocess_time
+  _postprocess_qttf
+  _postprocess_bxcx
+  _postprocess_log0
+  _postprocess_logn
+  _postprocess_sqrt
+  _postprocess_addd
+  _postprocess_sbtr
+  _postprocess_mltp
+  _postprocess_divd
+  _postprocess_rais
+  _postprocess_absl
+  _postprocess_pwrs
+  _postprocess_pwor
+  _postprocess_bins
+  _postprocess_bsor
+  _postprocess_bnwd
+  _postprocess_bnwo
+  _postprocess_bnep
+  _postprocess_bneo
+  _postprocess_tlbn
+  _postprocess_bkt1
+  _postprocess_bkt2
+  _postprocess_bkt3
+  _postprocess_bkt4
+  _postprocess_DPnb
+  _postprocess_DPmm
+  _postprocess_DPrt
+  _postprocess_DPbn
+  _postprocess_DPod
+  _postprocess_DPmc
+  _postprocess_exc2
+  _postprocess_exc5
+
+  #__FunctionBlock: postmunge ML infill
+  __createpostMLinfillsets
+  __predictpostinfill
+  __postMLinfillfunction
+
+  #__FunctionBlock: postmunge PCA
+  __postcreatePCAsets
+  __postPCAfunction
+
+  #__FunctionBlock: postmunge feature selection
+  __postfeatureselect
+
+  #__FunctionBlock: postmunge driftreport
+  __prepare_driftreport
+
+  #__FunctionBlock: postmunge(.) definition
+  postmunge
+
+  #________________________________________________
+  #03 - inversion related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: data structure assembly support functions
+  __populate_categorytree
+  __populate_family
+  __get_categorylist
+  __populate_inverse_categorytree
+  __populate_inverse_family
+  __populate_inputcolumn_dict
+  __populate_labelsencoding_dict_support
+  __populate_labelsencoding_dict_support2
+  __populate_labelsencoding_dict_support3
+
+  #__FunctionBlock: inversion preprocessing support
+  __LS_invert
+  __inversion_header_support
+
+  #__FunctionBlock: custom inversion support
+  __custom_inverseprocess_wrapper
+
+  #__FunctionBlock: postmunge inversion inverseprocess and custom_inversion functions
+  _inverseprocess_nmbr
+  _inverseprocess_year
+  _inverseprocess_mean
+  _inverseprocess_MADn
+  _inverseprocess_MAD3
+  _inverseprocess_mnmx
+  _inverseprocess_mnm3
+  _inverseprocess_mxab
+  _inverseprocess_retn
+  _inverseprocess_shft
+  _inverseprocess_qttf
+  _inverseprocess_log0
+  _inverseprocess_logn
+  _inverseprocess_addd
+  _inverseprocess_sbtr
+  _inverseprocess_mltp
+  _inverseprocess_divd
+  _inverseprocess_rais
+  _inverseprocess_absl
+  _inverseprocess_sqrt
+  _inverseprocess_bnst
+  _inverseprocess_UPCS
+  _inverseprocess_excl
+  _inverseprocess_pwr2
+  _inverseprocess_pwor
+  _inverseprocess_bins
+  _inverseprocess_bsor
+  _inverseprocess_bnwd
+  _inverseprocess_bnwo
+  _inverseprocess_bnep
+  _inverseprocess_bneo
+  _inverseprocess_tlbn
+  _inverseprocess_bkt1
+  _inverseprocess_bkt2
+  _inverseprocess_bkt3
+  _inverseprocess_bkt4
+  _custom_inversion_onht
+  _inverseprocess_smth
+  _custom_inversion_GPS1
+  _inverseprocess_mlti
+  _custom_inversion_ordl
+  _inverseprocess_strg
+  _inverseprocess_bnry
+  _custom_inversion_1010
+  _inverseprocess_splt
+  _inverseprocess_spl2
+  _inverseprocess_sp19
+  _inverseprocess_sbst
+  _inverseprocess_sbs3
+  _inverseprocess_srch
+  _inverseprocess_src2
+  _inverseprocess_src3
+  _inverseprocess_src4
+  _inverseprocess_nmrc
+  _inverseprocess_DPmc
+  _inverseprocess_qbt1
+  _custom_inversion_trig
+
+  #__FunctionBlock: master inversion functions
+  __df_inversion
+  __df_inversion_meta
+  __inversion_parent
+  """
   
   def __init__(self):
     pass
+
+  #________________________________________________
+  #01 - automunge(.) related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: FamilyTrees (transform_dict)
 
   def __assembletransformdict(self, binstransform, NArw_marker):
     """
@@ -3717,6 +4245,8 @@ class AutoMunge:
                                      'friends'       : []}})
 
     return transform_dict
+
+  #__FunctionBlock: category definitions (process_dict)
   
   def __assembleprocessdict(self):
     '''
@@ -7713,6 +8243,8 @@ class AutoMunge:
 
     return process_dict
 
+  #__FunctionBlock: automunge process family functions
+
   def __processfamily(self, df_train, df_test, column, origcategory, \
                     transform_dict, postprocess_dict, assign_param):
     '''
@@ -8292,6 +8824,68 @@ class AutoMunge:
 
     return df_train, df_test, postprocess_dict, inplaceperformed
 
+  def __grab_params(self, assign_param, category, column, processdict_entry, postprocess_dict):
+    """
+    #In order of precendence, parameters assigned to distinct 
+    #category/column configurations take precedence 
+    #to default_assignparam assigned to categories which take precendence 
+    #to global_assignparam assigned to all transformations which take precendence 
+    #to parameters set as defaultparams in processdict definition.
+    """
+    
+    params = {}
+    
+    if 'defaultparams' in processdict_entry:
+      
+      #key are parameters
+      for key in processdict_entry['defaultparams']:
+        
+        params.update({key : processdict_entry['defaultparams'][key]})
+
+    #if assign_param is not empty
+    if bool(assign_param):
+      
+      if 'global_assignparam' in assign_param:
+        
+        #key are parameters
+        for key in assign_param['global_assignparam']:
+          
+          params.update({key : assign_param['global_assignparam'][key]})
+          
+      if 'default_assignparam' in assign_param:
+        
+        if category in assign_param['default_assignparam']:
+            
+          #key are parameters
+          for key in assign_param['default_assignparam'][category]:
+
+            params.update({key : assign_param['default_assignparam'][category][key]})
+                
+      if category in assign_param:
+        
+        #distinct category/column configurations can either be assigned
+        #using the source column or the derived column serving as input to the transform
+        #in case both are present the dervied column specifciation takes precedence
+          
+        #derived column specification with suffix takes precendence over input column specification
+        if column in assign_param[category]:
+
+          #key are parameters
+          for key in assign_param[category][column]:
+
+            params.update({key : assign_param[category][column][key]})
+
+        #we won't use a specified source column entry if the derived column was already specfied
+        elif column in postprocess_dict['column_dict'] \
+        and postprocess_dict['column_dict'][column]['origcolumn'] in assign_param[category]:
+
+          #key are parameters
+          for key in assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']]:
+
+            params.update({key : assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']][key]})
+    
+    return params
+
   def __custom_process_wrapper(self, mdf_train, mdf_test, column, category, \
                               treecategory, postprocess_dict, params = {}):
     """
@@ -8618,6 +9212,8 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
+  #__FunctionBlock: suffix overlap and defaultinfill support functions
+
   def __apply_defaultinfill(self, df, suffixcolumn, postprocess_dict, treecategory = False, defaultinfill_dict = False):
     """
     Applies default infill based on defaultinfill processdict entry
@@ -8891,6 +9487,148 @@ class AutoMunge:
     
     return df, defaultinfill_dict
 
+  def __set_indexcolumn(self, trainID_column, testID_column, application_number):
+    """
+    #this either sets indexcolumn as 'Automunge_index' 
+    #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
+    #(this helps with a rare potential workflow when data sets are repeatedly run through automunge)
+    """
+    
+    indexcolumn = 'Automunge_index'
+    indexcolumn_valresult = False
+
+    fullset = set()
+    
+    if isinstance(trainID_column, list):
+      fullset = fullset | set(trainID_column)
+      if 'Automunge_index' in trainID_column:
+        indexcolumn = 'Automunge_index_' + str(application_number)
+    elif 'Automunge_index' == trainID_column:
+      fullset = fullset | {trainID_column}
+      indexcolumn = 'Automunge_index_' + str(application_number)
+        
+    if isinstance(testID_column, list):
+      fullset = fullset | set(testID_column)
+      if 'Automunge_index' in testID_column:
+        indexcolumn = 'Automunge_index_' + str(application_number)
+    elif 'Automunge_index' == testID_column:
+      fullset = fullset | {testID_column}
+      indexcolumn = 'Automunge_index_' + str(application_number)
+
+    #this is a very remote edge case, just being comprehensive
+    if indexcolumn in fullset:
+      while indexcolumn in fullset:
+        indexcolumn = indexcolumn + ','
+
+    if indexcolumn != 'Automunge_index':
+      indexcolumn_valresult = True
+    
+    return indexcolumn, indexcolumn_valresult
+
+  def __set_Binary_column(self, postprocess_dict, suffixrange, root = 'Binary_'):
+    """
+    #this support function used in Binary dimensionality reduction
+    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
+    #so we will compare the root of the new column
+    #which for Binary will be 'Binary_'
+    #to input columns logged in postprocess_dict['origcolumn']
+    #and returned columns logged in postprocess_dict['column_dict']
+    #and if overlap found add an appender to the root as string of the application_number
+    #which is a 12 digit integer derived by random sample for each automunge(.) call
+    #similar to what is done for Automunge_index returned in ID sets
+    #note that we'll also check for overlaps between potential configurations of root plus suffix
+    #if overlap found a validation result will be returned
+    #suffixrange is an integer >= 0 which sets depth of how many overlaps will be checked
+    #which we know the number of returned columns from Binary will be <= a value as function of nunique
+    """
+    
+    #root column will be base of the new column header
+    rootcolumn = root
+    set_Binary_column_valresult = False
+    
+    #___
+    
+    #permutations are potential derivaitons from the root based on different Binary options
+    #note that to ensure comprehensive, we set a suffixrange depth of inspection as per _Binary_convert
+    permutations = {rootcolumn, rootcolumn+'_ord3'}
+    for i in range(suffixrange):
+      _1010_permutation = rootcolumn + '_1010_' + str(i)
+      _onht_permutation = rootcolumn + '_onht_' + str(i)
+      permutations = permutations | {_1010_permutation, _onht_permutation}
+      
+    origcolumns = set(postprocess_dict['origcolumn'])
+    returnedcolumns = set(postprocess_dict['column_dict'])
+    fullcolumns = origcolumns | returnedcolumns
+    
+    #if overlap between fullcolumns and root and permutations add application number appender
+    if len(permutations & fullcolumns) > 0:
+      rootcolumn = rootcolumn + str(postprocess_dict['application_number'])
+      set_Binary_column_valresult = True
+      
+    #___
+    
+    if set_Binary_column_valresult is True:
+      #now one more check to be comprehensive, this is for a very remote edge case
+      permutations = {rootcolumn, rootcolumn+'_ord3'}
+      for i in range(suffixrange):
+        _1010_permutation = rootcolumn + '_1010_' + str(i)
+        _onht_permutation = rootcolumn + '_onht_' + str(i)
+        permutations = permutations | {_1010_permutation, _onht_permutation}
+
+      if len(permutations & fullcolumns) > 0:
+        while len(permutations & fullcolumns) > 0:
+
+          rootcolumn = rootcolumn + ','
+
+          permutations = {rootcolumn, rootcolumn+'_ord3'}
+          for i in range(suffixrange):
+            _1010_permutation = rootcolumn + '_1010_' + str(i)
+            _onht_permutation = rootcolumn + '_onht_' + str(i)
+            permutations = permutations | {_1010_permutation, _onht_permutation}
+          
+    #___
+    
+    return rootcolumn, set_Binary_column_valresult
+
+  def __set_PCA_column(self, newcolumncount, postprocess_dict, root='PCA_'):
+    """
+    #this support function used in PCA dimensionality reduction
+    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
+    #so we will compare the root of the new column
+    #which for PCA will be 'PCA_'
+    #to input columns logged in postprocess_dict['origcolumn']
+    #and returned columns logged in postprocess_dict['column_dict']
+    #and if overlap found add an appender to the root as string of the application_number
+    #which is a 12 digit integer derived by random sample for each automunge(.) call
+    #similar to what is done for Automunge_index returned in ID sets
+    #if overlap found a validation result will be returned
+    """
+    
+    #the returned column names check for overlap with existing columns to accomodate edge case
+    origcolumns = set(postprocess_dict['origcolumn'])
+    returnedcolumns = set(postprocess_dict['column_dict'])
+    fullcolumns = origcolumns | returnedcolumns
+    PCA_columns_valresult = False
+    
+    #generate a list of column names for the conversion to pandas
+    columnnames = [root + '_' + str(y) for y in range(newcolumncount)]
+    
+    #if overlap found, add the application_number to column headers
+    if len((set(columnnames) | {root}) & fullcolumns) > 0:
+      PCA_columns_valresult = True
+      
+      columnnames = [(root + str(postprocess_dict['application_number']) + '_' + str(y)) for y in range(newcolumncount)]
+      
+    #one more to be comprehensive, this is for a very remote edge case
+    if PCA_columns_valresult is True:
+      i=1
+      if len((set(columnnames) | {root}) & fullcolumns) > 0:
+        while len(set(columnnames) & fullcolumns) > 0:
+          columnnames = [(root + str(postprocess_dict['application_number']) + i*',' + '_' + str(y)) for y in range(newcolumncount)]
+          i+=1
+        
+    return columnnames, PCA_columns_valresult
+
   def __df_copy_train(self, df_train, column, newcolumn, suffixoverlap_results = {}, printstatus = False):
     """
     #performs a copy operation to add column to a df_train
@@ -9007,6 +9745,7 @@ class AutoMunge:
       postprocess_dict['miscparameters_results']['suffixoverlap_results'].update(
       postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
 
+    #note that we automatically mitigate this channel now by revision of the PCA column root
     for entry1 in postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['PCA_suffixoverlap_results'][entry1] is True:
 
@@ -9022,6 +9761,7 @@ class AutoMunge:
             print("This form of column header should be avoided in passed data.")
             print("")
 
+    #note that we automatically mitigate this channel now by revision of the Binary column root
     for entry1 in postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results']:
       if postprocess_dict['miscparameters_results']['Binary_suffixoverlap_results'][entry1] is True:
 
@@ -9052,6 +9792,8 @@ class AutoMunge:
     postprocess_dict['miscparameters_results'].update({'suffixoverlap_aggregated_result':suffixoverlap_aggregated_result})
     
     return postprocess_dict
+
+  #__FunctionBlock: automunge dualprocess, singleprocess, and custom_train functions
 
   def _process_NArw(self, df, column, category, treecategory, postprocess_dict, params = {}):
     '''
@@ -23418,6 +24160,8 @@ class AutoMunge:
       
     return df, normalization_dict
 
+  #__FunctionBlock: evalcategory and NArows
+
   def __evalcategory(self, df_source, column, randomseed, eval_ratio, \
                    numbercategoryheuristic, powertransform, labels = False):
     '''
@@ -24206,6 +24950,50 @@ class AutoMunge:
     else:
       
       return NArows, drift_dict
+
+  def __assemble_excluded_from_postmunge_getNArows(self, postprocess_dict):
+    """
+    #Creates a list of orig columns which can be excluded
+    #from running getNArows in postmunge
+    #based on infill assignment
+    #(stdrdinfill does not need to run getNArows)
+    """
+
+    #get lists of which orig columns will need to run getNArows in postmunge
+    excluded_from_postmunge_getNArows = []
+    included_in_postmunge_getNArows = []
+
+    #postprocess_assigninfill_dict has returned column headers per infill assignments
+    for infilltype in postprocess_dict['postprocess_assigninfill_dict']:
+
+      if infilltype == 'stdrdinfill':
+
+        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
+
+          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
+
+          excluded_from_postmunge_getNArows.append(infill_origcolumn)
+
+      #unspecified is a redundant list so exluded
+      elif infilltype != 'unspecified':
+
+        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
+
+          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
+
+          included_in_postmunge_getNArows.append(infill_origcolumn)
+
+    #consolidate redundancies
+    excluded_from_postmunge_getNArows = set(excluded_from_postmunge_getNArows)
+    included_in_postmunge_getNArows = set(included_in_postmunge_getNArows)
+
+    #for cases where entry in both lists default to run get_NArows in postmunge
+    excluded_from_postmunge_getNArows = \
+    excluded_from_postmunge_getNArows - included_in_postmunge_getNArows
+
+    return excluded_from_postmunge_getNArows
+
+  #__FunctionBlock: parsing support functions
   
   def __parsedate(self, df, column):
     """
@@ -24361,404 +25149,135 @@ class AutoMunge:
     
     return NArows
 
-  def __populateMLinfilldefaults(self, randomseed):
+  #__FunctionBlock: ML infill
+
+  def __MLinfillfunction(self, df_train, df_test, column, postprocess_dict, \
+                        masterNArows_train, masterNArows_test, randomseed, \
+                        ML_cmnd, printstatus):
     '''
-    populates a dictionary with default values for ML infill,
-    currently based on Random Forest Regressor and Random Forest Classifier 
-    (Each based on ScikitLearn default values)
-  
-    note that n_estimators set at 100 (default for version 0.22)
-
-    note that we apply our own random seed by default instead of defering to scikit
-    (where randomseed is randomized if not specified)
+    #new function ML infill, generalizes the MLinfill application between categories
+    #def __MLinfill (df_train, df_test, column, postprocess_dict, \
+    #masterNArows_train, masterNArows_test, randomseed)
+    #function that applies series of functions of createMLinfillsets, 
+    #predictinfill, and insertinfill to a categorical encoded set.
+    #please note that general convention is even single column sets are cast as dataframes instead of series
+    #we prefer this convention for support of common operations independant of single or multi column sets
     '''
-  
-    MLinfilldefaults = {'RandomForestClassifier':{}, 'RandomForestRegressor':{}}
-    
-    MLinfilldefaults['RandomForestClassifier'].update({'n_estimators':100, \
-                                                       'criterion':'gini', \
-                                                       'max_depth':None, \
-                                                       'min_samples_split':2, \
-                                                       'min_samples_leaf':1, \
-                                                       'min_weight_fraction_leaf':0.0, \
-                                                       'max_features':'auto', \
-                                                       'max_leaf_nodes':None, \
-                                                       'min_impurity_decrease':0.0, \
-                                                       'min_impurity_split':None, \
-                                                       'bootstrap':True, \
-                                                       'oob_score':False, \
-                                                       'n_jobs':None, \
-                                                       'random_state':randomseed, \
-                                                       'verbose':0, \
-                                                       'warm_start':False, \
-                                                       'class_weight':None, \
-                                                       'ccp_alpha':0.0, \
-                                                       'max_samples':None, \
-                                                       })
-  
-    MLinfilldefaults['RandomForestRegressor'].update({'n_estimators':100, \
-                                                      'criterion':'mse', \
-                                                      'max_depth':None, \
-                                                      'min_samples_split':2, \
-                                                      'min_samples_leaf':1, \
-                                                      'min_weight_fraction_leaf':0.0, \
-                                                      'max_features':'auto', \
-                                                      'max_leaf_nodes':None, \
-                                                      'min_impurity_decrease':0.0, \
-                                                      'min_impurity_split':None, \
-                                                      'bootstrap':True, \
-                                                      'oob_score':False, \
-                                                      'n_jobs':None, \
-                                                      'random_state':randomseed, \
-                                                      'verbose':0, \
-                                                      'warm_start':False, \
-                                                      'ccp_alpha':0.0, \
-                                                      'max_samples':None, \
-                                                      })
 
-    return MLinfilldefaults
-
-  def __initRandomForestClassifier(self, ML_cmnd, MLinfilldefaults):
-    '''
-    function that assigns appropriate parameters based on defaults and user inputs
-    and then initializes a RandomForestClassifier model
-    '''
+    #df_traininfill later returned to support infilliterate early stopping criteria
+    #returned as False when infill performed with another column from categorylist
+    df_traininfill = False
     
-    #populate ML_cmnd if stuff not already present
-    if 'MLinfill_cmnd' not in ML_cmnd:
-      ML_cmnd.update({'MLinfill_cmnd':{}})
-    if 'RandomForestClassifier' not in ML_cmnd['MLinfill_cmnd']:
-      ML_cmnd['MLinfill_cmnd'].update({'RandomForestClassifier':{}})
+    if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
+
+      columnslist = postprocess_dict['column_dict'][column]['columnslist']
+      categorylist = postprocess_dict['column_dict'][column]['categorylist']
+      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
+      category = postprocess_dict['column_dict'][column]['category']
+      autoMLer = postprocess_dict['autoMLer']
       
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_train[column][:0]).copy()
 
-    #MLinfilldefaults['RandomForestClassifier']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_estimators']
-    else:
-      n_estimators = MLinfilldefaults['RandomForestClassifier']['n_estimators']
+      elif len(categorylist) > 1:
+        #copy the datatype to ensure returned set is consistent
+        df_temp_dtype = pd.DataFrame(df_train[categorylist][:0]).copy()
 
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['criterion']
-    else:
-      criterion = MLinfilldefaults['RandomForestClassifier']['criterion']
-
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_depth']
-    else:
-      max_depth = MLinfilldefaults['RandomForestClassifier']['max_depth']
-
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_split']
-    else:
-      min_samples_split = MLinfilldefaults['RandomForestClassifier']['min_samples_split']
-
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_leaf']
-    else:
-      min_samples_leaf = MLinfilldefaults['RandomForestClassifier']['min_samples_leaf']
-
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_weight_fraction_leaf']
-    else:
-      min_weight_fraction_leaf = MLinfilldefaults['RandomForestClassifier']['min_weight_fraction_leaf']
-
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_features']
-    else:
-      max_features = MLinfilldefaults['RandomForestClassifier']['max_features']
-
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_leaf_nodes']
-    else:
-      max_leaf_nodes = MLinfilldefaults['RandomForestClassifier']['max_leaf_nodes']
-
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_decrease']
-    else:
-      min_impurity_decrease = MLinfilldefaults['RandomForestClassifier']['min_impurity_decrease']
-
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_split']
-    else:
-      min_impurity_split = MLinfilldefaults['RandomForestClassifier']['min_impurity_split']
-
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['bootstrap']
-    else:
-      bootstrap = MLinfilldefaults['RandomForestClassifier']['bootstrap']
-
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['oob_score']
-    else:
-      oob_score = MLinfilldefaults['RandomForestClassifier']['oob_score']
-
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_jobs']
-    else:
-      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
-
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['random_state']
-    else:
-      random_state = MLinfilldefaults['RandomForestClassifier']['random_state']
-
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['verbose']
-    else:
-      verbose = MLinfilldefaults['RandomForestClassifier']['verbose']
-
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['warm_start']
-    else:
-      warm_start = MLinfilldefaults['RandomForestClassifier']['warm_start']
-
-    if 'class_weight' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      class_weight = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['class_weight']
-    else:
-      class_weight = MLinfilldefaults['RandomForestClassifier']['class_weight']
+      #createMLinfillsets
+      df_train_filltrain, df_train_filllabel, df_train_fillfeatures, df_test_fillfeatures = \
+      self.__createMLinfillsets(df_train, \
+                         df_test, column, \
+                         pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
+                         pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
+                         category, randomseed, postprocess_dict, \
+                         ML_cmnd, columnslist = columnslist, \
+                         categorylist = categorylist)
       
-    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['ccp_alpha']
-    else:
-      ccp_alpha = MLinfilldefaults['RandomForestClassifier']['ccp_alpha']
+      #run validations of all valid numeric, reported in postprocess_dict['temp_miscparameters_results']
+      postprocess_dict = \
+      self.__check_ML_infill_2(df_train_filltrain, df_train_filllabel, 
+                             df_train_fillfeatures, df_test_fillfeatures, printstatus,
+                             column, postprocess_dict, reportlocation = 'temp_miscparameters_results', ampm = 'am')
+
+      #predict infill values using defined function predictinfill(.)
+      df_traininfill, df_testinfill, model, postprocess_dict = \
+      self.__predictinfill(column, category, df_train_filltrain, df_train_filllabel, \
+                        df_train_fillfeatures, df_test_fillfeatures, randomseed, \
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = categorylist)
+
+      #now we'll add our trained model to the postprocess_dict
+      postprocess_dict['column_dict'][column]['infillmodel'] \
+      = model
+
+      #note: we're only saving trained model in the postprocess_dict for one 
+      #of columns from multicolumn set to reduce file size
       
-    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_samples']
-    else:
-      max_samples = MLinfilldefaults['RandomForestClassifier']['max_samples']
+      #only insert infill if we have a valid model
+      if model is not False:
 
-    #do other stuff?
+        #apply _stochastic_impute to train data imputations based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+        df_traininfill, postprocess_dict = \
+        self.__stochastic_impute(ML_cmnd, df_traininfill, column, postprocess_dict, df_train=df_train_filllabel)
 
-    #then initialize RandomForestClassifier model
-    model = RandomForestClassifier(n_estimators = n_estimators, \
-                                   criterion = criterion, \
-                                   max_depth = max_depth, \
-                                   min_samples_split = min_samples_split, \
-                                   min_samples_leaf = min_samples_leaf, \
-                                   min_weight_fraction_leaf = min_weight_fraction_leaf, \
-                                   max_features = max_features, \
-                                   max_leaf_nodes = max_leaf_nodes, \
-                                   min_impurity_decrease = min_impurity_decrease, \
-                                   min_impurity_split = min_impurity_split, \
-                                   bootstrap = bootstrap, \
-                                   oob_score = oob_score, \
-                                   n_jobs = n_jobs, \
-                                   random_state = random_state, \
-                                   verbose = verbose, \
-                                   warm_start = warm_start, \
-                                   class_weight = class_weight, \
-                                   ccp_alpha = ccp_alpha, \
-                                   max_samples = max_samples, \
-                                  )
+        #apply the function insertinfill(.) to insert missing value predictions
+        df_train = self.__insertinfill(df_train, column, df_traininfill, category, \
+                              pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
+                              postprocess_dict, columnslist = columnslist, \
+                              categorylist = categorylist)
 
-    return model
+        if masterNArows_test[origcolumn+'_NArows'].astype(bool).any():
 
-  def __initRandomForestRegressor(self, ML_cmnd, MLinfilldefaults):
-    '''
-    function that assigns appropriate parameters based on defaults and user inputs
-    and then initializes a RandomForestRegressor model
-    '''
-    
-    #populate ML_cmnd if stuff not already present
-    if 'MLinfill_cmnd' not in ML_cmnd:
-      ML_cmnd.update({'MLinfill_cmnd':{}})
-    if 'RandomForestRegressor' not in ML_cmnd['MLinfill_cmnd']:
-      ML_cmnd['MLinfill_cmnd'].update({'RandomForestRegressor':{}})
-      
-    #MLinfilldefaults['RandomForestRegressor']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_estimators']
-    else:
-      n_estimators = MLinfilldefaults['RandomForestRegressor']['n_estimators']
+          #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
+          df_testinfill, postprocess_dict = \
+          self.__stochastic_impute(ML_cmnd, df_testinfill, column, postprocess_dict, df_train=False)
 
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['criterion']
-    else:
-      criterion = MLinfilldefaults['RandomForestRegressor']['criterion']
+          df_test = self.__insertinfill(df_test, column, df_testinfill, category, \
+                             pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
+                             postprocess_dict, columnslist = columnslist, \
+                             categorylist = categorylist)
 
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_depth']
-    else:
-      max_depth = MLinfilldefaults['RandomForestRegressor']['max_depth']
-
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_split']
-    else:
-      min_samples_split = MLinfilldefaults['RandomForestRegressor']['min_samples_split']
-
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_leaf']
-    else:
-      min_samples_leaf = MLinfilldefaults['RandomForestRegressor']['min_samples_leaf']
-
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_weight_fraction_leaf']
-    else:
-      min_weight_fraction_leaf = MLinfilldefaults['RandomForestRegressor']['min_weight_fraction_leaf']
-
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_features']
-    else:
-      max_features = MLinfilldefaults['RandomForestRegressor']['max_features']
-
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_leaf_nodes']
-    else:
-      max_leaf_nodes = MLinfilldefaults['RandomForestRegressor']['max_leaf_nodes']
-
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_decrease']
-    else:
-      min_impurity_decrease = MLinfilldefaults['RandomForestRegressor']['min_impurity_decrease']
-
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_split']
-    else:
-      min_impurity_split = MLinfilldefaults['RandomForestRegressor']['min_impurity_split']
-
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['bootstrap']
-    else:
-      bootstrap = MLinfilldefaults['RandomForestRegressor']['bootstrap']
-
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['oob_score']
-    else:
-      oob_score = MLinfilldefaults['RandomForestRegressor']['oob_score']
-
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_jobs']
-    else:
-      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
-
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['random_state']
-    else:
-      random_state = MLinfilldefaults['RandomForestRegressor']['random_state']
-
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['verbose']
-    else:
-      verbose = MLinfilldefaults['RandomForestRegressor']['verbose']
-
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['warm_start']
-    else:
-      warm_start = MLinfilldefaults['RandomForestRegressor']['warm_start']
-      
-    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['ccp_alpha']
-    else:
-      ccp_alpha = MLinfilldefaults['RandomForestRegressor']['ccp_alpha']
-      
-    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_samples']
-    else:
-      max_samples = MLinfilldefaults['RandomForestRegressor']['max_samples']
-
-    #do other stuff?
-
-    #then initialize RandomForestRegressor model 
-    model = RandomForestRegressor(n_estimators = n_estimators, \
-                                  criterion = criterion, \
-                                  max_depth = max_depth, \
-                                  min_samples_split = min_samples_split, \
-                                  min_samples_leaf = min_samples_leaf, \
-                                  min_weight_fraction_leaf = min_weight_fraction_leaf, \
-                                  max_features = max_features, \
-                                  max_leaf_nodes = max_leaf_nodes, \
-                                  min_impurity_decrease = min_impurity_decrease, \
-                                  min_impurity_split = min_impurity_split, \
-                                  bootstrap = bootstrap, \
-                                  oob_score = oob_score, \
-                                  n_jobs = n_jobs, \
-                                  random_state = random_state, \
-                                  verbose = verbose, \
-                                  warm_start = warm_start, \
-                                  ccp_alpha = ccp_alpha, \
-                                  max_samples = max_samples, \
-                                 )
-
-    return model
-  
-  def __inspect_ML_cmnd(self, ML_cmnd, autoML_type, MLinfill_alg):
-    """
-    #Inspects ML_cmnd to determine if any of the parameters passed
-    #for regressor or classifier are passed as lists instead of distinct
-    #values, in which case they will be evaluated via grid search
-    #or in a future extension random search or other hyperparameter tuning methods
-    
-    #takes as input user-passed ML_cmnd, returns tune_marker
-    #where tune_marker = True indicates sets were passed, else False
-    
-    #autoML_type refers to type of predictive algorithm applied,
-    #default is scikit Random Forest via 'randomforest'
-    """
-    
-    #initialize tune_marker to default
-    tune_marker = False
-    
-    if autoML_type in {'randomforest'}:
-    
-      if 'MLinfill_cmnd' in ML_cmnd:
-
-        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
-
-          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
-
-            #if passed parameter is a list, range, or distribution
-            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
-            in {type([1]), type(range(1)), type(stats.expon(1))}:
-
-              tune_marker = True
-    
-    return tune_marker
-  
-  def __assemble_param_sets(self, ML_cmnd, autoML_type, MLinfill_alg):
-    """
-    #assembles ML_cmnd passed parameters into two sets
-    #for hyoeroparameter tuning operation
-    
-    #those parameters that were passed as sets 
-    #will be saved in tune_params dictionary
-    
-    #those parameters that were otherwise passed
-    #will be saved in static_params dictionary
-    
-    #returns those two dictionaries tune_params & static_params
-    
-    #autoML_type refers to type of predictive algorithm applied,
-    #defaults to scikit Random Forest via 'default'
-    
-    #MLinfill_cmnd supports passing parameters to target algorithms
-    #e.g. under default supports 'RandomForestRegressor' & 'RandomForestClassifier'
-    """
-    
-    #initialize returned dictionaries
-    static_params = {}
-    tune_params = {}
-    
-    if autoML_type in {'randomforest'}:
-      
-      if 'MLinfill_cmnd' in ML_cmnd:
+      #now change the infillcomplete marker in the text_dict for each \
+      #associated text column unless in concurrent_activations MLinfilltype
+      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
         
-        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
+        postprocess_dict['column_dict'][column]['infillcomplete'] = True
+
+        #now we'll add our trained text model to the postprocess_dict
+        postprocess_dict['column_dict'][column]['infillmodel'] \
+        = model
+        
+      else:
+        
+        for columnname in categorylist:
+          postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
+
+        #now we'll add our trained model to the postprocess_dict (model only saved in first categorylist column)
+        postprocess_dict['column_dict'][column]['infillmodel'] \
+        = model
+
+      #reset data type to ensure returned data is consistent with what was passed
+      if len(categorylist) == 1 or \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+        df_train[column] = \
+        df_train[column].astype({column:df_temp_dtype[column].dtypes})
+        
+        df_test[column] = \
+        df_test[column].astype({column:df_temp_dtype[column].dtypes})
+
+      elif len(categorylist) > 1:
+        for dtype_column in categorylist:
+          df_train[dtype_column] = \
+          df_train[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
           
-          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
-            
-            #if passed parameter is a set
-            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
-            in {type([1]), type(range(1)), type(stats.expon(1))}:
-              
-              #add set to tune_params which will be targeted for grid search
-              tune_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
-              
-            else:
-              
-              #else add to static_params which will overwrite defaults
-              static_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
-        
-    return static_params, tune_params
+          df_test[dtype_column] = \
+          df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
+
+    return df_train, df_test, postprocess_dict, df_traininfill
 
   def __predictinfill(self, column, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
@@ -25206,6 +25725,286 @@ class AutoMunge:
 
     return df
 
+  def __inspect_ML_cmnd(self, ML_cmnd, autoML_type, MLinfill_alg):
+    """
+    #Inspects ML_cmnd to determine if any of the parameters passed
+    #for regressor or classifier are passed as lists instead of distinct
+    #values, in which case they will be evaluated via grid search
+    #or in a future extension random search or other hyperparameter tuning methods
+    
+    #takes as input user-passed ML_cmnd, returns tune_marker
+    #where tune_marker = True indicates sets were passed, else False
+    
+    #autoML_type refers to type of predictive algorithm applied,
+    #default is scikit Random Forest via 'randomforest'
+    """
+    
+    #initialize tune_marker to default
+    tune_marker = False
+    
+    if autoML_type in {'randomforest'}:
+    
+      if 'MLinfill_cmnd' in ML_cmnd:
+
+        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
+
+          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
+
+            #if passed parameter is a list, range, or distribution
+            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
+            in {type([1]), type(range(1)), type(stats.expon(1))}:
+
+              tune_marker = True
+    
+    return tune_marker
+  
+  def __assemble_param_sets(self, ML_cmnd, autoML_type, MLinfill_alg):
+    """
+    #assembles ML_cmnd passed parameters into two sets
+    #for hyoeroparameter tuning operation
+    
+    #those parameters that were passed as sets 
+    #will be saved in tune_params dictionary
+    
+    #those parameters that were otherwise passed
+    #will be saved in static_params dictionary
+    
+    #returns those two dictionaries tune_params & static_params
+    
+    #autoML_type refers to type of predictive algorithm applied,
+    #defaults to scikit Random Forest via 'default'
+    
+    #MLinfill_cmnd supports passing parameters to target algorithms
+    #e.g. under default supports 'RandomForestRegressor' & 'RandomForestClassifier'
+    """
+    
+    #initialize returned dictionaries
+    static_params = {}
+    tune_params = {}
+    
+    if autoML_type in {'randomforest'}:
+      
+      if 'MLinfill_cmnd' in ML_cmnd:
+        
+        if MLinfill_alg in ML_cmnd['MLinfill_cmnd']:
+          
+          for key in ML_cmnd['MLinfill_cmnd'][MLinfill_alg]:
+            
+            #if passed parameter is a set
+            if type(ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]) \
+            in {type([1]), type(range(1)), type(stats.expon(1))}:
+              
+              #add set to tune_params which will be targeted for grid search
+              tune_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
+              
+            else:
+              
+              #else add to static_params which will overwrite defaults
+              static_params.update({key : ML_cmnd['MLinfill_cmnd'][MLinfill_alg][key]})
+        
+    return static_params, tune_params
+
+  #__FunctionBlock: halting criteria support functions
+
+  def __consolidate_multicolumn(self, df_traininfill, column, MLinfilltype, postprocess_dict):
+    """
+    #consolidates multicolumn infill representations to a single column of aggregated strings with header column
+    #else returns received single column to same column but renamed to header column
+    #this multicolumn representation is used to evaluate halting criteria for infilliterate
+    """
+    
+    if MLinfilltype in {'multirt', '1010'}:
+      
+      categorylist = list(df_traininfill)
+      
+      #these have suffix included so won't have overlap with arbitrary column header 'asdf', but just in case
+      tempcolumn = 'asdf'
+      if tempcolumn in categorylist:
+        while tempcolumn in categorylist:
+          tempcolumn = tempcolumn + 'z'
+
+      df_traininfill[tempcolumn] = ''
+      
+      for entry in categorylist:
+        
+        df_traininfill[tempcolumn] = df_traininfill[tempcolumn] + df_traininfill[entry].astype(str)
+        
+        del df_traininfill[entry]
+        
+      #now rename the target column
+      df_traininfill.rename(columns = {tempcolumn : column}, inplace = True)
+      
+    # elif 'infill' in df_traininfill:
+        
+    #   df_traininfill.rename(columns = {'infill' : column}, inplace = True)
+    
+    return df_traininfill
+
+  def __populate_halt_dict(self, df_infill_i, df_infill_iplus, MLinfilltype, halt_dict, iteration, column, df_traininfill_rowcount):
+    """
+    Appends entries to halt_dict associated with the current target column
+    """
+
+    if iteration > 0:
+      
+      #if set is categoric
+      if MLinfilltype in {'singlct', 'binary', 'multirt', '1010', 'concurrent_ordl', 'concurrent_act'}:
+        
+        #this is a count of cases where imputations matched between iterations which signals that iterations are honing in on final form
+        sumofinequal = int(pd.DataFrame(df_infill_iplus[column][:df_traininfill_rowcount] != df_infill_i[column][:df_traininfill_rowcount]).sum())
+        
+        #this is a count of number of imputations associated with this infill
+        quantity = df_traininfill_rowcount
+        
+        ratio = sumofinequal / quantity
+        
+        categoric_tuple_df_row = pd.DataFrame({'sumofinequal':[sumofinequal], 
+                                               'quantity':[quantity],
+                                               'ratio':[ratio],
+                                               'column':[column]})
+        
+        #now concat that row onto the categoric_tuple_df stored in halt_dict for this iteration
+        halt_dict[iteration]['categoric_tuple_df'] = pd.concat([halt_dict[iteration]['categoric_tuple_df'], categoric_tuple_df_row], axis=0)
+        
+      #if set is numeric
+      if MLinfilltype in {'numeric', 'integer', 'concurrent_nmbr'}:
+        
+        #this is the max value found in absolute value of deltas between iterations
+        meanabsdelta = (df_infill_iplus[column][:df_traininfill_rowcount] - df_infill_i[column][:df_traininfill_rowcount]).abs().mean()
+        
+        meanabs = df_infill_iplus[column][:df_traininfill_rowcount].abs().mean()
+        
+        quantity = df_traininfill_rowcount
+        
+        numeric_tuple_df_row = pd.DataFrame({'meanabsdelta':[meanabsdelta], 
+                                             'meanabs':[meanabs],
+                                             'quantity':[quantity],
+                                             'column':[column]})
+        
+        #now concat that row onto the numeric_tuple_df stored in halt_dict for this iteration
+        halt_dict[iteration]['numeric_tuple_df'] = pd.concat([halt_dict[iteration]['numeric_tuple_df'], numeric_tuple_df_row], axis=0)
+    
+    return halt_dict
+
+  def __calc_stop_result(self, halt_dict, iteration, ML_cmnd):
+    """
+    #calculates a result for stopping criteria
+    #note that the numeric criteria was partly inspired by review of scikit-learn iterativeimputer stopping criteria
+    #note that the categoric stopping criteria was partly inspired by review of MissForest stopping criteria
+    #although there are some fundamental differences in place for each
+    #receives tolerances in ML_cmnd as ML_cmnd['numeric_tol'] and ML_cmnd['categoric_tol']
+    #and when these entries are not populated defaults to numeric_tol = 0.03, categoric_tol = 0.05
+    #(these defaults are for the moment somewhat arbitrary and may be further refined in future update)
+    
+    #Please note that the stop_result is only returned as True 
+    #if early stopping was activated by ML_cmnd['halt_iterate'] = True
+    """
+    
+    #initialize
+    stop_result = False
+    
+    if 'categoric_tol' in ML_cmnd:
+      categoric_tol = ML_cmnd['categoric_tol']
+    else:
+      categoric_tol = 0.05
+      
+    if 'numeric_tol' in ML_cmnd:
+      numeric_tol = ML_cmnd['numeric_tol']
+    else:
+      numeric_tol = 0.03
+    
+    if iteration > 0:
+      
+      #_(1)_
+      
+      #first calculate categoric result based on aggregation of all categoric imputations
+      
+      categoric_tuple_df = halt_dict[iteration]['categoric_tuple_df']
+
+      if categoric_tuple_df.shape[0] == 0:
+        categoric_result = True
+      else:
+        
+        #result is based on whether sum(sumofinequal)/sum(quantity) < categoric_tol
+        categoric_result = False
+        
+        sum_sumofinequal = categoric_tuple_df['sumofinequal'].sum()
+        sum_quantity = categoric_tuple_df['quantity'].sum()
+
+        if sum_sumofinequal / sum_quantity < categoric_tol:
+          
+          categoric_result = True
+
+        # #validation printouts
+        # print("categoric: sum_sumofinequal / sum_quantity")
+        # print(sum_sumofinequal / sum_quantity)
+        # print("categoric_tol = ", categoric_tol)
+        # print("categoric_result = ", categoric_result)
+        # print()
+          
+      #now calculate numeric result based on aggregation of all numeric imputations
+      
+      numeric_tuple_df = halt_dict[iteration]['numeric_tuple_df']
+      
+      if numeric_tuple_df.shape[0] == 0:
+        numeric_result = True
+      else:
+        
+        #result is based on weighted average of ratio meanabsdelta/meanabs < numeric_tol
+        #where we'll derive quantity_times_ratio_sum and quantity_sum
+        #and halt when quantity_times_ratio_sum / quantity_sum < numeric_tol
+        
+        #(weighted by quantity of imputations associated with the ratio)
+        numeric_result = False
+        
+        #quantity_times_ratio_sum = quantity * ratio
+        #ratio = meanabsdelta / meanabs
+        
+        #this is for an edge case where inferred infill is all 0, would interfere with division
+        numeric_tuple_df = numeric_tuple_df.loc[numeric_tuple_df['meanabs'] != 0]
+
+        quantity_times_ratio_sum = (numeric_tuple_df['quantity'] * \
+                                   numeric_tuple_df['meanabsdelta'] / \
+                                   numeric_tuple_df['meanabs']).sum()
+        
+        #for consistency of quantity basis we'll derive quantity_sum after extracting all zero infill edge case
+        quantity_sum = numeric_tuple_df['quantity'].sum()
+          
+        if quantity_sum == 0:
+          numeric_result = True
+          
+        elif quantity_times_ratio_sum / quantity_sum < numeric_tol:
+          numeric_result = True
+
+        # #validation printouts
+        # print("numeric: quantity_times_ratio_sum / quantity_sum")
+        # print(quantity_times_ratio_sum / quantity_sum)
+        # print("numeric_tol = ", numeric_tol)
+        # print("numeric_result = ", numeric_result)
+        # print()
+
+      #_(1)_
+      stop_result = False
+      
+      if numeric_result is True and categoric_result is True:
+        
+        stop_result = True
+          
+      halt_dict[iteration]['numeric_result'] = numeric_result
+      halt_dict[iteration]['categoric_result'] = categoric_result
+      halt_dict[iteration]['stop_result'] = stop_result
+      
+      #check if user activated halt_iterate in ML_cmnd (early stopping for infilliterate)
+      if 'halt_iterate' in ML_cmnd and ML_cmnd['halt_iterate'] is True:
+        pass
+      else:
+        #stop_result recorded in halt_dict as evlauated but returned as False
+        stop_result = False
+
+    return stop_result, halt_dict
+
+  #__FunctionBlock: ML infill leakage support
+
   def __check_for_leakage(self, ML_cmnd, postprocess_dict, masterNArows_train, postprocess_assigninfill_dict):
     """
     compare aggregated NArw activations from a target feature in a train set 
@@ -25518,137 +26317,7 @@ class AutoMunge:
 
     return ML_cmnd
 
-  def __MLinfillfunction(self, df_train, df_test, column, postprocess_dict, \
-                        masterNArows_train, masterNArows_test, randomseed, \
-                        ML_cmnd, printstatus):
-    '''
-    #new function ML infill, generalizes the MLinfill application between categories
-    #def __MLinfill (df_train, df_test, column, postprocess_dict, \
-    #masterNArows_train, masterNArows_test, randomseed)
-    #function that applies series of functions of createMLinfillsets, 
-    #predictinfill, and insertinfill to a categorical encoded set.
-    #for the record I'm sure that the conversion of the single column
-    #series to a dataframe is counter to the intent of pandas
-    #it's probably less memory efficient but it's the current basis of
-    #the functions so we're going to maintain that approach for now
-    #the revision of these functions to accept pandas series is a
-    #possible future extension
-    '''
-
-    #df_traininfill later returned to support infilliterate early stopping criteria
-    #returned as False when infill performed with another column from categorylist
-    df_traininfill = False
-    
-    if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
-
-      columnslist = postprocess_dict['column_dict'][column]['columnslist']
-      categorylist = postprocess_dict['column_dict'][column]['categorylist']
-      origcolumn = postprocess_dict['column_dict'][column]['origcolumn']
-      category = postprocess_dict['column_dict'][column]['category']
-      autoMLer = postprocess_dict['autoMLer']
-      
-      if len(categorylist) == 1 or \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
-        #copy the datatype to ensure returned set is consistent
-        df_temp_dtype = pd.DataFrame(df_train[column][:0]).copy()
-
-      elif len(categorylist) > 1:
-        #copy the datatype to ensure returned set is consistent
-        df_temp_dtype = pd.DataFrame(df_train[categorylist][:0]).copy()
-
-      #createMLinfillsets
-      df_train_filltrain, df_train_filllabel, df_train_fillfeatures, df_test_fillfeatures = \
-      self.__createMLinfillsets(df_train, \
-                         df_test, column, \
-                         pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
-                         pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                         category, randomseed, postprocess_dict, \
-                         ML_cmnd, columnslist = columnslist, \
-                         categorylist = categorylist)
-      
-      #run validations of all valid numeric, reported in postprocess_dict['temp_miscparameters_results']
-      postprocess_dict = \
-      self.__check_ML_infill_2(df_train_filltrain, df_train_filllabel, 
-                             df_train_fillfeatures, df_test_fillfeatures, printstatus,
-                             column, postprocess_dict, reportlocation = 'temp_miscparameters_results', ampm = 'am')
-
-      #predict infill values using defined function predictinfill(.)
-      df_traininfill, df_testinfill, model, postprocess_dict = \
-      self.__predictinfill(column, category, df_train_filltrain, df_train_filllabel, \
-                        df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                        postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = categorylist)
-
-      #now we'll add our trained model to the postprocess_dict
-      postprocess_dict['column_dict'][column]['infillmodel'] \
-      = model
-
-      #note: we're only saving trained model in the postprocess_dict for one 
-      #of columns from multicolumn set to reduce file size
-      
-      #only insert infill if we have a valid model
-      if model is not False:
-
-        #apply _stochastic_impute to train data imputations based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
-        df_traininfill, postprocess_dict = \
-        self.__stochastic_impute(ML_cmnd, df_traininfill, column, postprocess_dict, df_train=df_train_filllabel)
-
-        #apply the function insertinfill(.) to insert missing value predictions
-        df_train = self.__insertinfill(df_train, column, df_traininfill, category, \
-                              pd.DataFrame(masterNArows_train[origcolumn+'_NArows']), \
-                              postprocess_dict, columnslist = columnslist, \
-                              categorylist = categorylist)
-
-        if masterNArows_test[origcolumn+'_NArows'].astype(bool).any():
-
-          #apply _stochastic_impute to test data based on ML_cmnd['stochastic_impute_categoric'] or ML_cmnd['stochastic_impute_numeric']
-          df_testinfill, postprocess_dict = \
-          self.__stochastic_impute(ML_cmnd, df_testinfill, column, postprocess_dict, df_train=False)
-
-          df_test = self.__insertinfill(df_test, column, df_testinfill, category, \
-                             pd.DataFrame(masterNArows_test[origcolumn+'_NArows']), \
-                             postprocess_dict, columnslist = columnslist, \
-                             categorylist = categorylist)
-
-      #now change the infillcomplete marker in the text_dict for each \
-      #associated text column unless in concurrent_activations MLinfilltype
-      if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
-        
-        postprocess_dict['column_dict'][column]['infillcomplete'] = True
-
-        #now we'll add our trained text model to the postprocess_dict
-        postprocess_dict['column_dict'][column]['infillmodel'] \
-        = model
-        
-      else:
-        
-        for columnname in categorylist:
-          postprocess_dict['column_dict'][columnname]['infillcomplete'] = True
-
-        #now we'll add our trained model to the postprocess_dict (model only saved in first categorylist column)
-        postprocess_dict['column_dict'][column]['infillmodel'] \
-        = model
-
-      #reset data type to ensure returned data is consistent with what was passed
-      if len(categorylist) == 1 or \
-      postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
-      in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
-        df_train[column] = \
-        df_train[column].astype({column:df_temp_dtype[column].dtypes})
-        
-        df_test[column] = \
-        df_test[column].astype({column:df_temp_dtype[column].dtypes})
-
-      elif len(categorylist) > 1:
-        for dtype_column in categorylist:
-          df_train[dtype_column] = \
-          df_train[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
-          
-          df_test[dtype_column] = \
-          df_test[dtype_column].astype({dtype_column:df_temp_dtype[dtype_column].dtypes})
-
-    return df_train, df_test, postprocess_dict, df_traininfill
+  #__FunctionBlock: ML infill stochastic impute support
 
   def __stochastic_impute(self, ML_cmnd, df, column, postprocess_dict, df_train=False):
     """
@@ -26084,6 +26753,8 @@ class AutoMunge:
     #returned data now has stochastic noise injected to a subset of imputations (per flip_prob ratio)
     return df, postprocess_dict
 
+  #__FunctionBlock: ML infill autoML training, inference, and support
+
   def __assemble_autoMLer(self):
     """
     #populates the "autoMLer" data structure that supports application of autoML for ML infill
@@ -26183,6 +26854,326 @@ class AutoMunge:
         ML_cmnd['customML']['customML_Regressor_train'] = True
         
     return postprocess_dict, ML_cmnd
+
+  def __populateMLinfilldefaults(self, randomseed):
+    '''
+    populates a dictionary with default values for ML infill,
+    currently based on Random Forest Regressor and Random Forest Classifier 
+    (Each based on ScikitLearn default values)
+  
+    note that n_estimators set at 100 (default for version 0.22)
+
+    note that we apply our own random seed by default instead of defering to scikit
+    (where randomseed is randomized if not specified)
+    '''
+  
+    MLinfilldefaults = {'RandomForestClassifier':{}, 'RandomForestRegressor':{}}
+    
+    MLinfilldefaults['RandomForestClassifier'].update({'n_estimators':100, \
+                                                       'criterion':'gini', \
+                                                       'max_depth':None, \
+                                                       'min_samples_split':2, \
+                                                       'min_samples_leaf':1, \
+                                                       'min_weight_fraction_leaf':0.0, \
+                                                       'max_features':'auto', \
+                                                       'max_leaf_nodes':None, \
+                                                       'min_impurity_decrease':0.0, \
+                                                       'min_impurity_split':None, \
+                                                       'bootstrap':True, \
+                                                       'oob_score':False, \
+                                                       'n_jobs':None, \
+                                                       'random_state':randomseed, \
+                                                       'verbose':0, \
+                                                       'warm_start':False, \
+                                                       'class_weight':None, \
+                                                       'ccp_alpha':0.0, \
+                                                       'max_samples':None, \
+                                                       })
+  
+    MLinfilldefaults['RandomForestRegressor'].update({'n_estimators':100, \
+                                                      'criterion':'mse', \
+                                                      'max_depth':None, \
+                                                      'min_samples_split':2, \
+                                                      'min_samples_leaf':1, \
+                                                      'min_weight_fraction_leaf':0.0, \
+                                                      'max_features':'auto', \
+                                                      'max_leaf_nodes':None, \
+                                                      'min_impurity_decrease':0.0, \
+                                                      'min_impurity_split':None, \
+                                                      'bootstrap':True, \
+                                                      'oob_score':False, \
+                                                      'n_jobs':None, \
+                                                      'random_state':randomseed, \
+                                                      'verbose':0, \
+                                                      'warm_start':False, \
+                                                      'ccp_alpha':0.0, \
+                                                      'max_samples':None, \
+                                                      })
+
+    return MLinfilldefaults
+
+  def __initRandomForestClassifier(self, ML_cmnd, MLinfilldefaults):
+    '''
+    function that assigns appropriate parameters based on defaults and user inputs
+    and then initializes a RandomForestClassifier model
+    '''
+    
+    #populate ML_cmnd if stuff not already present
+    if 'MLinfill_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_cmnd':{}})
+    if 'RandomForestClassifier' not in ML_cmnd['MLinfill_cmnd']:
+      ML_cmnd['MLinfill_cmnd'].update({'RandomForestClassifier':{}})
+      
+
+    #MLinfilldefaults['RandomForestClassifier']
+    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_estimators']
+    else:
+      n_estimators = MLinfilldefaults['RandomForestClassifier']['n_estimators']
+
+    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['criterion']
+    else:
+      criterion = MLinfilldefaults['RandomForestClassifier']['criterion']
+
+    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_depth']
+    else:
+      max_depth = MLinfilldefaults['RandomForestClassifier']['max_depth']
+
+    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_split']
+    else:
+      min_samples_split = MLinfilldefaults['RandomForestClassifier']['min_samples_split']
+
+    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_leaf']
+    else:
+      min_samples_leaf = MLinfilldefaults['RandomForestClassifier']['min_samples_leaf']
+
+    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_weight_fraction_leaf']
+    else:
+      min_weight_fraction_leaf = MLinfilldefaults['RandomForestClassifier']['min_weight_fraction_leaf']
+
+    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_features']
+    else:
+      max_features = MLinfilldefaults['RandomForestClassifier']['max_features']
+
+    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_leaf_nodes']
+    else:
+      max_leaf_nodes = MLinfilldefaults['RandomForestClassifier']['max_leaf_nodes']
+
+    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_decrease']
+    else:
+      min_impurity_decrease = MLinfilldefaults['RandomForestClassifier']['min_impurity_decrease']
+
+    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_split']
+    else:
+      min_impurity_split = MLinfilldefaults['RandomForestClassifier']['min_impurity_split']
+
+    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['bootstrap']
+    else:
+      bootstrap = MLinfilldefaults['RandomForestClassifier']['bootstrap']
+
+    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['oob_score']
+    else:
+      oob_score = MLinfilldefaults['RandomForestClassifier']['oob_score']
+
+    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_jobs']
+    else:
+      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
+
+    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['random_state']
+    else:
+      random_state = MLinfilldefaults['RandomForestClassifier']['random_state']
+
+    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['verbose']
+    else:
+      verbose = MLinfilldefaults['RandomForestClassifier']['verbose']
+
+    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['warm_start']
+    else:
+      warm_start = MLinfilldefaults['RandomForestClassifier']['warm_start']
+
+    if 'class_weight' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      class_weight = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['class_weight']
+    else:
+      class_weight = MLinfilldefaults['RandomForestClassifier']['class_weight']
+      
+    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['ccp_alpha']
+    else:
+      ccp_alpha = MLinfilldefaults['RandomForestClassifier']['ccp_alpha']
+      
+    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
+      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_samples']
+    else:
+      max_samples = MLinfilldefaults['RandomForestClassifier']['max_samples']
+
+    #do other stuff?
+
+    #then initialize RandomForestClassifier model
+    model = RandomForestClassifier(n_estimators = n_estimators, \
+                                   criterion = criterion, \
+                                   max_depth = max_depth, \
+                                   min_samples_split = min_samples_split, \
+                                   min_samples_leaf = min_samples_leaf, \
+                                   min_weight_fraction_leaf = min_weight_fraction_leaf, \
+                                   max_features = max_features, \
+                                   max_leaf_nodes = max_leaf_nodes, \
+                                   min_impurity_decrease = min_impurity_decrease, \
+                                   min_impurity_split = min_impurity_split, \
+                                   bootstrap = bootstrap, \
+                                   oob_score = oob_score, \
+                                   n_jobs = n_jobs, \
+                                   random_state = random_state, \
+                                   verbose = verbose, \
+                                   warm_start = warm_start, \
+                                   class_weight = class_weight, \
+                                   ccp_alpha = ccp_alpha, \
+                                   max_samples = max_samples, \
+                                  )
+
+    return model
+
+  def __initRandomForestRegressor(self, ML_cmnd, MLinfilldefaults):
+    '''
+    function that assigns appropriate parameters based on defaults and user inputs
+    and then initializes a RandomForestRegressor model
+    '''
+    
+    #populate ML_cmnd if stuff not already present
+    if 'MLinfill_cmnd' not in ML_cmnd:
+      ML_cmnd.update({'MLinfill_cmnd':{}})
+    if 'RandomForestRegressor' not in ML_cmnd['MLinfill_cmnd']:
+      ML_cmnd['MLinfill_cmnd'].update({'RandomForestRegressor':{}})
+      
+    #MLinfilldefaults['RandomForestRegressor']
+    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_estimators']
+    else:
+      n_estimators = MLinfilldefaults['RandomForestRegressor']['n_estimators']
+
+    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['criterion']
+    else:
+      criterion = MLinfilldefaults['RandomForestRegressor']['criterion']
+
+    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_depth']
+    else:
+      max_depth = MLinfilldefaults['RandomForestRegressor']['max_depth']
+
+    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_split']
+    else:
+      min_samples_split = MLinfilldefaults['RandomForestRegressor']['min_samples_split']
+
+    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_leaf']
+    else:
+      min_samples_leaf = MLinfilldefaults['RandomForestRegressor']['min_samples_leaf']
+
+    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_weight_fraction_leaf']
+    else:
+      min_weight_fraction_leaf = MLinfilldefaults['RandomForestRegressor']['min_weight_fraction_leaf']
+
+    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_features']
+    else:
+      max_features = MLinfilldefaults['RandomForestRegressor']['max_features']
+
+    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_leaf_nodes']
+    else:
+      max_leaf_nodes = MLinfilldefaults['RandomForestRegressor']['max_leaf_nodes']
+
+    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_decrease']
+    else:
+      min_impurity_decrease = MLinfilldefaults['RandomForestRegressor']['min_impurity_decrease']
+
+    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_split']
+    else:
+      min_impurity_split = MLinfilldefaults['RandomForestRegressor']['min_impurity_split']
+
+    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['bootstrap']
+    else:
+      bootstrap = MLinfilldefaults['RandomForestRegressor']['bootstrap']
+
+    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['oob_score']
+    else:
+      oob_score = MLinfilldefaults['RandomForestRegressor']['oob_score']
+
+    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_jobs']
+    else:
+      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
+
+    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['random_state']
+    else:
+      random_state = MLinfilldefaults['RandomForestRegressor']['random_state']
+
+    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['verbose']
+    else:
+      verbose = MLinfilldefaults['RandomForestRegressor']['verbose']
+
+    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['warm_start']
+    else:
+      warm_start = MLinfilldefaults['RandomForestRegressor']['warm_start']
+      
+    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['ccp_alpha']
+    else:
+      ccp_alpha = MLinfilldefaults['RandomForestRegressor']['ccp_alpha']
+      
+    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
+      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_samples']
+    else:
+      max_samples = MLinfilldefaults['RandomForestRegressor']['max_samples']
+
+    #do other stuff?
+
+    #then initialize RandomForestRegressor model 
+    model = RandomForestRegressor(n_estimators = n_estimators, \
+                                  criterion = criterion, \
+                                  max_depth = max_depth, \
+                                  min_samples_split = min_samples_split, \
+                                  min_samples_leaf = min_samples_leaf, \
+                                  min_weight_fraction_leaf = min_weight_fraction_leaf, \
+                                  max_features = max_features, \
+                                  max_leaf_nodes = max_leaf_nodes, \
+                                  min_impurity_decrease = min_impurity_decrease, \
+                                  min_impurity_split = min_impurity_split, \
+                                  bootstrap = bootstrap, \
+                                  oob_score = oob_score, \
+                                  n_jobs = n_jobs, \
+                                  random_state = random_state, \
+                                  verbose = verbose, \
+                                  warm_start = warm_start, \
+                                  ccp_alpha = ccp_alpha, \
+                                  max_samples = max_samples, \
+                                 )
+
+    return model
 
   def _train_randomforest_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
@@ -26426,254 +27417,6 @@ class AutoMunge:
     
     infill = model.predict(fillfeatures)
     
-    return infill
-
-  def _train_customML_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    modeltype = 'classification'
-    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
-
-  def _train_customML_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    modeltype = 'regression'
-    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
-  
-  def __train_customML(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
-    """
-    #wrapper for custom defined autoMLer training functions 
-    #either for classification or regression, which this function distinguishes with modeltype parameter
-    
-    #which custom defined functions are accepted in the form
-    #def customML_train_template(labels, features, columntype_report, commands, randomseed):
-    #  return model
-    
-    #where labels for classification are passed to the custom function 
-    #as a pandas dataframe with single column with header of integer 1 with str(int) entries
-    #and if user prefers labels as integers instead of string can apply in their function: labels = labels.astype(int)
-    
-    #and labels for regression are passed to the custom function 
-    #as a pandas dataframe with single column with header of integer 0 with continuous float entries
-    
-    #and features is recieved as a pandas dataframe numerically encoded, 
-    #with categoric entries as integers, and headers matching the returned suffix convention
-
-    #columntype_report is a dictionary reporting properties of the columns found in features
-    #a list of categoric features is available as columntype_report['all_categoric']
-    #a list of of numeric features is available as columntype_report['all_numeric']
-    #and columntype_report also contains more granular information such as feature set groupings and types
-
-    #commands is received as a dictionary as passed by user 
-    #for classifier in ML_cmnd['MLinfill_cmnd']['customClassifier]
-    #or for regression in ML_cmnd['MLinfill_cmnd']['customRegressor]
-    #randomseed is the randomseed associated with the automunge(.) call
-    #the returned model is saved in postprocess_dict
-    #and accessed to impute missing data in automunge and again in postmunge
-    #if model training not successful user can return model as False
-    
-    #note that pandas is available as pd and numpy as np
-    
-    #we'll have convention that if custom function returns a ValueError
-    #will not halt operation and instead just return model as False 
-    #meaning imputaitons will defer to the defaultinfill applied with transformation function
-    
-    #any required imports can either be conducted externally when defining the function
-    #or internal to the template
-    
-    #note that if user wishes to conduct a validation split as part of their function
-    #am._df_split is avilable, as documented in code base
-    
-    #the custom_autoMLer_train_template will be passed to an automunge call in ML_cmnd as
-    #ML_cmnd = {'autoML_type':'customML',
-    #           'MLinfill_cmnd':{'customML_Classifier':{},
-    #                            'customML_Regressor':{}},
-    #           'customML':{'customML_Classifier_train'  :function, 
-    #                       'customML_Classifier_predict':function, 
-    #                       'customML_Regressor_train'   :function, 
-    #                       'customML_Regressor_predict' :function}}
-    """
-    
-    columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
-
-    df_train_filllabel = df_train_filllabel.copy()
-    
-    #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-    df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
-    df_train_filllabel = df_train_filllabel.reset_index(drop=True)
-    
-    df_train_filltrain = df_train_filltrain.reset_index(drop=True)
-    
-    ML_label_columns = list(df_train_filllabel.columns)
-
-    if len(ML_label_columns) == 1:
-      #this will be ML_label_column = integer 0
-      ML_label_column = ML_label_columns[0]
-
-      if modeltype == 'classification':
-        df_train_filllabel[ML_label_column] = df_train_filllabel[ML_label_column].astype(str)
-
-    else:
-      #note this scenario only occurs for classification
-      #returns a single column with str(int) entries encoding each distinct activation set
-      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
-      ML_label_column = list(df_train_filllabel.columns)[0]
-    
-    if modeltype == 'classification':
-      #convention is that regression will return labels with header of integer 0, classification with header of integer 1
-      df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
-      ML_label_column = 1
-    
-    #note that we know that ML_label_column won't overlap with df_train_filltrain headers
-    #because df_train_filltrain headers are strings in suffix convention which include an underscore character
-    #and labels header is integer 0
-    #so if user wants to concatinate labels onto training set in their function it is ok
-    
-    #access any user passed parameters
-    commands = {}
-    if modeltype == 'classification':
-      if 'MLinfill_cmnd' in ML_cmnd:
-        if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
-          commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
-    if modeltype == 'regression':
-      if 'MLinfill_cmnd' in ML_cmnd:
-        if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
-          commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
-    
-    #train the model
-    model = False
-    if modeltype == 'classification':
-      function_address = 'customML_Classifier_train'
-    elif modeltype == 'regression':
-      function_address = 'customML_Regressor_train'
-      
-    if 'customML' in ML_cmnd:
-      if function_address in ML_cmnd['customML']:
-        if callable(ML_cmnd['customML'][function_address]):
-          try:
-            model = \
-            ML_cmnd['customML'][function_address](df_train_filltrain, 
-                                                  df_train_filllabel, 
-                                                  columntype_report,
-                                                  commands, 
-                                                  randomseed)
-          except ValueError:
-            pass
-
-    return model
-
-  def _predict_customML_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    modeltype = 'classification'
-    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
-
-  def _predict_customML_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    modeltype = 'regression'
-    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
-
-  def __predict_customML(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
-    """
-    #wrapper for custom defined autoMLer inference functions 
-    #either for classification or regression, which this function distinguishes with modeltype parameter
-    
-    #which custom defined functions are accepted in the form
-    #def customML_predict_template(features, model):
-    #  return infill
-    
-    #where features is a pandas dataframe matching the form of features passed to the corresponding training operation
-    #and features will have at least one row
-    #model is the model returned forom the corresponding training operation
-    #(the model == False scenario won't call the custom function)
-    
-    #and the expectation is that infill will be derived by passing features to a model inference operation
-    #and infill should be returned as either a single column pandas dataframe (column header is ignored)
-    #or infill can also be returned as single column numpy array
-    
-    #where for the regression application the infill entries should be returned as float type
-    #and for the classification application the infill entries can be returned as either int type or str(int) type
-    #and more granular data type management will be conducted externally
-    
-    #note that pandas is available as pd and numpy as np
-    #if imports were performed internal to customML_train_template they will need to be reinitilized in customML_predict_template
-    
-    #defaulttype is associated with use of internal default inference fucntions as alternate to user defined
-    #and is accessed when user passes to ML_cmnd a string for the custon predict functions
-           'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
-                         'customML_Classifier_predict': '(defaulttype)', 
-                         'customML_Regressor_train'   : customML_train_regressor, 
-                         'customML_Regressor_predict' : '(defaulttype)'}}
-    #where the string '(defaulttype)' may be one of
-    #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}
-    """
-    
-    if model is not False:
-      
-      fillfeatures = fillfeatures.reset_index(drop=True)
-
-      #access any user passed parameters
-      commands = {}
-      if modeltype == 'classification':
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
-            commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
-      if modeltype == 'regression':
-        if 'MLinfill_cmnd' in ML_cmnd:
-          if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
-            commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
-      
-      if modeltype == 'classification':
-        function_address = 'customML_Classifier_predict'
-      elif modeltype == 'regression':
-        function_address = 'customML_Regressor_predict'
-      
-      #ML_cmnd['customML'][function_address] will either be populated with a function or a string
-      #when populated with a string it is passed to defaulttype and used to access one of internal defined inference functions
-      defaulttype = False
-      if not callable(ML_cmnd['customML'][function_address]):
-        defaulttype = ML_cmnd['customML'][function_address]
-        
-      #defaulttype is associated with use of internal default inference functions as alternate to user defined
-      if defaulttype in {'tensorflow', 'xgboost', 'catboost', 
-                         'flaml', 'autogluon', 'randomforest'}:
-        
-        infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands)
-        
-      #otherwise this is scenario when a string defaulttype was not defined, meaning we call the custom function
-      elif defaulttype is False:
-        
-        if 'customML' in ML_cmnd:
-          if function_address in ML_cmnd['customML']:
-            if callable(ML_cmnd['customML'][function_address]):
-              try:
-                infill = \
-                ML_cmnd['customML'][function_address](fillfeatures, 
-                                                      model,
-                                                      commands)
-              except ValueError:
-                infill = np.zeros(shape=(fillfeatures.shape[0],1))
-              
-      #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
-      #we'll convert to a flattened array for common form
-      if type(infill) == type(pd.DataFrame()) or type(infill) == type(pd.Series([1])):
-        infill = infill.to_numpy()
-        
-      infill = infill.ravel()
-              
-      if modeltype == 'classification':
-        
-        #returned values from inference are accepted as either type int or type str(int)
-        #categorylist is a list of headers corresponding to onehot form, where if this is a 1010 set will be list before converting back to binarized
-        if len(categorylist) > 1:
-          
-          #this will return a onehot encoded array with 0/1 integer entries
-          infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
-        
-        else:
-          
-          #else for single column case if entries are str(int) we'll convert to int
-          #so this could result in a boolean integer set or ordinal integer set depending on label composition
-          infill = infill.astype(int)
-        
-    elif model is False:
-      
-      #note that infill is not inserted when model is False
-      infill = np.zeros(shape=(1,len(categorylist)))
-      
     return infill
 
   def _train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
@@ -27307,7 +28050,255 @@ class AutoMunge:
       
       return infill
 
-  #__FunctionBlock_00x customML default inference functions
+  #__FunctionBlock: customML support functions
+
+  def _train_customML_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'classification'
+    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_customML_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'regression'
+    return self.__train_customML(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+  
+  def __train_customML(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
+    """
+    #wrapper for custom defined autoMLer training functions 
+    #either for classification or regression, which this function distinguishes with modeltype parameter
+    
+    #which custom defined functions are accepted in the form
+    #def customML_train_template(labels, features, columntype_report, commands, randomseed):
+    #  return model
+    
+    #where labels for classification are passed to the custom function 
+    #as a pandas dataframe with single column with header of integer 1 with str(int) entries
+    #and if user prefers labels as integers instead of string can apply in their function: labels = labels.astype(int)
+    
+    #and labels for regression are passed to the custom function 
+    #as a pandas dataframe with single column with header of integer 0 with continuous float entries
+    
+    #and features is recieved as a pandas dataframe numerically encoded, 
+    #with categoric entries as integers, and headers matching the returned suffix convention
+
+    #columntype_report is a dictionary reporting properties of the columns found in features
+    #a list of categoric features is available as columntype_report['all_categoric']
+    #a list of of numeric features is available as columntype_report['all_numeric']
+    #and columntype_report also contains more granular information such as feature set groupings and types
+
+    #commands is received as a dictionary as passed by user 
+    #for classifier in ML_cmnd['MLinfill_cmnd']['customClassifier]
+    #or for regression in ML_cmnd['MLinfill_cmnd']['customRegressor]
+    #randomseed is the randomseed associated with the automunge(.) call
+    #the returned model is saved in postprocess_dict
+    #and accessed to impute missing data in automunge and again in postmunge
+    #if model training not successful user can return model as False
+    
+    #note that pandas is available as pd and numpy as np
+    
+    #we'll have convention that if custom function returns a ValueError
+    #will not halt operation and instead just return model as False 
+    #meaning imputaitons will defer to the defaultinfill applied with transformation function
+    
+    #any required imports can either be conducted externally when defining the function
+    #or internal to the template
+    
+    #note that if user wishes to conduct a validation split as part of their function
+    #am._df_split is avilable, as documented in code base
+    
+    #the custom_autoMLer_train_template will be passed to an automunge call in ML_cmnd as
+    #ML_cmnd = {'autoML_type':'customML',
+    #           'MLinfill_cmnd':{'customML_Classifier':{},
+    #                            'customML_Regressor':{}},
+    #           'customML':{'customML_Classifier_train'  :function, 
+    #                       'customML_Classifier_predict':function, 
+    #                       'customML_Regressor_train'   :function, 
+    #                       'customML_Regressor_predict' :function}}
+    """
+    
+    columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+
+    df_train_filllabel = df_train_filllabel.copy()
+    
+    #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
+    df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+    df_train_filllabel = df_train_filllabel.reset_index(drop=True)
+    
+    df_train_filltrain = df_train_filltrain.reset_index(drop=True)
+    
+    ML_label_columns = list(df_train_filllabel.columns)
+
+    if len(ML_label_columns) == 1:
+      #this will be ML_label_column = integer 0
+      ML_label_column = ML_label_columns[0]
+
+      if modeltype == 'classification':
+        df_train_filllabel[ML_label_column] = df_train_filllabel[ML_label_column].astype(str)
+
+    else:
+      #note this scenario only occurs for classification
+      #returns a single column with str(int) entries encoding each distinct activation set
+      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
+      ML_label_column = list(df_train_filllabel.columns)[0]
+    
+    if modeltype == 'classification':
+      #convention is that regression will return labels with header of integer 0, classification with header of integer 1
+      df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
+      ML_label_column = 1
+    
+    #note that we know that ML_label_column won't overlap with df_train_filltrain headers
+    #because df_train_filltrain headers are strings in suffix convention which include an underscore character
+    #and labels header is integer 0
+    #so if user wants to concatinate labels onto training set in their function it is ok
+    
+    #access any user passed parameters
+    commands = {}
+    if modeltype == 'classification':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
+    if modeltype == 'regression':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
+    
+    #train the model
+    model = False
+    if modeltype == 'classification':
+      function_address = 'customML_Classifier_train'
+    elif modeltype == 'regression':
+      function_address = 'customML_Regressor_train'
+      
+    if 'customML' in ML_cmnd:
+      if function_address in ML_cmnd['customML']:
+        if callable(ML_cmnd['customML'][function_address]):
+          try:
+            model = \
+            ML_cmnd['customML'][function_address](df_train_filltrain, 
+                                                  df_train_filllabel, 
+                                                  columntype_report,
+                                                  commands, 
+                                                  randomseed)
+          except ValueError:
+            pass
+
+    return model
+
+  def _predict_customML_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'classification'
+    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def _predict_customML_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'regression'
+    return self.__predict_customML(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def __predict_customML(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
+    """
+    #wrapper for custom defined autoMLer inference functions 
+    #either for classification or regression, which this function distinguishes with modeltype parameter
+    
+    #which custom defined functions are accepted in the form
+    #def customML_predict_template(features, model):
+    #  return infill
+    
+    #where features is a pandas dataframe matching the form of features passed to the corresponding training operation
+    #and features will have at least one row
+    #model is the model returned forom the corresponding training operation
+    #(the model == False scenario won't call the custom function)
+    
+    #and the expectation is that infill will be derived by passing features to a model inference operation
+    #and infill should be returned as either a single column pandas dataframe (column header is ignored)
+    #or infill can also be returned as single column numpy array
+    
+    #where for the regression application the infill entries should be returned as float type
+    #and for the classification application the infill entries can be returned as either int type or str(int) type
+    #and more granular data type management will be conducted externally
+    
+    #note that pandas is available as pd and numpy as np
+    #if imports were performed internal to customML_train_template they will need to be reinitilized in customML_predict_template
+    
+    #defaulttype is associated with use of internal default inference fucntions as alternate to user defined
+    #and is accessed when user passes to ML_cmnd a string for the custon predict functions
+           'customML' : {'customML_Classifier_train'  : customML_train_classifier, 
+                         'customML_Classifier_predict': '(defaulttype)', 
+                         'customML_Regressor_train'   : customML_train_regressor, 
+                         'customML_Regressor_predict' : '(defaulttype)'}}
+    #where the string '(defaulttype)' may be one of
+    #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}
+    """
+    
+    if model is not False:
+      
+      fillfeatures = fillfeatures.reset_index(drop=True)
+
+      #access any user passed parameters
+      commands = {}
+      if modeltype == 'classification':
+        if 'MLinfill_cmnd' in ML_cmnd:
+          if 'customML_Classifier' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customML_Classifier']
+      if modeltype == 'regression':
+        if 'MLinfill_cmnd' in ML_cmnd:
+          if 'customML_Regressor' in ML_cmnd['MLinfill_cmnd']:
+            commands = ML_cmnd['MLinfill_cmnd']['customML_Regressor']
+      
+      if modeltype == 'classification':
+        function_address = 'customML_Classifier_predict'
+      elif modeltype == 'regression':
+        function_address = 'customML_Regressor_predict'
+      
+      #ML_cmnd['customML'][function_address] will either be populated with a function or a string
+      #when populated with a string it is passed to defaulttype and used to access one of internal defined inference functions
+      defaulttype = False
+      if not callable(ML_cmnd['customML'][function_address]):
+        defaulttype = ML_cmnd['customML'][function_address]
+        
+      #defaulttype is associated with use of internal default inference functions as alternate to user defined
+      if defaulttype in {'tensorflow', 'xgboost', 'catboost', 
+                         'flaml', 'autogluon', 'randomforest'}:
+        
+        infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands)
+        
+      #otherwise this is scenario when a string defaulttype was not defined, meaning we call the custom function
+      elif defaulttype is False:
+        
+        if 'customML' in ML_cmnd:
+          if function_address in ML_cmnd['customML']:
+            if callable(ML_cmnd['customML'][function_address]):
+              try:
+                infill = \
+                ML_cmnd['customML'][function_address](fillfeatures, 
+                                                      model,
+                                                      commands)
+              except ValueError:
+                infill = np.zeros(shape=(fillfeatures.shape[0],1))
+              
+      #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
+      #we'll convert to a flattened array for common form
+      if type(infill) == type(pd.DataFrame()) or type(infill) == type(pd.Series([1])):
+        infill = infill.to_numpy()
+        
+      infill = infill.ravel()
+              
+      if modeltype == 'classification':
+        
+        #returned values from inference are accepted as either type int or type str(int)
+        #categorylist is a list of headers corresponding to onehot form, where if this is a 1010 set will be list before converting back to binarized
+        if len(categorylist) > 1:
+          
+          #this will return a onehot encoded array with 0/1 integer entries
+          infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+        
+        else:
+          
+          #else for single column case if entries are str(int) we'll convert to int
+          #so this could result in a boolean integer set or ordinal integer set depending on label composition
+          infill = infill.astype(int)
+        
+    elif model is False:
+      
+      #note that infill is not inserted when model is False
+      infill = np.zeros(shape=(1,len(categorylist)))
+      
+    return infill
 
   def __call_default_function(self, defaulttype, modeltype, fillfeatures, model, commands):
     """
@@ -27375,6 +28366,8 @@ class AutoMunge:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
           
     return infill
+
+  #__FunctionBlock: customML default inference functions
 
   def __customML_tensorflow_defaultpredict_classification(self, features, model, commands):
     """
@@ -27502,6 +28495,8 @@ class AutoMunge:
     infill = model.predict(features)
 
     return infill
+
+  #__FunctionBlock: data translations support
 
   def __convert_onehot_to_singlecolumn(self, df, stringtype = True):
     """
@@ -27783,6 +28778,8 @@ class AutoMunge:
     
     return df2
 
+  #__FunctionBlock: oversampling support
+
   def __LabelSetGenerator(self, df, column, label):
     '''
     #LabelSetGenerator
@@ -28041,6 +29038,8 @@ class AutoMunge:
           del train_df[labelcolumn]
 
     return train_df, labels_df
+
+  #__FunctionBlock: automunge feature importance
   
   def __trainFSmodel(self, am_subset, am_labels, randomseed, \
                    process_dict, postprocess_dict, labelctgy, ML_cmnd, printstatus):
@@ -28754,6 +29753,8 @@ class AutoMunge:
       print("")
     
     return madethecut, FSmodel, FScolumn_dict, FS_sorted, FS_validations
+
+  #__FunctionBlock: assigninfill support functions
   
   def __assemblepostprocess_assigninfill(self, assigninfill, infillcolumns_list, 
                                        columns_train, postprocess_dict, MLinfill):
@@ -29318,203 +30319,6 @@ class AutoMunge:
                                 masterNArows_test)
     
     return df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count
-
-  def __consolidate_multicolumn(self, df_traininfill, column, MLinfilltype, postprocess_dict):
-    """
-    #consolidates multicolumn infill representations to a single column of aggregated strings with header column
-    #else returns received single column to same column but renamed to header column
-    #this multicolumn representation is used to evaluate halting criteria for infilliterate
-    """
-    
-    if MLinfilltype in {'multirt', '1010'}:
-      
-      categorylist = list(df_traininfill)
-      
-      #these have suffix included so won't have overlap with arbitrary column header 'asdf', but just in case
-      tempcolumn = 'asdf'
-      if tempcolumn in categorylist:
-        while tempcolumn in categorylist:
-          tempcolumn = tempcolumn + 'z'
-
-      df_traininfill[tempcolumn] = ''
-      
-      for entry in categorylist:
-        
-        df_traininfill[tempcolumn] = df_traininfill[tempcolumn] + df_traininfill[entry].astype(str)
-        
-        del df_traininfill[entry]
-        
-      #now rename the target column
-      df_traininfill.rename(columns = {tempcolumn : column}, inplace = True)
-      
-    # elif 'infill' in df_traininfill:
-        
-    #   df_traininfill.rename(columns = {'infill' : column}, inplace = True)
-    
-    return df_traininfill
-
-  def __populate_halt_dict(self, df_infill_i, df_infill_iplus, MLinfilltype, halt_dict, iteration, column, df_traininfill_rowcount):
-    """
-    Appends entries to halt_dict associated with the current target column
-    """
-
-    if iteration > 0:
-      
-      #if set is categoric
-      if MLinfilltype in {'singlct', 'binary', 'multirt', '1010', 'concurrent_ordl', 'concurrent_act'}:
-        
-        #this is a count of cases where imputations matched between iterations which signals that iterations are honing in on final form
-        sumofinequal = int(pd.DataFrame(df_infill_iplus[column][:df_traininfill_rowcount] != df_infill_i[column][:df_traininfill_rowcount]).sum())
-        
-        #this is a count of number of imputations associated with this infill
-        quantity = df_traininfill_rowcount
-        
-        ratio = sumofinequal / quantity
-        
-        categoric_tuple_df_row = pd.DataFrame({'sumofinequal':[sumofinequal], 
-                                               'quantity':[quantity],
-                                               'ratio':[ratio],
-                                               'column':[column]})
-        
-        #now concat that row onto the categoric_tuple_df stored in halt_dict for this iteration
-        halt_dict[iteration]['categoric_tuple_df'] = pd.concat([halt_dict[iteration]['categoric_tuple_df'], categoric_tuple_df_row], axis=0)
-        
-      #if set is numeric
-      if MLinfilltype in {'numeric', 'integer', 'concurrent_nmbr'}:
-        
-        #this is the max value found in absolute value of deltas between iterations
-        meanabsdelta = (df_infill_iplus[column][:df_traininfill_rowcount] - df_infill_i[column][:df_traininfill_rowcount]).abs().mean()
-        
-        meanabs = df_infill_iplus[column][:df_traininfill_rowcount].abs().mean()
-        
-        quantity = df_traininfill_rowcount
-        
-        numeric_tuple_df_row = pd.DataFrame({'meanabsdelta':[meanabsdelta], 
-                                             'meanabs':[meanabs],
-                                             'quantity':[quantity],
-                                             'column':[column]})
-        
-        #now concat that row onto the numeric_tuple_df stored in halt_dict for this iteration
-        halt_dict[iteration]['numeric_tuple_df'] = pd.concat([halt_dict[iteration]['numeric_tuple_df'], numeric_tuple_df_row], axis=0)
-    
-    return halt_dict
-
-  def __calc_stop_result(self, halt_dict, iteration, ML_cmnd):
-    """
-    #calculates a result for stopping criteria
-    #note that the numeric criteria was partly inspired by review of scikit-learn iterativeimputer stopping criteria
-    #note that the categoric stopping criteria was partly inspired by review of MissForest stopping criteria
-    #although there are some fundamental differences in place for each
-    #receives tolerances in ML_cmnd as ML_cmnd['numeric_tol'] and ML_cmnd['categoric_tol']
-    #and when these entries are not populated defaults to numeric_tol = 0.03, categoric_tol = 0.05
-    #(these defaults are for the moment somewhat arbitrary and may be further refined in future update)
-    
-    #Please note that the stop_result is only returned as True 
-    #if early stopping was activated by ML_cmnd['halt_iterate'] = True
-    """
-    
-    #initialize
-    stop_result = False
-    
-    if 'categoric_tol' in ML_cmnd:
-      categoric_tol = ML_cmnd['categoric_tol']
-    else:
-      categoric_tol = 0.05
-      
-    if 'numeric_tol' in ML_cmnd:
-      numeric_tol = ML_cmnd['numeric_tol']
-    else:
-      numeric_tol = 0.03
-    
-    if iteration > 0:
-      
-      #_(1)_
-      
-      #first calculate categoric result based on aggregation of all categoric imputations
-      
-      categoric_tuple_df = halt_dict[iteration]['categoric_tuple_df']
-
-      if categoric_tuple_df.shape[0] == 0:
-        categoric_result = True
-      else:
-        
-        #result is based on whether sum(sumofinequal)/sum(quantity) < categoric_tol
-        categoric_result = False
-        
-        sum_sumofinequal = categoric_tuple_df['sumofinequal'].sum()
-        sum_quantity = categoric_tuple_df['quantity'].sum()
-
-        if sum_sumofinequal / sum_quantity < categoric_tol:
-          
-          categoric_result = True
-
-        # #validation printouts
-        # print("categoric: sum_sumofinequal / sum_quantity")
-        # print(sum_sumofinequal / sum_quantity)
-        # print("categoric_tol = ", categoric_tol)
-        # print("categoric_result = ", categoric_result)
-        # print()
-          
-      #now calculate numeric result based on aggregation of all numeric imputations
-      
-      numeric_tuple_df = halt_dict[iteration]['numeric_tuple_df']
-      
-      if numeric_tuple_df.shape[0] == 0:
-        numeric_result = True
-      else:
-        
-        #result is based on weighted average of ratio meanabsdelta/meanabs < numeric_tol
-        #where we'll derive quantity_times_ratio_sum and quantity_sum
-        #and halt when quantity_times_ratio_sum / quantity_sum < numeric_tol
-        
-        #(weighted by quantity of imputations associated with the ratio)
-        numeric_result = False
-        
-        #quantity_times_ratio_sum = quantity * ratio
-        #ratio = meanabsdelta / meanabs
-        
-        #this is for an edge case where inferred infill is all 0, would interfere with division
-        numeric_tuple_df = numeric_tuple_df.loc[numeric_tuple_df['meanabs'] != 0]
-
-        quantity_times_ratio_sum = (numeric_tuple_df['quantity'] * \
-                                   numeric_tuple_df['meanabsdelta'] / \
-                                   numeric_tuple_df['meanabs']).sum()
-        
-        #for consistency of quantity basis we'll derive quantity_sum after extracting all zero infill edge case
-        quantity_sum = numeric_tuple_df['quantity'].sum()
-          
-        if quantity_sum == 0:
-          numeric_result = True
-          
-        elif quantity_times_ratio_sum / quantity_sum < numeric_tol:
-          numeric_result = True
-
-        # #validation printouts
-        # print("numeric: quantity_times_ratio_sum / quantity_sum")
-        # print(quantity_times_ratio_sum / quantity_sum)
-        # print("numeric_tol = ", numeric_tol)
-        # print("numeric_result = ", numeric_result)
-        # print()
-
-      #_(1)_
-      stop_result = False
-      
-      if numeric_result is True and categoric_result is True:
-        
-        stop_result = True
-          
-      halt_dict[iteration]['numeric_result'] = numeric_result
-      halt_dict[iteration]['categoric_result'] = categoric_result
-      halt_dict[iteration]['stop_result'] = stop_result
-      
-      #check if user activated halt_iterate in ML_cmnd (early stopping for infilliterate)
-      if 'halt_iterate' in ML_cmnd and ML_cmnd['halt_iterate'] is True:
-        pass
-      else:
-        #stop_result recorded in halt_dict as evlauated but returned as False
-        stop_result = False
-
-    return stop_result, halt_dict
   
   def __apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
@@ -30947,6 +31751,8 @@ class AutoMunge:
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
     return PCAset_train, PCAset_test, postprocess_dict, PCA_columns_valresult
+
+  #__FunctionBlock: validation functions
   
   def __check_am_miscparameters(self, valpercent, floatprecision, shuffletrain, \
                              TrainLabelFreqLevel, dupl_rows, powertransform, binstransform, MLinfill, \
@@ -31900,6 +32706,23 @@ class AutoMunge:
         
     return result
 
+  def __create_inverse_assigncat(self, assigncat):
+    """
+    #This will invert entries in assigncat 
+    #to make more efficient accessing category associated with a column
+    #where assigncat has entries at this point {'category' : ['column1', 'column2']}
+    #and so inverse_assigncat translates to eg
+    #{'column1':'category', 'column2':'category'}
+    """
+    
+    inverse_assigncat = {}
+
+    for entry1 in assigncat:
+      for entry2 in assigncat[entry1]:
+        inverse_assigncat.update({entry2 : entry1})
+        
+    return inverse_assigncat
+
   def __check_assigninfill(self, assigninfill, printstatus):
     """
     #Here we'll do a quick check for any redundant column assignments in the
@@ -32821,144 +33644,6 @@ class AutoMunge:
       
     return check_processdict_result, check_processdict_result2
 
-  def __populate_labelsencoding_dict_support(self, labelsencoding_dict, postprocess_dict, labels_column_entry, inputcolumn):
-    """
-    #support function to populate labelsencoding_dict
-    #to ensure normalization_dict entries are included for columns not returned from transforms
-    #such as those subject to replacement
-    #which will be excluded from columnkeylist
-    """
-    
-    labelscategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
-    
-    #if inputcolumn has a column_dict entry we'll add the normalization_dict
-    if inputcolumn in postprocess_dict['column_dict']:
-      #this data strucutre is converted in __populate_labelsencoding_dict_support3 to column_dict entries
-      #so don't need to populate the entire normalization_dict
-      labelsnormalization_dict_key = list(postprocess_dict['column_dict'][inputcolumn]['normalization_dict'])[0]
-      labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({labelsnormalization_dict_key:{}})
-      
-      #now do the same for the next inputcolumn, this will halt once the inputcolumn reaches the column passed to automunge(.)
-      inputinputcolumn = postprocess_dict['column_dict'][inputcolumn]['inputcolumn']      
-      labelsencoding_dict = self.__populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, labels_column_entry, inputinputcolumn)
-    
-    return labelsencoding_dict
-
-  def __populate_labelsencoding_dict_support2(self, labelsencoding_dict, postprocess_dict, transform_dict, category, i):
-    """
-    #populates transform_dict and process_dict entries to mirror_dict or labelsencoding_dict
-    #but only those associated with applied transforms
-    #where mirror_dict is the returned form for postprocess_dict['transform_dict'] and postprocess_dict['process_dict']
-    #which serves the purpose of omitting transform_dict and process_dict entries not inspected for derivations
-    #which benefits privacy
-
-    #the recieved category is a root category applied to an input feature or input label
-    #e.g. root category = postprocess_dict['origcolumn'][labels_column_entry]['category']
-
-    #the family tree of that root category is inspected and upstream primitives are inspected with i=0
-    #downstream tiers will receive category entries to primitive with offspring and i>0
-    """
-
-    if 'transform_dict' not in labelsencoding_dict:
-      labelsencoding_dict.update({'transform_dict' : {}})
-      
-    if 'process_dict' not in labelsencoding_dict:
-      labelsencoding_dict.update({'process_dict' : {}})
-    
-    familytree = transform_dict[category]
-    
-    labelsencoding_dict['transform_dict'].update({category : transform_dict[category]})
-    labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
-    
-    #i will be 0 for upstream primitives
-    if i == 0:
-      
-      #populate process_dict for all category entries
-      for primitive in ['parents', 'siblings', 'auntsuncles', 'cousins']:
-        if len(familytree[primitive]) > 0:
-          for category in familytree[primitive]:
-            if category != None:
-              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
-      
-      #populate transform_dict for categories with offspring, populated by calling function recursively
-      for primitive in ['parents', 'siblings']:
-        if len(familytree[primitive]) > 0:
-          for category in familytree[primitive]:
-            if category != None:
-              i+=1
-              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
-              i=0
-    
-    #i will > 0 for downstream primitives
-    elif i > 0:
-      
-      #populate process_dict for all category entries
-      for primitive in ['children', 'niecesnephews', 'coworkers', 'friends']:
-        if len(familytree[primitive]) > 0:
-          for category in familytree[primitive]:
-            if category != None:
-              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
-      
-      #populate transform_dict for categories with offspring, populated by calling function recursively
-      for primitive in ['children', 'niecesnephews']:
-        if len(familytree[primitive]) > 0:
-          for category in familytree[primitive]:
-            if category != None:
-              i+=1
-              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
-
-    return labelsencoding_dict, i
-
-  def __populate_labelsencoding_dict_support3(self, labelsencoding_dict, postprocess_dict):
-    """
-    populates labelsencoding_dict with entries inspected for label inversion
-    used when privacy_encode = True and encryption performed via encrypt_key parameter
-    this results in 'column_dict' entries replacing the corresponding 'transforms' entries populated in __populate_labelsencoding_dict_support
-
-    basically all that's happening here is we're mirroring label records from postprocess_dict
-    into the labelsencoding_dict
-    which will be returned as a public entry when encryption performed with encrypt_key and privacy_encode != 'private'
-    for use to allow label inversion without the need for an encryption key
-    """
-    
-    labelsencoding_dict['column_dict'] = {}
-    labelsencoding_dict['inverse_categorytree'] = {}
-    labelsencoding_dict['origcolumn'] = {}
-    labelsencoding_dict['excl_suffix'] = postprocess_dict['excl_suffix']
-    labelsencoding_dict['excl_suffix_conversion_dict'] = {}
-    labelsencoding_dict['excl_suffix_inversion_dict'] = {}
-    labelsencoding_dict['privacy_encode'] = postprocess_dict['privacy_encode']
-    labelsencoding_dict['finalcolumns_train'] = []
-    labelsencoding_dict['finalcolumns_labels'] = postprocess_dict['finalcolumns_labels']
-    labelsencoding_dict['labels_column'] = postprocess_dict['labels_column']
-    labelsencoding_dict['labels_column_listofcolumns'] = postprocess_dict['labels_column_listofcolumns']
-    labelsencoding_dict['madethecut'] = []
-
-    for inputcolumn in labelsencoding_dict['transforms']:
-      for rootcategory in labelsencoding_dict['transforms'][inputcolumn]:
-        for derivedcolumn in labelsencoding_dict['transforms'][inputcolumn][rootcategory]:
-
-          labelsencoding_dict['column_dict'].update({derivedcolumn : postprocess_dict['column_dict'][derivedcolumn]})
-
-          if labelsencoding_dict['column_dict'][derivedcolumn]['category'] == 'excl':
-            labelsencoding_dict['excl_suffix_conversion_dict'].update({labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn'] : derivedcolumn})
-            labelsencoding_dict['excl_suffix_inversion_dict'].update({derivedcolumn : labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn']})
-
-    del labelsencoding_dict['transforms']
-            
-    for origcolumn in postprocess_dict['labels_column_listofcolumns']:
-      labelsencoding_dict['origcolumn'].update({origcolumn : postprocess_dict['origcolumn'][origcolumn]})
-
-    labelsencoding_dict['excl_columns_without_suffix'] = list(labelsencoding_dict['excl_suffix_conversion_dict'])
-    
-    #this data structure supports inversion path selection
-    labels_inverse_categorytree = \
-    self.__populate_inverse_categorytree(postprocess_dict, labelscase=True)
-    
-    labelsencoding_dict['inverse_categorytree'] = labels_inverse_categorytree
-    
-    return labelsencoding_dict
-
   def __check_processdict3(self, entry, processdict, postprocess_dict, transform_dict, mirror_dict, printstatus):
     """
     The processdict 'labelctgy' entry is only really used on small part of library
@@ -33149,6 +33834,8 @@ class AutoMunge:
             print("Note that if a common function is desired for both train and test data user can instead pass a function in the 'custom_train' or 'singleprocess' convention")
 
     return check_processdict4_valresult, check_processdict4_valresult2
+
+  #__FunctionBlock: functionpointer support
 
   def __grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict, process_dict, \
                                             i, check_functionpointer_result, printstatus):
@@ -33366,6 +34053,8 @@ class AutoMunge:
                                                i, check_functionpointer_result, printstatus)
 
     return processdict, check_functionpointer_result
+
+  #__FunctionBlock: column assignments string conversion
   
   def __assigncat_str_convert(self, assigncat):
     """
@@ -33512,98 +34201,8 @@ class AutoMunge:
         assignnan['global'] = [assignnan['global']]
           
     return assignnan
-  
-  def __floatprecision_transform(self, df, columnkeylist, floatprecision):
-    """
-    #floatprecision is a parameter user passed to automunge
-    #allowable values are 16/32/64
-    #if 64 do nothing (we'll assume our transform functions default to 64)
-    #if 16 or 32 then check each column in df for columnkeylist and if
-    #float convert to this precision
-    """
-    
-    if isinstance(columnkeylist, str):
-      columnkeylist = [columnkeylist]
-    
-    #if floatprecision in {16, 32, 64}:
-    if floatprecision in {16, 32}:
-      
-      for columnkey in columnkeylist:
-        
-        if pd.api.types.is_float_dtype(df[columnkey]):
-          
-          if floatprecision == 32:
-            df[columnkey] = df[columnkey].astype(np.float32)
-            
-          elif floatprecision == 16:
-            df[columnkey] = df[columnkey].astype(np.float16)
-            
-#           elif floatprecision == 64:
-#             df[columnkey] = df[columnkey].astype(np.float64)
 
-    return df
-
-  def __grab_params(self, assign_param, category, column, processdict_entry, postprocess_dict):
-    """
-    #In order of precendence, parameters assigned to distinct 
-    #category/column configurations take precedence 
-    #to default_assignparam assigned to categories which take precendence 
-    #to global_assignparam assigned to all transformations which take precendence 
-    #to parameters set as defaultparams in processdict definition.
-    """
-    
-    params = {}
-    
-    if 'defaultparams' in processdict_entry:
-      
-      #key are parameters
-      for key in processdict_entry['defaultparams']:
-        
-        params.update({key : processdict_entry['defaultparams'][key]})
-
-    #if assign_param is not empty
-    if bool(assign_param):
-      
-      if 'global_assignparam' in assign_param:
-        
-        #key are parameters
-        for key in assign_param['global_assignparam']:
-          
-          params.update({key : assign_param['global_assignparam'][key]})
-          
-      if 'default_assignparam' in assign_param:
-        
-        if category in assign_param['default_assignparam']:
-            
-          #key are parameters
-          for key in assign_param['default_assignparam'][category]:
-
-            params.update({key : assign_param['default_assignparam'][category][key]})
-                
-      if category in assign_param:
-        
-        #distinct category/column configurations can either be assigned
-        #using the source column or the derived column serving as input to the transform
-        #in case both are present the dervied column specifciation takes precedence
-          
-        #derived column specification with suffix takes precendence over input column specification
-        if column in assign_param[category]:
-
-          #key are parameters
-          for key in assign_param[category][column]:
-
-            params.update({key : assign_param[category][column][key]})
-
-        #we won't use a specified source column entry if the derived column was already specfied
-        elif column in postprocess_dict['column_dict'] \
-        and postprocess_dict['column_dict'][column]['origcolumn'] in assign_param[category]:
-
-          #key are parameters
-          for key in assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']]:
-
-            params.update({key : assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']][key]})
-    
-    return params
+  #__FunctionBlock: label smoothing support
 
   def __apply_LabelSmoothing(self, df, targetcolumn, epsilon, label_categorylist, label_category, categorycomplete_dict, LSfit, LSfitparams_dict):
     """
@@ -33911,6 +34510,8 @@ class AutoMunge:
           categorycomplete_dict[column1] = True
   
     return df, categorycomplete_dict
+
+  #__FunctionBlock: Binary categoric consolidations support
 
   def __BinaryConsolidate(self, df_train, df_test, Binary, postprocess_dict, root):
     """
@@ -34590,6 +35191,38 @@ class AutoMunge:
       self._custom_inversion_onht(df, Binary_columns, inputcolumn, Binary_dict)
       
     return df, inputcolumn
+
+  #__FunctionBlock: data type management
+  
+  def __floatprecision_transform(self, df, columnkeylist, floatprecision):
+    """
+    #floatprecision is a parameter user passed to automunge
+    #allowable values are 16/32/64
+    #if 64 do nothing (we'll assume our transform functions default to 64)
+    #if 16 or 32 then check each column in df for columnkeylist and if
+    #float convert to this precision
+    """
+    
+    if isinstance(columnkeylist, str):
+      columnkeylist = [columnkeylist]
+    
+    #if floatprecision in {16, 32, 64}:
+    if floatprecision in {16, 32}:
+      
+      for columnkey in columnkeylist:
+        
+        if pd.api.types.is_float_dtype(df[columnkey]):
+          
+          if floatprecision == 32:
+            df[columnkey] = df[columnkey].astype(np.float32)
+            
+          elif floatprecision == 16:
+            df[columnkey] = df[columnkey].astype(np.float16)
+            
+#           elif floatprecision == 64:
+#             df[columnkey] = df[columnkey].astype(np.float64)
+
+    return df
   
   def __convert_to_nan(self, df, column, category, postprocess_dict, convert_to_nan_list):
     """
@@ -34856,6 +35489,8 @@ class AutoMunge:
                 
     return df
 
+  #__FunctionBlock: data set partitioning and shuffling
+
   def _df_split(self, df, ratio, shuffle_param, randomseed):
     """
     #performs a split of passed dataframe df
@@ -34972,6 +35607,27 @@ class AutoMunge:
     del df_temp
     
     return df
+
+  def __dupl_rows_consolidate(self, df, df_consol_id, df_consol_labels):
+    """
+    #consolidates duplicate rows in a dataframe
+    #in other words if duplicate rows present only returns one of duplicates
+    """
+    
+    mask = pd.DataFrame(df.duplicated())
+    mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
+
+    if df_consol_id.shape[0] == df.shape[0]:
+      df_consol_id = df_consol_id.iloc[mask.to_numpy()]
+    
+    if df_consol_labels.shape[0] == df.shape[0]:
+      df_consol_labels = df_consol_labels.iloc[mask.to_numpy()]
+
+    df = df.iloc[mask.to_numpy()]
+    
+    return df, df_consol_id, df_consol_labels
+
+  #__FunctionBlock: populate returned reports
 
   def __populate_columntype_report(self, postprocess_dict, target_columns):
     """
@@ -35219,225 +35875,7 @@ class AutoMunge:
       
     return column_map
 
-  def __dupl_rows_consolidate(self, df, df_consol_id, df_consol_labels):
-    """
-    #consolidates duplicate rows in a dataframe
-    #in other words if duplicate rows present only returns one of duplicates
-    """
-    
-    mask = pd.DataFrame(df.duplicated())
-    mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
-
-    if df_consol_id.shape[0] == df.shape[0]:
-      df_consol_id = df_consol_id.iloc[mask.to_numpy()]
-    
-    if df_consol_labels.shape[0] == df.shape[0]:
-      df_consol_labels = df_consol_labels.iloc[mask.to_numpy()]
-
-    df = df.iloc[mask.to_numpy()]
-    
-    return df, df_consol_id, df_consol_labels
-
-  def __create_inverse_assigncat(self, assigncat):
-    """
-    #This will invert entries in assigncat 
-    #to make more efficient accessing category associated with a column
-    #where assigncat has entries at this point {'category' : ['column1', 'column2']}
-    #and so inverse_assigncat translates to eg
-    #{'column1':'category', 'column2':'category'}
-    """
-    
-    inverse_assigncat = {}
-
-    for entry1 in assigncat:
-      for entry2 in assigncat[entry1]:
-        inverse_assigncat.update({entry2 : entry1})
-        
-    return inverse_assigncat
-
-  def __set_indexcolumn(self, trainID_column, testID_column, application_number):
-    """
-    #this either sets indexcolumn as 'Automunge_index' 
-    #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
-    #(this helps with a rare potential workflow when data sets are repeatedly run through automunge)
-    """
-    
-    indexcolumn = 'Automunge_index'
-    indexcolumn_valresult = False
-
-    fullset = set()
-    
-    if isinstance(trainID_column, list):
-      fullset = fullset | set(trainID_column)
-      if 'Automunge_index' in trainID_column:
-        indexcolumn = 'Automunge_index_' + str(application_number)
-    elif 'Automunge_index' == trainID_column:
-      fullset = fullset | {trainID_column}
-      indexcolumn = 'Automunge_index_' + str(application_number)
-        
-    if isinstance(testID_column, list):
-      fullset = fullset | set(testID_column)
-      if 'Automunge_index' in testID_column:
-        indexcolumn = 'Automunge_index_' + str(application_number)
-    elif 'Automunge_index' == testID_column:
-      fullset = fullset | {testID_column}
-      indexcolumn = 'Automunge_index_' + str(application_number)
-
-    #this is a very remote edge case, just being comprehensive
-    if indexcolumn in fullset:
-      while indexcolumn in fullset:
-        indexcolumn = indexcolumn + ','
-
-    if indexcolumn != 'Automunge_index':
-      indexcolumn_valresult = True
-    
-    return indexcolumn, indexcolumn_valresult
-
-  def __set_Binary_column(self, postprocess_dict, suffixrange, root = 'Binary_'):
-    """
-    #this support function used in Binary dimensionality reduction
-    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
-    #so we will compare the root of the new column
-    #which for Binary will be 'Binary_'
-    #to input columns logged in postprocess_dict['origcolumn']
-    #and returned columns logged in postprocess_dict['column_dict']
-    #and if overlap found add an appender to the root as string of the application_number
-    #which is a 12 digit integer derived by random sample for each automunge(.) call
-    #similar to what is done for Automunge_index returned in ID sets
-    #note that we'll also check for overlaps between potential configurations of root plus suffix
-    #if overlap found a validation result will be returned
-    #suffixrange is an integer >= 0 which sets depth of how many overlaps will be checked
-    #which we know the number of returned columns from Binary will be <= a value as function of nunique
-    """
-    
-    #root column will be base of the new column header
-    rootcolumn = root
-    set_Binary_column_valresult = False
-    
-    #___
-    
-    #permutations are potential derivaitons from the root based on different Binary options
-    #note that to ensure comprehensive, we set a suffixrange depth of inspection as per _Binary_convert
-    permutations = {rootcolumn, rootcolumn+'_ord3'}
-    for i in range(suffixrange):
-      _1010_permutation = rootcolumn + '_1010_' + str(i)
-      _onht_permutation = rootcolumn + '_onht_' + str(i)
-      permutations = permutations | {_1010_permutation, _onht_permutation}
-      
-    origcolumns = set(postprocess_dict['origcolumn'])
-    returnedcolumns = set(postprocess_dict['column_dict'])
-    fullcolumns = origcolumns | returnedcolumns
-    
-    #if overlap between fullcolumns and root and permutations add application number appender
-    if len(permutations & fullcolumns) > 0:
-      rootcolumn = rootcolumn + str(postprocess_dict['application_number'])
-      set_Binary_column_valresult = True
-      
-    #___
-    
-    if set_Binary_column_valresult is True:
-      #now one more check to be comprehensive, this is for a very remote edge case
-      permutations = {rootcolumn, rootcolumn+'_ord3'}
-      for i in range(suffixrange):
-        _1010_permutation = rootcolumn + '_1010_' + str(i)
-        _onht_permutation = rootcolumn + '_onht_' + str(i)
-        permutations = permutations | {_1010_permutation, _onht_permutation}
-
-      if len(permutations & fullcolumns) > 0:
-        while len(permutations & fullcolumns) > 0:
-
-          rootcolumn = rootcolumn + ','
-
-          permutations = {rootcolumn, rootcolumn+'_ord3'}
-          for i in range(suffixrange):
-            _1010_permutation = rootcolumn + '_1010_' + str(i)
-            _onht_permutation = rootcolumn + '_onht_' + str(i)
-            permutations = permutations | {_1010_permutation, _onht_permutation}
-          
-    #___
-    
-    return rootcolumn, set_Binary_column_valresult
-
-  def __set_PCA_column(self, newcolumncount, postprocess_dict, root='PCA_'):
-    """
-    #this support function used in PCA dimensionality reduction
-    #which Binary and PCA are unique in library in that they create new column headers by means other than suffix appention
-    #so we will compare the root of the new column
-    #which for PCA will be 'PCA_'
-    #to input columns logged in postprocess_dict['origcolumn']
-    #and returned columns logged in postprocess_dict['column_dict']
-    #and if overlap found add an appender to the root as string of the application_number
-    #which is a 12 digit integer derived by random sample for each automunge(.) call
-    #similar to what is done for Automunge_index returned in ID sets
-    #if overlap found a validation result will be returned
-    """
-    
-    #the returned column names check for overlap with existing columns to accomodate edge case
-    origcolumns = set(postprocess_dict['origcolumn'])
-    returnedcolumns = set(postprocess_dict['column_dict'])
-    fullcolumns = origcolumns | returnedcolumns
-    PCA_columns_valresult = False
-    
-    #generate a list of column names for the conversion to pandas
-    columnnames = [root + '_' + str(y) for y in range(newcolumncount)]
-    
-    #if overlap found, add the application_number to column headers
-    if len((set(columnnames) | {root}) & fullcolumns) > 0:
-      PCA_columns_valresult = True
-      
-      columnnames = [(root + str(postprocess_dict['application_number']) + '_' + str(y)) for y in range(newcolumncount)]
-      
-    #one more to be comprehensive, this is for a very remote edge case
-    if PCA_columns_valresult is True:
-      i=1
-      if len((set(columnnames) | {root}) & fullcolumns) > 0:
-        while len(set(columnnames) & fullcolumns) > 0:
-          columnnames = [(root + str(postprocess_dict['application_number']) + i*',' + '_' + str(y)) for y in range(newcolumncount)]
-          i+=1
-        
-    return columnnames, PCA_columns_valresult
-
-  def __assemble_excluded_from_postmunge_getNArows(self, postprocess_dict):
-    """
-    #Creates a list of orig columns which can be excluded
-    #from running getNArows in postmunge
-    #based on infill assignment
-    #(stdrdinfill does not need to run getNArows)
-    """
-
-    #get lists of which orig columns will need to run getNArows in postmunge
-    excluded_from_postmunge_getNArows = []
-    included_in_postmunge_getNArows = []
-
-    #postprocess_assigninfill_dict has returned column headers per infill assignments
-    for infilltype in postprocess_dict['postprocess_assigninfill_dict']:
-
-      if infilltype == 'stdrdinfill':
-
-        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
-
-          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
-
-          excluded_from_postmunge_getNArows.append(infill_origcolumn)
-
-      #unspecified is a redundant list so exluded
-      elif infilltype != 'unspecified':
-
-        for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
-
-          infill_origcolumn = postprocess_dict['column_dict'][entry]['origcolumn']
-
-          included_in_postmunge_getNArows.append(infill_origcolumn)
-
-    #consolidate redundancies
-    excluded_from_postmunge_getNArows = set(excluded_from_postmunge_getNArows)
-    included_in_postmunge_getNArows = set(included_in_postmunge_getNArows)
-
-    #for cases where entry in both lists default to run get_NArows in postmunge
-    excluded_from_postmunge_getNArows = \
-    excluded_from_postmunge_getNArows - included_in_postmunge_getNArows
-
-    return excluded_from_postmunge_getNArows
+  #__FunctionBlock: various automunge utility functions
 
   def __list_replace(self, targetlist, conversion_dict):
     """
@@ -35622,6 +36060,8 @@ class AutoMunge:
             
     return translatedcolumns_list
 
+  #__FunctionBlock: encryption utility functions
+
   def __encrypt_postprocess_dict(self, postprocess_dict, encrypt_key, privacy_encode, printstatus):
     """
     replaces the postprocess_dict with a public version
@@ -35754,6 +36194,73 @@ class AutoMunge:
     public_dict.update({'encrypted' : postprocess_dict})
     
     return public_dict
+
+  def __decrypt_postprocess_dict(self, postprocess_dict, encrypt_key, printstatus):
+    """
+    this funciton applied at start of postmunge
+    postprocess_dict is as returned from an automunge(.) call with encryption
+    and includes an entry 'encrypted' containing the encrypted full postprocess_dict
+    
+    encrypt_key is intended to be passed as a bytes object matching the automunge encryption key
+    where in automunge encrypt_key will either have been generated and returned in printouts
+    (when automunge encrypt_key was passed as one of True / 16 / 24 / 32 a key is generated,
+    or when automunge encrypt_key was passed as a bytes object with length 16/24/32 that is treated as the key)
+    
+    this function decodes and returns the encrypted full postprocess_dict
+    
+    #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
+    #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
+
+    Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library 
+    which requires installation in order to run (we found there were installations available via conda install). 
+    """
+
+    decode_valresult = False
+    
+    if not (isinstance(encrypt_key, bytes) and len(encrypt_key) in {16, 24, 32}):
+      
+      decode_valresult = True
+      
+      if printstatus != 'silent':
+        print("error: encryption was performed in automunge(.) without specifying the key in postmunge encrypt_key parameter")
+        print("encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+        print("encrypt_key was either returned in printouts of corresponding automunge(.) call")
+        print("or was designated by user through the automugne(.) encrypt_key parameter")
+        print()
+      
+    if 'encrypted' not in postprocess_dict:
+      
+      decode_valresult = True
+      
+      if printstatus != 'silent':
+        print("error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+      
+    from Crypto.Cipher import AES
+    import base64
+    import pickle
+
+    padding = b'{'
+
+    #here is the function to decode
+    #hat tip pythonprogramming.net
+    DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(padding)
+
+    #encrypt_key is passed by user to postmunge
+    #and needs to match the generated encrypt_key bytes either passed to automunge
+    #or generated by automunge and returned in printouts when encrypt_key was passed to automunge as integer
+
+    cipher = AES.new(encrypt_key)
+
+    #this gives a pickled representation, then can convert that to a dictionary
+    postprocess_dict = DecodeAES(cipher, postprocess_dict['encrypted'])
+    
+    #note that if this causes error it may be because user has not first initialized custom functions saved in the dictionary (e.g. for custom_train or customML)
+    #or user may have entered an incorrect encrypt_key value
+    postprocess_dict = pickle.loads(postprocess_dict)
+    
+    return postprocess_dict, decode_valresult
+
+  #__FunctionBlock: automunge(.) definition
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
@@ -35810,6 +36317,37 @@ class AutoMunge:
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
+
+    """
+    Workflow blocks can be navigated with control F search:
+    #__WorkflowBlock: Parameter prep
+    #__WorkflowBlock: Parameter validations
+    #__WorkflowBlock: Feature Importance
+    #__WorkflowBlock: Misc dataframe preps and validations
+    #__WorkflowBlock: ID set extraction
+    #__WorkflowBlock: validation and label set extraction
+    #__WorkflowBlock: column validations and variable initializations
+    #__WorkflowBlock: column processing
+    #__WorkflowBlock: label column processing
+    #__WorkflowBlock: infill derivation and insertion
+    #__WorkflowBlock: feature importance dimensionality reduction
+    #__WorkflowBlock: PCA dimensionality reduction
+    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: duplicate row consolidation
+    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: row shuffling
+    #__WorkflowBlock: float data type management
+    #__WorkflowBlock: excl suffix management
+    #__WorkflowBlock: populate postprocess_dict
+    #__WorkflowBlock: privacy encoding
+    #__WorkflowBlock: validation data prep
+    #__WorkflowBlock: final preps and return
+    """
+
+    #_________________________________________________________
+    #__WorkflowBlock: Parameter prep
+    #includes copying lists and dictionaries to internal state
+    #and string conversions for column assignments
     
     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     application_number = random.randint(100000000000,999999999999)
@@ -35862,6 +36400,13 @@ class AutoMunge:
 
     #convert assignnan if not recieved as lists in bottom tiers
     assignnan = self.__assignnan_list_convert(assignnan)
+
+    #_________________________________________________________
+    #__WorkflowBlock: Parameter validations
+    #includes aggregations of validation results for miscparameters_results
+    #as well as validations and prepping for transformdict and processdict 
+    #with consolidations into internal library transform_dict and process_dict
+    #and a few other initializations
 
     #check the range of parameters 
     #(generally speaking other than passed dictionaries, dataframes, or column identifiers)
@@ -36002,6 +36547,10 @@ class AutoMunge:
       randomseed = random.randint(0,4294967295)
     else:
       randomrandomseed = False
+
+    #_________________________________________________________
+    #__WorkflowBlock: Feature Importance
+    #a feature importance evaluation (based on featureselection parameter) performed here
     
     #feature selection analysis performed here if elected
     if featureselection in {True, 'pct', 'metric', 'report'}:
@@ -36087,6 +36636,13 @@ class AutoMunge:
     #validate that a model was trained
     check_FSmodel_result = self.__check_FSmodel(featureselection, FSmodel, printstatus)
     miscparameters_results.update({'check_FSmodel_result' : check_FSmodel_result})
+
+    #_________________________________________________________
+    #__WorkflowBlock: Misc dataframe preps and validations
+    #some of preps and validations are performed after feature importance to avoid redundancy
+    #this includes dataframe preps such as conversion from numpy or series, header string conversions
+    #including column header validations for featuers and labels
+    #if df_test was received as boolean False we create a dummy df_test from first row of df_train
 
     #printout display progress
     if printstatus is True:
@@ -36218,6 +36774,12 @@ class AutoMunge:
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
                                    'check_assignnan_columns_result'         : check_assignnan_columns_result, \
                                    'assignnan_actions_valresult'            : assignnan_actions_valresult})
+
+    #_________________________________________________________
+    #__WorkflowBlock: ID set extraction
+    #this includes extraction of columns associated with trainID_column and testID_column
+    #extraction of any non ranged integer indexes from the dataframes for the ID sets
+    #as well as aggregation of the Automunge_index for the ID sets
 
     #worth a disclaimer:
     #the trainID_column and testID_column column parameters are somewhat overloaded
@@ -36357,6 +36919,14 @@ class AutoMunge:
 
     del df_test_tempID
 
+    #_________________________________________________________
+    #__WorkflowBlock: validation and label set extraction
+    #this includes extraction of rows associated with the valpercent parameter
+    #which will be prepared with an internal postmunge(.) call after populating postprocess_dict
+    #label sets are also extracted based on labels_column parameter
+    #if labels aren't present in df_train we create an empty dataframe
+    #if labels aren't present in df_test we create a dummy set based on first row of training labels
+
     #ok now carve out the validation rows. We'll process these later
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
@@ -36459,6 +37029,14 @@ class AutoMunge:
     if df_test.shape[1] == 0:
       df_test = df_testlabels[0:1].copy()
 
+    #_________________________________________________________
+    #__WorkflowBlock: column validations and variable initializations
+    #this includes various validations associated with df_train and df_test column headers
+    #such as confirming consistent quantity, composition and order
+    #we also initialize a few variables here
+    #including initialization of the postprocess_dict
+    #which is the dictionary passed through processing and returned from automunge(.)
+
     #confirm consistency of train an test sets
 
     #check number of columns is consistent
@@ -36556,6 +37134,17 @@ class AutoMunge:
     #create mirror dictionary which will be populated with any inspected transform_dict and process_dict entries
     #so that the returned transform_dict and process_dict versions in postprocess_dict only contain inspected entries
     mirror_dict = {}
+
+    #_________________________________________________________
+    #__WorkflowBlock: column processing
+    #this for loop through the set of input feature columns applies transformations to train and test data
+    #and includes deriving a root category based on either assigncat specification or evalcategory derivation
+    #includes missing data injection for assignnan and consolidation to NaN representation
+    #the NArows are aggregated based on the input column and root category and populated in masterNArows_train and masterNArows_test
+    #the processfamily function applies transormations based on the root category's family tree
+    #the circleoflife function manages data structures associated with and performs column replacements
+    #the postprocess_dict['origcolumn'] entry is populated based on input column, derived columns, and category
+    #the mirror_dict is populated for use to populate the returned form of transform_dict and process_dict in postprocess_dict
     
     #For each column, perform processing 
     #based on either category assignments in assigncat 
@@ -36704,6 +37293,17 @@ class AutoMunge:
         print(" returned columns:")
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
+
+    #_________________________________________________________
+    #__WorkflowBlock: label column processing
+    #this for loop through the set of input label columns applies transformations to train and test data
+    #and includes deriving a root category based on either assigncat specification or evalcategory derivation
+    #includes missing data injection for assignnan and consolidation to NaN representation
+    #does not include NArows aggregation (unless NArw included in family tree)
+    #applies transformations and maintenance with processfamily and circleoflife
+    #populates a postprocess_dict['origcolumn'] entry
+    #populates a mirror_dict
+    #also populates a labelsencoding_dict for potential use for public label inversion with encryption
 
     labelsencoding_dict = {'transforms' : {}}
 
@@ -36866,6 +37466,18 @@ class AutoMunge:
       mirror_dict, _1 = \
       self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, mlti_entry, 0)
 
+    #_________________________________________________________
+    #__WorkflowBlock: infill derivation and insertion
+    #Now that feature transformations have been applied, this segment performs infill
+    #including ML infill or other assigninfill assignments
+    #(note that an initial infill in most cases will already have been performed with processing functions)
+    #postprocess_assigninfill_dict aggregates derived columns by infill type, such as based on parameters assigninfill, MLinfill
+    #we then perform some data leakage mitigations for ML ifnill basis exclusions
+    #including based on an evaluation of missing data correlation
+    #or based on user specified exclusions
+    #the infill is applied in __apply_am_infill
+    #afterwards we do a little data structure cleanup for autoMLer and intialize some variables
+
     #now that we've pre-processed all of the columns, let's apply infill
     
     #printout display progress
@@ -36908,6 +37520,13 @@ class AutoMunge:
     #quickly gather a list of columns before any dimensionalioty reductions for populating mirror trees
     pre_dimred_finalcolumns_train = list(df_train)
     pre_dimred_finalcolumns_labels = list(df_labels)
+
+    #_________________________________________________________
+    #__WorkflowBlock: feature importance dimensionality reduction
+    #when featureselection was performed with a specified featurethreshold 
+    #this triggers a sorting of columns by importance metric with prior feature importance application
+    #the list of retained columns are provided as madethecut
+    #and other columns are struck from the feature sets
     
     #Here's where we'll trim the columns that were stricken as part of featureselection method
     #if feature importance dimensionality reduction is applied based on featureselection and featurethreshold parameters
@@ -36952,6 +37571,15 @@ class AutoMunge:
           print("returned columns: ")
           print(list(df_train))
           print("")
+
+    #_________________________________________________________
+    #__WorkflowBlock: PCA dimensionality reduction
+    #PCA is performed based on automunge(.) parameter PCAn_components
+    #which when activated is considered for selection of a final n_components through __evalPCA
+    #applied towards numeric sets which are aggregated in __createPCAsets
+    #validated as all valid numeric
+    #and then trained in __PCAfunction
+    #and concatinated
 
     #begin PCA dimensionality reduction if elected
     prePCAcolumns = list(df_train)
@@ -37119,6 +37747,12 @@ class AutoMunge:
 
     #_____
 
+    #_________________________________________________________
+    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #categoric consolidations are performed to features based on the automunge(.) Binary parameter
+    #or performed to labels based on specifying labels as a list with first entry set bracket specification
+    #with application by way of __BinaryConsolidate
+
     #Binary dimensionality reduction to train and test data goes here
     df_train, df_test, Binary_dict, postprocess_dict, final_returned_Binary_columns, final_returned_Binary_sets, Binary_orig, Binary = \
     self.__BinaryConsolidate(df_train, df_test, Binary, postprocess_dict, 'Binary')
@@ -37146,6 +37780,10 @@ class AutoMunge:
 
     #_____
 
+    #_________________________________________________________
+    #__WorkflowBlock: duplicate row consolidation
+    #duplicated row consolidations are optionally performed by the dupl_rows paraemter
+
     #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
     train_rowcount = df_train.shape[0]
 
@@ -37155,6 +37793,13 @@ class AutoMunge:
       df_train, df_trainID, df_labels = self.__dupl_rows_consolidate(df_train, df_trainID, df_labels)
     if dupl_rows in {'test', 'traintest'}:
       df_test, df_testID, df_testlabels = self.__dupl_rows_consolidate(df_test, df_testID, df_testlabels)
+
+    #_________________________________________________________
+    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #oversampling is optionally performed based on inspection of the TrainLabelFreqLevel parameter
+    #applied in function __LabelFrequencyLevelizer
+    #and may optionally be applied to either or both of train and test data
+    #note that oversampling is consistently applied between features, labels, and ID sets
 
     #here is the process to levelize the frequency of label rows in train data
     #based on TrainLabelFreqLevel parameter
@@ -37237,6 +37882,13 @@ class AutoMunge:
         print(df_testlabels.shape[0])
         print("")
 
+    #_________________________________________________________
+    #__WorkflowBlock: row shuffling
+    #row shuffling is performed based on shuffletrain parameter
+    #or amy also be performed in a privacy_encode scenario
+    #and may optionally be applied to either or both of train and test data
+    #note that shuffling is consistently applied between features, labels, and ID sets
+
     #then if shuffle was elected perform here
     if shuffletrain is True or shuffletrain == 'traintest' or privacy_encode == 'private':
       
@@ -37259,7 +37911,14 @@ class AutoMunge:
       if testID_column is not False:
         df_testID = self.__df_shuffle(df_testID, randomseed)
 
-    #great the data is processed now let's do a few moore global training preps
+    #great the data is processed now let's do a few more global training preps
+
+    #_________________________________________________________
+    #__WorkflowBlock: float data type management
+    #unlike integer types which are managed in transformation functions
+    #float data types are collectively managed by the floatprecision parameter
+    #unless deactivated for a category in dtype_convert process_dict entry
+    #float transformations are applied by way of __floatprecision_transform
 
     #now we'll apply the floatprecision transformation    
     #floatprecision adjustment only applied to columns returned from transforms
@@ -37295,6 +37954,15 @@ class AutoMunge:
       df_labels = self.__floatprecision_transform(df_labels, floatcolumns_labels, floatprecision)
       if labelspresenttest is True:
         df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
+
+    #_________________________________________________________
+    #__WorkflowBlock: excl suffix management
+    #the excl (full passthrough) transform has a unique suffix convention in library
+    #in that a suffix is appended in transformations (for data structure management)
+    #and then removed in the returned data (signifying a full passthrough)
+    #in addition to this header conversion, a series of conversion dictionaries are also populated
+    #for use in header management associated with this special case
+    #(note the suffix removal convention can be deactivated with excl_suffix parameter)
 
     #a special case, those columns that we completely excluded from processing and infill via 'excl' category
     #we'll scrub the suffix appender (unless user passed parameter excl_suffix=True)
@@ -37358,6 +38026,13 @@ class AutoMunge:
         if labelspresenttest is True:
           df_testlabels.columns = df_labels_columns
 
+    #_________________________________________________________
+    #__WorkflowBlock: populate postprocess_dict
+    #the various returned entries are now fully populated in the postprocess_dict
+    #in a few cases some entries will first need to be derived
+    #including excluded_from_postmunge_getNArows, categorytree, inverse_categorytree, inputcolumn_dict
+    #we also populate the returned column reports here including columntype_report, label_columntype_report, column_map
+
     #here's a list of final column names saving here since if a translation to 
     #numpy arrays is performed below based on pandasoutput it scrubs the column headers
     finalcolumns_train = list(df_train)
@@ -37368,7 +38043,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.24'
+    automungeversion = '7.25'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -37498,6 +38173,16 @@ class AutoMunge:
     self.__populate_column_map_report(postprocess_dict)
     postprocess_dict.update({'column_map' : column_map})
 
+    #_________________________________________________________
+    #__WorkflowBlock: privacy encoding
+    #privacy encode application is now performed based on privacy_encode parameter
+    #this includes aggregation of the private headers (as integers) and conversion dictionaries
+    #note that even when privacy encoding isn't performed the conversion dictionaries are still aggrevated for reference
+    #if activated the encoding includes column shuffling (row shuffling may have been performed in the shuffling block)
+    #anonymization of the columntype_report and label_columntype_report is also performed
+    #and in 'private' scenario the indexes are reset (index even reset for ID sets, the original index can be recovered in ID set columns)
+    #as an aside also perform a final labelsencoding_dict prep here
+
     #now if user selects privacy preserving encodings, we'll update the headers
     #since any received integers will have been converted to string, we'll use integers
     #for privacy headers to avoid overlap
@@ -37626,6 +38311,15 @@ class AutoMunge:
 
     postprocess_dict.update({'labelsencoding_dict' : labelsencoding_dict})
 
+    #_________________________________________________________
+    #__WorkflowBlock: validation data prep
+    #when a validation set was extracted per valratio parameter
+    #it is passed to postmunge to prepare using the recently populated postprocess_dict as the basis
+    #note that if train data included labels they will still be included in df_validation1 prior to this postmunge application
+    #we then perform some index management
+    #as an aside we also adjacent here perform some cleanups 
+    #to dataframes with scenario as populated with a dummy row, like df_test or in some cases the validaiton sets
+
     if totalvalidationratio > 0:
 
       #printout display progress
@@ -37672,6 +38366,13 @@ class AutoMunge:
     elif labelspresenttest is False:
       df_testlabels = pd.DataFrame()
 
+    #_________________________________________________________
+    #__WorkflowBlock: final preps and return
+    #final preps include any numpy conversion based on pandasoutput parameter
+    #any flattenting (like with ravel or casting as series) for single column sets
+    #and any encryption of the postprocess_dict based on encrypt_key parameter
+    #Automunge Complete
+
     #printout display progress
     if printstatus is True:
 
@@ -37695,7 +38396,7 @@ class AutoMunge:
         print(list(df_labels))
         print("")
           
-    #else set output to numpy arrays, using dtype='object' to retain column dtype distinctions between integer and float
+    #else set output to numpy arrays
     if pandasoutput is False:
 
       df_train = df_train.to_numpy()
@@ -37755,6 +38456,12 @@ class AutoMunge:
     df_validation1, df_validationID1, df_validationlabels1, \
     df_test, df_testID, df_testlabels, \
     postprocess_dict
+
+  #________________________________________________
+  #02 - postmunge(.) related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: postmunge process family functions
 
   def __postprocessfamily(self, df_test, column, origcategory, \
                         transform_dict, postprocess_dict, assign_param):
@@ -38282,6 +38989,8 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
+
+  #__FunctionBlock: postmunge postprocess and custom_test functions
   
   def _postprocess_numerical(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
     '''
@@ -45468,71 +46177,6 @@ class AutoMunge:
       
     return drift_ppd, drift_report
 
-  def __decrypt_postprocess_dict(self, postprocess_dict, encrypt_key, printstatus):
-    """
-    this funciton applied at start of postmunge
-    postprocess_dict is as returned from an automunge(.) call with encryption
-    and includes an entry 'encrypted' containing the encrypted full postprocess_dict
-    
-    encrypt_key is intended to be passed as a bytes object matching the automunge encryption key
-    where in automunge encrypt_key will either have been generated and returned in printouts
-    (when automunge encrypt_key was passed as one of True / 16 / 24 / 32 a key is generated,
-    or when automunge encrypt_key was passed as a bytes object with length 16/24/32 that is treated as the key)
-    
-    this function decodes and returns the encrypted full postprocess_dict
-    
-    #aspects of the following implementation were inspired by a tutorial published by pythonprogramming.net
-    #https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/
-
-    Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library 
-    which requires installation in order to run (we found there were installations available via conda install). 
-    """
-
-    decode_valresult = False
-    
-    if not (isinstance(encrypt_key, bytes) and len(encrypt_key) in {16, 24, 32}):
-      
-      decode_valresult = True
-      
-      if printstatus != 'silent':
-        print("error: encryption was performed in automunge(.) without specifying the key in postmunge encrypt_key parameter")
-        print("encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
-        print("encrypt_key was either returned in printouts of corresponding automunge(.) call")
-        print("or was designated by user through the automugne(.) encrypt_key parameter")
-        print()
-      
-    if 'encrypted' not in postprocess_dict:
-      
-      decode_valresult = True
-      
-      if printstatus != 'silent':
-        print("error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
-      
-    from Crypto.Cipher import AES
-    import base64
-    import pickle
-
-    padding = b'{'
-
-    #here is the function to decode
-    #hat tip pythonprogramming.net
-    DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(padding)
-
-    #encrypt_key is passed by user to postmunge
-    #and needs to match the generated encrypt_key bytes either passed to automunge
-    #or generated by automunge and returned in printouts when encrypt_key was passed to automunge as integer
-
-    cipher = AES.new(encrypt_key)
-
-    #this gives a pickled representation, then can convert that to a dictionary
-    postprocess_dict = DecodeAES(cipher, postprocess_dict['encrypted'])
-    
-    #note that if this causes error it may be because user has not first initialized custom functions saved in the dictionary (e.g. for custom_train or customML)
-    #or user may have entered an incorrect encrypt_key value
-    postprocess_dict = pickle.loads(postprocess_dict)
-    
-    return postprocess_dict, decode_valresult
-
   def postmunge(self, postprocess_dict, df_test,
                 testID_column = False, pandasoutput = True, 
                 printstatus = True, inplace = False,
@@ -45546,6 +46190,32 @@ class AutoMunge:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
     """
 
+    """
+    Workflow blocks can be navigated with control F search:
+    #__WorkflowBlock: decryption support
+    #__WorkflowBlock: variable initializations and parameter validations
+    #__WorkflowBlock: postmunge feature importance
+    #__WorkflowBlock: misc initializations and conversions
+    #__WorkflowBlock: inversion
+    #__WorkflowBlock: labels and other variable initializations
+    #__WorkflowBlock: ID set populated
+    #__WorkflowBlock: validate data set headers
+    #__WorkflowBlock: drift report evaluated
+    #__WorkflowBlock: column processing
+    #__WorkflowBlock: label column processing
+    #__WorkflowBlock: apply infill
+    #__WorkflowBlock: feature importance dimensionality reduction
+    #__WorkflowBlock: PCA dimensionality reduction
+    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: duplicate row consolidation
+    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: row shuffling
+    #__WorkflowBlock: float data type management
+    #__WorkflowBlock: excl suffix management
+    #__WorkflowBlock: privacy encoding
+    #__WorkflowBlock: final preps and return
+    """
+
     # #copy postprocess_dict into internal state so don't edit external object
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
@@ -45556,6 +46226,14 @@ class AutoMunge:
     # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #- passing postmunge specific randomseed parameter through postmunge_randomseed
     # #which are both reset after use
+
+    #_________________________________________________________
+    #__WorkflowBlock: decryption support
+    #when the postprocess_dict returned from automunge(.) included encrypted entries
+    #decruption may be performed here
+    #note that if this is a inversion='labels' scenario and encrypt_key=False
+    #then inversion will proceed without decription
+    #otherwise decryption is based on the encrypt_key parameter
 
     #if postprocess_dict contained encrypted entries then we decode them here
     #if encryption was performed in automunge the encryption key was either user specified or returned in automunge(.) printouts
@@ -45576,6 +46254,16 @@ class AutoMunge:
         self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
 
         #decode_valresult saved after initializing pm_miscparameters_results below
+
+    #_________________________________________________________
+    #__WorkflowBlock: variable initializations and parameter validations
+    #we have a few temporary entries stored in postprocess_dict for postmunge
+    #including postmunge_randomseed, traindata, and temp_pm_miscparameters_results
+    #we have a few special conventions for privacy_encode which are addressed here
+    #we also copy parameters passed as lists to internal state
+    #perform some string conversions
+    #and perform bulk parameter validations via __check_pm_miscparameters
+    #and also validate df_test with __check_df_type
 
     #initialize randomseed for default configuration of random random seed
     #this is used in row shuffling and other random seeds that don't need to match automunge random seed
@@ -45636,6 +46324,12 @@ class AutoMunge:
       print("_______________")
       print("Begin Postmunge")
       print("")
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge feature importance
+    #postmunge feature importance is based on the featureeval parameter
+    #and is performed in __postfeatureselect
+    #or otherwise some variables for returned reports initalization as empty
     
     #feature selection analysis performed here if elected
     if featureeval is True:
@@ -45695,6 +46389,14 @@ class AutoMunge:
     check_FSmodel_result = self.__check_FSmodel(featureeval, FSmodel, printstatus)
     pm_miscparameters_results.update({'FSmodel_valresult' : check_FSmodel_result})
 
+    #_________________________________________________________
+    #__WorkflowBlock: misc initializations and conversions
+    #the initialized postreports_dict is the diciotnary returned from postmunge
+    #(sort of the postmunge analog to automunge's postprocess_dict)
+    #dataframe copying into internal state is based on inplace parameter which may benefit memory overhead when activated
+    #numpy support is acomodated here, e.g. nujpy converted to dataframe and column headers recovered assuming consistent order
+    #some dataframe formalizing including series accomodation and header string conversion
+
     #initialize postreports_dict
     postreports_dict = {'featureimportance':FScolumn_dict, \
                         'FS_sorted' : FS_sorted, \
@@ -45739,6 +46441,13 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
+    #_________________________________________________________
+    #__WorkflowBlock: inversion
+    #inversion performed here
+    #preceded by some inversion specific column header prep in __inversion_header_support
+    #with inversion channeled through __inversion_header_support
+    #and then a postmunge(.) return of the recovered sets
+
     #_______
     #here is where inversion is performed if selected
     if inversion is not False:
@@ -45757,6 +46466,15 @@ class AutoMunge:
       
       return df_test, recovered_list, inversion_info_dict
     #_______
+
+    #_________________________________________________________
+    #__WorkflowBlock: labels and other variable initializations
+    #labels columns from automugne(.) are inspected and checked for presence in df_test
+    #resulting in an initialized: 
+    #labels_column / labels_column_listofcolumns (automunge) 
+    #labelscolumn / labels_column_listofcolumns_test (postmunge)
+    #the labels dataframe is extracted if lagbels are present
+    #also a few variables initialized from postprocess_dict entries
   
     #labels_column with underscore is the automunge train set labels
     labels_column = False
@@ -45775,6 +46493,27 @@ class AutoMunge:
       labelscolumn = labels_column
       labels_column_listofcolumns_test = labels_column_listofcolumns
 
+    #as used here labels_column is the label from automunge
+    #labelscolumn without underscore is the postmunge version
+    #where labelscolumn will be False when labels_column not present in postmunge df_test
+    #otherwise labelscolumn = labels_column
+    if labelscolumn is not False:
+    
+    #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
+    #current convention is that these labels now have default infill associated with applied transformation function
+#         df_test = df_test.dropna(subset=[labels_column])
+
+      df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns_test])
+      for labels_column_listofcolumns_test_entry in labels_column_listofcolumns_test:
+        del df_test[labels_column_listofcolumns_test_entry]
+      
+      #if we only had one (label) column to begin with we'll create a dummy test set
+      if df_test.shape[1] == 0:
+        df_test = df_testlabels[0:1].copy()
+  
+    else:
+      df_testlabels = pd.DataFrame()
+
     #access a few entries from postprocess_dict
     powertransform = postprocess_dict['powertransform']
     binstransform = postprocess_dict['binstransform']
@@ -45785,6 +46524,15 @@ class AutoMunge:
     process_dict = postprocess_dict['process_dict']
       
     assign_param = postprocess_dict['assign_param']
+
+    #_________________________________________________________
+    #__WorkflowBlock: ID set populated
+    #ID list intialized 
+    #based on either testID_column postmunge parameter or automunge ID columns if present in df_test
+    #incuding validation of resulting list testID_column
+    #ID dataframe initialized, including extraction of any non range integer index from df_test
+    #and initialization of index column (same 'Automunge_index' as used in automunge)
+    #ID columns extracted from df_test and populated in ID set
 
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set
@@ -45852,26 +46600,9 @@ class AutoMunge:
 
     del df_test_tempID
 
-    #as used here labels_column is the label from automunge
-    #labelscolumn without underscore is the postmunge version
-    #where labelscolumn will be False when labels_column not present in postmunge df_test
-    #otherwise labelscolumn = labels_column
-    if labelscolumn is not False:
-    
-    #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
-    #current convention is that these labels now have default infill associated with applied transformation function
-#         df_test = df_test.dropna(subset=[labels_column])
-
-      df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns_test])
-      for labels_column_listofcolumns_test_entry in labels_column_listofcolumns_test:
-        del df_test[labels_column_listofcolumns_test_entry]
-      
-      #if we only had one (label) column to begin with we'll create a dummy test set
-      if df_test.shape[1] == 0:
-        df_test = df_testlabels[0:1].copy()
-  
-    else:
-      df_testlabels = pd.DataFrame()
+    #_________________________________________________________
+    #__WorkflowBlock: validate data set headers
+    #validate columns of df_test match quantity, composition, and order of columns passed to automunge
 
     #confirm consistency of train an test sets
 
@@ -45938,6 +46669,15 @@ class AutoMunge:
       return
     postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
+    #_________________________________________________________
+    #__WorkflowBlock: drift report evaluated
+    #a driftreport assessment is performed here based on postmunge driftreport parameter
+    #which may include a drift assessment of source columns conducted in __getNArows
+    #a drift assessment of derived columns conducted in __prepare_driftreport
+    #or both, as based on driftreport parameter
+    #driftreport may either be returned without further processing of data 
+    #or postmunge may proceed and return results in postreports_dict
+
     #__________
     #here we'll perform drift report if elected
     #if driftreport is True:
@@ -45996,6 +46736,15 @@ class AutoMunge:
       return [], [], [], postreports_dict
     #end drift report section
     #__________
+
+    #_________________________________________________________
+    #__WorkflowBlock: column processing
+    #this for loop through the set of input feature columns applies transformations to test data
+    #with root category based on what was applied in automunge
+    #includes missing data injection for assignnan and consolidation to NaN representation
+    #any needed NArows for infill are aggregated based on the input column and root category and populated in masterNArows_test
+    #the postprocessfamily function applies transormations based on the root category's family tree
+    #the postcircleoflife function manages column replacements
 
     #create an empty dataframe to serve as a store for each column's NArows
     #the column id's for this df will follow convention from NArows of 
@@ -46075,6 +46824,15 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
+    #_________________________________________________________
+    #__WorkflowBlock: label column processing
+    #this for loop through the set of input feature columns applies transformations to test data
+    #with root category based on what was applied in automunge
+    #includes missing data injection for assignnan and consolidation to NaN representation
+    #does not include NArows aggregation (unless NArw included in family tree)
+    #the postprocessfamily function applies transormations based on the root category's family tree
+    #the postcircleoflife function manages column replacements
+
     #process labels consistent to the train set if any are included in the postmunge test set
 
     #ok now let's check if that labels column is present in the test set
@@ -46113,6 +46871,11 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][labels_column_listofcolumns_entry]['columnkeylist'])
         print("")
 
+    #_________________________________________________________
+    #__WorkflowBlock: apply infill
+    #the infill assignments are accessed from postprocess_dict['postprocess_assigninfill_dict']
+    #and infill is performed in __apply_pm_infill
+
     #now that we've pre-processed all of the columns, let's apply infill
     
     #printout display progress
@@ -46130,6 +46893,11 @@ class AutoMunge:
                         masterNArows_test)
 
     postreports_dict['pm_miscparameters_results'].update(infill_validations)
+
+    #_________________________________________________________
+    #__WorkflowBlock: feature importance dimensionality reduction
+    #if feature importance dimensionality reduction was performed in automunge it is performed here
+    #based on entries stored in postprocess_dict
 
     #trim branches associated with feature selection
     if postprocess_dict['featureselection'] in {'pct', 'metric'}:
@@ -46165,6 +46933,15 @@ class AutoMunge:
           print("returned columns: ")
           print(list(df_test))
           print("")
+
+    #_________________________________________________________
+    #__WorkflowBlock: PCA dimensionality reduction
+    #if PCA dimensionality reduction was performed in automunge it is performed here
+    #based on entries stored in postprocess_dict
+    #including set creating in __postcreatePCAsets
+    #valid all numeric validation in __validate_allvalidnumeric
+    #derivation in __postPCAfunction
+    #and concatination onto df_test
 
     if postprocess_dict['PCA_applied'] is True:
       #grab parameters from postprocess_dict
@@ -46214,6 +46991,13 @@ class AutoMunge:
 
     #_____
 
+    #_________________________________________________________
+    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #if Binary dimensionality reduction was performed in automunge it is performed here
+    #based on entries stored in postprocess_dict
+    #as channeled through __postBinaryConsolidate
+    #similarly if the labels included a categoric consolidation it is also performed here 
+
     #Binary dimensionality reduction goes here
   
     #test processing
@@ -46237,6 +47021,10 @@ class AutoMunge:
 
     #_____
 
+    #_________________________________________________________
+    #__WorkflowBlock: duplicate row consolidation
+    #duplicated row consolidations are optionally performed by the dupl_rows paraemter
+
     #populate row count basis here (before duplications or oversampling)
     postreports_dict.update({'rowcount_basis' : {'automunge_train_rowcount' : postprocess_dict['train_rowcount'], \
                                                   'postmunge_test_rowcount' : df_test.shape[0]}})
@@ -46245,6 +47033,12 @@ class AutoMunge:
     #in other words, if multiple copies of same row present only returns one
     if dupl_rows is True:
       df_test, df_testID, df_testlabels = self.__dupl_rows_consolidate(df_test, df_testID, df_testlabels)
+
+    #_________________________________________________________
+    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #oversampling is optionally performed based on inspection of the TrainLabelFreqLevel parameter
+    #applied in function __LabelFrequencyLevelizer
+    #note that oversampling is consistently applied between features, labels, and ID sets
 
     #here is the process to levelize the frequency of label rows in train data
     #based on postmunge TrainLabelFreqLevel parameter
@@ -46288,6 +47082,12 @@ class AutoMunge:
         print(df_testlabels.shape[0])
         print("")
 
+    #_________________________________________________________
+    #__WorkflowBlock: row shuffling
+    #row shuffling is performed based on shuffletrain parameter
+    #or amy also be performed in a privacy_encode scenario
+    #note that shuffling is consistently applied between features, labels, and ID sets
+
     #if shuffletrain passed to postmunge it takes place here
     #(postmunge does not default to consistent shuffle as train set, relies on parameter)
     #row shuffling uses postmunge randomseed
@@ -46298,6 +47098,13 @@ class AutoMunge:
 
       if testID_column is not False:
         df_testID = self.__df_shuffle(df_testID, postprocess_dict['postmunge_randomseed'])
+
+    #_________________________________________________________
+    #__WorkflowBlock: float data type management
+    #unlike integer types which are managed in transformation functions
+    #float data types are collectively managed by the floatprecision parameter
+    #unless deactivated for a category in dtype_convert process_dict entry
+    #float transformations are applied by way of __floatprecision_transform
 
     #now we'll apply the floatprecision transformation
     floatcolumns_test = list(df_test)
@@ -46331,6 +47138,13 @@ class AutoMunge:
     if labelscolumn is not False:
       df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
 
+    #_________________________________________________________
+    #__WorkflowBlock: excl suffix management
+    #the excl (full passthrough) transform has a unique suffix convention in library
+    #in that a suffix is appended in transformations (for data structure management)
+    #and then removed in the returned data (signifying a full passthrough)
+    #here any translation is performed based on conversion dictionaries populated in automunge
+
     #a special case, those columns that we completely excluded from processing via excl
     #we'll scrub the suffix appender
     if postprocess_dict['excl_suffix'] is False:
@@ -46344,6 +47158,13 @@ class AutoMunge:
         df_testlabels_columns = list(df_testlabels)
         self.__list_replace(df_testlabels_columns, postprocess_dict['excl_suffix_inversion_dict'])
         df_testlabels.columns = df_testlabels_columns
+
+    #_________________________________________________________
+    #__WorkflowBlock: privacy encoding
+    #if privacy encoding was performed in automunge it is now applied here
+    #using conversion dictionaries populated in automunge
+    #the encoding includes column shuffling (row shuffling may have been performed in the shuffling block)
+    #and in 'private' scenario the indexes are reset (index even reset for ID sets, the original index can be recovered in ID set columns)
 
     #now rename columns and shuffle order of columns for privacy encoding when activated
     #column shuffling uses automunge random seed
@@ -46367,6 +47188,15 @@ class AutoMunge:
 
       # #this resets the Automunge_index column returned in ID sets
       # df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
+
+    #_________________________________________________________
+    #__WorkflowBlock: final preps and return
+    #final preps include any numpy conversion based on pandasoutput parameter
+    #any flattenting (like with ravel or casting as series) for single column sets
+    #some anonymizations associated with privacy encode when applicable
+    #striking any temporary postprocess_dict entries used for application
+    #and returnedsets option to return all sets concatinated into single dataframe may also be performed when elected
+    #Postmunge Complete
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
@@ -46470,6 +47300,12 @@ class AutoMunge:
     else:
       
       return df_test
+
+  #________________________________________________
+  #03 - inversion related Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: data structure assembly support functions
     
   def __populate_categorytree(self, postprocess_dict):
     """
@@ -46929,6 +47765,146 @@ class AutoMunge:
       inputcolumn_dict[inputcolumn][category].update({column : postprocess_dict['column_dict'][column]})
       
     return inputcolumn_dict
+
+  def __populate_labelsencoding_dict_support(self, labelsencoding_dict, postprocess_dict, labels_column_entry, inputcolumn):
+    """
+    #support function to populate labelsencoding_dict
+    #to ensure normalization_dict entries are included for columns not returned from transforms
+    #such as those subject to replacement
+    #which will be excluded from columnkeylist
+    """
+    
+    labelscategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
+    
+    #if inputcolumn has a column_dict entry we'll add the normalization_dict
+    if inputcolumn in postprocess_dict['column_dict']:
+      #this data strucutre is converted in __populate_labelsencoding_dict_support3 to column_dict entries
+      #so don't need to populate the entire normalization_dict
+      labelsnormalization_dict_key = list(postprocess_dict['column_dict'][inputcolumn]['normalization_dict'])[0]
+      labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({labelsnormalization_dict_key:{}})
+      
+      #now do the same for the next inputcolumn, this will halt once the inputcolumn reaches the column passed to automunge(.)
+      inputinputcolumn = postprocess_dict['column_dict'][inputcolumn]['inputcolumn']      
+      labelsencoding_dict = self.__populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, labels_column_entry, inputinputcolumn)
+    
+    return labelsencoding_dict
+
+  def __populate_labelsencoding_dict_support2(self, labelsencoding_dict, postprocess_dict, transform_dict, category, i):
+    """
+    #populates transform_dict and process_dict entries to mirror_dict or labelsencoding_dict
+    #but only those associated with applied transforms
+    #where mirror_dict is the returned form for postprocess_dict['transform_dict'] and postprocess_dict['process_dict']
+    #which serves the purpose of omitting transform_dict and process_dict entries not inspected for derivations
+    #which benefits privacy
+
+    #the recieved category is a root category applied to an input feature or input label
+    #e.g. root category = postprocess_dict['origcolumn'][labels_column_entry]['category']
+
+    #the family tree of that root category is inspected and upstream primitives are inspected with i=0
+    #downstream tiers will receive category entries to primitive with offspring and i>0
+    """
+
+    if 'transform_dict' not in labelsencoding_dict:
+      labelsencoding_dict.update({'transform_dict' : {}})
+      
+    if 'process_dict' not in labelsencoding_dict:
+      labelsencoding_dict.update({'process_dict' : {}})
+    
+    familytree = transform_dict[category]
+    
+    labelsencoding_dict['transform_dict'].update({category : transform_dict[category]})
+    labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+    
+    #i will be 0 for upstream primitives
+    if i == 0:
+      
+      #populate process_dict for all category entries
+      for primitive in ['parents', 'siblings', 'auntsuncles', 'cousins']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+      
+      #populate transform_dict for categories with offspring, populated by calling function recursively
+      for primitive in ['parents', 'siblings']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              i+=1
+              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+              i=0
+    
+    #i will > 0 for downstream primitives
+    elif i > 0:
+      
+      #populate process_dict for all category entries
+      for primitive in ['children', 'niecesnephews', 'coworkers', 'friends']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+      
+      #populate transform_dict for categories with offspring, populated by calling function recursively
+      for primitive in ['children', 'niecesnephews']:
+        if len(familytree[primitive]) > 0:
+          for category in familytree[primitive]:
+            if category != None:
+              i+=1
+              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+
+    return labelsencoding_dict, i
+
+  def __populate_labelsencoding_dict_support3(self, labelsencoding_dict, postprocess_dict):
+    """
+    populates labelsencoding_dict with entries inspected for label inversion
+    used when privacy_encode = True and encryption performed via encrypt_key parameter
+    this results in 'column_dict' entries replacing the corresponding 'transforms' entries populated in __populate_labelsencoding_dict_support
+
+    basically all that's happening here is we're mirroring label records from postprocess_dict
+    into the labelsencoding_dict
+    which will be returned as a public entry when encryption performed with encrypt_key and privacy_encode != 'private'
+    for use to allow label inversion without the need for an encryption key
+    """
+    
+    labelsencoding_dict['column_dict'] = {}
+    labelsencoding_dict['inverse_categorytree'] = {}
+    labelsencoding_dict['origcolumn'] = {}
+    labelsencoding_dict['excl_suffix'] = postprocess_dict['excl_suffix']
+    labelsencoding_dict['excl_suffix_conversion_dict'] = {}
+    labelsencoding_dict['excl_suffix_inversion_dict'] = {}
+    labelsencoding_dict['privacy_encode'] = postprocess_dict['privacy_encode']
+    labelsencoding_dict['finalcolumns_train'] = []
+    labelsencoding_dict['finalcolumns_labels'] = postprocess_dict['finalcolumns_labels']
+    labelsencoding_dict['labels_column'] = postprocess_dict['labels_column']
+    labelsencoding_dict['labels_column_listofcolumns'] = postprocess_dict['labels_column_listofcolumns']
+    labelsencoding_dict['madethecut'] = []
+
+    for inputcolumn in labelsencoding_dict['transforms']:
+      for rootcategory in labelsencoding_dict['transforms'][inputcolumn]:
+        for derivedcolumn in labelsencoding_dict['transforms'][inputcolumn][rootcategory]:
+
+          labelsencoding_dict['column_dict'].update({derivedcolumn : postprocess_dict['column_dict'][derivedcolumn]})
+
+          if labelsencoding_dict['column_dict'][derivedcolumn]['category'] == 'excl':
+            labelsencoding_dict['excl_suffix_conversion_dict'].update({labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn'] : derivedcolumn})
+            labelsencoding_dict['excl_suffix_inversion_dict'].update({derivedcolumn : labelsencoding_dict['column_dict'][derivedcolumn]['inputcolumn']})
+
+    del labelsencoding_dict['transforms']
+            
+    for origcolumn in postprocess_dict['labels_column_listofcolumns']:
+      labelsencoding_dict['origcolumn'].update({origcolumn : postprocess_dict['origcolumn'][origcolumn]})
+
+    labelsencoding_dict['excl_columns_without_suffix'] = list(labelsencoding_dict['excl_suffix_conversion_dict'])
+    
+    #this data structure supports inversion path selection
+    labels_inverse_categorytree = \
+    self.__populate_inverse_categorytree(postprocess_dict, labelscase=True)
+    
+    labelsencoding_dict['inverse_categorytree'] = labels_inverse_categorytree
+    
+    return labelsencoding_dict
+
+  #__FunctionBlock: inversion preprocessing support
   
   def __LS_invert(self, LabelSmoothing, df, categorylist, postprocess_dict):
     """
@@ -46999,6 +47975,55 @@ class AutoMunge:
         df = df.reindex(columns=postprocess_dict['finalcolumns_labels'])
 
     return df
+
+  #__FunctionBlock: custom inversion support
+
+  def __custom_inverseprocess_wrapper(self, df, categorylist, postprocess_dict):
+    """
+    A wrapper for custom inversion functions applied in postmunge
+    Where custom inversions follow templates of custom_inversion_template
+    
+    The purpose of this wrapper is to extend the minimized versions of custom inversions
+    To include other conventions of the library
+    Such as access inputs from data structures and etc.
+    
+    The form of the _custom_inverseprocess_wrapper inputs/outputs 
+    will be similar to what is applied for inverseprocess functions
+    
+    Receives dataframe of a test or labels set as df
+    categorylist is a list of the returned columns from forward pass that are the basis of inversion
+    postprocess_dict is the dictionary data structure passed between transforms
+    
+    Returns the resulting transformed dataframe df
+    As well as inputcolumn which is the header of the recovered column (as may result from removing the suffix appender)
+    
+    Note that this wrapper does not perform infill
+    The convention in the library is that missing entries in recovered sets are recorded as np.nan
+    category serving as basis
+    
+    We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
+    And likewise a similar wrapper for postprocess functions applied in postmunge (_custom_postprocess_wrapper)
+    """
+    
+    #ok so to call our inversion function we need df, returnedcolumn_list, inputcolumn, normalization_dict)
+    #we have df
+    #returnedcolumn_list is same as categorylist
+    
+    normkey = categorylist[0]
+    
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
+    treecategory = postprocess_dict['column_dict'][normkey]['category']
+    
+    if 'custom_inversion' in postprocess_dict['process_dict'][treecategory] \
+    and postprocess_dict['process_dict'][treecategory]['custom_inversion'] != None:
+      
+      df = \
+      postprocess_dict['process_dict'][treecategory]['custom_inversion'](df, categorylist, inputcolumn, normalization_dict)
+    
+    return df, inputcolumn
+
+  #__FunctionBlock: postmunge inversion inverseprocess and custom_inversion functions
 
   def _inverseprocess_nmbr(self, df, categorylist, postprocess_dict):
     """
@@ -49125,50 +50150,7 @@ class AutoMunge:
 
     return df
 
-  def __custom_inverseprocess_wrapper(self, df, categorylist, postprocess_dict):
-    """
-    A wrapper for custom inversion functions applied in postmunge
-    Where custom inversions follow templates of custom_inversion_template
-    
-    The purpose of this wrapper is to extend the minimized versions of custom inversions
-    To include other conventions of the library
-    Such as access inputs from data structures and etc.
-    
-    The form of the _custom_inverseprocess_wrapper inputs/outputs 
-    will be similar to what is applied for inverseprocess functions
-    
-    Receives dataframe of a test or labels set as df
-    categorylist is a list of the returned columns from forward pass that are the basis of inversion
-    postprocess_dict is the dictionary data structure passed between transforms
-    
-    Returns the resulting transformed dataframe df
-    As well as inputcolumn which is the header of the recovered column (as may result from removing the suffix appender)
-    
-    Note that this wrapper does not perform infill
-    The convention in the library is that missing entries in recovered sets are recorded as np.nan
-    category serving as basis
-    
-    We'll also create seperately a similar wrapper for process functions applied in automunge (_custom_process_wrapper)
-    And likewise a similar wrapper for postprocess functions applied in postmunge (_custom_postprocess_wrapper)
-    """
-    
-    #ok so to call our inversion function we need df, returnedcolumn_list, inputcolumn, normalization_dict)
-    #we have df
-    #returnedcolumn_list is same as categorylist
-    
-    normkey = categorylist[0]
-    
-    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
-    normalization_dict = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]
-    treecategory = postprocess_dict['column_dict'][normkey]['category']
-    
-    if 'custom_inversion' in postprocess_dict['process_dict'][treecategory] \
-    and postprocess_dict['process_dict'][treecategory]['custom_inversion'] != None:
-      
-      df = \
-      postprocess_dict['process_dict'][treecategory]['custom_inversion'](df, categorylist, inputcolumn, normalization_dict)
-    
-    return df, inputcolumn
+  #__FunctionBlock: master inversion functions
   
   def __df_inversion(self, categorylist_entry, df_test, postprocess_dict, inverse_categorytree, printstatus):
     """
