@@ -1080,7 +1080,6 @@ ML_cmnd = {'autoML_type':'flaml',
            'MLinfill_cmnd' : {'flaml_classifier_fit'   : {'time_budget' : 15 },
                               'flaml_regressor_fit'    : {'time_budget' : 15}}}
 ```
-Note that when applying one of these alternate autoML_type libraries, a user can perform library imports external to the automunge(.) or postmunge(.) call to benefit latency.
 
 Please note that model training by default incorporates a random random seed with each application,
 as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
@@ -5150,7 +5149,7 @@ that can optionally be used in place of a user defined customML inference functi
 be activated by passing a string to entries for 'customML_Classifier_predict' or  'customML_Regressor_predict'
 as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}. Use of the
 internally defined inference functions allows a user to upload a postprocess_dict in a seperate notebook
-without needing to first reinitialize the customML inference functions. Note that when applying one of these default inference functions, a user can perform library imports external to the automunge(.) or postmunge(.) call to benefit latency. For example, to apply a
+without needing to first reinitialize the customML inference functions. For example, to apply a
 default inference function for the XGBoost library could apply:
 ```
 ML_cmnd = {'autoML_type' : 'customML',
