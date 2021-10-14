@@ -4744,3 +4744,13 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - it appears this functionality did not work as expected for cases of redundantly called functions
 - (it would successfully import on the first call, but then on susbsequent application the module was present in sys.modules even though function didn't have access to it, resulting in no import)
 - appears to be another case of insufficient validation prior to rollout
+
+7.28
+- identified a subtle but impactful bug with customML
+- turned out to be really simple, had just passed parameters in wrong order to training operation
+- but because inference has a bypass for valueerror, it did not trigger a halt, so wasn't spotted until now
+- now resolved
+- updated catboost to receive single column label sets as pandas series instead of dataframe (to be consistent with the other autoML_types)
+- updated customML to receive single column label sets as pandas series instead of dataframe
+- note that this convention for single column labels sets as pandas series is consistent with form of label sets returned from automunge(.), other instances of single column sets are preserved as dataframes (i.e. for features and ID sets)
+- which is similar to the convention of flattening single column numpy arrays with ravel
