@@ -500,8 +500,9 @@ trainID_column parameter.
 * labels: a set of numerically encoded labels corresponding to the
 train set if a label column was passed. Note that the function
 assumes the label column is originally included in the train set. Note
-that if the labels set is a single column a returned numpy array is 
-flattened (e.g. [[1,2,3]] converted to [1,2,3] )
+that if the labels set is a single column a returned dataframe is flattened 
+to a pandas Series or a returned Numpy array is also 
+flattened (e.g. [[1,2,3]] converted to [1,2,3] ).
 
 * val: a set of training data carved out from the train set
 that is intended for use in hyperparameter tuning of a downstream model.
@@ -854,7 +855,7 @@ for returned pandas dataframe. If set to _True_ returns pandas dataframes
 and automunge(.) generates an application specific range integer index in ID sets 
 corresponding to the order of rows as they were passed to function). If set to _False_
 returns numpy arrays instead of dataframes. Note that the dataframes will have column
-specific data types, or returned numpy arrays will have a single data type.
+specific data types, or returned numpy arrays will have a single data type. 
 
 * NArw_marker: a boolean identifier _(True/False)_ which indicates if the
 returned sets will include columns with markers for source column entries subject to 
@@ -965,10 +966,10 @@ Note that 'excl' can be cast as the default category under automation to columns
 The ML_cmnd allows a user to set options or pass parameters to model training
 operations associated with ML infill, feature importance, or PCA. ML_cmnd is passed
 as a dictionary with first tier valid keys of:
-{'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'leakage_tolerance',
+{'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'PCA_retain', 'leakage_tolerance',
 'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
-'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol'}
+'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol', 'automungeversion'}
 
 When a user passed ML_cmnd as an empty dictionary, any default values are populated internally.
 
@@ -1165,6 +1166,8 @@ By default, ML_cmnd['PCA_cmnd'] is initalized internal to library with {'bool_or
 which designates that returned ordinal and boolean encoded columns are to be excluded from PCA.
 This convention by be turned off by passing as False, or to only exclude boolean integer but 
 not ordinal encoded columns can pass ML_cmnd['PCA_cmnd'] as {'bool_PCA_excl':True}.
+
+For the PCA aggregation to be performed without replacement, can pass ML_cmnd['PCA_retain']=True.
 
 * assigncat:
 
@@ -2029,8 +2032,9 @@ For more information please refer to writeup for the testID_column parameter.
 * test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
 assumes the label column is originally included in the train set. Note
-that if the labels set is a single column a returned numpy array is 
-flattened (e.g. [[1,2,3]] converted to [1,2,3] )
+that if the labels set is a single column a returned dataframe is flattened 
+to a pandas Series or a returned Numpy array is also 
+flattened (e.g. [[1,2,3]] converted to [1,2,3] ).
 
 * postreports_dict: a dictionary containing entries for following:
   - postreports_dict['featureimportance']: results of optional feature 
@@ -2222,6 +2226,8 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   no processing of data
   - _'report_full'_ means that the full assessment is performed and returned with no 
   processing of data
+Note that for transforms returning multi column sets, the drift stats will only be reported for first 
+column in the categorylist.
 
 * inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
@@ -2347,7 +2353,7 @@ sets will not include a returned 'NArw' (infill marker) even when parameter NArw
 passed as True.
 - lbnb: for numerical data, a label set is treated with an 'nmbr' z-score normalization.
 - lbor: for categoric data of >2 unique values, a label set is treated with an ordinal encoding similar to 'ord3' ordinal encoding (frequency sorted order of encodings). lbor differs from ord3 in that missing data does not receive a distinct encoding and is instead grouped into the 0 activation (consistent with the ord3 parameter setting null_activation=False).
-- lbbn: for categoric data of <3 unique values, a label set is treated with an 'bnry' binary encoding (single column binary).
+- lbbn: for categoric data of <3 unique values, a label set is treated with an 'bnry' binary encoding (single column binary), also applied to numeric sets with 2 unique values
 
 Other label categories are available for assignment in assigncat, described below in the 
 library of transforms section for label set encodings.
@@ -2893,8 +2899,7 @@ Other Q Notation root categories:
     - 'zeroset': boolean defaults to False, when True the number zero receives a distinct activation instead of grouping with missing data (recommend also updating NArowtype, such as to nonnegativenumeric)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
-  - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / 
-	                           <column> + '_ratio' (column specific)
+  - driftreport postmunge metrics: powerlabelsdict / meanlog / maxlog / activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * pwr2: bins groupings by powers of 10 (comparable to pwrs with negvalues parameter activated for values >0 & <0)
@@ -2909,8 +2914,7 @@ Other Q Notation root categories:
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'cap': defaults to False for no cap, can pass as integer or float and > values replaced with this figure
     - 'floor': defaults to False for no floor, can pass as integer or float and < values replaced with this figure
-  - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / 
-			           <column> + '_ratio' (column specific)
+  - driftreport postmunge metrics: powerlabelsdict / labels_train / missing_cols / activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * pwor: for numerical sets, outputs an ordinal encoding indicating where a
@@ -2976,7 +2980,7 @@ Note this can be activated to supplement numeric sets with binstransform automun
   - assignparam parameters accepted: 
     - bincount integer for number of bins, defaults to 6
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: binsmean / binsstd / <column> + '_ratio' (column specific)
+  - driftreport postmunge metrics: binsmean / binsstd / activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bsor: for numerical sets, outputs an ordinal encoding indicating where a
@@ -3004,8 +3008,7 @@ bins default to width of 1/1000/1000000 e.g. for bnwd/bnwK/bnwM
     - 'width' to set bin width
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
-			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / 
-                                   <column> + '_ratio' (column specific)
+			           bins_cuts / bn_width_bnwd (or bnwK/bnwM) / textcolumns / activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bnwo/bnKo/bnMo: for numerical set graining to fixed width bins for ordinal encoded bins 
@@ -3033,7 +3036,7 @@ bin count defaults to 5/7/9 e.g. for bnep/bne7/bne9
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
                                    bins_cuts / bincount_bnep (or bne7/bne9) / textcolumns / 
-                                   <column> + '_ratio' (column specific)
+                                   activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bneo/bn7o/bn9o: for numerical set graining to equal population bins for ordinal encoded bins. 
@@ -3059,7 +3062,7 @@ bin count defaults to 5/7/9 e.g. for bneo/bn7o/bn9o
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt1 / bins_cuts / bins_id / textcolumns / 
-					   <column> + '_ratio' (column specific)
+					   activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bkt2: for numerical set graining to user specified encoded bins. First and last bins bounded.
@@ -3072,7 +3075,7 @@ bin count defaults to 5/7/9 e.g. for bneo/bn7o/bn9o
       defaults to [0,1,2] (arbitrary plug values), can also pass buckets values as percent of range by framing as a set instead of list e.g. {0,0.25,0.50,1}
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / buckets_bkt2 / bins_cuts / bins_id / textcolumns / 
-					   <column> + '_ratio' (column specific)
+					   activation_ratios
   - returned datatype: int8
   - inversion available: yes with partial recovery
 * bkt3: for numerical set graining to user specified ordinal encoded bins. First and last bins unconstrained.
@@ -3117,7 +3120,7 @@ with metric2 results from a feature importance evaluation)
       which will take precedence over bincount (leave out -/+inf which will be added for first and last bins internally)
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: binsmean / bn_min / bn_max / bn_delta / bn_count / bins_id / 
-			           bins_cuts / bincount_tlbn / textcolumns / <column> + '_ratio' (column specific)
+			           bins_cuts / bincount_tlbn / textcolumns / activation_ratios
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
 
@@ -4884,6 +4887,7 @@ def custom_train_template(df, column, normalization_dict):
   #If any other temporary columns were created as part of transform that aren't returned
   #their column headers should be logged as a normalization_dict entry under 'tempcolumns'
   # e.g. normalization_dict.update('tempcolumns' : [tempcolumn]}
+  #we recommend naming non-returned temporary columns with integer headers since other headers will be strings
 
   return df, normalization_dict
 ```
@@ -5021,9 +5025,8 @@ def customML_train_classifier(labels, features, columntype_report, commands, ran
   #Template for integrating user defined ML classificaiton training into ML infill
   
   #labels for classification are received as a single column pandas dataframe with header of integer 1
-  #and entries of str(int) type (i.e. string representations of integers like '0', '1')
+  #and entries of str(int) type (i.e. string representations of non-negative integers like '0', '1')
   #if user prefers numeric labels, they can apply labels = labels.astype(int)
-  #label entries will be non-negative str(int) with possible exception for the string '-1'
   
   #features is received as a numerically encoded pandas dataframe
   #with categoric entries as boolean integer or ordinal integer
