@@ -4738,3 +4738,9 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - updated a variable naming in infill application support function for clarity (from "boolcolumn" to "incompatible_MLinfilltype")
 - formalized convention that any previously reported drift stats only reported in a single normalizaiton_dict out of a multi column set are now aggregated to a single reported form
 - ML_cmnd returned in postprocess_dict now records the version number of application for use in postmunge
+
+7.27
+- reverted conditional imports for ML infill and encryption
+- it appears this functionality did not work as expected for cases of redundantly called functions
+- (it would successfully import on the first call, but then on susbsequent application the module was present in sys.modules even though function didn't have access to it, resulting in no import)
+- appears to be another case of insufficient validation prior to rollout
