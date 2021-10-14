@@ -27785,10 +27785,10 @@ class AutoMunge:
     #classification differs by string conversion in single column labels case, based on modeltype parameter
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'autogluon.utils.tabular'
-    if module not in sys.modules:
-      from autogluon import TabularPrediction as task
+    # #user can conduct this import externally to speed up this function
+    # module = 'autogluon.utils.tabular'
+    # if module not in sys.modules:
+    from autogluon import TabularPrediction as task
 
     try:
 
@@ -27868,10 +27868,10 @@ class AutoMunge:
     #classification vs regression is based on modeltype and only differs by a string to integer conversion
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'autogluon.utils.tabular'
-    if module not in sys.modules:
-      from autogluon import TabularPrediction as task
+    # #user can conduct this import externally to speed up this function
+    # module = 'autogluon.utils.tabular'
+    # if module not in sys.modules:
+    from autogluon import TabularPrediction as task
     
     if model is not False:
       
@@ -27916,10 +27916,10 @@ class AutoMunge:
     #converts multi column one hot sets to ordinal (no string conversion required)
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'flaml.automl'
-    if module not in sys.modules:
-      from flaml import AutoML
+    # #user can conduct this import externally to speed up this function
+    # module = 'flaml.automl'
+    # if module not in sys.modules:
+    from flaml import AutoML
     
     try:
     # if True is True:
@@ -27988,10 +27988,10 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'flaml.automl'
-    if module not in sys.modules:
-      from flaml import AutoML
+    # #user can conduct this import externally to speed up this function
+    # module = 'flaml.automl'
+    # if module not in sys.modules:
+    from flaml import AutoML
     
     if model is not False:
       
@@ -28015,10 +28015,10 @@ class AutoMunge:
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'flaml.automl'
-    if module not in sys.modules:
-      from flaml import AutoML
+    # #user can conduct this import externally to speed up this function
+    # module = 'flaml.automl'
+    # if module not in sys.modules:
+    from flaml import AutoML
     
     try:
     # if True is True:
@@ -28066,10 +28066,10 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'flaml.automl'
-    if module not in sys.modules:
-      from flaml import AutoML
+    # #user can conduct this import externally to speed up this function
+    # module = 'flaml.automl'
+    # if module not in sys.modules:
+    from flaml import AutoML
     
     if model is not False:
       
@@ -28093,10 +28093,10 @@ class AutoMunge:
     #note that early stopping may cause issues in ML infill when all instances of label carried into validation set
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'catboost'
-    if module not in sys.modules:
-      from catboost import CatBoostClassifier
+    # #user can conduct this import externally to speed up this function
+    # module = 'catboost'
+    # if module not in sys.modules:
+    from catboost import CatBoostClassifier
     
     try:
 
@@ -28232,10 +28232,10 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'catboost'
-    if module not in sys.modules:
-      from catboost import CatBoostClassifier
+    # #user can conduct this import externally to speed up this function
+    # module = 'catboost'
+    # if module not in sys.modules:
+    from catboost import CatBoostClassifier
     
     if model is not False:
       
@@ -28262,10 +28262,10 @@ class AutoMunge:
     #ML_cmnd['MLinfill_cmnd']['catboost_classifier_fit']['eval_ratio'] = 0
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'catboost'
-    if module not in sys.modules:
-      from catboost import CatBoostRegressor
+    # #user can conduct this import externally to speed up this function
+    # module = 'catboost'
+    # if module not in sys.modules:
+    from catboost import CatBoostRegressor
     
     try:
 
@@ -28377,10 +28377,10 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    #user can conduct this import externally to speed up this function
-    module = 'catboost'
-    if module not in sys.modules:
-      from catboost import CatBoostRegressor
+    # #user can conduct this import externally to speed up this function
+    # module = 'catboost'
+    # if module not in sys.modules:
+    from catboost import CatBoostRegressor
     
     if model is not False:
       
@@ -28720,10 +28720,10 @@ class AutoMunge:
     
     #need to validate
 
-    #user can conduct this import externally to speed up this function
-    module = 'tensorflow'
-    if module not in sys.modules:
-      import tensorflow as tf
+    # #user can conduct this import externally to speed up this function
+    # module = 'tensorflow'
+    # if module not in sys.modules:
+    import tensorflow as tf
     
     features = tf.convert_to_tensor(features.to_numpy())
     
@@ -28762,10 +28762,10 @@ class AutoMunge:
     
     #need to validate
 
-    #user can conduct this import externally to speed up this function
-    module = 'tensorflow'
-    if module not in sys.modules:
-      import tensorflow as tf
+    # #user can conduct this import externally to speed up this function
+    # module = 'tensorflow'
+    # if module not in sys.modules:
+    import tensorflow as tf
     
     features = tf.convert_to_tensor(features.to_numpy())
     
@@ -28778,11 +28778,11 @@ class AutoMunge:
     #based on xgboost XGBClassifier or XGBRegressor
     """
     
-    #user can conduct this import externally to speed up this function
-    module = 'xgboost'
-    if module not in sys.modules:
-      from xgboost import XGBClassifier
-      from xgboost import XGBRegressor
+    # #user can conduct this import externally to speed up this function
+    # module = 'xgboost'
+    # if module not in sys.modules:
+    from xgboost import XGBClassifier
+    from xgboost import XGBRegressor
       
     infill = model.predict(features)
 
@@ -28793,11 +28793,11 @@ class AutoMunge:
     #based on catboost CatBoostClassifier or CatBoostRegressor
     """
     
-    #user can conduct this import externally to speed up this function
-    module = 'catboost'
-    if module not in sys.modules:
-      from catboost import CatBoostClassifier
-      from catboost import CatBoostRegressor
+    # #user can conduct this import externally to speed up this function
+    # module = 'catboost'
+    # if module not in sys.modules:
+    from catboost import CatBoostClassifier
+    from catboost import CatBoostRegressor
       
     infill = model.predict(features)
 
@@ -28808,10 +28808,10 @@ class AutoMunge:
     #based on flaml AutoML
     """
     
-    #user can conduct this import externally to speed up this function
-    module = 'flaml.automl'
-    if module not in sys.modules:
-      from flaml import AutoML
+    # #user can conduct this import externally to speed up this function
+    # module = 'flaml.automl'
+    # if module not in sys.modules:
+    from flaml import AutoML
       
     infill = model.predict(features)
 
@@ -28822,10 +28822,10 @@ class AutoMunge:
     #based on autogluon TabularPrediction
     """
     
-    #user can conduct this import externally to speed up this function
-    module = 'autogluon.utils.tabular'
-    if module not in sys.modules:
-      from autogluon import TabularPrediction as task
+    # #user can conduct this import externally to speed up this function
+    # module = 'autogluon.utils.tabular'
+    # if module not in sys.modules:
+    from autogluon import TabularPrediction as task
     
     infill = model.predict(features)
 
@@ -36478,10 +36478,10 @@ class AutoMunge:
     #we'll use the AES package from pycrypto
     #note that we recomend installing pycrypto with conda vs pip
 
-    #user can conduct this import externally to speed up this function
-    module = 'Crypto.Cipher.AES'
-    if module not in sys.modules:
-      from Crypto.Cipher import AES
+    # #user can conduct this import externally to speed up this function
+    # module = 'Crypto.Cipher.AES'
+    # if module not in sys.modules:
+    from Crypto.Cipher import AES
 
     #for encryption we'll format data as base64
     import base64
@@ -36601,10 +36601,10 @@ class AutoMunge:
       if printstatus != 'silent':
         print("error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
       
-    #user can conduct this import externally to speed up this function
-    module = 'Crypto.Cipher.AES'
-    if module not in sys.modules:
-      from Crypto.Cipher import AES
+    # #user can conduct this import externally to speed up this function
+    # module = 'Crypto.Cipher.AES'
+    # if module not in sys.modules:
+    from Crypto.Cipher import AES
 
     import base64
     import pickle
@@ -38425,7 +38425,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.26'
+    automungeversion = '7.27'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
