@@ -4700,3 +4700,41 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - and their entry in the code include codee comments of high level summary of key operations for the block
 - we expect this update will significantly benefit code navigation
 - which since we group everything in a single file was probably long overdue
+
+7.26
+- a few code comment cleanups to evalcategory associated with application of bnry to numeric sets with 2 unique values, added this clarifiaiton that also applies to numeric labels
+- updated to convention for temporary columns initialized as part of transfomrations
+- now non-returned temporary columns are named with integer column headers, which is an improvement as it eliminates a suffix overlap channel since other columns will be strings
+- relevant to transforms tmsc, pwrs, pwor, DPod
+- added code comment to custom_train_template in read me as:
+#we recommend naming non-returned temporary columns with integer headers since other headers will be strings
+- converted support function _df_split to a private function (I think I may have been using in an experiment was why it was not previously private, not positive)
+- made imports conditional for encryption support functions
+- added printouts to final suffix overlap results associated with cases where PCA, Binary, or index columns were adjusted to avoid overlap (not an error channel, just an FYI)
+- new PCA option to retain columns in returned data that served as basis
+- similar to the Binary retain options
+- can be activated by passing ML_cmnd['PCA_retain'] = True
+- an update to support function associated with ML infill data type conversions to eliminate editing dataframe serving as input for __convert_onehot_to_singlecolumn
+- in 7.24 had added note to the customML writeup in read me for customML_train_classifier template: "label entries will be non-negative str(int) with possible exception for the string '-1'"
+- this convention is now updated to label entries will be non-negative str(int)
+- I think this also fixes a snafu in our flaml autoML_type implementation since was using integer labels for classification instead of strings
+- updated automunge and postmunge WorkflowBlock addresses to be based on a unique string (previously there were some redundant string addresses between automunge and postmunge)
+- realized I wasn't applying ravel flattening to test_labels returned from automunge in pandasoutput = False scenario, which was an oversight
+- used as an opportunity to rethink aspects of single column conventions for other sets
+- we had in place that all single column pandas sets are copnverted to series already
+- but only single column numpy arrays were flattened
+- which was kind of not aligned
+- decided that for benefit of common pandas operations independant of single or multi column case to features and ID sets it made sense to limit series conversions to label sets
+- now updated and now aligned convention is with pandas output only single column label sets are converted to series, and with numpy output only single column label sets are flattened with ravel
+- updated the empty set scenario for numpy output in postmunge for ID and label sets to be returned as numpy arrays consistent with form returned from automunge (previously were returned as empty list)
+- found a simplification opportunity for a support function associated with populating a data structure as __populate_columnkey_dict
+- updated convention for normalization_dict entries found in postprocess_dict['column_dict']
+- previsouly we redundantly saved this dictionary for each column returned from a transform
+- since we only inspect it for one column for use in postmunge, decided to eliminate the redundancy to reduce memory overhead
+- (as in some cases, as with high cardinality categoric sets, these may have material size)
+- now only saved for column that is first entry in categorylist
+- updated postmunge driftreport to only report for first column in a categorylist
+- (this was for compatibility for new normalziation_dict convention but had side effect of making for cleaner reporting by eliminating redundancy in output)
+- updated a variable naming in infill application support function for clarity (from "boolcolumn" to "incompatible_MLinfilltype")
+- formalized convention that any previously reported drift stats only reported in a single normalizaiton_dict out of a multi column set are now aggregated to a single reported form
+- ML_cmnd returned in postprocess_dict now records the version number of application for use in postmunge
