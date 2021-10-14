@@ -5023,7 +5023,7 @@ def customML_train_classifier(labels, features, columntype_report, commands, ran
   """
   #Template for integrating user defined ML classificaiton training into ML infill
   
-  #labels for classification are received as a single column pandas dataframe with header of integer 1
+  #labels for classification are received as a single column pandas series with header of integer 1
   #and entries of str(int) type (i.e. string representations of non-negative integers like '0', '1')
   #if user prefers numeric labels, they can apply labels = labels.astype(int)
   
@@ -5070,7 +5070,7 @@ def customML_train_regressor(labels, features, columntype_report, commands, rand
   """
   #Template for integrating user defined ML regression training into ML infill
   
-  #labels for regression are received as a single column pandas dataframe with header of integer 0
+  #labels for regression are received as a single column pandas series with header of integer 0
   #and entries of float type
   
   #commands is received per user specification passed to automunge(.) 

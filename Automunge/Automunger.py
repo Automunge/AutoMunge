@@ -28123,6 +28123,9 @@ class AutoMunge:
         df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
+      #convert single column to series
+      df_train_filllabel = df_train_filllabel[ag_label_column]
+
       #user can pass parameters to catboost model initialization in ML_cmnd['MLinfill_cmnd']['catboost_classifier_model']
       model_params = {}
       if 'MLinfill_cmnd' in ML_cmnd:
@@ -28268,6 +28271,9 @@ class AutoMunge:
     from catboost import CatBoostRegressor
     
     try:
+
+      #convert single column to series
+      df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
 
       #catboost takes specification of categoric columns
       columntypes = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
@@ -28487,6 +28493,10 @@ class AutoMunge:
       #convention is that regression will return labels with header of integer 0, classification with header of integer 1
       df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
       ML_label_column = 1
+
+    #convert single column to a series
+    if df_train_filllabel.shape[1] == 1:
+      df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
     
     #note that we know that ML_label_column won't overlap with df_train_filltrain headers
     #because df_train_filltrain headers are strings in suffix convention which include an underscore character
@@ -28510,14 +28520,14 @@ class AutoMunge:
       function_address = 'customML_Classifier_train'
     elif modeltype == 'regression':
       function_address = 'customML_Regressor_train'
-      
+
     if 'customML' in ML_cmnd:
       if function_address in ML_cmnd['customML']:
         if callable(ML_cmnd['customML'][function_address]):
           try:
             model = \
-            ML_cmnd['customML'][function_address](df_train_filltrain, 
-                                                  df_train_filllabel, 
+            ML_cmnd['customML'][function_address](df_train_filllabel, 
+                                                  df_train_filltrain, 
                                                   columntype_report,
                                                   commands, 
                                                   randomseed)
@@ -38425,7 +38435,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.27'
+    automungeversion = '7.28'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
