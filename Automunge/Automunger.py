@@ -8420,9 +8420,12 @@ class AutoMunge:
     #to derive a normkey when returned column isn't known or may return emtpy set
     #
     #populates in the form:
-    #columnkey_dict.update({inputcolumn : {transformationcategory : categorylist_aggregate}})
+    #columnkey_dict.update({inputcolumn : {transformationcategory : categorylist}})
     #where categorylist_aggregate is a combination of all categorylists 
     #derived from some functions with recorded category applied to a given input column
+    #
+    #Note that convention is if the same transformation is applied multiple times in same family tree
+    #each application will have a unique input column, otherwise transfomation will be via a unique process_dict transformationcategory
     #  
     #Here column_dict_list is the list of dictionaries returned from a single processing function
     """
@@ -8432,17 +8435,12 @@ class AutoMunge:
       inputcolumn = column_dict_list[0][list(column_dict_list[0])[0]]['inputcolumn']
       if inputcolumn not in postprocess_dict['columnkey_dict']:
         postprocess_dict['columnkey_dict'].update({inputcolumn : {}})
+        
+      categorylist = column_dict_list[0][list(column_dict_list[0])[0]]['categorylist']
 
       if transformationcategory not in postprocess_dict['columnkey_dict'][inputcolumn]:
-        postprocess_dict['columnkey_dict'][inputcolumn].update({transformationcategory : []})
-
-      #another way to do this could be to just grab one of the categorylist entries, this is equivalent
-      for column_dict in column_dict_list:
-        #convention is column_dict_list is a list of column_dict dictionaries returned from a transformation, 
-        #each with a single first layer key of one of the returned columns
-        categorylist_entry = list(column_dict)[0]
-        postprocess_dict['columnkey_dict'][inputcolumn][transformationcategory].append(categorylist_entry)
-
+        postprocess_dict['columnkey_dict'][inputcolumn].update({transformationcategory : categorylist})
+      
     return postprocess_dict
   
   def __processcousin(self, df_train, df_test, column, cousin, origcategory, final_upstream, \
@@ -9188,12 +9186,14 @@ class AutoMunge:
     
     column_dict_list = []
     
+    newcolumn_normalization_dict = {}
+    if len(newcolumns_list) > 0:
+      newcolumn_normalization_dict = {newcolumns_list[0] : normalization_dict}
+    
     for newcolumn in newcolumns_list:
-      
-      #note I think this results in normalization_dict sharing memory address between entries for each newcolumn
-      #which should reduce memory overhead (in some scenarios normalization_dict could be large)
-      #and since no external rewrites to normalization_dict desired should be ok
-      newcolumn_normalization_dict = {newcolumn : deepcopy(normalization_dict)}
+
+      if newcolumn != newcolumns_list[0]:
+        newcolumn_normalization_dict = {}
       
       column_dict = {newcolumn : {'category' : treecategory, \
                                  'origcategory' : category, \
@@ -9790,6 +9790,28 @@ class AutoMunge:
             print("")
           
     postprocess_dict['miscparameters_results'].update({'suffixoverlap_aggregated_result':suffixoverlap_aggregated_result})
+
+    if 'indexcolumn_valresult' in postprocess_dict['miscparameters_results'] \
+    and postprocess_dict['miscparameters_results']['indexcolumn_valresult'] is True:
+      if postprocess_dict['printstatus'] != 'silent':
+        print("please note that the Automunge_index returned in the ID sets had a header update to avoid overlap")
+        print("updated Automunge_index header is: ", postprocess_dict['indexcolumn'])
+        print()
+
+    if 'PCA_columns_valresult' in postprocess_dict['miscparameters_results'] \
+    and postprocess_dict['miscparameters_results']['PCA_columns_valresult'] is True:
+      if postprocess_dict['printstatus'] != 'silent':
+        print("please note that the PCA derivation had a root header update to avoid overlap")
+        print("returned PCA columns are: ", postprocess_dict['returned_PCA_columns'])
+        print()
+
+    if 'set_Binary_column_valresult' in postprocess_dict['miscparameters_results'] \
+    and postprocess_dict['miscparameters_results']['set_Binary_column_valresult'] is True:
+      if postprocess_dict['printstatus'] != 'silent':
+        print("please note that the Binary derivation had a root header update to avoid overlap")
+        print("returned Binary columns are: ", postprocess_dict['returned_Binary_columns'])
+        print("returned label Binary columns are: ", postprocess_dict['final_returned_labelBinary_columns'])
+        print()
     
     return postprocess_dict
 
@@ -9834,6 +9856,9 @@ class AutoMunge:
     column_dict_list = []
     
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        NArwnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -10021,6 +10046,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -10131,6 +10159,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -10260,6 +10291,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -10368,6 +10402,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -10499,6 +10536,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -10663,6 +10703,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -10815,6 +10858,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -10924,6 +10970,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -11180,6 +11229,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -11353,6 +11405,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -11624,6 +11679,9 @@ class AutoMunge:
     column_dict_list = []
 
     for bc in bnrycolumns:
+
+      if bc != bnrycolumns[0]:
+        bnrynormalization_dict = {}
 
       column_dict = { bc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -12033,9 +12091,10 @@ class AutoMunge:
                                         LSfitparams_dict)
     
     column_dict_list = []
-    for tc in textcolumns:
-      
-      textnormalization_dict = {tc : {'textlabelsdict' : textlabelsdict, \
+    textnormalization_dict = {}
+
+    if len(textcolumns) > 0:
+      textnormalization_dict = {textcolumns[0] : {'textlabelsdict' : textlabelsdict, \
                                       'textcolumns' : textcolumns, \
                                       'inputtextcolumns' : inputtextcolumns, \
                                       'LSfitparams_dict' : LSfitparams_dict, \
@@ -12044,6 +12103,11 @@ class AutoMunge:
                                       'testsmooth' : testsmooth, \
                                       'suffix' : suffix, \
                                       'inplace' : inplace}}
+
+    for tc in textcolumns:
+
+      if tc != textcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -12491,21 +12555,26 @@ class AutoMunge:
             mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint32)
             mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
 
+    textnormalization_dict = {}
+    if len(final_returned_columns) > 0:
+      textnormalization_dict = {final_returned_columns[0] : {'norm_category' : norm_category, \
+                                                              'norm_params' : norm_params, \
+                                                              'textlabelsdict' : textlabelsdict, \
+                                                              'textcolumns' : textcolumns, \
+                                                              'inputtextcolumns' : inputtextcolumns, \
+                                                              'norm_columnkey_dict' : norm_columnkey_dict, \
+                                                              'norm_column_dict_list' : norm_column_dict_list, \
+                                                              'dtype' : dtype, \
+                                                              'max_encoding_for_dtype_convert_dict' : max_encoding_for_dtype_convert_dict, \
+                                                              'final_returned_columns' : final_returned_columns, \
+                                                              'suffix' : suffix, \
+                                                              'inplace' : inplace}}
+
     column_dict_list = []
     for tc in final_returned_columns:
-      
-      textnormalization_dict = {tc : {'norm_category' : norm_category, \
-                                      'norm_params' : norm_params, \
-                                      'textlabelsdict' : textlabelsdict, \
-                                      'textcolumns' : textcolumns, \
-                                      'inputtextcolumns' : inputtextcolumns, \
-                                      'norm_columnkey_dict' : norm_columnkey_dict, \
-                                      'norm_column_dict_list' : norm_column_dict_list, \
-                                      'dtype' : dtype, \
-                                      'max_encoding_for_dtype_convert_dict' : max_encoding_for_dtype_convert_dict, \
-                                      'final_returned_columns' : final_returned_columns, \
-                                      'suffix' : suffix, \
-                                      'inplace' : inplace}}
+
+      if tc != final_returned_columns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -12598,6 +12667,9 @@ class AutoMunge:
     
     for nc in columns:
 
+      if nc != columns[0]:
+        normalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
@@ -12682,6 +12754,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in [suffixcolumn]:
+
+      if nc != [suffixcolumn][0]:
+        normalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -12764,6 +12839,9 @@ class AutoMunge:
     column_dict_list = []
     
     for nc in UPCScolumns:
+
+      if nc != UPCScolumns[0]:
+        normalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -13084,22 +13162,27 @@ class AutoMunge:
     else:
       int_labels_dict = False
       inverse_int_labels_dict = False
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'suffix' : suffix, \
+                                                'test_same_as_train' : test_same_as_train, \
+                                                'overlap_dict' : overlap_dict, \
+                                                'splt_newcolumns_splt'   : newcolumns, \
+                                                'minsplit' : minsplit, \
+                                                'concurrent_activations' : concurrent_activations, \
+                                                'preint_newcolumns' : preint_newcolumns, \
+                                                'int_headers' : int_headers, \
+                                                'int_labels_dict' : int_labels_dict, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'inverse_int_labels_dict' : inverse_int_labels_dict}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'suffix' : suffix, \
-                                      'test_same_as_train' : test_same_as_train, \
-                                      'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_splt'   : newcolumns, \
-                                      'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -13439,21 +13522,26 @@ class AutoMunge:
 #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
     newcolumns.append(newcolumn)
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'suffix' : suffix, \
+                                                'test_same_as_train' : test_same_as_train, \
+                                                'consolidate_nonoverlaps' : consolidate_nonoverlaps, \
+                                                'overlap_dict' : overlap_dict, \
+                                                'spl2_newcolumns'   : newcolumns, 
+                                                'spl2_overlap_dict' : spl2_overlap_dict, \
+                                                'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
+                                                'spl5_zero_dict' : spl5_zero_dict, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'minsplit' : minsplit}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'suffix' : suffix, \
-                                      'test_same_as_train' : test_same_as_train, \
-                                      'consolidate_nonoverlaps' : consolidate_nonoverlaps, \
-                                      'overlap_dict' : overlap_dict, \
-                                      'spl2_newcolumns'   : newcolumns, 
-                                      'spl2_overlap_dict' : spl2_overlap_dict, \
-                                      'spl2_test_overlap_dict' : spl2_test_overlap_dict, \
-                                      'spl5_zero_dict' : spl5_zero_dict, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'minsplit' : minsplit}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -13839,7 +13927,6 @@ class AutoMunge:
           #store the encoding in a list for checking in next step
           encoding_list.append(encoding)
 
-
       #clear up memory
       del encoding_list
   #     del overlap_list
@@ -13850,7 +13937,6 @@ class AutoMunge:
         sumcalc = (mdf_train[sp19_column] == key).sum() 
         ratio = sumcalc / mdf_train[sp19_column].shape[0]
         _1010_activations_dict.update({key:ratio})
-
 
       #replace the cateogries in train set via ordinal trasnformation
       mdf_train[sp19_column] = mdf_train[sp19_column].astype('object').replace(binary_encoding_dict) 
@@ -13897,26 +13983,30 @@ class AutoMunge:
       #now store the column_dict entries
       categorylist = _1010_columnlist
 
+      normalization_dict = {}
+      if len(categorylist) > 0:
+        normalization_dict = {categorylist[0] : {'suffix' : suffix, \
+                                                'test_same_as_train' : test_same_as_train, \
+                                                '_1010_binary_encoding_dict' : binary_encoding_dict, \
+                                                '_1010_binary_column_count' : binary_column_count, \
+                                                '_1010_activations_dict' : _1010_activations_dict, \
+                                                'categorylist' : categorylist, \
+                                                'overlap_dict' : overlap_dict, \
+                                                'splt_newcolumns_sp19'   : newcolumns, \
+                                                'minsplit' : minsplit, \
+                                                'concurrent_activations' : concurrent_activations, \
+                                                'preint_newcolumns' : preint_newcolumns, \
+                                                'int_headers' : int_headers, \
+                                                'int_labels_dict' : int_labels_dict, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'inverse_int_labels_dict' : inverse_int_labels_dict}}
+
       column_dict_list = []
 
       for tc in categorylist:
 
-        #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'suffix' : suffix, \
-                                    'test_same_as_train' : test_same_as_train, \
-                                    '_1010_binary_encoding_dict' : binary_encoding_dict, \
-                                    '_1010_binary_column_count' : binary_column_count, \
-                                    '_1010_activations_dict' : _1010_activations_dict, \
-                                    'categorylist' : categorylist, \
-                                    'overlap_dict' : overlap_dict, \
-                                    'splt_newcolumns_sp19'   : newcolumns, \
-                                    'minsplit' : minsplit, \
-                                    'concurrent_activations' : concurrent_activations, \
-                                    'preint_newcolumns' : preint_newcolumns, \
-                                    'int_headers' : int_headers, \
-                                    'int_labels_dict' : int_labels_dict, \
-                                    'defaultinfill_dict' : defaultinfill_dict,
-                                    'inverse_int_labels_dict' : inverse_int_labels_dict}}
+        if tc != categorylist[0]:
+          normalization_dict = {}
 
         column_dict = {tc : {'category' : treecategory, \
                              'origcategory' : category, \
@@ -14157,22 +14247,27 @@ class AutoMunge:
     else:
       int_labels_dict = False
       inverse_int_labels_dict = False
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'suffix' : suffix, \
+                                                'test_same_as_train' : test_same_as_train, \
+                                                'overlap_dict' : overlap_dict, \
+                                                'splt_newcolumns_sbst'   : newcolumns, \
+                                                'minsplit' : minsplit, \
+                                                'concurrent_activations' : concurrent_activations, \
+                                                'preint_newcolumns' : preint_newcolumns, \
+                                                'int_headers' : int_headers, \
+                                                'int_labels_dict' : int_labels_dict, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'inverse_int_labels_dict' : inverse_int_labels_dict}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'suffix' : suffix, \
-                                      'test_same_as_train' : test_same_as_train, \
-                                      'overlap_dict' : overlap_dict, \
-                                      'splt_newcolumns_sbst'   : newcolumns, \
-                                      'minsplit' : minsplit, \
-                                      'concurrent_activations' : concurrent_activations, \
-                                      'preint_newcolumns' : preint_newcolumns, \
-                                      'int_headers' : int_headers, \
-                                      'int_labels_dict' : int_labels_dict, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inverse_int_labels_dict' : inverse_int_labels_dict}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -14471,7 +14566,6 @@ class AutoMunge:
           #store the encoding in a list for checking in next step
           encoding_list.append(encoding)
 
-
       #clear up memory
       del encoding_list
   #     del overlap_list
@@ -14482,7 +14576,6 @@ class AutoMunge:
         sumcalc = (mdf_train[sbs3_column] == key).sum() 
         ratio = sumcalc / mdf_train[sbs3_column].shape[0]
         _1010_activations_dict.update({key:ratio})
-
 
       #replace the cateogries in train set via ordinal trasnformation
       mdf_train[sbs3_column] = mdf_train[sbs3_column].astype('object').replace(binary_encoding_dict) 
@@ -14529,26 +14622,30 @@ class AutoMunge:
       #now store the column_dict entries
       categorylist = _1010_columnlist
 
+      normalization_dict = {}
+      if len(categorylist) > 0:
+        normalization_dict = {categorylist[0] : {'suffix' : suffix, \
+                                                'test_same_as_train' : test_same_as_train, \
+                                                '_1010_binary_encoding_dict' : binary_encoding_dict, \
+                                                '_1010_binary_column_count' : binary_column_count, \
+                                                '_1010_activations_dict' : _1010_activations_dict, \
+                                                'categorylist' : categorylist, \
+                                                'overlap_dict' : overlap_dict, \
+                                                'splt_newcolumns_sbs3'   : newcolumns, \
+                                                'concurrent_activations' : concurrent_activations, \
+                                                'minsplit' : minsplit, \
+                                                'preint_newcolumns' : preint_newcolumns, \
+                                                'int_headers' : int_headers, \
+                                                'int_labels_dict' : int_labels_dict, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'inverse_int_labels_dict' : inverse_int_labels_dict}}
+
       column_dict_list = []
 
       for tc in categorylist:
 
-  #                                   '_1010_overlap_replace' : overlap_replace, \
-        normalization_dict = {tc : {'suffix' : suffix, \
-                                    'test_same_as_train' : test_same_as_train, \
-                                    '_1010_binary_encoding_dict' : binary_encoding_dict, \
-                                    '_1010_binary_column_count' : binary_column_count, \
-                                    '_1010_activations_dict' : _1010_activations_dict, \
-                                    'categorylist' : categorylist, \
-                                    'overlap_dict' : overlap_dict, \
-                                    'splt_newcolumns_sbs3'   : newcolumns, \
-                                    'concurrent_activations' : concurrent_activations, \
-                                    'minsplit' : minsplit, \
-                                    'preint_newcolumns' : preint_newcolumns, \
-                                    'int_headers' : int_headers, \
-                                    'int_labels_dict' : int_labels_dict, \
-                                    'defaultinfill_dict' : defaultinfill_dict,
-                                    'inverse_int_labels_dict' : inverse_int_labels_dict}}
+        if tc != categorylist[0]:
+          normalization_dict = {}
 
         column_dict = {tc : {'category' : treecategory, \
                              'origcategory' : category, \
@@ -14854,24 +14951,29 @@ class AutoMunge:
         mdf_train[hashcolumn] = mdf_train[hashcolumn].astype(np.uint32)
         mdf_test[hashcolumn] = mdf_test[hashcolumn].astype(np.uint32)
     
+    hashnormalization_dict = {}
+    if len(hashcolumns) > 0:
+      hashnormalization_dict = {hashcolumns[0] : {'hashcolumns' : hashcolumns, \
+                                                  'col_count' : max_length, \
+                                                  'vocab_size_hash' : vocab_size, \
+                                                  'heuristic_multiplier' : heuristic_multiplier, \
+                                                  'heuristic_cap' : heuristic_cap, \
+                                                  'max_length' : max_length, \
+                                                  'excluded_characters' : excluded_characters, \
+                                                  'space' : space, \
+                                                  'salt' : salt, \
+                                                  'max_column_count' : max_column_count, \
+                                                  'hash_alg' : hash_alg, \
+                                                  'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
+
     column_dict_list = []
 
     for hc in hashcolumns:
-      
-      hashnormalization_dict = {hc : {'hashcolumns' : hashcolumns, \
-                                      'col_count' : max_length, \
-                                      'vocab_size_hash' : vocab_size, \
-                                      'heuristic_multiplier' : heuristic_multiplier, \
-                                      'heuristic_cap' : heuristic_cap, \
-                                      'max_length' : max_length, \
-                                      'excluded_characters' : excluded_characters, \
-                                      'space' : space, \
-                                      'salt' : salt, \
-                                      'max_column_count' : max_column_count, \
-                                      'hash_alg' : hash_alg, \
-                                      'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}
+
+      if hc != hashcolumns[0]:
+        hashnormalization_dict = {}
       
       column_dict = { hc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -15047,22 +15149,27 @@ class AutoMunge:
     #remove support column
     del mdf_train[suffixcolumn]
     del mdf_test[suffixcolumn]
+
+    hashnormalization_dict = {}
+    if len(hashcolumns) > 0:
+      hashnormalization_dict = {hashcolumns[0] : {'hashcolumns' : hashcolumns, \
+                                                  'col_count' : binary_column_count, \
+                                                  'vocab_size' : vocab_size, \
+                                                  'heuristic_multiplier' : heuristic_multiplier, \
+                                                  'heuristic_cap' : heuristic_cap, \
+                                                  'salt' : salt, \
+                                                  'excluded_characters' : excluded_characters, \
+                                                  'hash_alg' : hash_alg, \
+                                                  'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
     
     column_dict_list = []
 
     for hc in hashcolumns:
-      
-      hashnormalization_dict = {hc : {'hashcolumns' : hashcolumns, \
-                                      'col_count' : binary_column_count, \
-                                      'vocab_size' : vocab_size, \
-                                      'heuristic_multiplier' : heuristic_multiplier, \
-                                      'heuristic_cap' : heuristic_cap, \
-                                      'salt' : salt, \
-                                      'excluded_characters' : excluded_characters, \
-                                      'hash_alg' : hash_alg, \
-                                      'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}      
+
+      if hc != hashcolumns[0]:
+        hashnormalization_dict = {}
       
       column_dict = { hc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -15231,22 +15338,27 @@ class AutoMunge:
     #remove temporary support column
     del mdf_train[suffixcolumn]
     del mdf_test[suffixcolumn]
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'search_dict' : search_dict, \
+                                                'inverse_search_dict' : inverse_search_dict, \
+                                                'srch_newcolumns_srch'   : newcolumns, \
+                                                'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
+                                                'search' : search, \
+                                                'search_preflattening' : search_preflattening, \
+                                                'aggregated_dict' : aggregated_dict, \
+                                                'suffix' : suffix, \
+                                                'inplace' : inplace, \
+                                                'defaultinfill_dict' : defaultinfill_dict, \
+                                                'case' : case}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'search_dict' : search_dict, \
-                                      'inverse_search_dict' : inverse_search_dict, \
-                                      'srch_newcolumns_srch'   : newcolumns, \
-                                      'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
-                                      'search' : search, \
-                                      'search_preflattening' : search_preflattening, \
-                                      'aggregated_dict' : aggregated_dict, \
-                                      'suffix' : suffix, \
-                                      'inplace' : inplace, \
-                                      'defaultinfill_dict' : defaultinfill_dict, \
-                                      'case' : case}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -15504,22 +15616,27 @@ class AutoMunge:
     #remove temporary support column
     del mdf_train[suffixcolumn]
     del mdf_test[suffixcolumn]
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'overlap_dict' : overlap_dict, \
+                                                'src2_newcolumns_src2'   : newcolumns, \
+                                                'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
+                                                'search' : search, \
+                                                'inverse_search_dict' : inverse_search_dict, \
+                                                'aggregated_dict' : aggregated_dict, \
+                                                'case' : case, \
+                                                'suffix' : suffix, \
+                                                'inplace' : inplace, \
+                                                'defaultinfill_dict' : defaultinfill_dict,
+                                                'search_preflattening' : search_preflattening}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'src2_newcolumns_src2'   : newcolumns, \
-                                      'newcolumns_before_aggregation' : newcolumns_before_aggregation, \
-                                      'search' : search, \
-                                      'inverse_search_dict' : inverse_search_dict, \
-                                      'aggregated_dict' : aggregated_dict, \
-                                      'case' : case, \
-                                      'suffix' : suffix, \
-                                      'inplace' : inplace, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'search_preflattening' : search_preflattening}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -15778,20 +15895,25 @@ class AutoMunge:
     #remove temporary support column
     del mdf_train[suffixcolumn]
     del mdf_test[suffixcolumn]
+
+    textnormalization_dict = {}
+    if len(newcolumns) > 0:
+      textnormalization_dict = {newcolumns[0] : {'overlap_dict' : overlap_dict, \
+                                                'srch_newcolumns_src3'   : newcolumns, \
+                                                'aggregated_dict' : aggregated_dict, \
+                                                'inverse_search_dict' : inverse_search_dict, \
+                                                'case' : case, \
+                                                'suffix' : suffix, \
+                                                'inplace': inplace, \
+                                                'defaultinfill_dict' : defaultinfill_dict, \
+                                                'search' : search}}
     
     column_dict_list = []
 
     for tc in newcolumns:
 
-      textnormalization_dict = {tc : {'overlap_dict' : overlap_dict, \
-                                      'srch_newcolumns_src3'   : newcolumns, \
-                                      'aggregated_dict' : aggregated_dict, \
-                                      'inverse_search_dict' : inverse_search_dict, \
-                                      'case' : case, \
-                                      'suffix' : suffix, \
-                                      'inplace': inplace, \
-                                      'defaultinfill_dict' : defaultinfill_dict, \
-                                      'search' : search}}
+      if tc != newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16002,22 +16124,27 @@ class AutoMunge:
     #src4_newcolumns are after consolidating to ordinal encoding (single entry)
     src4_newcolumns = [suffixcolumn]
 
+    textnormalization_dict = {}
+    if len(src4_newcolumns) > 0:
+      textnormalization_dict = {src4_newcolumns[0] : {'search_dict' : search_dict, \
+                                                      'inverse_search_dict' : inverse_search_dict, \
+                                                      'srch_newcolumns_src4' : newcolumns, \
+                                                      'src4_newcolumns' : src4_newcolumns, \
+                                                      'search' : search, \
+                                                      'search_preflattening' : search_preflattening, \
+                                                      'aggregated_dict' : aggregated_dict, \
+                                                      'case' : case, \
+                                                      'ordl_dict1' : ordl_dict1, \
+                                                      'activations_list' : list(ordl_dict1), \
+                                                      'defaultinfill_dict' : defaultinfill_dict, \
+                                                      'suffix' : suffix, \
+                                                      'inplace': inplace, \
+                                                      'ordl_dict2' : ordl_dict2}}
+
     for tc in src4_newcolumns:
 
-      textnormalization_dict = {tc : {'search_dict' : search_dict, \
-                                      'inverse_search_dict' : inverse_search_dict, \
-                                      'srch_newcolumns_src4' : newcolumns, \
-                                      'src4_newcolumns' : src4_newcolumns, \
-                                      'search' : search, \
-                                      'search_preflattening' : search_preflattening, \
-                                      'aggregated_dict' : aggregated_dict, \
-                                      'case' : case, \
-                                      'ordl_dict1' : ordl_dict1, \
-                                      'activations_list' : list(ordl_dict1), \
-                                      'defaultinfill_dict' : defaultinfill_dict, \
-                                      'suffix' : suffix, \
-                                      'inplace': inplace, \
-                                      'ordl_dict2' : ordl_dict2}}
+      if tc != src4_newcolumns[0]:
+        textnormalization_dict = {}
       
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16100,6 +16227,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        normalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16244,6 +16374,9 @@ class AutoMunge:
     column_dict_list = []
     
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16451,6 +16584,9 @@ class AutoMunge:
     column_dict_list = []
     
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -16717,6 +16853,9 @@ class AutoMunge:
     column_dict_list = []
     
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -17206,6 +17345,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        normalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -17309,15 +17451,20 @@ class AutoMunge:
     mdf_test[suffixcolumn] = mdf_test[suffixcolumn].fillna(ordinal_nan_value)
     
     categorylist = [suffixcolumn]  
+
+    normalization_dict = {}
+    if len(categorylist) > 0:
+      normalization_dict = {categorylist[0] : {'ordinal_dict' : ordinal_dict, \
+                                              'ordinal_nan_value' : ordinal_nan_value, \
+                                              'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict}}
         
     column_dict_list = []
     
     for tc in categorylist:
-        
-      normalization_dict = {tc : {'ordinal_dict' : ordinal_dict, \
-                                  'ordinal_nan_value' : ordinal_nan_value, \
-                                  'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict}}
+
+      if tc != categorylist[0]:
+        normalization_dict = {}
     
       column_dict = {tc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -17687,6 +17834,9 @@ class AutoMunge:
 
     for dc in datecolumns:
 
+      if dc != datecolumns[0]:
+        normalization_dict = {}
+
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
@@ -17757,6 +17907,9 @@ class AutoMunge:
     column_dict_list = []
 
     for dc in datecolumns:
+
+      if dc != datecolumns[0]:
+        normalization_dict = {}      
 
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -17855,6 +18008,9 @@ class AutoMunge:
 
     for dc in datecolumns:
 
+      if dc != datecolumns[0]:
+        normalization_dict = {}
+
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
@@ -17943,7 +18099,6 @@ class AutoMunge:
     sun_ratio = df[df[suffixcolumn] == 6].shape[0] / numberofrows
     infill_ratio = df[df[suffixcolumn] == 7].shape[0] / numberofrows
   
-  
     #create normalization dictionary
     normalization_dict = {suffixcolumn : {'mon_ratio' : mon_ratio, \
                                           'tue_ratio' : tue_ratio, \
@@ -17961,6 +18116,9 @@ class AutoMunge:
     column_dict_list = []
 
     for dc in datecolumns:
+
+      if dc != datecolumns[0]:
+        normalization_dict = {}
 
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -18079,6 +18237,9 @@ class AutoMunge:
 
     for dc in datecolumns:
 
+      if dc != datecolumns[0]:
+        normalization_dict = {}
+
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : normalization_dict, \
@@ -18160,6 +18321,9 @@ class AutoMunge:
                                           'inplace' : inplace}}
 
     for dc in datecolumns:
+
+      if dc != datecolumns[0]:
+        normalization_dict = {}
 
       column_dict = { dc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -18288,8 +18452,8 @@ class AutoMunge:
       mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
     
     elif scale == 'monthday':
-      tempcolumn1 = time_column + '_tmp1'
-      tempcolumn2 = time_column + '_tmp2'
+      tempcolumn1 = 1
+      tempcolumn2 = 2
       
       suffixoverlap_results = \
       self.__df_check_suffixoverlap(mdf_train, [tempcolumn1, tempcolumn2], suffixoverlap_results, postprocess_dict['printstatus'])
@@ -18393,16 +18557,22 @@ class AutoMunge:
       column_dict_list = []
       categorylist = [time_column]
 
+      norm_dict = {}
+      if len(categorylist) > 0:
+        norm_dict = {categorylist[0] : {'scale'         : scale, \
+                                        'suffix'        : suffix, \
+                                        'function'      : function, \
+                                        'timemean'      : timemean, \
+                                        'timemax'       : timemax, \
+                                        'timemin'       : timemin, \
+                                        'timestd'       : timestd, \
+                                        'defaultinfill_dict' : defaultinfill_dict,
+                                        'inplace'       : inplace}}
+
       for tc in categorylist:
-        norm_dict = {tc : {'scale'         : scale, \
-                           'suffix'        : suffix, \
-                           'function'      : function, \
-                           'timemean'      : timemean, \
-                           'timemax'       : timemax, \
-                           'timemin'       : timemin, \
-                           'timestd'       : timestd, \
-                           'defaultinfill_dict' : defaultinfill_dict,
-                           'inplace'       : inplace}}
+
+        if tc != categorylist[0]:
+          norm_dict = {}
 
         column_dict = {tc : {'category' : treecategory, \
                              'origcategory' : category, \
@@ -18547,19 +18717,25 @@ class AutoMunge:
       column_dict_list = []
       categorylist = [time_column]
 
+      norm_dict = {}
+      if len(categorylist) > 0:
+        norm_dict = {categorylist[0] : {'scale'         : scale, \
+                                        'suffix'        : suffix, \
+                                        'normalization' : normalization, \
+                                        'scaler'        : scaler, \
+                                        'divisor'       : divisor, \
+                                        'timemean'      : timemean, \
+                                        'timemax'       : timemax, \
+                                        'timemin'       : timemin, \
+                                        'timestd'       : timestd, \
+                                        'maxminusmin'   : maxminusmin, \
+                                        'defaultinfill_dict' : defaultinfill_dict,
+                                        'inplace'       : inplace}}
+
       for tc in categorylist:
-        norm_dict = {tc : {'scale'         : scale, \
-                           'suffix'        : suffix, \
-                           'normalization' : normalization, \
-                           'scaler'        : scaler, \
-                           'divisor'       : divisor, \
-                           'timemean'      : timemean, \
-                           'timemax'       : timemax, \
-                           'timemin'       : timemin, \
-                           'timestd'       : timestd, \
-                           'maxminusmin'   : maxminusmin, \
-                           'defaultinfill_dict' : defaultinfill_dict,
-                           'inplace'       : inplace}}
+
+        if tc != categorylist[0]:
+          norm_dict = {}
 
         column_dict = {tc : {'category' : treecategory, \
                              'origcategory' : category, \
@@ -18705,21 +18881,26 @@ class AutoMunge:
     #initilize column_dict_list
     column_dict_list = []
     
+    normalization_dict = {}
+    if len(nmbrcolumns) > 0:
+      normalization_dict = {nmbrcolumns[0] : {'input_max' : input_max,
+                                              'input_min' : input_min,
+                                              'input_stdev' : input_stdev,
+                                              'input_mean' : input_mean,
+                                              'qttf' : qttf,
+                                              'mean_impute' : mean_impute,
+                                              'n_quantiles' : n_quantiles,
+                                              'output_distribution' : output_distribution,
+                                              'ignore_implicit_zeros' : ignore_implicit_zeros,
+                                              'subsample' : subsample,
+                                              'random_state' : random_state,
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'suffix' : suffix}}
+
     for nc in nmbrcolumns:
 
-      normalization_dict = {nc : {'input_max' : input_max,
-                                  'input_min' : input_min,
-                                  'input_stdev' : input_stdev,
-                                  'input_mean' : input_mean,
-                                  'qttf' : qttf,
-                                  'mean_impute' : mean_impute,
-                                  'n_quantiles' : n_quantiles,
-                                  'output_distribution' : output_distribution,
-                                  'ignore_implicit_zeros' : ignore_implicit_zeros,
-                                  'subsample' : subsample,
-                                  'random_state' : random_state,
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'suffix' : suffix}}
+      if nc != nmbrcolumns[0]:
+        normalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -18844,17 +19025,22 @@ class AutoMunge:
     #initilize column_dict_list
     column_dict_list = []
     
-    for nc in nmbrcolumns:
-      
+    normalization_dict = {}
+    if len(nmbrcolumns) > 0:
       #test_bxcx_lmbda is False when mdf_test[suffixcolumn].nunique() == 1
-      normalization_dict = {nc : {'mean' : mean, \
-                                  'bxcx_lmbda' : bxcx_lmbda, \
-                                  'test_bxcx_lmbda' : test_bxcx_lmbda, \
-                                  'max_train' : max_train, \
-                                  'max_test' : max_test, \
-                                  'suffix' : suffix, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'inplace' : inplace}}
+      normalization_dict = {nmbrcolumns[0] : {'mean' : mean, \
+                                              'bxcx_lmbda' : bxcx_lmbda, \
+                                              'test_bxcx_lmbda' : test_bxcx_lmbda, \
+                                              'max_train' : max_train, \
+                                              'max_test' : max_test, \
+                                              'suffix' : suffix, \
+                                              'defaultinfill_dict' : defaultinfill_dict,
+                                              'inplace' : inplace}}
+
+    for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        normalization_dict = {}
       
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -18965,6 +19151,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19073,6 +19262,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -19183,6 +19375,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19280,6 +19475,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -19379,6 +19577,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19476,6 +19677,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -19578,6 +19782,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19674,6 +19881,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19764,6 +19974,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -19825,10 +20038,10 @@ class AutoMunge:
       suffix = treecategory
       
     suffixcolumn = column + '_' + suffix
-    
-    tempcolumn = suffixcolumn + '_-10^'
+
+    tempcolumn = 1
     tempcolumn_zero = suffixcolumn + '_zero'
-    negtempcolumn = column + '_negtemp'
+    negtempcolumn = -1
 
     #store original column for later reversion
     mdf_train, suffixoverlap_results = \
@@ -20039,23 +20252,34 @@ class AutoMunge:
     
     #store some values in the text_dict{} for use later in ML infill methods
     column_dict_list = []
+
+    powernormalization_dict = {}
+    if len(powercolumns) > 0:
+      #pos_and_negative_list excludes the zero column
+      powernormalization_dict = {powercolumns[0] : {'powerlabelsdict_pwrs' : powerlabelsdict, \
+                                                    'labels_train' : labels_train, \
+                                                    'negvalues' : negvalues, \
+                                                    'zeroset' : zeroset, \
+                                                    'cap' : cap, \
+                                                    'floor' : floor, \
+                                                    'suffix' : suffix, \
+                                                    'pos_and_negative_list' : list(df_train_cat)}}
+
+    #drift stats for activation ratios
+    powernormalization_dict.update({'activation_ratios' : {}})
     
     for pc in powercolumns:
-      
+
       #new parameter collected for driftreport
       tc_ratio = pc + '_ratio'
       tcratio = mdf_train[pc].sum() / mdf_train[pc].shape[0]
-      
-      #pos_and_negative_list excludes the zero column
-      powernormalization_dict = {pc : {'powerlabelsdict_pwrs' : powerlabelsdict, \
-                                       'labels_train' : labels_train, \
-                                       'negvalues' : negvalues, \
-                                       'zeroset' : zeroset, \
-                                       'cap' : cap, \
-                                       'floor' : floor, \
-                                       'suffix' : suffix, \
-                                       'pos_and_negative_list' : list(df_train_cat), \
-                                       tc_ratio : tcratio}}
+
+      powernormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+    
+    for pc in powercolumns:
+
+      if pc != powercolumns[0]:
+        powernormalization_dict = {}
     
       column_dict = {pc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -20161,7 +20385,7 @@ class AutoMunge:
     
     #copy set for negative values
     if negvalues is True:
-      negtempcolumn = column + '_negtempcolumn'
+      negtempcolumn = -1
 
       mdf_train, suffixoverlap_results = \
       self.__df_copy_train(mdf_train, pworcolumn, negtempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
@@ -20179,7 +20403,7 @@ class AutoMunge:
       mdf_test[negtempcolumn] = mdf_test[negtempcolumn].abs()
       
     if zeroset is True:
-      zerotempcolumn = column + '_zerotempcolumn'
+      zerotempcolumn = 0
       
       mdf_train, suffixoverlap_results = \
       self.__df_copy_train(mdf_train, pworcolumn, zerotempcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
@@ -20349,19 +20573,24 @@ class AutoMunge:
       ratio = sumcalc / mdf_train[pworcolumn].shape[0]
       ordl_activations_dict.update({unique:ratio})
     
+    powernormalization_dict = {}
+    if len(powercolumns) > 0:
+      powernormalization_dict = {powercolumns[0] : {'train_replace_dict' : train_replace_dict, \
+                                                    'inverse_train_replace_dict' : inverse_train_replace_dict, \
+                                                    'activations_list' : activations_list, \
+                                                    'test_replace_dict' : test_replace_dict, \
+                                                    'ordl_activations_dict' : ordl_activations_dict, \
+                                                    'negvalues' : negvalues, \
+                                                    'zeroset' : zeroset, \
+                                                    'cap' : cap, \
+                                                    'floor' : floor, \
+                                                    'suffix' : suffix, \
+                                                    'inplace' : inplace}}
+
     for pc in powercolumns:
 
-      powernormalization_dict = {pc : {'train_replace_dict' : train_replace_dict, \
-                                       'inverse_train_replace_dict' : inverse_train_replace_dict, \
-                                       'activations_list' : activations_list, \
-                                       'test_replace_dict' : test_replace_dict, \
-                                       'ordl_activations_dict' : ordl_activations_dict, \
-                                       'negvalues' : negvalues, \
-                                       'zeroset' : zeroset, \
-                                       'cap' : cap, \
-                                       'floor' : floor, \
-                                       'suffix' : suffix, \
-                                       'inplace' : inplace}}
+      if pc != powercolumns[0]:
+        powernormalization_dict = {}
     
       column_dict = {pc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -20517,6 +20746,21 @@ class AutoMunge:
     
       #store some values in the nmbr_dict{} for use later in ML infill methods
       column_dict_list = []
+
+      nmbrnormalization_dict = {}
+      if len(textcolumns) > 0:
+        nmbrnormalization_dict = {textcolumns[0] : {'bincuts' : bincuts, \
+                                                  'binlabels' : binlabels, \
+                                                  'binscolumns' : textcolumns, \
+                                                  'bincount' : bincount, \
+                                                  'binsmean' : mean, \
+                                                  'binsstd' : std, \
+                                                  'normalizedinput' : normalizedinput, \
+                                                  'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict}}
+
+      #drift stats for activation ratios
+      nmbrnormalization_dict.update({'activation_ratios' : {}})
       
       for nc in textcolumns:
 
@@ -20524,16 +20768,12 @@ class AutoMunge:
         tc_ratio = nc + '_ratio'
         tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-        nmbrnormalization_dict = {nc : {'bincuts' : bincuts, \
-                                        'binlabels' : binlabels, \
-                                        'binscolumns' : textcolumns, \
-                                        'bincount' : bincount, \
-                                        'binsmean' : mean, \
-                                        'binsstd' : std, \
-                                        'normalizedinput' : normalizedinput, \
-                                        'suffix' : suffix, \
-                                        'defaultinfill_dict' : defaultinfill_dict,
-                                        tc_ratio : tcratio}}
+        nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+      
+      for nc in textcolumns:
+
+        if nc != textcolumns[0]:
+          nmbrnormalization_dict = {}
 
         column_dict = { nc : {'category' : treecategory, \
                               'origcategory' : category, \
@@ -20705,21 +20945,26 @@ class AutoMunge:
       #store some values in the nmbr_dict{} for use later in ML infill methods
       column_dict_list = []
 
+      nmbrnormalization_dict = {}
+      if len(nmbrcolumns) > 0:
+        nmbrnormalization_dict = {nmbrcolumns[0] : {'ordinal_dict' : ordinal_dict, \
+                                                    'inverse_ordinal_dict' : inverse_ordinal_dict, \
+                                                    'activations_list' : activations_list, \
+                                                    'ordl_activations_dict' : ordl_activations_dict, \
+                                                    'binsmean' : mean, \
+                                                    'binsstd' : std, \
+                                                    'normalizedinput' : normalizedinput, \
+                                                    'bincount' : bincount, \
+                                                    'bincuts' : bincuts, \
+                                                    'binlabels' : binlabels, \
+                                                    'suffix' : suffix, \
+                                                    'defaultinfill_dict' : defaultinfill_dict,
+                                                    'inplace' : inplace}}
+
       for nc in nmbrcolumns:
 
-        nmbrnormalization_dict = {nc : {'ordinal_dict' : ordinal_dict, \
-                                        'inverse_ordinal_dict' : inverse_ordinal_dict, \
-                                        'activations_list' : activations_list, \
-                                        'ordl_activations_dict' : ordl_activations_dict, \
-                                        'binsmean' : mean, \
-                                        'binsstd' : std, \
-                                        'normalizedinput' : normalizedinput, \
-                                        'bincount' : bincount, \
-                                        'bincuts' : bincuts, \
-                                        'binlabels' : binlabels, \
-                                        'suffix' : suffix, \
-                                        'defaultinfill_dict' : defaultinfill_dict,
-                                        'inplace' : inplace}}
+        if nc != nmbrcolumns[0]:
+          nmbrnormalization_dict = {}
 
         column_dict = { nc : {'category' : treecategory, \
                               'origcategory' : category, \
@@ -20852,24 +21097,35 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(textcolumns) > 0:
+      nmbrnormalization_dict = {textcolumns[0] : {'suffix' : suffix, \
+                                                'binsmean' : mean, \
+                                                'bn_min' : bn_min, \
+                                                'bn_max' : bn_max, \
+                                                'bn_delta' : bn_delta, \
+                                                'bn_count' : bn_count, \
+                                                'bins_id' : bins_id, \
+                                                'bins_cuts' : bins_cuts, \
+                                                'bn_width_bnwd' : bn_width, \
+                                                'textcolumns' : textcolumns, \
+                                                'defaultinfill_dict' : defaultinfill_dict}}
+
+    #drift stats for activation ratios
+    nmbrnormalization_dict.update({'activation_ratios' : {}})
+    
     for nc in textcolumns:
-      
+
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'suffix' : suffix, \
-                                      'binsmean' : mean, \
-                                      'bn_min' : bn_min, \
-                                      'bn_max' : bn_max, \
-                                      'bn_delta' : bn_delta, \
-                                      'bn_count' : bn_count, \
-                                      'bins_id' : bins_id, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bn_width_bnwd' : bn_width, \
-                                      'textcolumns' : textcolumns, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      tc_ratio : tcratio}}
+      nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+
+    for nc in textcolumns:
+
+      if nc != textcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21004,21 +21260,26 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(nmbrcolumns) > 0:
+      nmbrnormalization_dict = {nmbrcolumns[0] : {'suffix' : suffix, \
+                                                  'binsmean' : mean, \
+                                                  'bn_min' : bn_min, \
+                                                  'bn_max' : bn_max, \
+                                                  'bn_delta' : bn_delta, \
+                                                  'bn_count' : bn_count, \
+                                                  'bins_id' : bins_id, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bn_width' : bn_width, \
+                                                  'activations_list' : activations_list, \
+                                                  'ordl_activations_dict' : ordl_activations_dict, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
+
     for nc in nmbrcolumns:
 
-      nmbrnormalization_dict = {nc : {'suffix' : suffix, \
-                                      'binsmean' : mean, \
-                                      'bn_min' : bn_min, \
-                                      'bn_max' : bn_max, \
-                                      'bn_delta' : bn_delta, \
-                                      'bn_count' : bn_count, \
-                                      'bins_id' : bins_id, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bn_width' : bn_width, \
-                                      'activations_list' : activations_list, \
-                                      'ordl_activations_dict' : ordl_activations_dict, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21194,23 +21455,34 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(textcolumns) > 0:
+      nmbrnormalization_dict = {textcolumns[0] : {'suffix' : suffix, \
+                                                  'binsmean' : mean, \
+                                                  'bn_min' : bn_min, \
+                                                  'bn_max' : bn_max, \
+                                                  'bn_delta' : bn_delta, \
+                                                  'bn_count' : bn_count, \
+                                                  'bins_id' : bins_id, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bincount_bnep' : bincount, \
+                                                  'textcolumns' : textcolumns}}
+
+    #drift stats for activation ratios
+    nmbrnormalization_dict.update({'activation_ratios' : {}})
+    
     for nc in textcolumns:
-      
+
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'suffix' : suffix, \
-                                      'binsmean' : mean, \
-                                      'bn_min' : bn_min, \
-                                      'bn_max' : bn_max, \
-                                      'bn_delta' : bn_delta, \
-                                      'bn_count' : bn_count, \
-                                      'bins_id' : bins_id, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bincount_bnep' : bincount, \
-                                      'textcolumns' : textcolumns, \
-                                      tc_ratio : tcratio}}
+      nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+
+    for nc in textcolumns:
+
+      if nc != textcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21393,21 +21665,26 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(nmbrcolumns) > 0:
+      nmbrnormalization_dict = {nmbrcolumns[0] : {'suffix' : suffix, \
+                                                  'binsmean' : mean, \
+                                                  'bn_min' : bn_min, \
+                                                  'bn_max' : bn_max, \
+                                                  'bn_delta' : bn_delta, \
+                                                  'bn_count' : bn_count, \
+                                                  'bins_id' : bins_id, \
+                                                  'activations_list' : bins_id, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bincount' : bincount, \
+                                                  'ordl_activations_dict' : ordl_activations_dict, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
+
     for nc in nmbrcolumns:
 
-      nmbrnormalization_dict = {nc : {'suffix' : suffix, \
-                                      'binsmean' : mean, \
-                                      'bn_min' : bn_min, \
-                                      'bn_max' : bn_max, \
-                                      'bn_delta' : bn_delta, \
-                                      'bn_count' : bn_count, \
-                                      'bins_id' : bins_id, \
-                                      'activations_list' : bins_id, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount, \
-                                      'ordl_activations_dict' : ordl_activations_dict, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21664,25 +21941,36 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(textcolumns) > 0:
+      nmbrnormalization_dict = {textcolumns[0] : {'binsmean' : mean, \
+                                                  'bn_min' : bn_min, \
+                                                  'bn_max' : bn_max, \
+                                                  'bn_delta' : bn_delta, \
+                                                  'bn_count' : bn_count, \
+                                                  'bins_id' : bins_id, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bincount' : bincount, \
+                                                  'bincount_tlbn' : bincount_orig, \
+                                                  'buckets_tlbn' : buckets, \
+                                                  'textcolumns' : textcolumns, \
+                                                  'suffix' : suffix}}
+
+    #drift stats for activation ratios
+    nmbrnormalization_dict.update({'activation_ratios' : {}})
+
     for nc in textcolumns:
 
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'bn_min' : bn_min, \
-                                      'bn_max' : bn_max, \
-                                      'bn_delta' : bn_delta, \
-                                      'bn_count' : bn_count, \
-                                      'bins_id' : bins_id, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bincount' : bincount, \
-                                      'bincount_tlbn' : bincount_orig, \
-                                      'buckets_tlbn' : buckets, \
-                                      'textcolumns' : textcolumns, \
-                                      'suffix' : suffix, \
-                                      tc_ratio : tcratio}}
+      nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+
+    for nc in textcolumns:
+
+      if nc != textcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21824,22 +22112,33 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(textcolumns) > 0:
+      nmbrnormalization_dict = {textcolumns[0] : {'binsmean' : mean, \
+                                                  'buckets_bkt1' : buckets, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bins_id' : bins_id, \
+                                                  'textcolumns' : textcolumns, \
+                                                  'trainmax' : trainmax, \
+                                                  'trainmin' : trainmin, \
+                                                  'suffix' : suffix, \
+                                                  'origbuckets_bkt1' : origbuckets}}
+
+    #drift stats for activation ratios
+    nmbrnormalization_dict.update({'activation_ratios' : {}})
+
     for nc in textcolumns:
-      
+
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets_bkt1' : buckets, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bins_id' : bins_id, \
-                                      'textcolumns' : textcolumns, \
-                                       tc_ratio : tcratio, \
-                                      'trainmax' : trainmax, \
-                                      'trainmin' : trainmin, \
-                                      'suffix' : suffix, \
-                                      'origbuckets_bkt1' : origbuckets}}
+      nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+
+    for nc in textcolumns:
+
+      if nc != textcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -21976,22 +22275,33 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(textcolumns) > 0:
+      nmbrnormalization_dict = {textcolumns[0] : {'binsmean' : mean, \
+                                                  'buckets_bkt2' : buckets, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bins_id' : bins_id, \
+                                                  'textcolumns' : textcolumns, \
+                                                  'trainmax' : trainmax, \
+                                                  'trainmin' : trainmin, \
+                                                  'suffix' : suffix, \
+                                                  'origbuckets_bkt2' : origbuckets}}
+
+    #drift stats for activation ratios
+    nmbrnormalization_dict.update({'activation_ratios' : {}})
+
     for nc in textcolumns:
-      
+
       #new parameter collected for driftreport
       tc_ratio = nc + '_ratio'
       tcratio = mdf_train[nc].sum() / mdf_train[nc].shape[0]
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets_bkt2' : buckets, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bins_id' : bins_id, \
-                                      'textcolumns' : textcolumns, \
-                                       tc_ratio : tcratio, \
-                                      'trainmax' : trainmax, \
-                                      'trainmin' : trainmin, \
-                                      'suffix' : suffix, \
-                                      'origbuckets_bkt2' : origbuckets}}
+      nmbrnormalization_dict['activation_ratios'].update({tc_ratio : tcratio})
+
+    for nc in textcolumns:
+
+      if nc != textcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -22143,20 +22453,25 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(nmbrcolumns) > 0:
+      nmbrnormalization_dict = {nmbrcolumns[0] : {'binsmean' : mean, \
+                                                  'buckets' : buckets, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bins_id' : bins_id, \
+                                                  'activations_list' : bins_id, \
+                                                  'infill_activation' : infill_activation, \
+                                                  'ordl_activations_dict' : ordl_activations_dict, \
+                                                  'trainmax' : trainmax, \
+                                                  'trainmin' : trainmin, \
+                                                  'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
+
     for nc in nmbrcolumns:
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets' : buckets, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bins_id' : bins_id, \
-                                      'activations_list' : bins_id, \
-                                      'infill_activation' : infill_activation, \
-                                      'ordl_activations_dict' : ordl_activations_dict, \
-                                      'trainmax' : trainmax, \
-                                      'trainmin' : trainmin, \
-                                      'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -22319,20 +22634,25 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
+    nmbrnormalization_dict = {}
+    if len(nmbrcolumns) > 0:
+      nmbrnormalization_dict = {nmbrcolumns[0] : {'binsmean' : mean, \
+                                                  'buckets' : buckets, \
+                                                  'bins_cuts' : bins_cuts, \
+                                                  'bins_id' : bins_id, \
+                                                  'activations_list' : bins_id, \
+                                                  'infill_activation' : infill_activation, \
+                                                  'ordl_activations_dict' : ordl_activations_dict, \
+                                                  'trainmax' : trainmax, \
+                                                  'trainmin' : trainmin, \
+                                                  'suffix' : suffix, \
+                                                  'defaultinfill_dict' : defaultinfill_dict,
+                                                  'inplace' : inplace}}
+
     for nc in nmbrcolumns:
 
-      nmbrnormalization_dict = {nc : {'binsmean' : mean, \
-                                      'buckets' : buckets, \
-                                      'bins_cuts' : bins_cuts, \
-                                      'bins_id' : bins_id, \
-                                      'activations_list' : bins_id, \
-                                      'infill_activation' : infill_activation, \
-                                      'ordl_activations_dict' : ordl_activations_dict, \
-                                      'trainmax' : trainmax, \
-                                      'trainmin' : trainmin, \
-                                      'suffix' : suffix, \
-                                      'defaultinfill_dict' : defaultinfill_dict,
-                                      'inplace' : inplace}}
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                             'origcategory' : category, \
@@ -22461,6 +22781,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -22617,6 +22940,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -22975,6 +23301,9 @@ class AutoMunge:
     
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -23063,6 +23392,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -23127,8 +23459,8 @@ class AutoMunge:
       upstream_hsh2 = False
       
     DPod_column = column + '_' + suffix
-    DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
-    DPod_tempcolumn2 = column + '_' + suffix + '_tmp2'
+    DPod_tempcolumn1 = 1
+    DPod_tempcolumn2 = 2
     
     newcolumns = [DPod_column, DPod_tempcolumn1, DPod_tempcolumn2]
     
@@ -23207,6 +23539,9 @@ class AutoMunge:
     column_dict_list = []
 
     for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
 
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -23438,25 +23773,26 @@ class AutoMunge:
         mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
       
     column_dict_list = []
+
+    normalization_dict = {}
+    if len(textcolumns) > 0:
+      normalization_dict = {textcolumns[0] : {'inputtextcolumns' : inputtextcolumns, \
+                                              'textcolumns' : textcolumns, \
+                                              'textlabelsdict' : textlabelsdict, \
+                                              'flip_prob' : flip_prob, \
+                                              'testnoise' : testnoise, \
+                                              'weighted' : weighted, \
+                                              'weights' : weights, \
+                                              'df_unique' : df_unique, \
+                                              'suffix' : suffix, \
+                                              'maxencodings' : maxencodings, \
+                                              'upstream_hs10' : upstream_hs10, \
+                                              'inplace' : inplace}}
     
     for textcolumn in textcolumns:
-      
-      #in case it is a large object, we'll only save df_unique in the first entry for memory conservation
+
       if textcolumn != textcolumns[0]:
-        df_unique = False
-      
-      normalization_dict = {textcolumn : {'inputtextcolumns' : inputtextcolumns, \
-                                          'textcolumns' : textcolumns, \
-                                          'textlabelsdict' : textlabelsdict, \
-                                          'flip_prob' : flip_prob, \
-                                          'testnoise' : testnoise, \
-                                          'weighted' : weighted, \
-                                          'weights' : weights, \
-                                          'df_unique' : df_unique, \
-                                          'suffix' : suffix, \
-                                          'maxencodings' : maxencodings, \
-                                          'upstream_hs10' : upstream_hs10, \
-                                          'inplace' : inplace}}
+        normalization_dict = {}
     
       column_dict = {textcolumn : {'category' : treecategory, \
                                    'origcategory' : category, \
@@ -23654,24 +23990,29 @@ class AutoMunge:
     #allcolumns = sign_columns + integer_columns + fractional_columns
     
     column_dict_list = []
+
+    normalization_dict = {}
+    if len(allcolumns) > 0:
+      normalization_dict = {allcolumns[0] : {'sign_columns' : sign_columns, \
+                                            'integer_columns' : integer_columns, \
+                                            'fractional_columns' : fractional_columns, \
+                                            'suffix' : suffix, \
+                                            'integer_bits' : integer_bits, \
+                                            'fractional_bits' : fractional_bits, \
+                                            'sign_bit' : sign_bit, \
+                                            'minimum' : minimum, \
+                                            'maximum' : maximum, \
+                                            'mean' : mean, \
+                                            'stdev' : stdev, \
+                                            'overflow' : overflow, \
+                                            'abs_zero' : abs_zero, \
+                                            'defaultinfill_dict' : defaultinfill_dict,
+                                            'inplace' : inplace}}
     
     for ac in allcolumns:
 
-      normalization_dict = {ac : {'sign_columns' : sign_columns, \
-                                  'integer_columns' : integer_columns, \
-                                  'fractional_columns' : fractional_columns, \
-                                  'suffix' : suffix, \
-                                  'integer_bits' : integer_bits, \
-                                  'fractional_bits' : fractional_bits, \
-                                  'sign_bit' : sign_bit, \
-                                  'minimum' : minimum, \
-                                  'maximum' : maximum, \
-                                  'mean' : mean, \
-                                  'stdev' : stdev, \
-                                  'overflow' : overflow, \
-                                  'abs_zero' : abs_zero, \
-                                  'defaultinfill_dict' : defaultinfill_dict,
-                                  'inplace' : inplace}}
+      if ac != allcolumns[0]:
+        normalization_dict = {}
       
       column_dict = {ac : {'category' : treecategory, \
                            'origcategory' : category, \
@@ -24098,6 +24439,9 @@ class AutoMunge:
 
     for nc in nmbrcolumns:
 
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
       column_dict = { nc : {'category' : treecategory, \
                            'origcategory' : category, \
                            'normalization_dict' : nmbrnormalization_dict, \
@@ -24190,8 +24534,8 @@ class AutoMunge:
 
     defaultbnry = 'bnry'
     bnry: for categorical data of <=2 unique values excluding infill (eg NaN), 
-    the column is encoded to 0/1. Note that numerical sets with <= 2 unique values 
-    in train set default to bnry.
+    the column is encoded to 0/1. Note that numerical sets with 2 unique values 
+    in train set also default to bnry.
       
     defaultnumerical = 'nmbr'
     nmbr: for numerical data, columns are treated with z-score normalization. 
@@ -24222,7 +24566,7 @@ class AutoMunge:
     which replaces the default transformations from powertransform=False to following
     lbnm: for numerical data, a label set is treated with an 'exc2' pass-through transform (without normalization).
     lbor: for categoric data of >2 unique values, a label set is treated with an 'lbor' ordinal encoding (frequency sorted encodings with no missing data bucket).
-    lbbn: for categoric data of <3 unique values, a label set is treated with a bnry binary encoding (single column binarization)
+    lbbn: for categoric data of <3 unique values, a label set is treated with a bnry binary encoding (single column binarization), also applied to numeric sets with 2 unique values
     
     Note that label sets do not receive the distribution evaluation associated with powertransform=True
     And if that treatment is desired they can instead by assigned to category ptfm in assigncat
@@ -24366,7 +24710,7 @@ class AutoMunge:
         #defaultcategorical = 'text'
         defaultcategorical = '1010'
         
-        #defaultbnry is for categoric or numeric sets with nunique <= 2
+        #defaultbnry is for categoric or numeric sets with nunique == 2
         defaultbnry = 'bnry'
         
         #defaultordinal applied when unique values exceeds numbercategoryheuristic
@@ -27466,7 +27810,7 @@ class AutoMunge:
           df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
       else:
         #note this scenario only occurs for classification
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
+        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #autogluon accepts labels as part of training set
@@ -27545,7 +27889,7 @@ class AutoMunge:
         
         if len(categorylist) > 1:
           
-          infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
         
     #     infill = np.array(infill)
 
@@ -27593,7 +27937,7 @@ class AutoMunge:
         ag_label_column = ag_label_column[0]
 
       else:
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=False)
+        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=False)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #convert to a Series
@@ -27655,7 +27999,7 @@ class AutoMunge:
 
       if len(categorylist) > 1:
 
-        infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+        infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
 
       return infill
     
@@ -27776,7 +28120,7 @@ class AutoMunge:
         df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
 
       else:
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
+        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #user can pass parameters to catboost model initialization in ML_cmnd['MLinfill_cmnd']['catboost_classifier_model']
@@ -27820,10 +28164,10 @@ class AutoMunge:
         
         #extract validation sets
         df_train_filltrain, df_train_filltrain_val = \
-        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
+        self.__df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
         df_train_filllabel, df_train_filllabel_val = \
-        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
+        self.__df_split(df_train_filllabel, eval_ratio, True, randomseed)
         
         train_nunique = int(df_train_filllabel.nunique())
         train_rows = int(df_train_filllabel.shape[0])
@@ -27899,7 +28243,7 @@ class AutoMunge:
 
       if len(categorylist) > 1:
 
-        infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+        infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
 
       return infill
     
@@ -27972,10 +28316,10 @@ class AutoMunge:
         
         #extract validation sets
         df_train_filltrain, df_train_filltrain_val = \
-        self._df_split(df_train_filltrain, eval_ratio, True, randomseed)
+        self.__df_split(df_train_filltrain, eval_ratio, True, randomseed)
 
         df_train_filllabel, df_train_filllabel_val = \
-        self._df_split(df_train_filllabel, eval_ratio, True, randomseed)
+        self.__df_split(df_train_filllabel, eval_ratio, True, randomseed)
 
         train_nunique = int(df_train_filllabel.nunique())
         
@@ -28136,7 +28480,7 @@ class AutoMunge:
     else:
       #note this scenario only occurs for classification
       #returns a single column with str(int) entries encoding each distinct activation set
-      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, stringtype=True)
+      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
       ML_label_column = list(df_train_filllabel.columns)[0]
     
     if modeltype == 'classification':
@@ -28255,7 +28599,7 @@ class AutoMunge:
       if defaulttype in {'tensorflow', 'xgboost', 'catboost', 
                          'flaml', 'autogluon', 'randomforest'}:
         
-        infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands)
+        infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands, ML_cmnd)
         
       #otherwise this is scenario when a string defaulttype was not defined, meaning we call the custom function
       elif defaulttype is False:
@@ -28285,7 +28629,7 @@ class AutoMunge:
         if len(categorylist) > 1:
           
           #this will return a onehot encoded array with 0/1 integer entries
-          infill = self.__convert_singlecolumn_to_onehot(infill, categorylist)
+          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
         
         else:
           
@@ -28300,7 +28644,7 @@ class AutoMunge:
       
     return infill
 
-  def __call_default_function(self, defaulttype, modeltype, fillfeatures, model, commands):
+  def __call_default_function(self, defaulttype, modeltype, fillfeatures, model, commands, ML_cmnd):
     """
     support function called in __predict_customML
     associated with cases where user passed ML_cmnd['customML'][function_address]
@@ -28315,13 +28659,13 @@ class AutoMunge:
       if modeltype == 'classification':
         try:
           infill = \
-          self.__customML_tensorflow_defaultpredict_classification(fillfeatures, model, commands)
+          self.__customML_tensorflow_defaultpredict_classification(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
       if modeltype == 'regression':
         try:
           infill = \
-          self.__customML_tensorflow_defaultpredict_regression(fillfeatures, model, commands)
+          self.__customML_tensorflow_defaultpredict_regression(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -28329,7 +28673,7 @@ class AutoMunge:
       if modeltype in {'classification', 'regression'}:
         try:
           infill = \
-          self.__customML_xgboost_defaultpredict(fillfeatures, model, commands)
+          self.__customML_xgboost_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -28337,7 +28681,7 @@ class AutoMunge:
       if modeltype in {'classification', 'regression'}:
         try:
           infill = \
-          self.__customML_catboost_defaultpredict(fillfeatures, model, commands)
+          self.__customML_catboost_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -28345,7 +28689,7 @@ class AutoMunge:
       if modeltype in {'classification', 'regression'}:
         try:
           infill = \
-          self.__customML_flaml_defaultpredict(fillfeatures, model, commands)
+          self.__customML_flaml_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -28353,7 +28697,7 @@ class AutoMunge:
       if modeltype in {'classification', 'regression'}:
         try:
           infill = \
-          self.__customML_autogluon_defaultpredict(fillfeatures, model, commands)
+          self.__customML_autogluon_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -28361,7 +28705,7 @@ class AutoMunge:
       if modeltype in {'classification', 'regression'}:
         try:
           infill = \
-          self.__customML_randomforest_defaultpredict(fillfeatures, model, commands)
+          self.__customML_randomforest_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
           
@@ -28369,7 +28713,7 @@ class AutoMunge:
 
   #__FunctionBlock: customML default inference functions
 
-  def __customML_tensorflow_defaultpredict_classification(self, features, model, commands):
+  def __customML_tensorflow_defaultpredict_classification(self, features, model, commands, ML_cmnd):
     """
     #based on tensorflow, including conversion to tensor
     """
@@ -28401,17 +28745,17 @@ class AutoMunge:
       #for rows where the original derivation had all zeros recover that form
       infill2 = np.where(infill.sum(axis=1).reshape(-1,1) == 0, 0, infill2)
       
-      #this translates to a single column with entries correpsonding to column index number of activation
-      #as str(int) type and entry '-1' for rows without activation
-      #e.g. first column activations populated as '0', second as '1', etc. No activations populated as '-1'
+      #this translates to a single column with entries correpsonding to column index number of activation +1
+      #as str(int) type and entry and '0' used as register for rows without activation
+      #e.g. first column activations populated as '1', second as '2', etc. No activations populated as '0'
       #for rows where 1 is populated in every column (as would be case when all entries in row are nonzero and equal), 
       #the rightmost column is treated as the activation
       
-      infill = self.__convert_onehot_to_singlecolumn(pd.DataFrame(infill2))
+      infill = self.__convert_onehot_to_singlecolumn(pd.DataFrame(infill2), ML_cmnd)
     
     return infill
 
-  def __customML_tensorflow_defaultpredict_regression(self, features, model, commands):
+  def __customML_tensorflow_defaultpredict_regression(self, features, model, commands, ML_cmnd):
     """
     #based on tensorflow, including conversion to tensor
     """
@@ -28429,7 +28773,7 @@ class AutoMunge:
     
     return infill
 
-  def __customML_xgboost_defaultpredict(self, features, model, commands):
+  def __customML_xgboost_defaultpredict(self, features, model, commands, ML_cmnd):
     """
     #based on xgboost XGBClassifier or XGBRegressor
     """
@@ -28444,7 +28788,7 @@ class AutoMunge:
 
     return infill
 
-  def __customML_catboost_defaultpredict(self, features, model, commands):
+  def __customML_catboost_defaultpredict(self, features, model, commands, ML_cmnd):
     """
     #based on catboost CatBoostClassifier or CatBoostRegressor
     """
@@ -28459,7 +28803,7 @@ class AutoMunge:
 
     return infill
 
-  def __customML_flaml_defaultpredict(self, features, model, commands):
+  def __customML_flaml_defaultpredict(self, features, model, commands, ML_cmnd):
     """
     #based on flaml AutoML
     """
@@ -28473,7 +28817,7 @@ class AutoMunge:
 
     return infill
 
-  def __customML_autogluon_defaultpredict(self, features, model, commands):
+  def __customML_autogluon_defaultpredict(self, features, model, commands, ML_cmnd):
     """
     #based on autogluon TabularPrediction
     """
@@ -28487,7 +28831,7 @@ class AutoMunge:
 
     return infill
 
-  def __customML_randomforest_defaultpredict(self, features, model, commands):
+  def __customML_randomforest_defaultpredict(self, features, model, commands, ML_cmnd):
     """
     #scikit random forest classifier and regressor already imported
     """
@@ -28498,7 +28842,7 @@ class AutoMunge:
 
   #__FunctionBlock: data translations support
 
-  def __convert_onehot_to_singlecolumn(self, df, stringtype = True):
+  def __convert_onehot_to_singlecolumn(self, df, ML_cmnd, stringtype = True):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts onehot encoded sets to single column
@@ -28508,22 +28852,26 @@ class AutoMunge:
     #which since these are dervied from a numpy set won't overlap with headers
     """
     
-    df[-1] = -1
+    df2 = pd.DataFrame({-1:[-1]*df.shape[0]}, index=df.index)
     
     for column in df:
-      if column != -1:
-        df = \
-        self.__autowhere(df, -1, df[column]==1, column, specified='replacement')
+      df2 = \
+      self.__autowhere(df2, -1, df[column]==1, column, specified='replacement')
       
-    df2 = pd.DataFrame(df[-1].copy())
     df2 = df2.rename(columns = {-1:'labels'})
+
+    #version check for backward compatibility
+    if 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
+      #this shifts register forward by 1, is associated with the -1 convention for onehot rows without activation
+      #after this register shift entries are always non-negative
+      df2 += 1
     
     if stringtype is True:
       df2['labels'] = df2['labels'].astype(str)
         
     return df2
 
-  def __convert_singlecolumn_to_onehot(self, df, columnslist):
+  def __convert_singlecolumn_to_onehot(self, df, ML_cmnd, columnslist):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts single column encoded sets back to onehot
@@ -28538,6 +28886,11 @@ class AutoMunge:
 
     df[0] = df[0].astype(int)
     df = df.rename(columns = {0:'labels'})
+
+    #version check for backward compatibility
+    if 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
+      #this shifts the register back by 1, and results in -1 convention for onehot rows without activation
+      df -= 1
     
     df2 = pd.DataFrame(np.zeros(shape = (df.shape[0], len(columnslist))))
     
@@ -30116,17 +30469,17 @@ class AutoMunge:
                   print("     infill type: medianinfill")
                   print("")
 
-                #check if column is boolean
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 if (categorylistlength == 1) \
-                and boolcolumn is False:
+                and incompatible_MLinfilltype is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -30149,18 +30502,18 @@ class AutoMunge:
                   print("     infill type: meaninfill")
                   print("")
 
-                #check if column is boolean
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
                 if (categorylistlength == 1) \
-                and boolcolumn is False:
+                and incompatible_MLinfilltype is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -30183,15 +30536,15 @@ class AutoMunge:
                   print("     infill type: modeinfill")
                   print("")
 
-                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
                 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {}:
                 # in {'boolexclude', 'concurrent_nmbr'}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
-                if boolcolumn is False:
+                if incompatible_MLinfilltype is False:
 
                   df_train, infillvalue = \
                   self.__train_modeinfillfunction(df_train, column, postprocess_dict, \
@@ -30212,15 +30565,15 @@ class AutoMunge:
                   print("     infill type: lcinfill")
                   print("")
 
-                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
 
                 #seems reasonable to exclude concurrent_nmbr from mode
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
-                if boolcolumn is False:
+                if incompatible_MLinfilltype is False:
 
                   df_train, infillvalue = \
                   self.__train_lcinfillfunction(df_train, column, postprocess_dict, \
@@ -30438,18 +30791,18 @@ class AutoMunge:
                   print("     infill type: medianinfill")
                   print("")
 
-                #check if column is boolean
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
                 if (categorylistlength == 1) \
-                and boolcolumn is False:
+                and incompatible_MLinfilltype is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -30468,18 +30821,18 @@ class AutoMunge:
                   print("     infill type: meaninfill")
                   print("")
 
-                #check if column is boolean
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
                 #exclude boolean and ordinal from this infill method
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
                 #if (column not in excludetransformscolumns) \
                 if (categorylistlength == 1) \
-                and boolcolumn is False:
+                and incompatible_MLinfilltype is False:
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
 
@@ -30498,14 +30851,14 @@ class AutoMunge:
                   print("     infill type: modeinfill")
                   print("")
 
-                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
-                if boolcolumn is False:
+                if incompatible_MLinfilltype is False:
 
                   infillvalue = postprocess_dict['column_dict'][column]['assigninfill_infillvalue']
 
@@ -30522,14 +30875,14 @@ class AutoMunge:
                   print("     infill type: lcinfill")
                   print("")
 
-                #check if column is excluded (variable poorly named, interpret boolcolumn here as excluded)
-                boolcolumn = False
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
 
                 if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
                 in {}:
-                  boolcolumn = True
+                  incompatible_MLinfilltype = True
 
-                if boolcolumn is False:
+                if incompatible_MLinfilltype is False:
 
                   #noting that currently we're only going to infill 0 for single column categorylists
                   #some comparable address for multi-column categories is a future extension
@@ -31683,7 +32036,7 @@ class AutoMunge:
 
     #assemble the set of columns to be dropped
     PCAexcl_posttransform = list((set(PCAexcl_posttransform) | set(full_exclude)) & set(df_train))
-          
+
     #assemble the sets by dropping the columns excluded
     PCAset_train = df_train.drop(PCAexcl_posttransform, axis=1)
     PCAset_test = df_test.drop(PCAexcl_posttransform, axis=1)
@@ -33351,6 +33704,15 @@ class AutoMunge:
                               default=0.5, 
                               valid_entries=False,
                               valid_type=float)
+
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'PCA_retain', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=False, 
+                              valid_entries={True, False},
+                              valid_type=bool)
     
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
@@ -35491,7 +35853,7 @@ class AutoMunge:
 
   #__FunctionBlock: data set partitioning and shuffling
 
-  def _df_split(self, df, ratio, shuffle_param, randomseed):
+  def __df_split(self, df, ratio, shuffle_param, randomseed):
     """
     #performs a split of passed dataframe df
     #based on proportions of ratio where 0<ratio<1
@@ -36115,7 +36477,11 @@ class AutoMunge:
     
     #we'll use the AES package from pycrypto
     #note that we recomend installing pycrypto with conda vs pip
-    from Crypto.Cipher import AES
+
+    #user can conduct this import externally to speed up this function
+    module = 'Crypto.Cipher.AES'
+    if module not in sys.modules:
+      from Crypto.Cipher import AES
 
     #for encryption we'll format data as base64
     import base64
@@ -36235,7 +36601,11 @@ class AutoMunge:
       if printstatus != 'silent':
         print("error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
       
-    from Crypto.Cipher import AES
+    #user can conduct this import externally to speed up this function
+    module = 'Crypto.Cipher.AES'
+    if module not in sys.modules:
+      from Crypto.Cipher import AES
+
     import base64
     import pickle
 
@@ -36320,32 +36690,32 @@ class AutoMunge:
 
     """
     Workflow blocks can be navigated with control F search:
-    #__WorkflowBlock: Parameter prep
-    #__WorkflowBlock: Parameter validations
-    #__WorkflowBlock: Feature Importance
-    #__WorkflowBlock: Misc dataframe preps and validations
-    #__WorkflowBlock: ID set extraction
-    #__WorkflowBlock: validation and label set extraction
-    #__WorkflowBlock: column validations and variable initializations
-    #__WorkflowBlock: column processing
-    #__WorkflowBlock: label column processing
-    #__WorkflowBlock: infill derivation and insertion
-    #__WorkflowBlock: feature importance dimensionality reduction
-    #__WorkflowBlock: PCA dimensionality reduction
-    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
-    #__WorkflowBlock: duplicate row consolidation
-    #__WorkflowBlock: label rebalancing (e.g. oversampling)
-    #__WorkflowBlock: row shuffling
-    #__WorkflowBlock: float data type management
-    #__WorkflowBlock: excl suffix management
-    #__WorkflowBlock: populate postprocess_dict
-    #__WorkflowBlock: privacy encoding
-    #__WorkflowBlock: validation data prep
-    #__WorkflowBlock: final preps and return
+    #__WorkflowBlock: automunge Parameter prep
+    #__WorkflowBlock: automunge Parameter validations
+    #__WorkflowBlock: automunge Feature Importance
+    #__WorkflowBlock: automunge Misc dataframe preps and validations
+    #__WorkflowBlock: automunge ID set extraction
+    #__WorkflowBlock: automunge validation and label set extraction
+    #__WorkflowBlock: automunge column validations and variable initializations
+    #__WorkflowBlock: automunge column processing
+    #__WorkflowBlock: automunge label column processing
+    #__WorkflowBlock: automunge infill derivation and insertion
+    #__WorkflowBlock: automunge feature importance dimensionality reduction
+    #__WorkflowBlock: automunge PCA dimensionality reduction
+    #__WorkflowBlock: automunge Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: automunge duplicate row consolidation
+    #__WorkflowBlock: automunge label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: automunge row shuffling
+    #__WorkflowBlock: automunge float data type management
+    #__WorkflowBlock: automunge excl suffix management
+    #__WorkflowBlock: automunge populate postprocess_dict
+    #__WorkflowBlock: automunge privacy encoding
+    #__WorkflowBlock: automunge validation data prep
+    #__WorkflowBlock: automunge final preps and return
     """
 
     #_________________________________________________________
-    #__WorkflowBlock: Parameter prep
+    #__WorkflowBlock: automunge Parameter prep
     #includes copying lists and dictionaries to internal state
     #and string conversions for column assignments
     
@@ -36402,7 +36772,7 @@ class AutoMunge:
     assignnan = self.__assignnan_list_convert(assignnan)
 
     #_________________________________________________________
-    #__WorkflowBlock: Parameter validations
+    #__WorkflowBlock: automunge Parameter validations
     #includes aggregations of validation results for miscparameters_results
     #as well as validations and prepping for transformdict and processdict 
     #with consolidations into internal library transform_dict and process_dict
@@ -36549,7 +36919,7 @@ class AutoMunge:
       randomrandomseed = False
 
     #_________________________________________________________
-    #__WorkflowBlock: Feature Importance
+    #__WorkflowBlock: automunge Feature Importance
     #a feature importance evaluation (based on featureselection parameter) performed here
     
     #feature selection analysis performed here if elected
@@ -36638,7 +37008,7 @@ class AutoMunge:
     miscparameters_results.update({'check_FSmodel_result' : check_FSmodel_result})
 
     #_________________________________________________________
-    #__WorkflowBlock: Misc dataframe preps and validations
+    #__WorkflowBlock: automunge Misc dataframe preps and validations
     #some of preps and validations are performed after feature importance to avoid redundancy
     #this includes dataframe preps such as conversion from numpy or series, header string conversions
     #including column header validations for featuers and labels
@@ -36776,7 +37146,7 @@ class AutoMunge:
                                    'assignnan_actions_valresult'            : assignnan_actions_valresult})
 
     #_________________________________________________________
-    #__WorkflowBlock: ID set extraction
+    #__WorkflowBlock: automunge ID set extraction
     #this includes extraction of columns associated with trainID_column and testID_column
     #extraction of any non ranged integer indexes from the dataframes for the ID sets
     #as well as aggregation of the Automunge_index for the ID sets
@@ -36920,7 +37290,7 @@ class AutoMunge:
     del df_test_tempID
 
     #_________________________________________________________
-    #__WorkflowBlock: validation and label set extraction
+    #__WorkflowBlock: automunge validation and label set extraction
     #this includes extraction of rows associated with the valpercent parameter
     #which will be prepared with an internal postmunge(.) call after populating postprocess_dict
     #label sets are also extracted based on labels_column parameter
@@ -36944,11 +37314,11 @@ class AutoMunge:
 
       #we'll wait to split out the validation labels
       df_train, df_validation1 = \
-      self._df_split(df_train, totalvalidationratio, shuffle_param, randomseed)
+      self.__df_split(df_train, totalvalidationratio, shuffle_param, randomseed)
 
       if trainID_column is not False:
         df_trainID, df_validationID1 = \
-        self._df_split(df_trainID, totalvalidationratio, shuffle_param, randomseed)
+        self.__df_split(df_trainID, totalvalidationratio, shuffle_param, randomseed)
 
       else:
         df_trainID = pd.DataFrame()
@@ -37030,7 +37400,7 @@ class AutoMunge:
       df_test = df_testlabels[0:1].copy()
 
     #_________________________________________________________
-    #__WorkflowBlock: column validations and variable initializations
+    #__WorkflowBlock: automunge column validations and variable initializations
     #this includes various validations associated with df_train and df_test column headers
     #such as confirming consistent quantity, composition and order
     #we also initialize a few variables here
@@ -37136,7 +37506,7 @@ class AutoMunge:
     mirror_dict = {}
 
     #_________________________________________________________
-    #__WorkflowBlock: column processing
+    #__WorkflowBlock: automunge column processing
     #this for loop through the set of input feature columns applies transformations to train and test data
     #and includes deriving a root category based on either assigncat specification or evalcategory derivation
     #includes missing data injection for assignnan and consolidation to NaN representation
@@ -37295,7 +37665,7 @@ class AutoMunge:
         print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: label column processing
+    #__WorkflowBlock: automunge label column processing
     #this for loop through the set of input label columns applies transformations to train and test data
     #and includes deriving a root category based on either assigncat specification or evalcategory derivation
     #includes missing data injection for assignnan and consolidation to NaN representation
@@ -37467,7 +37837,7 @@ class AutoMunge:
       self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, mlti_entry, 0)
 
     #_________________________________________________________
-    #__WorkflowBlock: infill derivation and insertion
+    #__WorkflowBlock: automunge infill derivation and insertion
     #Now that feature transformations have been applied, this segment performs infill
     #including ML infill or other assigninfill assignments
     #(note that an initial infill in most cases will already have been performed with processing functions)
@@ -37522,7 +37892,7 @@ class AutoMunge:
     pre_dimred_finalcolumns_labels = list(df_labels)
 
     #_________________________________________________________
-    #__WorkflowBlock: feature importance dimensionality reduction
+    #__WorkflowBlock: automunge feature importance dimensionality reduction
     #when featureselection was performed with a specified featurethreshold 
     #this triggers a sorting of columns by importance metric with prior feature importance application
     #the list of retained columns are provided as madethecut
@@ -37573,7 +37943,7 @@ class AutoMunge:
           print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: PCA dimensionality reduction
+    #__WorkflowBlock: automunge PCA dimensionality reduction
     #PCA is performed based on automunge(.) parameter PCAn_components
     #which when activated is considered for selection of a final n_components through __evalPCA
     #applied towards numeric sets which are aggregated in __createPCAsets
@@ -37701,9 +38071,19 @@ class AutoMunge:
 
         miscparameters_results.update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
 
-        #reattach the excluded columns to PCA set (retaining the original index from df_train)
-        df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
-        df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
+        #PCA_retain can be activated to retain columns serving as PCA basis
+        PCA_retain = False
+        if 'PCA_retain' in ML_cmnd and ML_cmnd['PCA_retain'] is True:
+          PCA_retain = True
+              
+        if PCA_retain is False:
+          #reattach the excluded columns to PCA set (retaining the original index from df_train)
+          df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train[PCAexcl_posttransform]], axis=1)
+          df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
+        if PCA_retain is True:
+          #reattach the excluded columns to PCA set (retaining the original index from df_train)
+          df_train = pd.concat([PCAset_train.set_index(df_train.index), df_train], axis=1)
+          df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test], axis=1)
 
         returned_PCA_columns = list(PCAset_train)
 
@@ -37724,6 +38104,7 @@ class AutoMunge:
         postprocess_dict.update({'PCAmodel' : None})
         returned_PCA_columns = []
         PCAn_components = False
+        PCA_retain = True
 
         miscparameters_results.update({'PCA_train_numeric_data_result': False})
         miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
@@ -37737,6 +38118,7 @@ class AutoMunge:
       postprocess_dict.update({'PCAmodel' : None})
       returned_PCA_columns = []
       PCAn_components = False
+      PCA_retain = True
 
       miscparameters_results.update({'PCA_train_numeric_data_result': False})
       miscparameters_results.update({'PCA_train_all_valid_entries_result': False})
@@ -37748,7 +38130,7 @@ class AutoMunge:
     #_____
 
     #_________________________________________________________
-    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: automunge Binary dimensionality reduction (categoric consolidations)
     #categoric consolidations are performed to features based on the automunge(.) Binary parameter
     #or performed to labels based on specifying labels as a list with first entry set bracket specification
     #with application by way of __BinaryConsolidate
@@ -37781,7 +38163,7 @@ class AutoMunge:
     #_____
 
     #_________________________________________________________
-    #__WorkflowBlock: duplicate row consolidation
+    #__WorkflowBlock: automunge duplicate row consolidation
     #duplicated row consolidations are optionally performed by the dupl_rows paraemter
 
     #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
@@ -37795,7 +38177,7 @@ class AutoMunge:
       df_test, df_testID, df_testlabels = self.__dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #_________________________________________________________
-    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: automunge label rebalancing (e.g. oversampling)
     #oversampling is optionally performed based on inspection of the TrainLabelFreqLevel parameter
     #applied in function __LabelFrequencyLevelizer
     #and may optionally be applied to either or both of train and test data
@@ -37883,7 +38265,7 @@ class AutoMunge:
         print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: row shuffling
+    #__WorkflowBlock: automunge row shuffling
     #row shuffling is performed based on shuffletrain parameter
     #or amy also be performed in a privacy_encode scenario
     #and may optionally be applied to either or both of train and test data
@@ -37914,7 +38296,7 @@ class AutoMunge:
     #great the data is processed now let's do a few more global training preps
 
     #_________________________________________________________
-    #__WorkflowBlock: float data type management
+    #__WorkflowBlock: automunge float data type management
     #unlike integer types which are managed in transformation functions
     #float data types are collectively managed by the floatprecision parameter
     #unless deactivated for a category in dtype_convert process_dict entry
@@ -37956,7 +38338,7 @@ class AutoMunge:
         df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
 
     #_________________________________________________________
-    #__WorkflowBlock: excl suffix management
+    #__WorkflowBlock: automunge excl suffix management
     #the excl (full passthrough) transform has a unique suffix convention in library
     #in that a suffix is appended in transformations (for data structure management)
     #and then removed in the returned data (signifying a full passthrough)
@@ -38027,7 +38409,7 @@ class AutoMunge:
           df_testlabels.columns = df_labels_columns
 
     #_________________________________________________________
-    #__WorkflowBlock: populate postprocess_dict
+    #__WorkflowBlock: automunge populate postprocess_dict
     #the various returned entries are now fully populated in the postprocess_dict
     #in a few cases some entries will first need to be derived
     #including excluded_from_postmunge_getNArows, categorytree, inverse_categorytree, inputcolumn_dict
@@ -38043,11 +38425,14 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.25'
+    automungeversion = '7.26'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
                        + str(application_timestamp)
+
+    #add automungeversion to ML_cmnd for potential access in inference functions
+    ML_cmnd.update({'automungeversion' : automungeversion})
 
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
@@ -38099,6 +38484,7 @@ class AutoMunge:
                              'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
                              'final_returned_labelBinary_sets' : final_returned_labelBinary_sets,
                              'PCA_applied' : PCA_applied,
+                             'PCA_retain' : PCA_retain,
                              'PCAn_components' : PCAn_components,
                              'PCAn_components_orig' : PCAn_components_orig,
                              'PCAexcl' : PCAexcl,
@@ -38174,7 +38560,7 @@ class AutoMunge:
     postprocess_dict.update({'column_map' : column_map})
 
     #_________________________________________________________
-    #__WorkflowBlock: privacy encoding
+    #__WorkflowBlock: automunge privacy encoding
     #privacy encode application is now performed based on privacy_encode parameter
     #this includes aggregation of the private headers (as integers) and conversion dictionaries
     #note that even when privacy encoding isn't performed the conversion dictionaries are still aggrevated for reference
@@ -38312,7 +38698,7 @@ class AutoMunge:
     postprocess_dict.update({'labelsencoding_dict' : labelsencoding_dict})
 
     #_________________________________________________________
-    #__WorkflowBlock: validation data prep
+    #__WorkflowBlock: automunge validation data prep
     #when a validation set was extracted per valratio parameter
     #it is passed to postmunge to prepare using the recently populated postprocess_dict as the basis
     #note that if train data included labels they will still be included in df_validation1 prior to this postmunge application
@@ -38367,7 +38753,7 @@ class AutoMunge:
       df_testlabels = pd.DataFrame()
 
     #_________________________________________________________
-    #__WorkflowBlock: final preps and return
+    #__WorkflowBlock: automunge final preps and return
     #final preps include any numpy conversion based on pandasoutput parameter
     #any flattenting (like with ravel or casting as series) for single column sets
     #and any encryption of the postprocess_dict based on encrypt_key parameter
@@ -38414,25 +38800,15 @@ class AutoMunge:
         df_labels = np.ravel(df_labels)
       if df_validationlabels1.ndim == 2 and df_validationlabels1.shape[1] == 1:
         df_validationlabels1 = np.ravel(df_validationlabels1)
+      if df_testlabels.ndim == 2 and df_testlabels.shape[1] == 1:
+        df_testlabels = np.ravel(df_testlabels)
 
-    #else flatten any single column dataframes to series
+    #else flatten any single column label dataframes to series
     else:
-      if len(df_train.shape) > 1 and df_train.shape[1] == 1:
-        df_train = df_train[df_train.columns[0]]
-      if len(df_trainID.shape) > 1 and df_trainID.shape[1] == 1:
-        df_trainID = df_trainID[df_trainID.columns[0]]
       if len(df_labels.shape) > 1 and df_labels.shape[1] == 1:
         df_labels = df_labels[df_labels.columns[0]]
-      if len(df_validation1.shape) > 1 and df_validation1.shape[1] == 1:
-        df_validation1 = df_validation1[df_validation1.columns[0]]
-      if len(df_validationID1.shape) > 1 and df_validationID1.shape[1] == 1:
-        df_validationID1 = df_validationID1[df_validationID1.columns[0]]
       if len(df_validationlabels1.shape) > 1 and df_validationlabels1.shape[1] == 1:
         df_validationlabels1 = df_validationlabels1[df_validationlabels1.columns[0]]
-      if len(df_test.shape) > 1 and df_test.shape[1] == 1:
-        df_test = df_test[df_test.columns[0]]
-      if len(df_testID.shape) > 1 and df_testID.shape[1] == 1:
-        df_testID = df_testID[df_testID.columns[0]]
       if len(df_testlabels.shape) > 1 and df_testlabels.shape[1] == 1:
         df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
@@ -42200,8 +42576,8 @@ class AutoMunge:
           mdf_test[time_column] = (mdf_test[time_column]) * 2 * np.pi / 60
 
         elif scale == 'monthday':
-          tempcolumn1 = time_column + '_tmp1'
-          tempcolumn2 = time_column + '_tmp2'
+          tempcolumn1 = 1
+          tempcolumn2 = 2
 
           #temp1 is for number of days in month, temp2 is to handle leap year support
 
@@ -43075,9 +43451,9 @@ class AutoMunge:
       textcolumns = postprocess_dict['column_dict'][normkey]['categorylist']
       pos_and_negative_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['pos_and_negative_list']
 
-      tempcolumn = suffixcolumn + '_-10^'
+      tempcolumn = 1
       tempcolumn_zero = suffixcolumn + '_zero'
-      negtempcolumn = column + '_negtemp'
+      negtempcolumn = -1
 
       #store original column for later reversion
       mdf_test[tempcolumn] = mdf_test[column].copy()
@@ -43263,7 +43639,7 @@ class AutoMunge:
       
       if negvalues is True:
         #copy set for negative values
-        negtempcolumn = column + '_negtempcolumn'
+        negtempcolumn = -1
 
         mdf_test[negtempcolumn] = mdf_test[pworcolumn].copy()
         
@@ -43298,7 +43674,7 @@ class AutoMunge:
         
       if zeroset is True:
         #copy set for negative values
-        zerotempcolumn = column + '_zerotempcolumn'
+        zerotempcolumn = 0
 
         mdf_test[zerotempcolumn] = mdf_test[pworcolumn].copy()
         
@@ -44821,8 +45197,8 @@ class AutoMunge:
         weights = []
 
       DPod_column = column + '_' + suffix
-      DPod_tempcolumn1 = column + '_' + suffix + '_tmp1'
-      DPod_tempcolumn2 = column + '_' + suffix + '_tmp2'
+      DPod_tempcolumn1 = 1
+      DPod_tempcolumn2 = 2
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
@@ -45320,12 +45696,8 @@ class AutoMunge:
     #masterNArows_train, masterNArows_test, randomseed)
     #function that applies series of functions of createMLinfillsets, 
     #predictinfill, and insertinfill to a categorical encoded set.
-    #for the record I'm sure that the conversion of the single column
-    #series to a dataframe is counter to the intent of pandas
-    #it's probably less memory efficient but it's the current basis of
-    #the functions so we're going to maintain that approach for now
-    #the revision of these functions to accept pandas series is a
-    #possible future extension
+    #please note that general convention is even single column sets are cast as dataframes instead of series
+    #we prefer this convention for support of common operations independant of single or multi column sets
     '''
     
     if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
@@ -45577,10 +45949,10 @@ class AutoMunge:
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
-      self._df_split(am_train, totalvalidation, False, randomseed)
+      self.__df_split(am_train, totalvalidation, False, randomseed)
 
       am_labels, am_validationlabels1 = \
-      self._df_split(am_labels, totalvalidation, False, randomseed)
+      self.__df_split(am_labels, totalvalidation, False, randomseed)
 
       #__
       
@@ -46117,54 +46489,57 @@ class AutoMunge:
       
       for origreturnedcolumn in returnedcolumns:
         if origreturnedcolumn not in newreturnedcolumns:
-          if printstatus is True:
-            print("___")
-            print("original derived column not in new returned column: ", origreturnedcolumn)
-            print("")
-            print("original automunge normalization parameters:")
-            print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
-            print("")
-          
-          drift_report[drift_column]['orignotinnew'].update({origreturnedcolumn:{'orignormparam':\
-          postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn]}})
+          if origreturnedcolumn == postprocess_dict['column_dict'][origreturnedcolumn]['categorylist'][0]:
+            if printstatus is True:
+              print("___")
+              print("original derived column not in new returned column: ", origreturnedcolumn)
+              print("")
+              print("original automunge normalization parameters:")
+              print(postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
+              print("")
+            
+            drift_report[drift_column]['orignotinnew'].update({origreturnedcolumn:{'orignormparam':\
+            postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn]}})
       
       for returnedcolumn in newreturnedcolumns:
+
+        if returnedcolumn == drift_ppd['column_dict'][returnedcolumn]['categorylist'][0]:
         
-        drift_report[drift_column]['newreturnedcolumn'].update(\
-        {returnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
-        
-        if printstatus is True:
-          print("___")
-          print("derived column: ", returnedcolumn)
-          print("")
+          drift_report[drift_column]['newreturnedcolumn'].update(\
+          {returnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
           
-        if returnedcolumn in returnedcolumns:
           if printstatus is True:
-            print("original automunge normalization parameters:")
+            print("___")
+            print("derived columns: ", postprocess_dict['column_dict'][returnedcolumn]['categorylist'])
+            print("")
             
-            print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+          if returnedcolumn in returnedcolumns:
+            if printstatus is True:
+              print("original automunge normalization parameters:")
+              
+              print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+              print("")
+              
+            #add to driftreport
+            drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
+            = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+            
+          else:
+            if printstatus is True:
+              print("new derived column not in original returned columns: ", returnedcolumn)
+              print("")
+              
+            drift_report[drift_column]['newnotinorig'].update({returnedcolumn:{'newnormparam':\
+            drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]}})
+            
+          if printstatus is True:
+            print("new postmunge normalization parameters:")
+            print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
             print("")
             
           #add to driftreport
-          drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
-          = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
-          
-        else:
-          if printstatus is True:
-            print("new derived column not in original returned columns: ", returnedcolumn)
-            print("")
-            
-          drift_report[drift_column]['newnotinorig'].update({returnedcolumn:{'newnormparam':\
-          drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]}})
-          
-        if printstatus is True:
-          print("new postmunge normalization parameters:")
-          print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
-          print("")
-          
-        #add to driftreport
-        drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['newnormparam'] \
-        = drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+          drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['newnormparam'] \
+          = drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
       
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
@@ -46192,28 +46567,28 @@ class AutoMunge:
 
     """
     Workflow blocks can be navigated with control F search:
-    #__WorkflowBlock: decryption support
-    #__WorkflowBlock: variable initializations and parameter validations
+    #__WorkflowBlock: postmunge decryption support
+    #__WorkflowBlock: postmunge variable initializations and parameter validations
     #__WorkflowBlock: postmunge feature importance
-    #__WorkflowBlock: misc initializations and conversions
-    #__WorkflowBlock: inversion
-    #__WorkflowBlock: labels and other variable initializations
-    #__WorkflowBlock: ID set populated
-    #__WorkflowBlock: validate data set headers
-    #__WorkflowBlock: drift report evaluated
-    #__WorkflowBlock: column processing
-    #__WorkflowBlock: label column processing
-    #__WorkflowBlock: apply infill
-    #__WorkflowBlock: feature importance dimensionality reduction
-    #__WorkflowBlock: PCA dimensionality reduction
-    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
-    #__WorkflowBlock: duplicate row consolidation
-    #__WorkflowBlock: label rebalancing (e.g. oversampling)
-    #__WorkflowBlock: row shuffling
-    #__WorkflowBlock: float data type management
-    #__WorkflowBlock: excl suffix management
-    #__WorkflowBlock: privacy encoding
-    #__WorkflowBlock: final preps and return
+    #__WorkflowBlock: postmunge misc initializations and conversions
+    #__WorkflowBlock: postmunge inversion
+    #__WorkflowBlock: postmunge labels and other variable initializations
+    #__WorkflowBlock: postmunge ID set populated
+    #__WorkflowBlock: postmunge validate data set headers
+    #__WorkflowBlock: postmunge drift report evaluated
+    #__WorkflowBlock: postmunge column processing
+    #__WorkflowBlock: postmunge label column processing
+    #__WorkflowBlock: postmunge apply infill
+    #__WorkflowBlock: postmunge feature importance dimensionality reduction
+    #__WorkflowBlock: postmunge PCA dimensionality reduction
+    #__WorkflowBlock: postmunge Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: postmunge duplicate row consolidation
+    #__WorkflowBlock: postmunge label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: postmunge row shuffling
+    #__WorkflowBlock: postmunge float data type management
+    #__WorkflowBlock: postmunge excl suffix management
+    #__WorkflowBlock: postmunge privacy encoding
+    #__WorkflowBlock: postmunge final preps and return
     """
 
     # #copy postprocess_dict into internal state so don't edit external object
@@ -46228,7 +46603,7 @@ class AutoMunge:
     # #which are both reset after use
 
     #_________________________________________________________
-    #__WorkflowBlock: decryption support
+    #__WorkflowBlock: postmunge decryption support
     #when the postprocess_dict returned from automunge(.) included encrypted entries
     #decruption may be performed here
     #note that if this is a inversion='labels' scenario and encrypt_key=False
@@ -46256,7 +46631,7 @@ class AutoMunge:
         #decode_valresult saved after initializing pm_miscparameters_results below
 
     #_________________________________________________________
-    #__WorkflowBlock: variable initializations and parameter validations
+    #__WorkflowBlock: postmunge variable initializations and parameter validations
     #we have a few temporary entries stored in postprocess_dict for postmunge
     #including postmunge_randomseed, traindata, and temp_pm_miscparameters_results
     #we have a few special conventions for privacy_encode which are addressed here
@@ -46390,7 +46765,7 @@ class AutoMunge:
     pm_miscparameters_results.update({'FSmodel_valresult' : check_FSmodel_result})
 
     #_________________________________________________________
-    #__WorkflowBlock: misc initializations and conversions
+    #__WorkflowBlock: postmunge misc initializations and conversions
     #the initialized postreports_dict is the diciotnary returned from postmunge
     #(sort of the postmunge analog to automunge's postprocess_dict)
     #dataframe copying into internal state is based on inplace parameter which may benefit memory overhead when activated
@@ -46442,7 +46817,7 @@ class AutoMunge:
     df_test.columns = testlabels
 
     #_________________________________________________________
-    #__WorkflowBlock: inversion
+    #__WorkflowBlock: postmunge inversion
     #inversion performed here
     #preceded by some inversion specific column header prep in __inversion_header_support
     #with inversion channeled through __inversion_header_support
@@ -46468,7 +46843,7 @@ class AutoMunge:
     #_______
 
     #_________________________________________________________
-    #__WorkflowBlock: labels and other variable initializations
+    #__WorkflowBlock: postmunge labels and other variable initializations
     #labels columns from automugne(.) are inspected and checked for presence in df_test
     #resulting in an initialized: 
     #labels_column / labels_column_listofcolumns (automunge) 
@@ -46526,7 +46901,7 @@ class AutoMunge:
     assign_param = postprocess_dict['assign_param']
 
     #_________________________________________________________
-    #__WorkflowBlock: ID set populated
+    #__WorkflowBlock: postmunge ID set populated
     #ID list intialized 
     #based on either testID_column postmunge parameter or automunge ID columns if present in df_test
     #incuding validation of resulting list testID_column
@@ -46601,7 +46976,7 @@ class AutoMunge:
     del df_test_tempID
 
     #_________________________________________________________
-    #__WorkflowBlock: validate data set headers
+    #__WorkflowBlock: postmunge validate data set headers
     #validate columns of df_test match quantity, composition, and order of columns passed to automunge
 
     #confirm consistency of train an test sets
@@ -46670,7 +47045,7 @@ class AutoMunge:
     postreports_dict['pm_miscparameters_results'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
 
     #_________________________________________________________
-    #__WorkflowBlock: drift report evaluated
+    #__WorkflowBlock: postmunge drift report evaluated
     #a driftreport assessment is performed here based on postmunge driftreport parameter
     #which may include a drift assessment of source columns conducted in __getNArows
     #a drift assessment of derived columns conducted in __prepare_driftreport
@@ -46738,7 +47113,7 @@ class AutoMunge:
     #__________
 
     #_________________________________________________________
-    #__WorkflowBlock: column processing
+    #__WorkflowBlock: postmunge column processing
     #this for loop through the set of input feature columns applies transformations to test data
     #with root category based on what was applied in automunge
     #includes missing data injection for assignnan and consolidation to NaN representation
@@ -46825,7 +47200,7 @@ class AutoMunge:
         print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: label column processing
+    #__WorkflowBlock: postmunge label column processing
     #this for loop through the set of input feature columns applies transformations to test data
     #with root category based on what was applied in automunge
     #includes missing data injection for assignnan and consolidation to NaN representation
@@ -46872,7 +47247,7 @@ class AutoMunge:
         print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: apply infill
+    #__WorkflowBlock: postmunge apply infill
     #the infill assignments are accessed from postprocess_dict['postprocess_assigninfill_dict']
     #and infill is performed in __apply_pm_infill
 
@@ -46895,7 +47270,7 @@ class AutoMunge:
     postreports_dict['pm_miscparameters_results'].update(infill_validations)
 
     #_________________________________________________________
-    #__WorkflowBlock: feature importance dimensionality reduction
+    #__WorkflowBlock: postmunge feature importance dimensionality reduction
     #if feature importance dimensionality reduction was performed in automunge it is performed here
     #based on entries stored in postprocess_dict
 
@@ -46935,7 +47310,7 @@ class AutoMunge:
           print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: PCA dimensionality reduction
+    #__WorkflowBlock: postmunge PCA dimensionality reduction
     #if PCA dimensionality reduction was performed in automunge it is performed here
     #based on entries stored in postprocess_dict
     #including set creating in __postcreatePCAsets
@@ -46973,8 +47348,17 @@ class AutoMunge:
         PCAset_test, postprocess_dict = \
         self.__postPCAfunction(PCAset_test, postprocess_dict)
 
-        #reattach the excluded columns to PCA set
-        df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
+        #PCA_retain can be activated to retain columns serving as PCA basis
+        PCA_retain = False
+        if 'PCA_retain' in ML_cmnd and ML_cmnd['PCA_retain'] is True:
+          PCA_retain = True
+              
+        if PCA_retain is False:
+          #reattach the excluded columns to PCA set (retaining the original index from df_train)
+          df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test[PCAexcl_posttransform]], axis=1)
+        if PCA_retain is True:
+          #reattach the excluded columns to PCA set (retaining the original index from df_train)
+          df_test = pd.concat([PCAset_test.set_index(df_test.index), df_test], axis=1)
 
         #printout display progress
         if printstatus is True:
@@ -46992,7 +47376,7 @@ class AutoMunge:
     #_____
 
     #_________________________________________________________
-    #__WorkflowBlock: Binary dimensionality reduction (categoric consolidations)
+    #__WorkflowBlock: postmunge Binary dimensionality reduction (categoric consolidations)
     #if Binary dimensionality reduction was performed in automunge it is performed here
     #based on entries stored in postprocess_dict
     #as channeled through __postBinaryConsolidate
@@ -47022,7 +47406,7 @@ class AutoMunge:
     #_____
 
     #_________________________________________________________
-    #__WorkflowBlock: duplicate row consolidation
+    #__WorkflowBlock: postmunge duplicate row consolidation
     #duplicated row consolidations are optionally performed by the dupl_rows paraemter
 
     #populate row count basis here (before duplications or oversampling)
@@ -47035,7 +47419,7 @@ class AutoMunge:
       df_test, df_testID, df_testlabels = self.__dupl_rows_consolidate(df_test, df_testID, df_testlabels)
 
     #_________________________________________________________
-    #__WorkflowBlock: label rebalancing (e.g. oversampling)
+    #__WorkflowBlock: postmunge label rebalancing (e.g. oversampling)
     #oversampling is optionally performed based on inspection of the TrainLabelFreqLevel parameter
     #applied in function __LabelFrequencyLevelizer
     #note that oversampling is consistently applied between features, labels, and ID sets
@@ -47083,7 +47467,7 @@ class AutoMunge:
         print("")
 
     #_________________________________________________________
-    #__WorkflowBlock: row shuffling
+    #__WorkflowBlock: postmunge row shuffling
     #row shuffling is performed based on shuffletrain parameter
     #or amy also be performed in a privacy_encode scenario
     #note that shuffling is consistently applied between features, labels, and ID sets
@@ -47100,7 +47484,7 @@ class AutoMunge:
         df_testID = self.__df_shuffle(df_testID, postprocess_dict['postmunge_randomseed'])
 
     #_________________________________________________________
-    #__WorkflowBlock: float data type management
+    #__WorkflowBlock: postmunge float data type management
     #unlike integer types which are managed in transformation functions
     #float data types are collectively managed by the floatprecision parameter
     #unless deactivated for a category in dtype_convert process_dict entry
@@ -47139,7 +47523,7 @@ class AutoMunge:
       df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
 
     #_________________________________________________________
-    #__WorkflowBlock: excl suffix management
+    #__WorkflowBlock: postmunge excl suffix management
     #the excl (full passthrough) transform has a unique suffix convention in library
     #in that a suffix is appended in transformations (for data structure management)
     #and then removed in the returned data (signifying a full passthrough)
@@ -47160,7 +47544,7 @@ class AutoMunge:
         df_testlabels.columns = df_testlabels_columns
 
     #_________________________________________________________
-    #__WorkflowBlock: privacy encoding
+    #__WorkflowBlock: postmunge privacy encoding
     #if privacy encoding was performed in automunge it is now applied here
     #using conversion dictionaries populated in automunge
     #the encoding includes column shuffling (row shuffling may have been performed in the shuffling block)
@@ -47190,7 +47574,7 @@ class AutoMunge:
       # df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
 
     #_________________________________________________________
-    #__WorkflowBlock: final preps and return
+    #__WorkflowBlock: postmunge final preps and return
     #final preps include any numpy conversion based on pandasoutput parameter
     #any flattenting (like with ravel or casting as series) for single column sets
     #some anonymizations associated with privacy encode when applicable
@@ -47248,7 +47632,7 @@ class AutoMunge:
       and returnedsets not in {False, 'test_ID', 'test_labels', 'test_ID_labels'}:
         df_testID = df_testID.to_numpy()
       else:
-        df_testID = []
+        df_testID = pd.DataFrame().to_numpy()
 
       if labelscolumn is not False \
       and returnedsets not in {False, 'test_ID', 'test_labels', 'test_ID_labels'}:
@@ -47259,14 +47643,10 @@ class AutoMunge:
           df_testlabels = np.ravel(df_testlabels)
 
       else:
-        df_testlabels = []
+        df_testlabels = pd.DataFrame().to_numpy()
 
-    #else flatten any single column dataframes to series
+    #else flatten any single column label dataframes to series
     else:
-      if len(df_test.shape) > 1 and df_test.shape[1] == 1:
-        df_test = df_test[df_test.columns[0]]
-      if len(df_testID.shape) > 1 and df_testID.shape[1] == 1:
-        df_testID = df_testID[df_testID.columns[0]]
       if len(df_testlabels.shape) > 1 and df_testlabels.shape[1] == 1:
         df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
@@ -50419,7 +50799,7 @@ class AutoMunge:
     elif isinstance(inversion, list):
       inversion_orig = deepcopy(inversion)
 
-    if inversion == 'test' and postprocess_dict['PCAmodel'] is not None:
+    if inversion == 'test' and postprocess_dict['PCAmodel'] is not None and postprocess_dict['PCA_retain'] is not True:
       if printstatus != 'silent':
         print("error: full test set inversion not currently supported with PCA.")
         print("user can pass partial list of columns to inversion parameter instead")
@@ -50440,6 +50820,11 @@ class AutoMunge:
       df_test_columns = list(df_test)
       self.__list_replace(df_test_columns, postprocess_dict['excl_suffix_conversion_dict'])
       df_test.columns = df_test_columns
+
+    #if PCA was applied with PCA_retain in inversion = 'test' scenario, we'll strike the PCA columns
+    if inversion == 'test' and postprocess_dict['PCAmodel'] is not None and postprocess_dict['PCA_retain'] is True:
+      for returned_PCA_column in postprocess_dict['returned_PCA_columns']:
+        del df_test[returned_PCA_column]
 
     if isinstance(inversion, list):
       #convert list entries to string
