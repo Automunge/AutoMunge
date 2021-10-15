@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Automunge",
-    version="7.28",
+    version="7.29",
     author="Nicholas Teague",
     author_email="pitg888@gmail.com",
     description="platform for preparing tabular data for machine learning",
