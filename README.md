@@ -5030,7 +5030,7 @@ def customML_train_classifier(labels, features, columntype_report, commands, ran
   #features is received as a numerically encoded pandas dataframe
   #with categoric entries as boolean integer or ordinal integer
   #and may include binarized features
-  #headers match the returned convention with suffix appenders
+  #headers are strings matching the returned convention with suffix appenders
   
   #columntype_report is a dictionary reporting properties of the columns found in features
   #a list of categoric features is available as columntype_report['all_categoric']
@@ -5160,7 +5160,7 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : 'xgboost'}}
 ```
-Please note we do not yet consider these default inference functions fully audited - pending further validations. As implemented is intended as a proof of concept.
+Please note we do not yet consider the tensorflow default inference function fully audited - pending further validations.
 
 And thus ML infill can run with any tabular learning library or algorithm. BYOML.
 
