@@ -4754,3 +4754,13 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - updated customML to receive single column label sets as pandas series instead of dataframe
 - note that this convention for single column labels sets as pandas series is consistent with form of label sets returned from automunge(.), other instances of single column sets are preserved as dataframes (i.e. for features and ID sets)
 - which is similar to the convention of flattening single column numpy arrays with ravel
+
+7.29
+- identified a channel for customML error associated with some quirks of the xgboost library
+- specifically, xgboost requires labels as fully represented integers within the set of sequential range from 0 to max of the encoding space
+- our customML implementation previously had potential for gaps in the encoding space
+- resolved by introducing a new convention for conversion of gaps for customML labels to meet this criteria
+- in other words, customML now provides labels as str(int) type with non-negative entries as a fully representated set for the sequential ranged integers from 0 to max of encoding space
+- implementation supported by a new data structure returned in postprocess_dict['ML_cmnd']['customML_inference_support']
+- struck some redundant ML_cmnd default initializations applied at random forest training (ML_cmnd validations and default initializations all applied in __check_ML_cmnd)
+- struck the value error bypass for customML training and inference. Figured that user needs to know if their model is not training.
