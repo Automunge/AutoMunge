@@ -25639,11 +25639,6 @@ class AutoMunge:
     #accepts autoMLer populated with architecture options which is applied based on entries to ML_cmnd
     '''
 
-    #if autoML_type not specified than we'll apply default (randomforest)
-    #note this is only a temporary update to ML_cmnd and is not returned from function call
-    if 'autoML_type' not in ML_cmnd:
-      ML_cmnd.update({'autoML_type' : 'randomforest'})
-
     #note that randomseed is received as the global automunge seed, 
     #which may either be a specified value through randomseed parameter or derived as a random integer when not specified
     #to introduce an option for stochasticity between iterations, we'll have a stochastic random seed 
@@ -25684,7 +25679,7 @@ class AutoMunge:
         #ML_application is another key to access the function, distinguishes between classification and regression
         ML_application = 'regression'
         
-        model = \
+        model, postprocess_dict = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict)
 
         #only run following if we have any train rows needing infill
@@ -25737,7 +25732,7 @@ class AutoMunge:
         else:
           ML_application = 'booleanclassification'
         
-        model = \
+        model, postprocess_dict = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict)
         
         #only run following if we have any train rows needing infill
@@ -25776,7 +25771,7 @@ class AutoMunge:
         #ML_application is another key to access the function, distinguishes between classification and regression
         ML_application = 'onehotclassification'
         
-        model = \
+        model, postprocess_dict = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict)
         
         #only run following if we have any train rows needing infill
@@ -25819,7 +25814,7 @@ class AutoMunge:
         #ML_application is another key to access the function, distinguishes between classification and regression
         ML_application = 'onehotclassification'
         
-        model = \
+        model, postprocess_dict = \
         autoMLer[autoML_type][ML_application]['train'](ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict)
 
         #this is to support 1010 infill predictions in postmunge
@@ -27552,17 +27547,10 @@ class AutoMunge:
     self.__populateMLinfilldefaults(randomseed)
     
     #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
-    if 'hyperparam_tuner' in ML_cmnd:
-      MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-    else:
-      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
-      MLinfill_tuner = 'gridCV'
+    MLinfill_tuner = ML_cmnd['hyperparam_tuner']
       
     #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
-    if MLinfill_tuner == 'randomCV':
-      if 'randomCV_n_iter' not in ML_cmnd:
-        ML_cmnd.update({'randomCV_n_iter' : 100})
-      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
+    randomCV_n_iter = ML_cmnd['randomCV_n_iter']
     
     autoML_type = ML_cmnd['autoML_type']
     MLinfill_alg = 'RandomForestClassifier'
@@ -27619,7 +27607,7 @@ class AutoMunge:
         print(tuned_params)
         print("")
 
-      return tuned_model
+      return tuned_model, postprocess_dict
 
     else:
       
@@ -27627,7 +27615,7 @@ class AutoMunge:
 
       model.fit(df_train_filltrain, df_train_filllabel)
 
-      return model
+      return model, postprocess_dict
 
   def _predict_randomforest_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -27675,17 +27663,10 @@ class AutoMunge:
     self.__populateMLinfilldefaults(randomseed)
     
     #ML_cmnd accepts specification for type of tuner when hyperparaemter tuning applied, else defaults to gridCV
-    if 'hyperparam_tuner' in ML_cmnd:
-      MLinfill_tuner = ML_cmnd['hyperparam_tuner']
-    else:
-      ML_cmnd.update({'hyperparam_tuner' : 'gridCV'})
-      MLinfill_tuner = 'gridCV'
+    MLinfill_tuner = ML_cmnd['hyperparam_tuner']
       
     #if randomCV tuner applied, number of iterations accepted as randomCV_n_iter, else defaults to 100
-    if MLinfill_tuner == 'randomCV':
-      if 'randomCV_n_iter' not in ML_cmnd:
-        ML_cmnd.update({'randomCV_n_iter' : 100})
-      randomCV_n_iter = ML_cmnd['randomCV_n_iter']
+    randomCV_n_iter = ML_cmnd['randomCV_n_iter']
     
     autoML_type = ML_cmnd['autoML_type']
     MLinfill_alg = 'RandomForestRegressor'
@@ -27739,7 +27720,7 @@ class AutoMunge:
         print(tuned_params)
         print("")
         
-      return tuned_model
+      return tuned_model, postprocess_dict
 
     else:
       
@@ -27747,7 +27728,7 @@ class AutoMunge:
 
       model.fit(df_train_filltrain, df_train_filllabel)
 
-      return model
+      return model, postprocess_dict
 
   def _predict_randomforest_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -27810,7 +27791,7 @@ class AutoMunge:
           df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
       else:
         #note this scenario only occurs for classification
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
+        df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #autogluon accepts labels as part of training set
@@ -27841,10 +27822,10 @@ class AutoMunge:
       #train the model
       model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
       
-      return model
+      return model, postprocess_dict
         
     except ValueError:
-      return False
+      return False, postprocess_dict
 
   def _predict_autogluon_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     modeltype = 'classification'
@@ -27937,7 +27918,7 @@ class AutoMunge:
         ag_label_column = ag_label_column[0]
 
       else:
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=False)
+        df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=False)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #convert to a Series
@@ -27972,10 +27953,10 @@ class AutoMunge:
           df_train_filltrain, df_train_filllabel, **default_fit_params
         )
 
-      return model
+      return model, postprocess_dict
     
     except:
-      return False
+      return False, postprocess_dict
 
   def _predict_flaml_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -28054,10 +28035,10 @@ class AutoMunge:
           df_train_filltrain, df_train_filllabel, **default_fit_params
         )
 
-      return model
+      return model, postprocess_dict
     
     except:
-      return False
+      return False, postprocess_dict
 
   def _predict_flaml_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -28120,7 +28101,7 @@ class AutoMunge:
         df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
 
       else:
-        df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
+        df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
         ag_label_column = list(df_train_filllabel.columns)[0]
 
       #convert single column to series
@@ -28219,10 +28200,10 @@ class AutoMunge:
             df_train_filltrain, df_train_filllabel, cat_features = categorical_features_indices, **default_fit_params
           )
 
-      return model
+      return model, postprocess_dict
     
     except ValueError:
-      return False
+      return False, postprocess_dict
 
   def _predict_catboost_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -28371,10 +28352,10 @@ class AutoMunge:
             df_train_filltrain, df_train_filllabel, cat_features = categorical_features_indices, **default_fit_params
           )
 
-      return model
+      return model, postprocess_dict
     
     except ValueError:
-      return False
+      return False, postprocess_dict
 
   def _predict_catboost_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     """
@@ -28465,6 +28446,12 @@ class AutoMunge:
     """
     
     columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+    
+    #featurekey is a unique concatinated string of all column headers serving as basis for this model
+    featureskey = ''
+    for entry in df_train_filltrain.columns:
+      featureskey += entry
+    ML_cmnd['customML_inference_support'].update({featureskey : {'seq_ordinal_marker':True}})
 
     df_train_filllabel = df_train_filllabel.copy()
     
@@ -28486,7 +28473,8 @@ class AutoMunge:
     else:
       #note this scenario only occurs for classification
       #returns a single column with str(int) entries encoding each distinct activation set
-      df_train_filllabel = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
+      df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True,
+                                                                         featureskey = featureskey)
       ML_label_column = list(df_train_filllabel.columns)[0]
     
     if modeltype == 'classification':
@@ -28524,17 +28512,19 @@ class AutoMunge:
     if 'customML' in ML_cmnd:
       if function_address in ML_cmnd['customML']:
         if callable(ML_cmnd['customML'][function_address]):
-          try:
-            model = \
-            ML_cmnd['customML'][function_address](df_train_filllabel, 
-                                                  df_train_filltrain, 
-                                                  columntype_report,
-                                                  commands, 
-                                                  randomseed)
-          except ValueError:
-            pass
-
-    return model
+          # try:
+          model = \
+          ML_cmnd['customML'][function_address](df_train_filllabel, 
+                                                df_train_filltrain, 
+                                                columntype_report,
+                                                commands, 
+                                                randomseed)
+          # except ValueError:
+          #   pass
+    
+    postprocess_dict['customML_inference_support'].update(ML_cmnd['customML_inference_support'])
+    
+    return model, postprocess_dict
 
   def _predict_customML_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
     modeltype = 'classification'
@@ -28581,6 +28571,11 @@ class AutoMunge:
     
     if model is not False:
       
+      #featurekey is a unique concatinated string of all column headers serving as basis for this model
+      featureskey = ''
+      for entry in fillfeatures.columns:
+        featureskey += entry
+      
       fillfeatures = fillfeatures.reset_index(drop=True)
 
       #access any user passed parameters
@@ -28617,13 +28612,13 @@ class AutoMunge:
         if 'customML' in ML_cmnd:
           if function_address in ML_cmnd['customML']:
             if callable(ML_cmnd['customML'][function_address]):
-              try:
-                infill = \
-                ML_cmnd['customML'][function_address](fillfeatures, 
-                                                      model,
-                                                      commands)
-              except ValueError:
-                infill = np.zeros(shape=(fillfeatures.shape[0],1))
+              # try:
+              infill = \
+              ML_cmnd['customML'][function_address](fillfeatures, 
+                                                    model,
+                                                    commands)
+              # except ValueError:
+              #   infill = np.zeros(shape=(fillfeatures.shape[0],1))
               
       #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
       #we'll convert to a flattened array for common form
@@ -28639,7 +28634,8 @@ class AutoMunge:
         if len(categorylist) > 1:
           
           #this will return a onehot encoded array with 0/1 integer entries
-          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
+          #this will return a onehot encoded array with 0/1 integer entries
+          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist, featureskey=featureskey)
         
         else:
           
@@ -28761,7 +28757,7 @@ class AutoMunge:
       #for rows where 1 is populated in every column (as would be case when all entries in row are nonzero and equal), 
       #the rightmost column is treated as the activation
       
-      infill = self.__convert_onehot_to_singlecolumn(pd.DataFrame(infill2), ML_cmnd)
+      infill, ML_cmnd = self.__convert_onehot_to_singlecolumn(pd.DataFrame(infill2), ML_cmnd)
     
     return infill
 
@@ -28852,7 +28848,8 @@ class AutoMunge:
 
   #__FunctionBlock: data translations support
 
-  def __convert_onehot_to_singlecolumn(self, df, ML_cmnd, stringtype = True):
+  def __convert_onehot_to_singlecolumn(self, df, ML_cmnd, stringtype = True, 
+                                       featureskey = ''):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts onehot encoded sets to single column
@@ -28860,6 +28857,8 @@ class AutoMunge:
     #for cases where a row did not have an entry (such as all zeros)
     #we'll populate with -1
     #which since these are dervied from a numpy set won't overlap with headers
+    
+    #when featureskey is passed as a non empty string the conversion to sequential integers occurs
     """
     
     df2 = pd.DataFrame({-1:[-1]*df.shape[0]}, index=df.index)
@@ -28870,18 +28869,41 @@ class AutoMunge:
       
     df2 = df2.rename(columns = {-1:'labels'})
 
-    #version check for backward compatibility
-    if 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
-      #this shifts register forward by 1, is associated with the -1 convention for onehot rows without activation
-      #after this register shift entries are always non-negative
-      df2 += 1
-    
-    if stringtype is True:
-      df2['labels'] = df2['labels'].astype(str)
-        
-    return df2
+    #this shifts register forward by 1, is associated with the -1 convention for onehot rows without activation
+    #after this register shift entries are always non-negative
+    df2 += 1
+      
+    #the above conversion may result in cases of gaps in the set of sequential ranged integers
+    #some learning libraries need a fully represented set of integers from 0-max
+    #so this option translates from the gapped representation to sequential fully represented
+    if featureskey != '':
+      
+      original_labels = list(df2['labels'].unique())
+      sequential_labels = list(range(len(original_labels)))
+      
+      #'seq_ordinal_dict' : {original_label : sequential_label}
+      seq_ordinal_dict = dict(zip(original_labels, sequential_labels))
+      
+      #'inverse_seq_ordinal_dict' : {sequential_label : original_label}
+      inverse_seq_ordinal_dict = {value:key for key,value in seq_ordinal_dict.items()}
+      
+      if featureskey in ML_cmnd['customML_inference_support']:
 
-  def __convert_singlecolumn_to_onehot(self, df, ML_cmnd, columnslist):
+        ML_cmnd['customML_inference_support'][featureskey].update({
+          'seq_ordinal_dict' : seq_ordinal_dict,
+          'inverse_seq_ordinal_dict' : inverse_seq_ordinal_dict,
+        })
+        
+      #now apply the conversion to fully represented sequential ranged integers
+      df2['labels'] = df2['labels'].replace(seq_ordinal_dict)
+      
+    #this converts the integers to type str(int)
+    if stringtype is True:
+      df2['labels'] = df2['labels'].astype(int).astype(str)
+        
+    return df2, ML_cmnd
+
+  def __convert_singlecolumn_to_onehot(self, df, ML_cmnd, columnslist, featureskey=''):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts single column encoded sets back to onehot
@@ -28891,14 +28913,28 @@ class AutoMunge:
     #we'll populate with -1
     #which since these are dervied from a numpy set won't overlap with headers
     """
-    
+
     df = pd.DataFrame(df)
 
     df[0] = df[0].astype(int)
     df = df.rename(columns = {0:'labels'})
+    
+    #if a sequential convert was applied for training it is now inverted
+    #we have convention that featurekey='' signals no translation performed
+    if featureskey != '':
+      
+      #this function called in both automunge and postmunge, 'automungeversion' present in postmunge
+      if 'automungeversion' not in ML_cmnd \
+      or 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.29:
+        if featureskey in ML_cmnd['customML_inference_support']:
 
-    #version check for backward compatibility
-    if 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
+          inverse_seq_ordinal_dict = \
+          ML_cmnd['customML_inference_support'][featureskey]['inverse_seq_ordinal_dict']
+        
+          df['labels'] = df['labels'].astype(int).replace(inverse_seq_ordinal_dict)
+
+    if 'automungeversion' not in ML_cmnd \
+    or 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
       #this shifts the register back by 1, and results in -1 convention for onehot rows without activation
       df -= 1
     
@@ -33876,7 +33912,16 @@ class AutoMunge:
                               default=0.03, 
                               valid_entries=False,
                               valid_type=float)
-
+    
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'customML_inference_support', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default={}, 
+                              valid_entries=False,
+                              valid_type=dict)
+    
     return check_ML_cmnd_result, ML_cmnd
   
   def __check_assignparam(self, assignparam, process_dict, printstatus):
@@ -37501,7 +37546,8 @@ class AutoMunge:
                         'printstatus' : printstatus,
                         'randomseed' : randomseed,
                         'application_number' : application_number,
-                        'autoMLer' : autoMLer }
+                        'autoMLer' : autoMLer,
+                        'customML_inference_support' : {} }
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = deepcopy(assigncat)
@@ -38435,7 +38481,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.28'
+    automungeversion = '7.29'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38443,6 +38489,10 @@ class AutoMunge:
 
     #add automungeversion to ML_cmnd for potential access in inference functions
     ML_cmnd.update({'automungeversion' : automungeversion})
+
+    #and consolidated all customML_inference_support entries from postprocess_dict
+    ML_cmnd['customML_inference_support'].update(postprocess_dict['customML_inference_support'])
+    del postprocess_dict['customML_inference_support']
 
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
