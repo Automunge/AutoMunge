@@ -4764,3 +4764,11 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - implementation supported by a new data structure returned in postprocess_dict['ML_cmnd']['customML_inference_support']
 - struck some redundant ML_cmnd default initializations applied at random forest training (ML_cmnd validations and default initializations all applied in __check_ML_cmnd)
 - struck the value error bypass for customML training and inference. Figured that user needs to know if their model is not training.
+
+7.30
+- new trainnoise parameter accepted for DP family of noise injection transforms
+- trainnoise accepts boolean defaulting to True, indicating that noise injection will be applied to training data
+- note that for postmunge application, when a DP transform inspects the traindata parameter, it now also takes into account the trainnoise parameter for determination of whether to inject
+- i.e. traindata postmunge parameter selects whether a data set is to be treated as test or train data
+- and the trainnoise assignparam option selects whether for a given transform data considered training data will receive injection
+- in the process fixed a snafu for test set noise injection in the DPod automunge transform associated with weighted sampling
