@@ -3617,10 +3617,12 @@ holiday
 The DP family of transforms are special in that they treat train sets different than test sets, 
 specifically they apply a noise injection to train sets such as may benefit differential privacy,
 data augmentation, or also for model perturbation in assembly of ensembles.
-Note that if desired to treat data passed to postmunge as a train set can apply the traindata
-parameter to postmunge. Note that when passing parameters to these functions, the transformation
+Note that if desired to treat data passed to postmunge as a train set can apply the traindata postmunge
+parameter to signal that postmunge is preparing training data. 
+Note that when passing parameters to these functions, the transformation
 category associated with the transformation function may be different than the root category.
-Noise sampling is built on top of numpy.random which uses an algorithm called Mersenne twister as a pseudo random number generator.
+Noise sampling is built on top of numpy.random which as of version 1.17.0 uses an algorithm called PCG 
+as a pseudo random number generator.
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
@@ -3633,6 +3635,7 @@ on flip_prob parameter.
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.06
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPnb' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3651,6 +3654,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.03
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPmm' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3670,6 +3674,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defaults to 0.03
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - Parameters should be passed to 'DPrt' transformation category from family tree.
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3689,6 +3694,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPbn' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3707,6 +3713,7 @@ on number of activations)
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3726,6 +3733,7 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3745,6 +3753,7 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3764,6 +3773,7 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3782,6 +3792,7 @@ on number of activations).
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embeeded in a dicionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -3800,6 +3811,7 @@ on number of activations).
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo7' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
