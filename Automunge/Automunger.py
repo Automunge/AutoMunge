@@ -22710,6 +22710,11 @@ class AutoMunge:
     else:
       #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
+
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
       
     if 'testnoise' in params:
       testnoise = params['testnoise']
@@ -22725,24 +22730,29 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results, postprocess_dict['printstatus'])
-      
-    #first we'll derive our sampled noise for injection
-    if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-      normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
-    elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-      normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+    
+    if trainnoise is True:
+      #first we'll derive our sampled noise for injection
+      if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
+        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+      elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
+        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
 
-    if noisedistribution in {'abs_normal', 'abs_laplace'}:
-      normal_samples = abs(normal_samples)
-    if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
-      normal_samples = (-1) * abs(normal_samples)
+      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        normal_samples = abs(normal_samples)
+      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        normal_samples = (-1) * abs(normal_samples)
+        
+      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
       
-    binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
-    
-    mdf_train[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
-    
-    #now inject noise
-    mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
+      mdf_train[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      
+      #now inject noise
+      mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
+
+    #else is just pass-through
+    elif trainnoise is False:
+      mdf_train[DPnm_column] = mdf_train[column].copy()
 
     #for test data is just pass-through unless testnoise or traindata parameter activated
     if testnoise is False:
@@ -22774,6 +22784,7 @@ class AutoMunge:
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise, \
                                              'suffix' : suffix, \
                                              'noisedistribution' : noisedistribution}}
 
@@ -22850,6 +22861,11 @@ class AutoMunge:
     else:
       testnoise = False
 
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
+
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -22917,8 +22933,11 @@ class AutoMunge:
       del df[DPmm_column_temp1]
       
       return df
-    
-    mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
+
+    if trainnoise is True:
+      mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
+    elif trainnoise is False:
+      mdf_train[DPmm_column] = mdf_train[column].copy()
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is False:
@@ -22933,6 +22952,7 @@ class AutoMunge:
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise, \
                                              'suffix' : suffix, \
                                              'noisedistribution' : noisedistribution}}
 
@@ -23050,6 +23070,11 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -23267,7 +23292,8 @@ class AutoMunge:
         
       return df
     
-    mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
+    if trainnoise is True:
+      mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True:
@@ -23297,6 +23323,7 @@ class AutoMunge:
                                              'suffix' : suffix, \
                                              'defaultinfill_dict' : defaultinfill_dict,
                                              'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -23350,6 +23377,11 @@ class AutoMunge:
     else:
       testnoise = False
 
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
+
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -23364,7 +23396,10 @@ class AutoMunge:
     mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
     
     #now inject noise
-    mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
+    if trainnoise is True:
+      mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
+    elif trainnoise is False:
+      mdf_train[DPbn_column] = mdf_train[column].copy()
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is False:
@@ -23385,7 +23420,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
                                              'suffix' : suffix, \
-                                             'testnoise' : testnoise}}
+                                             'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -23443,6 +23479,11 @@ class AutoMunge:
     else:
       testnoise = False
 
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
+
     if 'suffix' in params:
       suffix = params['suffix']
     else:
@@ -23476,26 +23517,32 @@ class AutoMunge:
       and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
         vocab_size = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
         ord_encodings = list(range(vocab_size))
-      
-    #first we'll derive our sampled noise for injection
-    mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
 
     weights = []
-    if weighted is False:
-      mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
-    elif weighted is True:
+    if weighted is True:
       for entry in ord_encodings:
         weight = (mdf_train[mdf_train[column] == entry].shape[0]) / mdf_train.shape[0]
         weights.append(weight)
-      mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
+
+    if trainnoise is True:  
     
-    #now inject noise
-    #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-    mdf_train[DPod_column] = \
-    mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
-      
-    del mdf_train[DPod_tempcolumn1]
-    del mdf_train[DPod_tempcolumn2]
+      #derive our sampled noise for injection
+      mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      if weighted is False:
+        mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
+      elif weighted is True:
+        mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
+
+      #now inject noise
+      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+      mdf_train[DPod_column] = \
+      mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
+        
+      del mdf_train[DPod_tempcolumn1]
+      del mdf_train[DPod_tempcolumn2]
+
+    elif trainnoise is False:
+      mdf_train[DPod_column] = mdf_train[column].copy()
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is False:
@@ -23503,7 +23550,10 @@ class AutoMunge:
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
       mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
-      mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+      if weighted is False:
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+      elif weighted is True:
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -23533,7 +23583,8 @@ class AutoMunge:
                                              'weighted' : weighted, \
                                              'weights' : weights, \
                                              'suffix' : suffix, \
-                                             'testnoise' : testnoise}}
+                                             'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise}}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -23603,6 +23654,11 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True 
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -23746,9 +23802,11 @@ class AutoMunge:
       
       return df
     
-    #inject noise to mdf_train
-    mdf_train = \
-    _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
+    if trainnoise is True:
+
+      #inject noise to mdf_train
+      mdf_train = \
+      _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
     
     #inspect testnoise for determination of whether to inject noise to mdf_test
     if testnoise is True:
@@ -23781,6 +23839,7 @@ class AutoMunge:
                                               'textlabelsdict' : textlabelsdict, \
                                               'flip_prob' : flip_prob, \
                                               'testnoise' : testnoise, \
+                                              'trainnoise' : trainnoise, \
                                               'weighted' : weighted, \
                                               'weights' : weights, \
                                               'df_unique' : df_unique, \
@@ -38481,7 +38540,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.29'
+    automungeversion = '7.30'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44778,6 +44837,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       
@@ -44786,7 +44850,7 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -44861,6 +44925,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
@@ -44870,7 +44939,7 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -45000,6 +45069,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['divisor']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       
       mu = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu']
@@ -45066,7 +45140,7 @@ class AutoMunge:
       traindata = postprocess_dict['traindata']
       
       #if this is train data we'll inject noise
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -45175,6 +45249,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
 
@@ -45183,7 +45262,7 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
         
         #first we'll derive our sampled noise for injection
         mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -45242,6 +45321,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
       ord_encodings = \
@@ -45263,7 +45347,7 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
         
         #now we'll derive our sampled noise for injection
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -45333,6 +45417,11 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
       weighted = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['weighted']
       weights = \
@@ -45393,7 +45482,7 @@ class AutoMunge:
 
         return df
       
-      if traindata is True or testnoise is True:
+      if (trainnoise is True and traindata is True) or testnoise is True:
         
         #inject noise to mdf_test
         mdf_test = \
