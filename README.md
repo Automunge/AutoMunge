@@ -757,8 +757,8 @@ category assignments under automation based on received feature set properties.
   - The 'infill2' scenario is similar to the 'infill' scenario, with added allowance for inclusion of
   non-numeric sets, which are given an excl pass-through and excluded from ML infill basis. (May return sets not suitable for direct application of ML.)
 DP1 and DP2 are used for defaulting to noise injection for numeric and (non-hashed) categoric
-  - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, binary with DPbn, hash with DPhs, hsh2 with DPh2
-  - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, binary with DPbn, hash with DPhs, hsh2 with DPh2
+  - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, binary with DPbn, hash with DPhs, hsh2 with DPh2 (labels do not receive noise in this configuration)
+  - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, binary with DPbn, hash with DPhs, hsh2 with DPh2 (labels do not receive noise in this configuration)
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -5156,7 +5156,7 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : customML_predict_regressor}}
 ```
-Note that the library has an internal suite of inference fucntions for different ML libraries 
+Note that the library has an internal suite of inference functions for different ML libraries 
 that can optionally be used in place of a user defined customML inference function. These can
 be activated by passing a string to entries for 'customML_Classifier_predict' or  'customML_Regressor_predict'
 as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}. Use of the
@@ -5172,7 +5172,6 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : 'xgboost'}}
 ```
-Please note we do not yet consider the tensorflow default inference function fully audited - pending further validations.
 
 And thus ML infill can run with any tabular learning library or algorithm. BYOML.
 
