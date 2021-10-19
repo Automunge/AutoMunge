@@ -4783,3 +4783,9 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - still if user wanted to do their own privacy management this probably would have been a hard one to spot
 - so went ahead and stripped suffix validation results for this purpose
 - note that the aggregated suffix overlap results are still available as suffixoverlap_aggregated_result
+
+7.32
+- added a source column drift stat for categoric root categories as unique_ratio
+- (recorded in cases of root category with justNaN NArowtype)
+- unique_ratio records a dictionary mapping unique entries to a float representing percent of entries in the feature with that value
+- this is sort of similar to the derived column drift stat activation_ratios previously recorded for a few categoric and binning transforms
