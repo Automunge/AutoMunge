@@ -25028,13 +25028,26 @@ class AutoMunge:
         #if number of unique is below a threshold (arbrily set to 500)
         if nunique < 500:
 
-          drift_dict.update({column : {'unique' : df2[column].unique(), \
+          unique = df2[column].unique()
+
+          unique_ratio = {}
+          for entry in unique:
+            if entry == entry:
+              unique_ratio.update({entry : df2.loc[df2[column] == entry].shape[0] / df2.shape[0]})
+            else:
+              unique_ratio.update({entry : df2.loc[df2[column].isna()].shape[0] / df2.shape[0]})
+
+          drift_dict.update({column : {'unique' : unique, \
+                                       'unique_ratio' : unique_ratio, \
                                        'nunique' : nunique, \
                                        'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
           
         else:
           
-          drift_dict.update({column : {'nunique' : nunique, \
+          #unique entry specific drift stats not recorded when nunique > 500
+          drift_dict.update({column : {'unique' : False, \
+                                       'unique_ratio' : False, \
+                                       'nunique' : nunique, \
                                        'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
           
       #returns dataframe of True and False, where True coresponds to the NaN's
@@ -38540,7 +38553,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.31'
+    automungeversion = '7.32'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
