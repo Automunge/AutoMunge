@@ -2220,7 +2220,7 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _True_ means an assessment is performed for both the source column and derived column 
   stats
   - _'efficient'_ means that a postmunge drift assessment is only performed on the source 
-  columns (less information but much more energy efficient)
+  columns (less information but better latency / computational efficiency)
   - _'report_effic'_ means that the efficient assessment is performed and returned with 
   no processing of data
   - _'report_full'_ means that the full assessment is performed and returned with no 
@@ -5160,7 +5160,7 @@ Note that the library has an internal suite of inference functions for different
 that can optionally be used in place of a user defined customML inference function. These can
 be activated by passing a string to entries for 'customML_Classifier_predict' or  'customML_Regressor_predict'
 as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}. Use of the
-internally defined inference functions allows a user to upload a postprocess_dict in a seperate notebook
+internally defined inference functions allows a user to upload a postprocess_dict in a separate notebook
 without needing to first reinitialize the customML inference functions. For example, to apply a
 default inference function for the XGBoost library could apply:
 ```
