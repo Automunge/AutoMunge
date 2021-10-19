@@ -2210,11 +2210,13 @@ feature importance results are returned in postreports_dict['FS_sorted'], includ
 columns sorted by metric and metric2. Relies on ML_cmnd parameters from original
 automunge(.) call.
 
-* driftreport: activates a drift report evaluation, in which the normalization 
-parameters are recalculated for the columns of the test data passed to postmunge 
-for comparison to the original normalization parameters derived from the corresponding 
-columns of the automunge train data set. The results are returned in the
-postreports_dict object returned from postmunge as postreports_dict['driftreport']. 
+* driftreport: activates a drift report evaluation, in which drift statistics are collected
+for comparison between features in the train data that was passed to automunge(.) verses test data
+passed to postmunge(.). May include drift statistics associated with the raw data found 
+in the input features, and may also include drift statistics associated with the returned
+data derived features as collected during derivations and recorded in the normalization 
+parameters of a transformation. The results are returned in the
+postreports_dict object returned from postmunge as postreports_dict['driftreport'] and postreports_dict['sourcecolumn_drift']. 
 The results will also be printed out if printstatus is activated. Defaults to _False_, and:
   - _False_ means no postmunge drift assessment is performed
   - _True_ means an assessment is performed for both the source column and derived column 
@@ -2226,7 +2228,7 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _'report_full'_ means that the full assessment is performed and returned with no 
   processing of data
 Note that for transforms returning multi column sets, the drift stats will only be reported for first 
-column in the categorylist.
+column in the categorylist.  Note that derived feature drift statistics are only returned for transform outputs that were not subject to replacement by family tree specification.
 
 * inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
