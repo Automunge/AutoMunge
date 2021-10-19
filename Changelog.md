@@ -4772,3 +4772,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - i.e. traindata postmunge parameter selects whether a data set is to be treated as test or train data
 - and the trainnoise assignparam option selects whether for a given transform data considered training data will receive injection
 - in the process fixed a snafu for test set noise injection in the DPod automunge transform associated with weighted sampling
+
+7.31
+- a slight reshuffling of postmunge drift reporting to improve flow of printouts
+- (source column drift stats are now collected prior to derived column drift stats)
+- in the process identified a driftreport scenario that wasn't collecting source column drift stats as intended
+- (associated with driftreport = True)
+- a cleanup to returned validation results in cases of privacy encoding to remove leakage channel
+- technically this wasn't really a leakage channel since was part of encrypted entries
+- still if user wanted to do their own privacy management this probably would have been a hard one to spot
+- so went ahead and stripped suffix validation results for this purpose
+- note that the aggregated suffix overlap results are still available as suffixoverlap_aggregated_result
