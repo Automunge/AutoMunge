@@ -38540,7 +38540,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.30'
+    automungeversion = '7.31'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38934,6 +38934,17 @@ class AutoMunge:
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
     postprocess_dict = self.__suffix_overlap_final_aggregation_and_printouts(postprocess_dict)
+
+    #a cleanup to the validation results in cases of privacy encoding to remove leakage channel
+    #note that the aggregated result is still available as suffixoverlap_aggregated_result
+    if privacy_encode in {True, 'private'}:
+
+      for valresult_leakage_channel in ['suffixoverlap_results', 
+                                        'PCA_suffixoverlap_results', 
+                                        'Binary_suffixoverlap_results',
+                                        'excl_suffixoverlap_results']:
+
+        postprocess_dict['miscparameters_results'][valresult_leakage_channel] = {}
 
     #perform postprocess_dict encryption if elected by encrypt_key
     if encrypt_key is not False:
@@ -47204,18 +47215,8 @@ class AutoMunge:
 
     #__________
     #here we'll perform drift report if elected
-    #if driftreport is True:
-    if driftreport in {True, 'report_full'}:
-
-      #returns a new partially populated postprocess_dict containing
-      #column_dict entries populated with newly calculated normalization parameters
-      #for now we'll just print the results in the function, a future expansion may
-      #return these to the user somehow, need to put some thought into that
-      drift_ppd, drift_report = self.__prepare_driftreport(df_test, postprocess_dict, printstatus)
-
-      postreports_dict['driftreport'] = drift_report
       
-    if driftreport in {'report_full', 'report_effic'}:
+    if driftreport in {True, 'report_full', 'report_effic'}:
       
       postdrift_dict = {}
 
@@ -47256,6 +47257,18 @@ class AutoMunge:
         print("_______________")
         print("Source Column Drift Report Complete")
         print("")
+
+    if driftreport in {True, 'report_full'}:
+
+      #returns a new partially populated postprocess_dict containing
+      #column_dict entries populated with newly calculated normalization parameters
+      #for now we'll just print the results in the function, a future expansion may
+      #return these to the user somehow, need to put some thought into that
+      drift_ppd, drift_report = self.__prepare_driftreport(df_test, postprocess_dict, printstatus)
+
+      postreports_dict['driftreport'] = drift_report
+
+    if driftreport in {'report_full', 'report_effic'}:
       
       return [], [], [], postreports_dict
     #end drift report section
@@ -47814,6 +47827,7 @@ class AutoMunge:
       del postreports_dict['driftreport']
       del postreports_dict['rowcount_basis']
       del postreports_dict['sourcecolumn_drift']
+      postreports_dict['pm_miscparameters_results']['postfeatureselect_automungecall_validationresults'] = {}
 
     #printout display progress
     if printstatus is True:
