@@ -4789,3 +4789,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - (recorded in cases of root category with justNaN NArowtype)
 - unique_ratio records a dictionary mapping unique entries to a float representing percent of entries in the feature with that value
 - this is sort of similar to the derived column drift stat activation_ratios previously recorded for a few categoric and binning transforms
+
+7.33
+- found a (remote) edge case for drift report, now mitigated
+- associated with the new categorylist[0] convention for storing normalization_dict
+- associated with cases where orig categorylist[0] != new categorylist[0]
+- also a few other remote edge cases for drift report identified from runing comprehensive valications
+- including edge cases associated with None / nan conversion and edge case case for null transform
+- in the process performed some variable naming cleanup for drift report assembly
+- had aggregated lists of returnedcolumns and newreturnedcolumns, but was refering to an entry in newreturnedcolumns as returncolumn, which was kind of confusing
+- now referring to entry in newreturnedcolumns as newreturnedcolumn
+- also revised the source column drift stat assembly heuristic for categoric features, increasing the heuristic threshold from 500 to 5000
