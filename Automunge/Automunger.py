@@ -25025,8 +25025,8 @@ class AutoMunge:
         
         #this is to ensure postprocess_dict file size doesn't get out of control so 
         #only collect unique entries in source column drift stats
-        #if number of unique is below a threshold (arbrily set to 500)
-        if nunique < 500:
+        #if number of unique is below a threshold (arbrily set to 5000)
+        if nunique < 5000:
 
           unique = df2[column].unique()
 
@@ -25077,7 +25077,7 @@ class AutoMunge:
         
         nunique = df2[column].nunique()
           
-        if nunique < 500:
+        if nunique < 5000:
 
           drift_dict.update({column : {'unique' : valuecounts, \
                                        'nunique' : nunique, \
@@ -38553,7 +38553,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.32'
+    automungeversion = '7.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -46553,6 +46553,8 @@ class AutoMunge:
     #entries for our new derivations below
     drift_ppd = deepcopy(postprocess_dict)
     drift_ppd['column_dict'] = {}
+    #temp_miscparameters_results is inspected in an edge case
+    drift_ppd.update({'temp_miscparameters_results' : {}})
     
     #for each column in df_test
     for drift_column in df_test:
@@ -46580,6 +46582,9 @@ class AutoMunge:
       else:
         
         drift_category = 'null'
+        #this is remote edge case that comes up in comprehensive validations
+        if 'null' not in drift_ppd['transform_dict']:
+          drift_category = list(drift_ppd['transform_dict'])[0]
       
       #update driftreport with this column
       drift_report.update({drift_column : {'origreturnedcolumns_list':returnedcolumns, \
@@ -46601,6 +46606,10 @@ class AutoMunge:
       #we're only going to copy one source column at a time, as should be 
       #more memory efficient than copying the entire set
       df_test2_temp = pd.DataFrame(df_test[drift_column].copy())
+
+      #this is for edge case associated with missing data
+      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
+      df_test2_temp = self.__convert_to_nan(df_test2_temp, drift_column, drift_category, postprocess_dict, convert_to_nan_list)
       
       #then a second copy set, here of just a few rows, to follow convention of 
       #automunge processfamily calls
@@ -46645,8 +46654,6 @@ class AutoMunge:
         
       else:
         
-#         newreturnedcolumns = \
-#         drift_ppd['column_dict'][drift_ppd['origcolumn'][drift_column]['columnkey']]['columnslist']
         newreturnedcolumns = \
         drift_ppd['column_dict'][columnkey]['columnslist']
 
@@ -46673,46 +46680,56 @@ class AutoMunge:
             
             drift_report[drift_column]['orignotinnew'].update({origreturnedcolumn:{'orignormparam':\
             postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn]}})
-      
-      for returnedcolumn in newreturnedcolumns:
 
-        if returnedcolumn == drift_ppd['column_dict'][returnedcolumn]['categorylist'][0]:
+      for newreturnedcolumn in newreturnedcolumns:
+
+        if newreturnedcolumn == drift_ppd['column_dict'][newreturnedcolumn]['categorylist'][0]:
         
           drift_report[drift_column]['newreturnedcolumn'].update(\
-          {returnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
+          {newreturnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
           
           if printstatus is True:
             print("___")
-            print("derived columns: ", postprocess_dict['column_dict'][returnedcolumn]['categorylist'])
+            print("derived columns: ", postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'])
             print("")
-            
-          if returnedcolumn in returnedcolumns:
+
+          if newreturnedcolumn in returnedcolumns \
+          and postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'][0] == \
+          drift_ppd['column_dict'][newreturnedcolumn]['categorylist'][0]:
             if printstatus is True:
               print("original automunge normalization parameters:")
               
-              print(postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+              print(postprocess_dict['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
               print("")
               
             #add to driftreport
-            drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['orignormparam'] \
-            = postprocess_dict['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+            drift_report[drift_column]['newreturnedcolumn'][newreturnedcolumn]['orignormparam'] \
+            = postprocess_dict['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn]
             
           else:
-            if printstatus is True:
-              print("new derived column not in original returned columns: ", returnedcolumn)
-              print("")
+            
+            if newreturnedcolumn in returnedcolumns:
+              if printstatus is True:
+                print("new derived column has first categorylist entry not matching first categorylist entry from original derivation")
+                print("For derived column: ", newreturnedcolumn)
+                print("This is treated comparably to new derived column not in original returned columns")
+                print("")
+            else:
+              if printstatus is True:
+                print("new derived column not in original returned columns: ", newreturnedcolumn)
+                print("")
               
-            drift_report[drift_column]['newnotinorig'].update({returnedcolumn:{'newnormparam':\
-            drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]}})
+            drift_report[drift_column]['newnotinorig'].update({newreturnedcolumn:{'newnormparam':\
+            drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn]}})
             
           if printstatus is True:
             print("new postmunge normalization parameters:")
-            print(drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn])
+            print(drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
             print("")
             
           #add to driftreport
-          drift_report[drift_column]['newreturnedcolumn'][returnedcolumn]['newnormparam'] \
-          = drift_ppd['column_dict'][returnedcolumn]['normalization_dict'][returnedcolumn]
+          drift_report[drift_column]['newreturnedcolumn'][newreturnedcolumn]['newnormparam'] \
+          = drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn]
       
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
