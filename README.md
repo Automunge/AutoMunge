@@ -2223,10 +2223,10 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   stats
   - _'efficient'_ means that a postmunge drift assessment is only performed on the source 
   columns (less information but better latency / computational efficiency)
-  - _'report_effic'_ means that the efficient assessment is performed and returned with 
+  - _'report_effic'_ means that the efficient assessment is performed (only source column stats) and returned with 
   no processing of data
-  - _'report_full'_ means that the full assessment is performed and returned with no 
-  processing of data
+  - _'report_full'_ means that the full assessment is performed for both the source column and derived column 
+  and returned with no processing of data
 Note that for transforms returning multi column sets, the drift stats will only be reported for first 
 column in the categorylist.  Note that derived feature drift statistics are only returned for transform outputs that were not subject to replacement by family tree specification.
 
