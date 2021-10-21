@@ -25,22 +25,9 @@
  ___ 
 
 ## Introduction
-[Automunge](https://automunge.com) is a python library platform for preparing 
-tabular data for machine learning. A user has options between automated inference 
-of column properties for application of appropriate simple feature engineering
-methods, or may also assign to distinct columns custom feature engineering 
-transformations, custom sets (e.g. "family trees") of feature engineering 
-transformations, and select from options for missing data infill. The feature 
-engineering transformations may be accessed from the internal library (aka a 
-"feature transformation store"), or may also be custom defined using a very simple template. 
-The tool includes options for automated feature 
-importance evaluation, automated "ML infill" for derivation of missing data inputation 
-using machine learning models trained on the set, automated 
-preparation for oversampling for labels class imbalance, automated dimensionality 
-reductions such as based on feature importance, principal component analysis (PCA), 
-or binary encoding, automated evaluation of data property drift between training 
-data and subsequent data, and perhaps most importantly the simplest means for 
-consistent processing of additional data with a single function call. 
+[Automunge](https://automunge.com) is an open source python library that has formalized and automated the data preparations for tabular learning in between the workflow boundaries of received “tidy data” (one column per feature and one row per sample) and returned dataframes suitable for the direct application of machine learning. Under automation numeric features are normalized, categoric features are binarized, and missing data is imputed. Data transformations are fit to properties of a training set for a consistent basis on any partitioned “validation data” or additional “test data”. When preparing training data, a compact python dictionary is returned recording the steps and parameters of transformation, which then may serve as a key for preparing additional data on a consistent basis.
+
+In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principle component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
 
 > In other words, put simply:<br/>
 >  - **automunge(.)** prepares tabular data for machine learning.<br/>
@@ -48,34 +35,7 @@ consistent processing of additional data with a single function call.
 >  
 > We make machine learning easy.
 
-The automunge(.) function takes as input tabular training data intended to
-train a machine learning model with any corresponding labels if available 
-included in the set, and also if available consistently formatted test data 
-that can then be used to generate predictions from that trained model. When 
-fed pandas dataframes or numpy arrays for these sets the function returns a 
-series of transformed pandas dataframes (or numpy arrays per selection) which 
-are numerically encoded and suitable for the direct application of machine 
-learning algorithms. A user has an option between default feature engineering 
-based on inferred properties of the data with feature transformations such as 
-z-score normalization, binary encoding for categorical sets, hashing for
-high cardinality categoric sets, time series 
-agregation to sin and cos transforms (with bins for business hours, weekdays, 
-and holidays), and more (full documentation below); assigning distinct column 
-feature engineering methods using a built-in library of feature engineering 
-transformations; or alternatively the passing of user-defined custom 
-transformation functions from a simple template such as to allow 
-custom methods to each column while still making use of all of the built-in 
-features of the tool (such as ML infill, feature importance, dimensionality 
-reduction, and most importantly the simplest way for the consistent preparation 
-of subsequently available data using just a single function call of the 
-postmunge(.) function). Missing data points in the sets are also available to be 
-addressed by either the default automated "ML infill" method which predicts 
-infill using machine learning models trained on the rest of the set in a fully 
-generalized and automated fashion or alternatively by assigning methods from an 
-imputation libary. automunge(.) returns a populated python dictionary which can 
-be used as input along with a subsequent data set to the postmunge(.) function 
-for consistent preparations of additional data such as for inference. Be sure to
-check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
+Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
 
 ## Install, Initialize, and Basics
 
@@ -2228,7 +2188,7 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _'report_full'_ means that the full assessment is performed for both the source column and derived column 
   and returned with no processing of data
 Note that for transforms returning multi column sets, the drift stats will only be reported for first 
-column in the categorylist.  Note that derived feature drift statistics are only returned for transform outputs that were not subject to replacement by family tree specification.
+column in the categorylist.  Note that derived feature drift statistics are only returned for transform outputs that were not subject to replacement by family tree specification. Note that driftreport is not available in conjunction with privacy encoding.
 
 * inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
@@ -3247,8 +3207,6 @@ Note that text and onht are implemented with the same functions by updates to th
   - default NArowtype: justNaN
   - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'ordered_overide', boolean defaults True, when True inspects for Pandas ordered categorical and 
-      if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', when passed as True e.g. 2 == '2'
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
@@ -4116,7 +4074,7 @@ entries with the abbreviated string overlap
                                    minsplit
   - returned datatype: str (other categoric encodings can be returned downstream to return numeric)
   - inversion available: yes with partial recovery
-* spl5/spl6/ors5: similar to spl2, but those entries without identified string overlap are set to 0,
+* spl5/ors5: similar to spl2, but those entries without identified string overlap are set to 0,
 (used in ors5 in conjunction with ord3)
   - useful for: final tier of spl2 aggregations such as in or19
   - default infill: none
@@ -4292,6 +4250,9 @@ Here are those root categories presented again in a concise sorted list, intende
 avoid unintentional duplication.
 - '1010',
 - '101d',
+- 'DLmm',
+- 'DLnb',
+- 'DLrt',
 - 'DP10',
 - 'DPb2',
 - 'DPbn',
@@ -4545,7 +4506,7 @@ avoid unintentional duplication.
 - 'nmE7',
 - 'nmE8',
 - 'nmE9',
-- 'nmEm',
+- 'nmEU',
 - 'nmq2',
 - 'nmqb',
 - 'nmr2',
