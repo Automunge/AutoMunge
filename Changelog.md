@@ -4800,3 +4800,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - had aggregated lists of returnedcolumns and newreturnedcolumns, but was refering to an entry in newreturnedcolumns as returncolumn, which was kind of confusing
 - now referring to entry in newreturnedcolumns as newreturnedcolumn
 - also revised the source column drift stat assembly heuristic for categoric features, increasing the heuristic threshold from 500 to 5000
+
+7.34
+- found an inconsistency in workflow order of operations between automunge and postmunge
+- associated with label set extraction and index extraction
+- basically convention is that when df_train recieves a non-range integer index, it is extracted and returned in ID sets
+- the issue was that in automunge we extracted non ranged integer index prior to extracting label set
+- but in postmunge we had in reverse order
+- resulting in potential scenario where the postmunge labels had an index not matching the features
+- which is an error channel
+- resolved by simply swapping the order between postmunge workflow blocks "postmunge ID set populated" and "postmunge labels and other variable initializations"
+- (now the ID set gets populated first)
