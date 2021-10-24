@@ -454,7 +454,8 @@ as row identifiers or for pairing tabular data rows with a corresponding
 image file for instance. Also included in this set is a derived column
 titled 'Automunge_index', this column serves as an index identifier for order
 of rows as they were received in passed data, such as may be beneficial
-when data is shuffled. For more information please refer to writeup for the 
+when data is shuffled. If the reveived df_train had a non-ranged integer index,
+it is extracted and returned in this set. For more information please refer to writeup for the 
 trainID_column parameter.
 
 * labels: a set of numerically encoded labels corresponding to the
@@ -1987,6 +1988,8 @@ in this set is a derived column titled 'Automunge_index',
 this column serves as an index identifier for order of rows as they were 
 received in passed data, such as may be beneficial when data is shuffled.
 For more information please refer to writeup for the testID_column parameter.
+If the reveived df_test had a non-ranged integer index,
+it is extracted and returned in this set. 
 
 * test_labels: a set of numerically encoded labels corresponding to the
 test set if a label column was passed. Note that the function
