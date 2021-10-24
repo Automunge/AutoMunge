@@ -384,7 +384,7 @@ class AutoMunge:
   __assignnan_inject
 
   #__FunctionBlock: data set partitioning and shuffling
-  _df_split
+  __df_split
   __df_split_specified
   __df_shuffle
   __df_shuffle_series
@@ -28504,9 +28504,6 @@ class AutoMunge:
     #any required imports can either be conducted externally when defining the function
     #or internal to the template
     
-    #note that if user wishes to conduct a validation split as part of their function
-    #am._df_split is avilable, as documented in code base
-    
     #the custom_autoMLer_train_template will be passed to an automunge call in ML_cmnd as
     #ML_cmnd = {'autoML_type':'customML',
     #           'MLinfill_cmnd':{'customML_Classifier':{},
@@ -37427,7 +37424,7 @@ class AutoMunge:
     #ok now carve out the validation rows. We'll process these later
     #(we're processing train data from validation data seperately to
     #ensure no leakage)
-    #note that a shuffle operation to df_train is performed as part of _df_split based on shuffletrain and randomseed
+    #note that a shuffle operation to df_train is performed as part of __df_split based on shuffletrain and randomseed
     #otherwise if shuffletrain not activated (and privacy_encode is not 'private') validation split based on bottom sequential rows
     #an additional shuffle operation may be conducted later in the workflow for df_train and/or df_test based on shuffletrain
     totalvalidationratio = valpercent
@@ -38553,7 +38550,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.33'
+    automungeversion = '7.34'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -38846,7 +38843,7 @@ class AutoMunge:
         print("Begin validation set processing with Postmunge")
         print("")
 
-      #(postmunge shuffletrain not needed since validation data was already shuffled in _df_split if shuffletrain was activated)
+      #(postmunge shuffletrain not needed since validation data was already shuffled in __df_split if shuffletrain was activated)
 
       #to recover index (postmunge partitions non-range index into ID set)
       temp_valindex = df_validation1.index
@@ -46762,8 +46759,8 @@ class AutoMunge:
     #__WorkflowBlock: postmunge feature importance
     #__WorkflowBlock: postmunge misc initializations and conversions
     #__WorkflowBlock: postmunge inversion
-    #__WorkflowBlock: postmunge labels and other variable initializations
     #__WorkflowBlock: postmunge ID set populated
+    #__WorkflowBlock: postmunge labels and other variable initializations
     #__WorkflowBlock: postmunge validate data set headers
     #__WorkflowBlock: postmunge drift report evaluated
     #__WorkflowBlock: postmunge column processing
@@ -47033,64 +47030,6 @@ class AutoMunge:
     #_______
 
     #_________________________________________________________
-    #__WorkflowBlock: postmunge labels and other variable initializations
-    #labels columns from automugne(.) are inspected and checked for presence in df_test
-    #resulting in an initialized: 
-    #labels_column / labels_column_listofcolumns (automunge) 
-    #labelscolumn / labels_column_listofcolumns_test (postmunge)
-    #the labels dataframe is extracted if lagbels are present
-    #also a few variables initialized from postprocess_dict entries
-  
-    #labels_column with underscore is the automunge train set labels
-    labels_column = False
-    #labelscolumn without underscore is the postmunge test set labels or False if not present
-    labelscolumn = False
-    #labels_column_listofcolumns is list of label columns for automunge train set labels
-    labels_column_listofcolumns = []
-    #labels_column_listofcolumns_test is list of test set label columns, which may be empty set if not present
-    labels_column_listofcolumns_test = []
-    
-    if postprocess_dict['labels_column'] is not False:
-      labels_column = postprocess_dict['labels_column']
-      labels_column_listofcolumns = postprocess_dict['labels_column_listofcolumns']
-    
-    if set(labels_column_listofcolumns).issubset(set(df_test)):
-      labelscolumn = labels_column
-      labels_column_listofcolumns_test = labels_column_listofcolumns
-
-    #as used here labels_column is the label from automunge
-    #labelscolumn without underscore is the postmunge version
-    #where labelscolumn will be False when labels_column not present in postmunge df_test
-    #otherwise labelscolumn = labels_column
-    if labelscolumn is not False:
-    
-    #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
-    #current convention is that these labels now have default infill associated with applied transformation function
-#         df_test = df_test.dropna(subset=[labels_column])
-
-      df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns_test])
-      for labels_column_listofcolumns_test_entry in labels_column_listofcolumns_test:
-        del df_test[labels_column_listofcolumns_test_entry]
-      
-      #if we only had one (label) column to begin with we'll create a dummy test set
-      if df_test.shape[1] == 0:
-        df_test = df_testlabels[0:1].copy()
-  
-    else:
-      df_testlabels = pd.DataFrame()
-
-    #access a few entries from postprocess_dict
-    powertransform = postprocess_dict['powertransform']
-    binstransform = postprocess_dict['binstransform']
-    NArw_marker = postprocess_dict['NArw_marker']
-    floatprecision = postprocess_dict['floatprecision']
-
-    transform_dict = postprocess_dict['transform_dict']
-    process_dict = postprocess_dict['process_dict']
-      
-    assign_param = postprocess_dict['assign_param']
-
-    #_________________________________________________________
     #__WorkflowBlock: postmunge ID set populated
     #ID list intialized 
     #based on either testID_column postmunge parameter or automunge ID columns if present in df_test
@@ -47164,6 +47103,64 @@ class AutoMunge:
     testID_column = testID_column + [indexcolumn]
 
     del df_test_tempID
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge labels and other variable initializations
+    #labels columns from automugne(.) are inspected and checked for presence in df_test
+    #resulting in an initialized: 
+    #labels_column / labels_column_listofcolumns (automunge) 
+    #labelscolumn / labels_column_listofcolumns_test (postmunge)
+    #the labels dataframe is extracted if lagbels are present
+    #also a few variables initialized from postprocess_dict entries
+  
+    #labels_column with underscore is the automunge train set labels
+    labels_column = False
+    #labelscolumn without underscore is the postmunge test set labels or False if not present
+    labelscolumn = False
+    #labels_column_listofcolumns is list of label columns for automunge train set labels
+    labels_column_listofcolumns = []
+    #labels_column_listofcolumns_test is list of test set label columns, which may be empty set if not present
+    labels_column_listofcolumns_test = []
+    
+    if postprocess_dict['labels_column'] is not False:
+      labels_column = postprocess_dict['labels_column']
+      labels_column_listofcolumns = postprocess_dict['labels_column_listofcolumns']
+    
+    if set(labels_column_listofcolumns).issubset(set(df_test)):
+      labelscolumn = labels_column
+      labels_column_listofcolumns_test = labels_column_listofcolumns
+
+    #as used here labels_column is the label from automunge
+    #labelscolumn without underscore is the postmunge version
+    #where labelscolumn will be False when labels_column not present in postmunge df_test
+    #otherwise labelscolumn = labels_column
+    if labelscolumn is not False:
+    
+    #we originally had convention in both automunge and postmunge that rows with missing data in labels were deleted
+    #current convention is that these labels now have default infill associated with applied transformation function
+#         df_test = df_test.dropna(subset=[labels_column])
+
+      df_testlabels = pd.DataFrame(df_test[labels_column_listofcolumns_test])
+      for labels_column_listofcolumns_test_entry in labels_column_listofcolumns_test:
+        del df_test[labels_column_listofcolumns_test_entry]
+      
+      #if we only had one (label) column to begin with we'll create a dummy test set
+      if df_test.shape[1] == 0:
+        df_test = df_testlabels[0:1].copy()
+  
+    else:
+      df_testlabels = pd.DataFrame()
+
+    #access a few entries from postprocess_dict
+    powertransform = postprocess_dict['powertransform']
+    binstransform = postprocess_dict['binstransform']
+    NArw_marker = postprocess_dict['NArw_marker']
+    floatprecision = postprocess_dict['floatprecision']
+
+    transform_dict = postprocess_dict['transform_dict']
+    process_dict = postprocess_dict['process_dict']
+      
+    assign_param = postprocess_dict['assign_param']
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge validate data set headers
