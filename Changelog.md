@@ -4811,3 +4811,9 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - which is an error channel
 - resolved by simply swapping the order between postmunge workflow blocks "postmunge ID set populated" and "postmunge labels and other variable initializations"
 - (now the ID set gets populated first)
+
+7.35
+- update to drift reporting, now derived column drift stat reporting includes derived columns that were subject to replacement
+- added entry to postprocess_dict['origcolumn'] data structure as allderivedlist, which is similar to columnkeylist but includes derived columns that were subject to replacement
+- small tweak to support function that sorts a set to match order of a list, now added support for sorting a target list (prior assumed the sorting target was a set) for support function __list_sorting 
+- performed audit of Function Blocks to identify cases where the function block string wasn't included in the code, found and added a few missing instances
