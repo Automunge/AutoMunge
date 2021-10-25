@@ -2191,7 +2191,7 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   - _'report_full'_ means that the full assessment is performed for both the source column and derived column 
   and returned with no processing of data
 Note that for transforms returning multi column sets, the drift stats will only be reported for first 
-column in the categorylist.  Note that derived feature drift statistics are only returned for transform outputs that were not subject to replacement by family tree specification. Note that driftreport is not available in conjunction with privacy encoding.
+column in the categorylist.  Note that driftreport is not available in conjunction with privacy encoding.
 
 * inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
