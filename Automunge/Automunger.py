@@ -207,7 +207,7 @@ class AutoMunge:
   __is_number_EU
   __parsenumeric
 
-  #__FunctionBlock: ML infill
+  #__FunctionBlock: ML infill master functions
   __MLinfillfunction
   __predictinfill
   __createMLinfillsets
@@ -25565,7 +25565,7 @@ class AutoMunge:
     
     return NArows
 
-  #__FunctionBlock: ML infill
+  #__FunctionBlock: ML infill master functions
 
   def __MLinfillfunction(self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
@@ -31705,6 +31705,8 @@ class AutoMunge:
 
     return df, mode
 
+  #__FunctionBlock: PCA support functions
+
   def __populatePCAdefaults(self, randomseed):
     '''
     populates sa dictionary with default values for PCA methods PCA, 
@@ -36399,6 +36401,10 @@ class AutoMunge:
     which is acceptable in context of our use for categoric encodings
     an alternate placeholder entry may be specified with reserved parameter if desired
     """
+
+    #below assumes mixed_set is a set, this adds support for mixed_set received as a list
+    if isinstance(mixed_set, list):
+      mixed_set = set(mixed_set)
     
     #this populates a dicitonary mapping ordered_list entries to their index number
     order_key_dict = {}
@@ -37707,6 +37713,8 @@ class AutoMunge:
       #list of columns
       #using a list instead of set here to maintain order, even though set would be a little quicker
       templist1 = list(df_train)
+      #tempset1 is similar to templist1, but is based on column_dict so includes derivations that were subject to replacement
+      tempset1 = set(postprocess_dict['column_dict'])
 
       #Before calling getNArows, we'll allow user to designate either by category or column 
       #designated source column values that will be converted to nan for treatment as infill
@@ -37756,6 +37764,7 @@ class AutoMunge:
       ##
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_train)
+      tempset2 = set(postprocess_dict['column_dict'])
 
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
@@ -37764,6 +37773,11 @@ class AutoMunge:
       for templist2_entry in templist2:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
+
+      #allderivedlist is similar to columnkeylist but includes headers of derivations that were subject to replacement
+      allderivedlist = tempset2 - tempset1
+      allderivedlist = \
+      self.__list_sorting(columnkeylist, allderivedlist)
 
       #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
       if len(columnkeylist) == 0:
@@ -37775,6 +37789,7 @@ class AutoMunge:
       postprocess_dict['origcolumn'].update({column : {'type' : 'train', \
                                                        'category' : category, \
                                                        'columnkeylist' : columnkeylist, \
+                                                       'allderivedlist' : allderivedlist, \
                                                        'columnkey' : columnkey}})
 
       #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
@@ -37883,6 +37898,8 @@ class AutoMunge:
       #to support the postprocess_dict entry below, let's first create a temp
       #list of columns
       templist1 = list(df_labels)
+      #tempset1 is similar to templist1, but is based on column_dict so includes derivations that were subject to replacement
+      tempset1 = set(postprocess_dict['column_dict'])
 
       #now process family
       df_labels, df_testlabels, postprocess_dict = \
@@ -37896,6 +37913,7 @@ class AutoMunge:
 
       #here's another templist to support the postprocess_dict entry below
       templist2 = list(df_labels)
+      tempset2 = set(postprocess_dict['column_dict'])
 
       #ok now we're going to pick one of the new entries in templist2 to serve 
       #as a "columnkey" for pulling datas from the postprocess_dict down the road
@@ -37904,6 +37922,11 @@ class AutoMunge:
       for templist2_entry in templist2:
         if templist2_entry not in templist1:
           columnkeylist.append(templist2_entry)
+
+      #allderivedlist is similar to columnkeylist but includes headers of derivations that were subject to replacement
+      allderivedlist = tempset2 - tempset1
+      allderivedlist = \
+      self.__list_sorting(columnkeylist, allderivedlist)
 
       #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
       if len(columnkeylist) == 0:
@@ -37914,6 +37937,7 @@ class AutoMunge:
       postprocess_dict['origcolumn'].update({labels_column_entry : {'type' : 'label', \
                                                                     'category' : labelscategory, \
                                                                     'columnkeylist' : columnkeylist, \
+                                                                    'allderivedlist' : allderivedlist, \
                                                                     'columnkey' : columnkey}})
 
       #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
@@ -38550,7 +38574,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.34'
+    automungeversion = '7.35'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45664,6 +45688,8 @@ class AutoMunge:
 
     return mdf_test
 
+  #__FunctionBlock: postmunge ML infill
+
   def __createpostMLinfillsets(self, df_test, column, testNArows, category, ML_cmnd, \
                              postprocess_dict, columnslist = [], categorylist = []):
     '''
@@ -45946,6 +45972,8 @@ class AutoMunge:
 
     return df_test, postprocess_dict
 
+  #__FunctionBlock: postmunge PCA
+
   def __postcreatePCAsets(self, df_test, postprocess_dict):
     '''
     Function that takes as input the dataframes df_train and df_test 
@@ -45995,6 +46023,8 @@ class AutoMunge:
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
     return PCAset_test, postprocess_dict
+
+  #__FunctionBlock: postmunge feature selection
 
   def __postfeatureselect(self, df_test, testID_column, \
                         postprocess_dict, printstatus):
@@ -46525,7 +46555,9 @@ class AutoMunge:
       print("")
 
     return FSmodel, FScolumn_dict, FS_sorted, FS_validations
-  
+
+  #__FunctionBlock: postmunge driftreport
+
   def __prepare_driftreport(self, df_test, postprocess_dict, printstatus):
     """
     #driftreport uses the processfamily functions as originally implemented
@@ -46556,12 +46588,12 @@ class AutoMunge:
     #for each column in df_test
     for drift_column in df_test:
       
-      returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
-
-      #this accomodates any suffix edge case associated with excl trasnform
-      self.__list_replace(returnedcolumns, postprocess_dict['excl_suffix_conversion_dict'])
-
-      returnedcolumns.sort()
+      #returnedcolumns as used here is specific to a givin input drift_column
+      if 'allderivedlist' in postprocess_dict['origcolumn'][drift_column]:
+        returnedcolumns = postprocess_dict['origcolumn'][drift_column]['allderivedlist']
+      else:
+        #backward compatibility preceding 7.35
+        returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
       
       if printstatus is True:
         print("______")
@@ -46613,8 +46645,8 @@ class AutoMunge:
 #       df_test3_temp = df_test2_temp[0:10].copy()
       df_test3_temp = df_test2_temp[0:1].copy()
       
-      #here's a templist to support the columnkey entry below
-      templist1 = list(df_test2_temp)
+      #this will be compared to tempset2 to derive list of derivations associated with drift_column as newreturnedcolumns
+      tempset1 = set(drift_ppd['column_dict'])
     
       #now process family
       df_test2_temp, df_test3_temp, drift_ppd = \
@@ -46622,39 +46654,25 @@ class AutoMunge:
                          drift_category, drift_transform_dict, \
                          drift_ppd, drift_assign_param)
 
-      #here's a second templist to support the columnkey entry below
-      templist2 = list(df_test2_temp)
+      #here's a second tempset to support newreturnedcolumns derivation
+      tempset2 = set(drift_ppd['column_dict'])
       
-      #ok now we're going to pick one of the new entries of. returned columns to serve 
-      #as a "columnkey" for pulling datas from the postprocess_dict 
-      #columnkeylist = list(set(templist2) - set(templist1))[0]
-      columnkeylist = list(set(templist2) - set(templist1))
-
-      #so last line I believe returns string if only one entry, so let's run a test
-      if isinstance(columnkeylist, str):
-        columnkey = columnkeylist
-      else:
-        #if list is empty
-        if len(columnkeylist) == 0:
-          columnkey = drift_column
-        else:
-          columnkey = columnkeylist[0]
+      #this is a list of all derived column headers originating from drift_column
+      newreturnedcolumns = \
+      tempset2 - tempset1
       
-      #if drift_ppd['origcolumn'][drift_column]['columnkey'] not in drift_ppd['column_dict']:
-      if len(columnkeylist) == 0:
+      #this sorts newreturnedcolumns to match order of returned columns from train data
+      #with any extra entries in alphabetic order at end of list
+      newreturnedcolumns = \
+      self.__list_sorting(returnedcolumns, newreturnedcolumns)
+      
+      if len(newreturnedcolumns) == 0:
         
         if printstatus is True:
           print("no new returned columns:")
           print("")
         
-        newreturnedcolumns = []
-        
       else:
-        
-        newreturnedcolumns = \
-        drift_ppd['column_dict'][columnkey]['columnslist']
-
-        newreturnedcolumns.sort()
 
         if printstatus is True:
           print("new returned columns:")
@@ -46738,6 +46756,8 @@ class AutoMunge:
       print("")
       
     return drift_ppd, drift_report
+
+  #__FunctionBlock: postmunge(.) definition
 
   def postmunge(self, postprocess_dict, df_test,
                 testID_column = False, pandasoutput = True, 
