@@ -3594,7 +3594,7 @@ on flip_prob parameter.
   - default NArowtype: numeric
   - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.06
@@ -3613,10 +3613,11 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
   - default NArowtype: numeric
   - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
     - 'sigma' for noise scale, defaults to 0.03
+    - 'noise_scaling_bias_offset', boolean defaulting to True, activates an evaluation of scaled noise to offset the sampled noise mean to closer approximate a resulting zero mean for the scaled noise (helps to mitigate potential for bias from noise scaling in cases of imbalanced feature distribution).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPmm' transformation category from family tree
@@ -3633,10 +3634,11 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - assignparam parameters accepted: 
     - parameters comparable to retn divisor / offset / multiplier / 
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
+    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defaults to 0.03
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
+    - 'noise_scaling_bias_offset', boolean defaulting to True, activates an evaluation of scaled noise to offset the sampled noise mean to closer approximate a resulting zero mean for the scaled noise (helps to mitigate potential for bias from noise scaling in cases of imbalanced feature distribution)
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - Parameters should be passed to 'DPrt' transformation category from family tree.
