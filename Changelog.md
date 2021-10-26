@@ -4817,3 +4817,15 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - added entry to postprocess_dict['origcolumn'] data structure as allderivedlist, which is similar to columnkeylist but includes derived columns that were subject to replacement
 - small tweak to support function that sorts a set to match order of a list, now added support for sorting a target list (prior assumed the sorting target was a set) for support function __list_sorting 
 - performed audit of Function Blocks to identify cases where the function block string wasn't included in the code, found and added a few missing instances
+
+7.36
+- new conveniont for noise injection transforms DPmm and DPrt
+- DPmm and DPrt are for noise injection to numeric sets with a fixed range of entries, specifically mnmx and retn normalization
+- DPmm and DPrt maintain a consistent range of values by scaling the noise distribution as a function of feature entry properties
+- the issue was that in cases of imbalanced feature distributions, this had potential to introduce bias from noise scaling resulting in noise with non-zero mean
+- the new convention is the noise mu, aka the noise mean, is adjusted from the specified version (defaulting to 0) to better approximate a scaled noise with zero mean
+- activated by the DPmm and DPrt parameter noise_scaling_bias_offset, which accepts a boolean defaulting to True
+- the original mu and final mu are returned in the normalization_dict as mu_orig and mu
+- basically we do this by sampling a noise for all entries, scaling, and measuring mean of the scaled noise, sampling again with the measured mean as an offset to the noise mean, measuring a mean for scaling of that noise, and then using the set of values of mu and their resulting mean of scaled noise to linear interpolate to a final mu closer approximating a scaled noise with mean of 0
+- *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs noisedistribution scenarios (i/e/ all positive or all negative noise scenarios), otherwise the sampled mean will be shifted resulting in noise with zero mean.
+- also corrected the location of a precautionary adjinfill application in DPmm
