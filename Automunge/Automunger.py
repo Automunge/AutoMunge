@@ -22865,6 +22865,11 @@ class AutoMunge:
       trainnoise = params['trainnoise']
     else:
       trainnoise = True
+      
+    if 'noise_scaling_bias_offset' in params:
+      noise_scaling_bias_offset = params['noise_scaling_bias_offset']
+    else:
+      noise_scaling_bias_offset = True
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -22876,6 +22881,109 @@ class AutoMunge:
     
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results, postprocess_dict['printstatus'])
+    
+    def debiasmmnoise(df, DPmm_column, DPmm_column_temp1, mu):
+      #1) derives noise and scales
+      #2) measure mean, re sample noise with that mean as an offset
+      #3) meansure the resulting mean, linear interpolate between to get final mean
+      #4) the resulting mean returned for the final sampling
+      
+      def noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu):
+      
+        #first we'll derive our sampled noise for injection
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+          normal_samples = abs(normal_samples)
+        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+          normal_samples = (-1) * abs(normal_samples)
+
+        df[DPmm_column] = pd.DataFrame(normal_samples)
+
+        #cap outliers
+        df = \
+        self.__autowhere(df, DPmm_column, df[DPmm_column] < -0.5, -0.5, specified='replacement')
+        df = \
+        self.__autowhere(df, DPmm_column, df[DPmm_column] > 0.5, 0.5, specified='replacement')
+
+        #support column to signal sign of noise, 0 is neg, 1 is pos
+        df = \
+        self.__autowhere(df, DPmm_column_temp1, df[DPmm_column] >= 0., 1, specified='replacement')
+
+        #now scale noise, with scaled noise to maintain range 0-1
+        #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+        #this does not include the injection by addition to df[column], final injection follows in a seperate function
+        #this is just to evaluate for scaled noise bias from df[column] distribution properties
+        df = \
+        self.__autowhere(df, 
+                        DPmm_column, 
+                        df[column] < 0.5, 
+  #                       df[column] + \
+                        (1 - df[DPmm_column_temp1]) * (df[DPmm_column] * df[column] / 0.5) + \
+                        (df[DPmm_column_temp1]) * (df[DPmm_column]), 
+                        specified='replacement')
+
+        df = \
+        self.__autowhere(df, 
+                        DPmm_column, 
+                        df[column] >= 0.5, 
+  #                       df[column] + \
+                        (1 - df[DPmm_column_temp1]) * (df[DPmm_column]) + \
+                        (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
+                        specified='replacement')
+        
+        return df
+      
+      #first noise sampling and scaling applied
+      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu)
+
+      #evaluate mean of resulting scaled noise
+      meanofscaledfrom_mu = df[DPmm_column].mean()
+      mu_iter1 = mu - meanofscaledfrom_mu
+      
+      #remove support columns
+      del df[DPmm_column]
+      del df[DPmm_column_temp1]    
+      
+      #now resample and scale again, this time using adjusted mu
+      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu_iter1)
+      
+      #evaluate mean of resulting scaled noise
+      meanofscaledfrom_mu_iter1 = df[DPmm_column].mean()
+      
+      #remove support columns
+      del df[DPmm_column]
+      del df[DPmm_column_temp1]    
+      
+      #so we'll linearly interpolate for a final bias offset, 
+      #want to solve for target_mu that produces a scaled mean of mu
+      #this may not give an optimal but should be an improvement
+      #this is derived from:
+      #(target_mu - mu) / (mu_iter1 - mu) = (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu)
+      #where mu on right side of above is based on trying to derive a target_mu that produces a scaled noise mean of mu
+
+      target_mu = \
+      (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
+      * (mu_iter1 - mu) + mu
+      
+      # #validation printouts
+      # df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, target_mu)
+      # meanofscaledfrom_target_mu = df[DPmm_column].mean()
+      # del df[DPmm_column]
+      # del df[DPmm_column_temp1]   
+      # print('mu = ', mu)
+      # print('meanofscaledfrom_mu = ', meanofscaledfrom_mu)
+      # print()
+      # print('mu_iter1 = ', mu_iter1)
+      # print('meanofscaledfrom_mu_iter1 = ', meanofscaledfrom_mu_iter1)
+      # print()
+      # print('target_mu = ', target_mu)
+      # print('meanofscaledfrom_target_mu = ', meanofscaledfrom_target_mu)
+      
+      return target_mu
     
     def _injectmmnoise(df, DPmm_column, DPmm_column_temp1):
       #support function for noise injection
@@ -22901,10 +23009,6 @@ class AutoMunge:
       df = \
       self.__autowhere(df, DPmm_column, df[DPmm_column] > 0.5, 0.5, specified='replacement')
 
-      #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
-      df[DPmm_column] = df[DPmm_column].fillna(method='ffill')
-      df[DPmm_column] = df[DPmm_column].fillna(method='bfill')
-
       #support column to signal sign of noise, 0 is neg, 1 is pos
       df = \
       self.__autowhere(df, DPmm_column_temp1, df[DPmm_column] >= 0., 1, specified='replacement')
@@ -22929,10 +23033,18 @@ class AutoMunge:
                       (df[DPmm_column_temp1]) * (df[DPmm_column] * (1 - df[column]) / 0.5), \
                       specified='replacement')
 
+      #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
+      df[DPmm_column] = df[DPmm_column].fillna(method='ffill')
+      df[DPmm_column] = df[DPmm_column].fillna(method='bfill')
+
       #remove support column
       del df[DPmm_column_temp1]
       
       return df
+    
+    mu_orig = mu
+    if noise_scaling_bias_offset is True:
+      mu = debiasmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu)
 
     if trainnoise is True:
       mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
@@ -22949,10 +23061,12 @@ class AutoMunge:
     nmbrcolumns = [DPmm_column]
 
     nmbrnormalization_dict = {DPmm_column : {'mu' : mu, \
+                                             'mu_orig' : mu_orig, \
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
+                                             'noise_scaling_bias_offset' : noise_scaling_bias_offset, \
                                              'suffix' : suffix, \
                                              'noisedistribution' : noisedistribution}}
 
@@ -23075,6 +23189,11 @@ class AutoMunge:
       trainnoise = params['trainnoise']
     else:
       trainnoise = True
+      
+    if 'noise_scaling_bias_offset' in params:
+      noise_scaling_bias_offset = params['noise_scaling_bias_offset']
+    else:
+      noise_scaling_bias_offset = True
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -23222,6 +23341,125 @@ class AutoMunge:
       
     #now apply noise injection
     
+    def debiasrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu):
+      #1) derives noise and scales
+      #2) measure mean, re sample noise with that mean as an offset
+      #3) meansure the resulting mean, linear interpolate between to get final mean
+      #4) the resulting mean returned for the final sampling
+      
+      def noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu):
+      
+        #first we'll derive our sampled noise for injection
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+
+        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+          normal_samples = abs(normal_samples)
+        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+          normal_samples = (-1) * abs(normal_samples)
+
+        df[DPrt_column_temp2] = pd.DataFrame(normal_samples)
+
+        #cap outliers
+        df = \
+        self.__autowhere(df, DPrt_column_temp2, df[DPrt_column_temp2] < -0.5, -0.5, specified='replacement')
+        df = \
+        self.__autowhere(df, DPrt_column_temp2, df[DPrt_column_temp2] > 0.5, 0.5, specified='replacement')
+
+        #support column to signal sign of noise, 0 is neg, 1 is pos
+        df = \
+        self.__autowhere(df, DPrt_column_temp1, df[DPrt_column_temp2] >= 0., 1, specified='replacement')
+        
+        #for noise injection we'll first move data into range 0-1 and then revert after injection
+        if scalingapproach == 'retn':
+          df[DPrt_column] = (df[DPrt_column] - (minimum / divisor) ) / multiplier - offset
+        elif scalingapproach == 'mnmx':
+          df[DPrt_column] = (df[DPrt_column]) / multiplier - offset
+        elif scalingapproach == 'mxmn':
+          df[DPrt_column] = (df[DPrt_column] + (maximum - minimum) / divisor) / multiplier - offset
+
+        #now scale noise, with scaled noise to maintain range 0-1
+        #(so if mnmx value <0.5, and neg noise, we scale noise to maintain ratio as if minmax was 0.5, similarly for >0.5 mnmx)
+        #this does not include the injection by addition to df[column], final injection follows in a seperate function
+        #this is just to evaluate for scaled noise bias from df[column] distribution properties
+        df = \
+        self.__autowhere(df, 
+                        DPrt_column_temp2, 
+                        df[DPrt_column] < 0.5, 
+#                         df[DPrt_column] + \
+                        (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * df[DPrt_column] / 0.5) + \
+                        (df[DPrt_column_temp1]) * (df[DPrt_column_temp2]), \
+                        specified='replacement')
+
+        df = \
+        self.__autowhere(df, 
+                        DPrt_column_temp2, 
+                        df[DPrt_column] >= 0.5, 
+#                         df[DPrt_column] + \
+                        (1 - df[DPrt_column_temp1]) * (df[DPrt_column_temp2]) + \
+                        (df[DPrt_column_temp1]) * (df[DPrt_column_temp2] * (1 - df[DPrt_column]) / 0.5), \
+                        specified='replacement')
+        
+        #for noise injection we'll first move data into range 0-1 and then revert after injection
+        if scalingapproach == 'retn':
+          df[DPrt_column] = (df[DPrt_column] + (minimum / divisor) ) * multiplier + offset
+        elif scalingapproach == 'mnmx':
+          df[DPrt_column] = (df[DPrt_column]) * multiplier + offset
+        elif scalingapproach == 'mxmn':
+          df[DPrt_column] = (df[DPrt_column] - (maximum - minimum) / divisor) * multiplier + offset
+        
+        return df
+      
+      #first noise sampling and scaling applied
+      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu)
+
+      #evaluate mean of resulting scaled noise
+      meanofscaledfrom_mu = df[DPrt_column_temp2].mean()
+      mu_iter1 = mu - meanofscaledfrom_mu
+      
+      #remove support columns
+      del df[DPrt_column_temp1]
+      del df[DPrt_column_temp2]    
+      
+      #now resample and scale again, this time using adjusted mu
+      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu_iter1)
+      
+      #evaluate mean of resulting scaled noise
+      meanofscaledfrom_mu_iter1 = df[DPrt_column_temp2].mean()
+      
+      #remove support columns
+      del df[DPrt_column_temp1]
+      del df[DPrt_column_temp2]    
+      
+      #so we'll linearly interpolate for a final bias offset, 
+      #want to solve for target_mu that produces a scaled mean of mu
+      #this may not give an optimal but should be an improvement
+      #this is derived from:
+      #(target_mu - mu) / (mu_iter1 - mu) = (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu)
+      #where mu on right side of above is based on trying to derive a target_mu that produces a scaled noise mean of mu
+
+      target_mu = \
+      (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
+      * (mu_iter1 - mu) + mu
+      
+      # #validation printouts
+      # df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, target_mu)
+      # meanofscaledfrom_target_mu = df[DPrt_column_temp2].mean()
+      # del df[DPrt_column_temp1]
+      # del df[DPrt_column_temp2] 
+      # print('mu = ', mu)
+      # print('meanofscaledfrom_mu = ', meanofscaledfrom_mu)
+      # print()
+      # print('mu_iter1 = ', mu_iter1)
+      # print('meanofscaledfrom_mu_iter1 = ', meanofscaledfrom_mu_iter1)
+      # print()
+      # print('target_mu = ', target_mu)
+      # print('meanofscaledfrom_target_mu = ', meanofscaledfrom_target_mu)
+      
+      return target_mu
+    
     def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2):
       #support function for DPrt noise injection
 
@@ -23292,6 +23530,10 @@ class AutoMunge:
         
       return df
     
+    mu_orig = mu
+    if noise_scaling_bias_offset is True:
+      mu = debiasrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu)
+    
     if trainnoise is True:
       mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
     
@@ -23306,6 +23548,7 @@ class AutoMunge:
     column_dict_list = []
     
     nmbrnormalization_dict = {DPrt_column : {'mu' : mu, \
+                                             'mu_orig' : mu_orig, \
                                              'sigma' : sigma, \
                                              'flip_prob' : flip_prob, \
                                              'noisedistribution' : noisedistribution, \
@@ -23324,6 +23567,7 @@ class AutoMunge:
                                              'defaultinfill_dict' : defaultinfill_dict,
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
+                                             'noise_scaling_bias_offset' : noise_scaling_bias_offset, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -38574,7 +38818,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.35'
+    automungeversion = '7.36'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45007,10 +45251,6 @@ class AutoMunge:
         mdf_test = \
         self.__autowhere(mdf_test, DPmm_column, mdf_test[DPmm_column] > 0.5, 0.5, specified='replacement')
 
-        #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
-        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
-        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
-
         #support column to signal sign of noise, 0 is neg, 1 is pos
         mdf_test = \
         self.__autowhere(mdf_test, DPmm_column_temp1, mdf_test[DPmm_column] >= 0., 1, specified='replacement')
@@ -45034,6 +45274,10 @@ class AutoMunge:
                         (1 - mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column]) + \
                         (mdf_test[DPmm_column_temp1]) * (mdf_test[DPmm_column] * (1 - mdf_test[column]) / 0.5), \
                         specified='replacement')
+
+        #adjacent cell infill (this is included as a precaution shouldn't have any effect since upstream normalization)
+        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='ffill')
+        mdf_test[DPmm_column] = mdf_test[DPmm_column].fillna(method='bfill')
 
         #remove support column
         del mdf_test[DPmm_column_temp1]
