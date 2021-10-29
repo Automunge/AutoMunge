@@ -22695,21 +22695,42 @@ class AutoMunge:
     else:
       mu = 0.0
       
+    if 'test_mu' in params:
+      test_mu = params['test_mu']
+    else:
+      test_mu = mu
+      
     if 'sigma' in params:
       sigma = params['sigma']
     else:
       sigma = 0.06
+      
+    if 'test_sigma' in params:
+      test_sigma = params['test_sigma']
+    else:
+      test_sigma = sigma
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
       #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
+      
+    if 'test_noisedistribution' in params:
+      test_noisedistribution = params['test_noisedistribution']
+    else:
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      test_noisedistribution = noisedistribution
 
     if 'trainnoise' in params:
       trainnoise = params['trainnoise']
@@ -22760,17 +22781,17 @@ class AutoMunge:
     
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
-      elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+      if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
+        normal_samples = np.random.normal(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
+      elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
+        normal_samples = np.random.laplace(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
 
-      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      if test_noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
-      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      if test_noisedistribution in {'negabs_normal', 'negabs_laplace'}:
         normal_samples = (-1) * abs(normal_samples)
 
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+      binomial_samples = np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
 
       mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
       
@@ -22786,7 +22807,12 @@ class AutoMunge:
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'suffix' : suffix, \
-                                             'noisedistribution' : noisedistribution}}
+                                             'noisedistribution' : noisedistribution, \
+                                             'test_mu' : test_mu, \
+                                             'test_sigma' : test_sigma, \
+                                             'test_flip_prob' : test_flip_prob, \
+                                             'test_noisedistribution' : test_noisedistribution, \
+                                            }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -22840,21 +22866,42 @@ class AutoMunge:
     else:
       mu = 0.0
       
+    if 'test_mu' in params:
+      test_mu = params['test_mu']
+    else:
+      test_mu = mu
+      
     if 'sigma' in params:
       sigma = params['sigma']
     else:
       sigma = 0.03
+      
+    if 'test_sigma' in params:
+      test_sigma = params['test_sigma']
+    else:
+      test_sigma = sigma
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
       #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
+      
+    if 'test_noisedistribution' in params:
+      test_noisedistribution = params['test_noisedistribution']
+    else:
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      test_noisedistribution = noisedistribution
       
     if 'testnoise' in params:
       testnoise = params['testnoise']
@@ -22882,13 +22929,13 @@ class AutoMunge:
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, [DPmm_column, DPmm_column_temp1], suffixoverlap_results, postprocess_dict['printstatus'])
     
-    def debiasmmnoise(df, DPmm_column, DPmm_column_temp1, mu):
+    def debiasmmnoise(df, DPmm_column, DPmm_column_temp1, mu, sigma, noisedistribution):
       #1) derives noise and scales
       #2) measure mean, re sample noise with that mean as an offset
       #3) meansure the resulting mean, linear interpolate between to get final mean
       #4) the resulting mean returned for the final sampling
       
-      def noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu):
+      def noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu, sigma, noisedistribution):
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -22938,7 +22985,7 @@ class AutoMunge:
         return df
       
       #first noise sampling and scaling applied
-      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu)
+      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu, sigma, noisedistribution)
 
       #evaluate mean of resulting scaled noise
       meanofscaledfrom_mu = df[DPmm_column].mean()
@@ -22949,7 +22996,7 @@ class AutoMunge:
       del df[DPmm_column_temp1]    
       
       #now resample and scale again, this time using adjusted mu
-      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu_iter1)
+      df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu_iter1, sigma, noisedistribution)
       
       #evaluate mean of resulting scaled noise
       meanofscaledfrom_mu_iter1 = df[DPmm_column].mean()
@@ -22985,7 +23032,7 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectmmnoise(df, DPmm_column, DPmm_column_temp1):
+    def _injectmmnoise(df, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution):
       #support function for noise injection
 
       #first we'll derive our sampled noise for injection
@@ -23043,11 +23090,20 @@ class AutoMunge:
       return df
     
     mu_orig = mu
+    test_mu_orig = test_mu
     if noise_scaling_bias_offset is True:
-      mu = debiasmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu)
+      mu = debiasmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu, sigma, noisedistribution)
+      
+      #if test_mu was specified differently than mu, then a test set specific debiasing is performed
+      if test_mu == mu_orig:
+        test_mu = mu
+      else:
+        #the single row case is when no df_test was passed to automunge(.)
+        if mdf_test.shape[0] > 1:
+          test_mu = debiasmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_noisedistribution)
 
     if trainnoise is True:
-      mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1)
+      mdf_train = _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution)
     elif trainnoise is False:
       mdf_train[DPmm_column] = mdf_train[column].copy()
     
@@ -23055,7 +23111,7 @@ class AutoMunge:
     if testnoise is False:
       mdf_test[DPmm_column] = mdf_test[column].copy()
     elif testnoise is True:
-      mdf_test = _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1)
+      mdf_test = _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_flip_prob, test_noisedistribution)
     
     #create list of columns
     nmbrcolumns = [DPmm_column]
@@ -23068,7 +23124,13 @@ class AutoMunge:
                                              'trainnoise' : trainnoise, \
                                              'noise_scaling_bias_offset' : noise_scaling_bias_offset, \
                                              'suffix' : suffix, \
-                                             'noisedistribution' : noisedistribution}}
+                                             'noisedistribution' : noisedistribution, \
+                                             'test_mu' : test_mu, \
+                                             'test_mu_orig' : test_mu_orig, \
+                                             'test_sigma' : test_sigma, \
+                                             'test_flip_prob' : test_flip_prob, \
+                                             'test_noisedistribution' : test_noisedistribution, \
+                                            }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -23164,21 +23226,42 @@ class AutoMunge:
     else:
       mu = 0.0
       
+    if 'test_mu' in params:
+      test_mu = params['test_mu']
+    else:
+      test_mu = mu
+      
     if 'sigma' in params:
       sigma = params['sigma']
     else:
       sigma = 0.03
+      
+    if 'test_sigma' in params:
+      test_sigma = params['test_sigma']
+    else:
+      test_sigma = sigma
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
       #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
       noisedistribution = 'normal'
+      
+    if 'test_noisedistribution' in params:
+      test_noisedistribution = params['test_noisedistribution']
+    else:
+      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      test_noisedistribution = noisedistribution
       
     if 'testnoise' in params:
       testnoise = params['testnoise']
@@ -23341,13 +23424,13 @@ class AutoMunge:
       
     #now apply noise injection
     
-    def debiasrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu):
+    def debiasrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, noisedistribution):
       #1) derives noise and scales
       #2) measure mean, re sample noise with that mean as an offset
       #3) meansure the resulting mean, linear interpolate between to get final mean
       #4) the resulting mean returned for the final sampling
       
-      def noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu):
+      def noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, noisedistribution):
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -23413,7 +23496,7 @@ class AutoMunge:
         return df
       
       #first noise sampling and scaling applied
-      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu)
+      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, noisedistribution)
 
       #evaluate mean of resulting scaled noise
       meanofscaledfrom_mu = df[DPrt_column_temp2].mean()
@@ -23424,7 +23507,7 @@ class AutoMunge:
       del df[DPrt_column_temp2]    
       
       #now resample and scale again, this time using adjusted mu
-      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu_iter1)
+      df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu_iter1, sigma, noisedistribution)
       
       #evaluate mean of resulting scaled noise
       meanofscaledfrom_mu_iter1 = df[DPrt_column_temp2].mean()
@@ -23460,7 +23543,7 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2):
+    def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution):
       #support function for DPrt noise injection
 
       #first we'll derive our sampled noise for injection
@@ -23531,15 +23614,24 @@ class AutoMunge:
       return df
     
     mu_orig = mu
+    test_mu_orig = test_mu
     if noise_scaling_bias_offset is True:
-      mu = debiasrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu)
+      mu = debiasrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, noisedistribution)
+      
+      #if test_mu was specified differently than mu, then a test set specific debiasing is performed
+      if test_mu == mu_orig:
+        test_mu = mu
+      else:
+        #single row case is when no df_test was passed to automunge(.)
+        if mdf_test.shape[0] > 1:
+          test_mu = debiasmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_noisedistribution)
     
     if trainnoise is True:
-      mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
+      mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution)
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True:
-      mdf_test = _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2)
+      mdf_test = _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_flip_prob, test_noisedistribution)
     
     #create list of columns
     nmbrcolumns = [DPrt_column]
@@ -23568,6 +23660,11 @@ class AutoMunge:
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'noise_scaling_bias_offset' : noise_scaling_bias_offset, \
+                                             'test_mu' : test_mu, \
+                                             'test_mu_orig' : test_mu_orig, \
+                                             'test_sigma' : test_sigma, \
+                                             'test_flip_prob' : test_flip_prob, \
+                                             'test_noisedistribution' : test_noisedistribution, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -23616,6 +23713,11 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -23650,7 +23752,7 @@ class AutoMunge:
       mdf_test[DPbn_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
@@ -23663,6 +23765,7 @@ class AutoMunge:
     nmbrcolumns = [DPbn_column]
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
+                                             'test_flip_prob' : flip_prob, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise}}
@@ -23718,6 +23821,11 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -23737,6 +23845,11 @@ class AutoMunge:
       weighted = params['weighted']
     else:
       weighted = True
+      
+    if 'test_weighted' in params:
+      test_weighted = params['test_weighted']
+    else:
+      test_weighted = weighted
 
     if 'upstream_hsh2' in params:
       upstream_hsh2 = params['upstream_hsh2']
@@ -23793,10 +23906,10 @@ class AutoMunge:
       mdf_test[DPod_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
-      if weighted is False:
+      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      if test_weighted is False:
         mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
-      elif weighted is True:
+      elif test_weighted is True:
         mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
@@ -23823,8 +23936,10 @@ class AutoMunge:
     nmbrcolumns = [DPod_column]
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
+                                             'test_flip_prob' : test_flip_prob, \
                                              'ord_encodings' : ord_encodings, \
                                              'weighted' : weighted, \
+                                             'test_weighted' : test_weighted, \
                                              'weights' : weights, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise, \
@@ -23894,6 +24009,11 @@ class AutoMunge:
     else:
       flip_prob = 0.03
       
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      test_flip_prob = flip_prob
+      
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -23913,6 +24033,11 @@ class AutoMunge:
       weighted = params['weighted']
     else:
       weighted = True
+      
+    if 'test_weighted' in params:
+      test_weighted = params['test_weighted']
+    else:
+      test_weighted = weighted
       
     #max encoding for conditional data type inspects upstream hs10 hashing vocab_size when selected
     if 'upstream_hs10' in params:
@@ -24057,7 +24182,7 @@ class AutoMunge:
       
       #inject noise to mdf_test
       mdf_test = \
-      _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+      _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights)
     
     #now apply data type conversion, this should align with received data types, just applying in case of drift
     for textcolumn in textcolumns:
@@ -24082,9 +24207,11 @@ class AutoMunge:
                                               'textcolumns' : textcolumns, \
                                               'textlabelsdict' : textlabelsdict, \
                                               'flip_prob' : flip_prob, \
+                                              'test_flip_prob' : test_flip_prob, \
                                               'testnoise' : testnoise, \
                                               'trainnoise' : trainnoise, \
                                               'weighted' : weighted, \
+                                              'test_weighted' : test_weighted, \
                                               'weights' : weights, \
                                               'df_unique' : df_unique, \
                                               'suffix' : suffix, \
@@ -38818,7 +38945,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.36'
+    automungeversion = '7.37'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45124,6 +45251,23 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       noisedistribution = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      
+      if 'test_mu' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_mu = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu']
+        test_sigma = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma']
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        test_noisedistribution = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_noisedistribution']
+      else:
+        #backward compatibility preceding 7.37
+        test_mu = mu
+        test_sigma = sigma
+        test_flip_prob = flip_prob
+        test_noisedistribution = noisedistribution
+
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
       trainnoise = True
@@ -45138,6 +45282,17 @@ class AutoMunge:
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        mu = mu
+        sigma = sigma
+        flip_prob = flip_prob
+        noisedistribution = noisedistribution
+      elif traindata is False:
+        mu = test_mu
+        sigma = test_sigma
+        flip_prob = test_flip_prob
+        noisedistribution = test_noisedistribution
       
       if (trainnoise is True and traindata is True) or testnoise is True:
 
@@ -45212,6 +45367,23 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       noisedistribution = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      
+      if 'test_mu' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_mu = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu']
+        test_sigma = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma']
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        test_noisedistribution = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_noisedistribution']
+      else:
+        #backward compatibility preceding 7.37
+        test_mu = mu
+        test_sigma = sigma
+        test_flip_prob = flip_prob
+        test_noisedistribution = noisedistribution
+      
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
       trainnoise = True
@@ -45227,6 +45399,17 @@ class AutoMunge:
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        mu = mu
+        sigma = sigma
+        flip_prob = flip_prob
+        noisedistribution = noisedistribution
+      elif traindata is False:
+        mu = test_mu
+        sigma = test_sigma
+        flip_prob = test_flip_prob
+        noisedistribution = test_noisedistribution
       
       if (trainnoise is True and traindata is True) or testnoise is True:
 
@@ -45372,6 +45555,22 @@ class AutoMunge:
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       noisedistribution = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['noisedistribution']
+      
+      if 'test_mu' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_mu = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu']
+        test_sigma = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma']
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        test_noisedistribution = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_noisedistribution']
+      else:
+        #backward compatibility preceding 7.37
+        test_mu = mu
+        test_sigma = sigma
+        test_flip_prob = flip_prob
+        test_noisedistribution = noisedistribution
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
@@ -45427,6 +45626,17 @@ class AutoMunge:
         
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        mu = mu
+        sigma = sigma
+        flip_prob = flip_prob
+        noisedistribution = noisedistribution
+      elif traindata is False:
+        mu = test_mu
+        sigma = test_sigma
+        flip_prob = test_flip_prob
+        noisedistribution = test_noisedistribution
       
       #if this is train data we'll inject noise
       if (trainnoise is True and traindata is True) or testnoise is True:
@@ -45536,6 +45746,14 @@ class AutoMunge:
       
       flip_prob = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      
+      if 'test_flip_prob' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+      else:
+        #backward compatibility preceding 7.37
+        test_flip_prob = flip_prob
+      
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
       trainnoise = True
@@ -45550,6 +45768,11 @@ class AutoMunge:
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        flip_prob = flip_prob
+      elif traindata is False:
+        flip_prob = test_flip_prob
       
       if (trainnoise is True and traindata is True) or testnoise is True:
         
@@ -45628,6 +45851,16 @@ class AutoMunge:
         #backward compatibility preceding 7.20
         weighted = False
         weights = []
+        
+      if 'test_flip_prob' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        test_weighted = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_weighted']
+      else:
+        #backward compatibility preceding 7.37
+        test_flip_prob = flip_prob
+        test_weighted = weighted
 
       DPod_column = column + '_' + suffix
       DPod_tempcolumn1 = 1
@@ -45635,6 +45868,13 @@ class AutoMunge:
       
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        flip_prob = flip_prob
+        weighted = weighted
+      elif traindata is False:
+        flip_prob = test_flip_prob
+        weighted = test_weighted
       
       if (trainnoise is True and traindata is True) or testnoise is True:
         
@@ -45725,6 +45965,16 @@ class AutoMunge:
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       
+      if 'test_flip_prob' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        test_weighted = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_weighted']
+      else:
+        #backward compatibility preceding 7.37
+        test_flip_prob = flip_prob
+        test_weighted = weighted
+      
       if inplace is not True:
         for inputtextcolumn in inputtextcolumns:
           mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
@@ -45770,6 +46020,13 @@ class AutoMunge:
           self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
 
         return df
+      
+      if traindata is True:
+        flip_prob = flip_prob
+        weighted = weighted
+      elif traindata is False:
+        flip_prob = test_flip_prob
+        weighted = test_weighted
       
       if (trainnoise is True and traindata is True) or testnoise is True:
         
