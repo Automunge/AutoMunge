@@ -4829,3 +4829,17 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - basically we do this by sampling a noise for all entries, scaling, and measuring mean of the scaled noise, sampling again with the measured mean as an offset to the noise mean, measuring a mean for scaling of that noise, and then using the set of values of mu and their resulting mean of scaled noise to linear interpolate to a final mu closer approximating a scaled noise with mean of 0
 - *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs noisedistribution scenarios (i/e/ all positive or all negative noise scenarios), otherwise the sampled mean will be shifted resulting in noise with zero mean.
 - also corrected the location of a precautionary adjinfill application in DPmm
+
+7.37
+- an extension to noise injection transforms
+- now user has option to designate distinct distribution parameters to train and test data
+- basically all distribution parameters (mu, sigma, flip_prob, noisedistribution, weighted)
+- now have a comparable test data mirror (test_mu, test_sigma, test_flip_prob, test_noisedistribution, test_weighted)
+- which when unspecified default to matching the train data specifications
+- only real complication was for scaled noise bias offset rolled out in 7.36 (associated with DPmm and DPrt)
+- now when test distriution parameters differ from train, the scaled noise bias offset is fit to each of train and test data seperately
+- (only relevant when testnoise parameter is activated)
+- generally we recommend only using these test distribution parameters in conjunction with activating the testnoise parameter
+- as otherwise postmunge processing of test data with noise by activating the postmunge traindata parameter will treat the data as train data so these won't be in play
+- the rationale for the new test specific noise distribution parameters was from running some benchmarks and finding that the performance penalty from noise is slightly more pronounced for test data used in inference in comparison to noise injected to training data
+- so just wanted to allow some flexibility for experimentation by any power users (including myself)
