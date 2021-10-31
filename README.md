@@ -33,7 +33,7 @@
 >  
 > We make machine learning easy.
 
-In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principle component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
+In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principle component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
 
 Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
 
@@ -158,7 +158,7 @@ with open('filename.pickle', 'rb') as handle:
   postprocess_dict = pickle.load(handle)
 
 #Please note that if you included externally initialized functions in an automunge(.) call
-#like for custom_train transformation functions or custom autoMLer functions
+#like for custom_train transformation functions or customML inference functions
 #they will need to be reinitialized prior to uploading the postprocess_dict with pickle.
 ```
 We can then apply the postprocess_dict saved from a prior application of automunge
@@ -179,109 +179,41 @@ am.postmunge(postprocess_dict, df_test,
              randomseed = False, encrypt_key = False)
 ```
 
-The functions depend on pandas dataframe formatted train and test data
-or numpy arrays with consistent order of columns between train and test data. 
-(For numpy arrays any label column should be positioned as final column in set.)
-The functions return pandas dataframes (or numpy arrays per selection) numerically encoded 
-and normalized such as to make them suitable for direct application to a 
+The functions accept pandas dataframe or numpy array input and return encoded dataframes
+with consistent order of columns between train and test data. 
+(For input numpy arrays any label column should be positioned as final column in set.)
+The functions return data with categoric features translated to numerical encodedings 
+and normalized numeric such as to make them suitable for direct application to a 
 machine learning model in the framework of a user's choice, including sets for 
-the various activities of a generic machine learning project such as training, 
-hyperparameter tuning validation (val), or data intended for use in generation 
-of predictions from the trained model (test set). The functions also return a 
-few other sets such as labels, column headers, ID sets, and etc if elected - a 
-full list of returned dataframes is below.
+the various activities of a generic machine learning project such as training (train), 
+validation (val), and inference (test). The automunge(.) function also returns a 
+python dictionary (the "postprocess_dict") that can be used as a key to prepare additional
+data with postmunge(.).
 
-When left to automation, the function works by inferring a category of 
-data based on properties of each column to select the type of processing 
-function to apply, for example whether a column is a numerical, categorical,
-binary, or time-series set. Alternately, a user can pass column header IDs to 
-assign specific processing functions to distinct columns - which processing functions
-may be pulled from the internal library of transformations or alternately user
-defined. Normalization parameters from the initial automunge application are
-saved to a returned dictionary for subsequent consistent processing of test data
-that wasn't available at initial address with the postmunge(.) function. 
+When left to automation, automunge(.) evaluates properties of a feature to select 
+the type of encoding, for example whether a column is numeric, categoric, high cardinality, 
+binary, date time, etc. Alternately, a user can 
+assign specific processing functions to distinct columns (via assigncat parameter) - 
+which may be pulled from the internal library of transformations or alternately custom
+defined.
 
-The feature engineering transformations are recorded with a series of suffixes 
+The feature engineering transformations are recorded with suffixes 
 appended to the column header title in the returned sets, for one example the 
 application of z-score normalization returns a column with header origname + '\_nmbr'. 
 As another example, for binary encoded sets the set of columns are returned with
 header origname + '\_1010_#' where # is integer to distinguish columns in same set.
-Each transformation category has a unique suffix appender.
+In most cases, the suffix appenders are derived from the transformation category 
+identifier (which is by convention a 4 letter string). 
 
-In automation, for numerical data, the functions generate a series of derived
-transformations which may result in one or more child columns. For numerical data, if the
-powertransform option is selected distribution properties are evaluated for 
-potential application of z-score normalization, min-max scaling, power law transform 
-via box-cox method, or mean absolute deviation scaling. Otherwise numerical data 
-defaults to z-score, with the binstransform parameter for supplementing normalized data 
-with standard deviation bins for values in range <-2, -2-1, -10, 01, 12, >2 from the
-mean. Further transformation options are detailed below. For time-series
-data the model segregates the data by time-scale (year, month, day, hour, minute, 
-second) and returns year z-score normalized, a pair of sets for combined month/day 
-and combined hour / minute / second with sin and cos transformations at period of 
-time-scale, and also returns binned sets identifying business hours, weekdays, and 
-US holidays. For binary categorical data the functions return a single column with 
-1/0 designation. For multimodal categorical data the functions return binary
-encoded sets where categoric entries may be distinguished by zero, one, or more
-simultaneous column activations. Alternatives for one-hot encoding, ordinal encoding, 
-and etc are also available. String parsing methods are available to extract and encode 
-grammatic structure shared between categoric entries. For all cases the functions may 
-generate a supplemental column (NArw) with a boolean integer identifier for cells that were 
-subject to infill due to missing or improperly formatted data when the default NArw_marker 
-parameter is left activated.
+The default transforms applied under automation are detailed below in section 
+[Default Transforms](https://github.com/Automunge/AutoMunge#default-transformations). 
+Missing data receives ML infill (defaulting to random forest models) and missing marker aggregation. 
+Other features of the library are detailed in the [tutorial notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials) 
+and with their associated parameters below. 
 
-The functions also defaults to a method we call 'ML infill' which if elected
-predicts infill for missing values in both the train and test sets using
-machine learning models trained on the rest of the set in a fully
-generalized and automated fashion. The ML infill works by initially
-applying infill using traditional methods such as mean for a numerical
-set, most common value for a binary set, and a boolean identifier for
-categorical. The functions then generate a column specific set of
-training data, labels, and feature sets for the derivation of infill.
-The column's trained model is included in the outputted dictionary for
-application of the same model in the postmunge function. Alternately, a
-user can pass column headers to assign different infill methods to distinct 
-columns. The method currently makes use of Scikit Random Forest models by 
-default. A user may defer to default hyperparameters or alternatively pass
-hyperparameters via the "ML_cmnd" object, and may also make use of grid 
-or randomized CV hyperparameter tuning by passing the hyperparameters as
-lists, ranges, or distributions of candidate parameters instead of distinct 
-values.
+Other options available in the library include feature importance (via featureselection parameter),
+oversampling (via the TrainLabelFreqLevel parameter), dimensionality reductions (via PCAn_components, Binary, or featurethreshold parameters). Further detail provided with parameter writeups below.
 
-The automunge(.) function also includes a method for feature importance 
-evaluation, in which metrics are derived to measure the impact to predictive 
-accuracy of original source columns as well as relative importance of 
-derived columns using a permutation importance method. Permutation importance 
-method was inspired by a fast.ai lecture and more information can be found in 
-the paper "Beware Default Random Forest Importances" by Terrence Parr, Kerem 
-Turgutlu, Christopher Csiszar, and Jeremy Howard. This method currently makes 
-use of Scikit-Learn's Random Forest predictors. I believe the metric we refer to
-as metric2 which evaluates relative importance between features derived from the 
-same source column is a unique approach.
-
-The function also includes a method we call 'TrainLabelFreqLevel' which
-if elected applies multiples of the feature sets associated with each
-label category in the returned training data so as to enable
-oversampling of those labels which may be underrepresented in the
-training data. This method is available for categorical labels or also
-for numerical labels when the label processing includes binned aggregations
-such as standard deviation bins or powers of ten bins. This method is 
-expected to improve downstream model accuracy for training data with uneven 
-distribution of labels. For more on the class imbalance problem see "A 
-systematic study of the class imbalance problem in convolutional neural 
-networks" - Buda, Maki, Mazurowski.
-
-The function also can perform dimensionality reduction of the sets via 
-principal component analysis (PCA), where the user can pass a desired number 
-of features and their preference of type and parameters between linear PCA, 
-Sparse PCA, or Kernel PCA - all currently implemented in Scikit-Learn. (We
-recommend caution in applying PCA toward fat tailed feature distributions.)
-
-The function also can perform dimensionality reduction of the sets via
-the Binary option which takes the set of columns with boolean {1/0} encodings
-and collectively applies a binary transform to consolidate these columns to
-a set where distinct activation sets may be represented by a distinct activation set
-in a reduced number of columns with zero, one, or more simultaneous activations.
 
 ## automunge(.)
 
@@ -690,7 +622,9 @@ test set, this may also be passed as _'traintest'_ to apply levelizing to both
 train and test sets or be passed as _'test'_ to only apply levelizing to test set.
 (If a label set includes multiple configurations of the labels, the levelizing
 will be based on the first categoric / binned set (either one-hot or ordinal)
-based on order of columns.)
+based on order of columns.) For more on the class imbalance problem see "A 
+systematic study of the class imbalance problem in convolutional neural 
+networks" - Buda, Maki, Mazurowski.
 
 * powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2'/'DP1'/'DP2')_, defaults to False.
 The powertransform parameter is used to select between options for derived
@@ -839,7 +773,11 @@ feature importance results are returned in postprocess_dict['FS_sorted'],
 including columns sorted by metric and metric2. Note that feature importance 
 model training inspects same ML_cmnd parameters as ML infill. (Note that any user-specified size of validationratios 
 if passed are used in this method, otherwise defaults to 0.2.) Note that as currently implemented 
-feature selection does not take into account dimensionality reductions (like PCA or Binary).
+feature selection does not take into account dimensionality reductions (like PCA or Binary). 
+Permutation importance method was inspired by a fast.ai lecture and more information can be found in 
+the paper "Beware Default Random Forest Importances" by Terrence Parr, Kerem 
+Turgutlu, Christopher Csiszar, and Jeremy Howard. This method currently makes 
+use of Scikit-Learn's Random Forest predictors. 
 
 * featurethreshold: defaults to 0., accepts float in range of 0-1. Inspected when
 featureselection passed as 'pct' or 'metric'. Used to designate the threshold for feature
