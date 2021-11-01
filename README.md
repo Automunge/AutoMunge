@@ -194,8 +194,8 @@ When left to automation, automunge(.) evaluates properties of a feature to selec
 the type of encoding, for example whether a column is numeric, categoric, high cardinality, 
 binary, date time, etc. Alternately, a user can 
 assign specific processing functions to distinct columns (via assigncat parameter) - 
-which may be pulled from the internal library of transformations or alternately custom
-defined.
+which may be pulled from the internal [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations) or alternately [custom
+defined](https://github.com/Automunge/AutoMunge#custom-transformation-functions).
 
 The feature engineering transformations are recorded with suffixes 
 appended to the column header title in the returned sets, for one example the 
