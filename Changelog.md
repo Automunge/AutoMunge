@@ -4853,5 +4853,11 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - identified a few other cases where added an index initialization as a precaiutionary measure
 - although I think the nois3e injeciton applicaitons were primary poitn of issue
 - now resolved
-- also found a validaiton function that was intefering with postmunge
+- also found a validaiton function that was intefering with feature importance
 - originating from calling printstatus from a dicitonary prior to initialization
+
+7.39
+- found an edge case for multi transform label sets originating from 7.26
+- (which was where we struck a redundant storage of normalization_dict in column_dict)
+- taking place with populating labelsencoding_dict
+- resolved by accessing targeted data structure entry through different path
