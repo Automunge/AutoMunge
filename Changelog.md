@@ -4843,3 +4843,15 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - as otherwise postmunge processing of test data with noise by activating the postmunge traindata parameter will treat the data as train data so these won't be in play
 - the rationale for the new test specific noise distribution parameters was from running some benchmarks and finding that the performance penalty from noise is slightly more pronounced for test data used in inference in comparison to noise injected to training data
 - so just wanted to allow some flexibility for experimentation by any power users (including myself)
+
+7.38
+- found an edge case for a few of the numeric noise injection transforms
+- associated with cases where a validation split was performed in automunge
+- arrising from an index mismatch between noise samples and target dataframe
+- resolved by following better practice of initializing index with dataframe initialization
+- used this as a hint to perform a walkthrough of each dataframe initialization in codebase
+- identified a few other cases where added an index initialization as a precaiutionary measure
+- although I think the nois3e injeciton applicaitons were primary poitn of issue
+- now resolved
+- also found a validaiton function that was intefering with postmunge
+- originating from calling printstatus from a dicitonary prior to initialization
