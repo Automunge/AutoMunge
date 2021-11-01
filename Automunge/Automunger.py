@@ -38328,11 +38328,10 @@ class AutoMunge:
       #first we'll populate some entries and then final aggregations performed after fully populating postprocess_dict
       labelsencoding_dict['transforms'].update({labels_column_entry : {labelscategory:{}}})
       for finalcolumn_label in columnkeylist:
-        # if finalcolumn_label == postprocess_dict['column_dict'][finalcolumn_label]['categorylist'][0]:
-        labelsnormalization_dict_key = list(postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict'])[0]
+
         #this populates a labelsnormalization_dict as {returnedcolumn : {}}
         #which later in the workflow are translated to column_dict entries in __populate_labelsencoding_dict_support3
-        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({labelsnormalization_dict_key : {}})
+        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({finalcolumn_label : {}})
 
         #this access any upstream normalization_dict's for columns that were subject to replacement
         inputcolumn = postprocess_dict['column_dict'][finalcolumn_label]['inputcolumn']
@@ -38952,7 +38951,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.38'
+    automungeversion = '7.39'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
