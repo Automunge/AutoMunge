@@ -18872,8 +18872,8 @@ class AutoMunge:
 
     #apply transform
     if qttf is not False:
-      mdf_train[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_train[suffixcolumn]))
-      mdf_test[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_test[suffixcolumn]))
+      mdf_train[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_train[suffixcolumn])), index=mdf_train.index)
+      mdf_test[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_test[suffixcolumn])), index=mdf_test.index)
 
     #output of a list of the created column names
     nmbrcolumns = [suffixcolumn]
@@ -22766,7 +22766,7 @@ class AutoMunge:
         
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
       
-      mdf_train[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      mdf_train[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_train.index) * pd.DataFrame(binomial_samples, index=mdf_train.index)
       
       #now inject noise
       mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
@@ -22793,7 +22793,7 @@ class AutoMunge:
 
       binomial_samples = np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
 
-      mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      mdf_test[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
       
       #now inject noise
       mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
@@ -22948,7 +22948,7 @@ class AutoMunge:
         if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
           normal_samples = (-1) * abs(normal_samples)
 
-        df[DPmm_column] = pd.DataFrame(normal_samples)
+        df[DPmm_column] = pd.DataFrame(normal_samples, index=df.index)
 
         #cap outliers
         df = \
@@ -23048,7 +23048,7 @@ class AutoMunge:
 
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
-      df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      df[DPmm_column] = pd.DataFrame(normal_samples, index=df.index) * pd.DataFrame(binomial_samples, index=df.index)
 
       #cap outliers
       df = \
@@ -23363,7 +23363,7 @@ class AutoMunge:
     self.__apply_defaultinfill(mdf_train, DPrt_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
     mdf_test, _1 = \
     self.__apply_defaultinfill(mdf_test, DPrt_column, postprocess_dict, treecategory=treecategory, defaultinfill_dict=defaultinfill_dict)
-    
+
     #edge case (only neccesary so scalingapproach is assigned)
     if maximum != maximum:
       maximum = 0
@@ -23443,7 +23443,7 @@ class AutoMunge:
         if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
           normal_samples = (-1) * abs(normal_samples)
 
-        df[DPrt_column_temp2] = pd.DataFrame(normal_samples)
+        df[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=df.index)
 
         #cap outliers
         df = \
@@ -23559,7 +23559,7 @@ class AutoMunge:
 
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
-      df[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      df[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=df.index) * pd.DataFrame(binomial_samples, index=df.index)
 
       #cap outliers
       df = \
@@ -25470,7 +25470,7 @@ class AutoMunge:
 
       #populates as 1 for other data else 0 for the two targets
       NArows = \
-      self.__autowhere(pd.DataFrame(), column+'_NArows', df2[column]!=binary_2, True, False, specified='replacementalternative')
+      self.__autowhere(pd.DataFrame(index=df2.index), column+'_NArows', df2[column]!=binary_2, True, False, specified='replacementalternative')
 
       # NArows[column+'_NArows'] = NArows[column+'_NArows'].astype(bool)
 
@@ -27483,7 +27483,7 @@ class AutoMunge:
       binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
       #we then combine the two, resulting in a zero value for entries without injection and a noise value elsewhere
-      df[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+      df[DPmm_column] = pd.DataFrame(normal_samples, index=df.index) * pd.DataFrame(binomial_samples, index=df.index)
 
       #cap outliers to ensure consistent returned range
       df = \
@@ -29378,7 +29378,7 @@ class AutoMunge:
       #this shifts the register back by 1, and results in -1 convention for onehot rows without activation
       df -= 1
     
-    df2 = pd.DataFrame(np.zeros(shape = (df.shape[0], len(columnslist))))
+    df2 = pd.DataFrame(np.zeros(shape = (df.shape[0], len(columnslist))), index=df.index)
     
     df2.columns = list(range(len(columnslist)))
     
@@ -29441,6 +29441,9 @@ class AutoMunge:
     please note that this assumes the onehot form will have activations in each row
     which is consistent with our use for ML infill
     and otherwise populates rows without activations in the all zero bucket
+
+    this is applied in context of infill conversions, 
+    so sequential range integer index is ok (doesn't need to match index of another dataframe)
     """
 
     #create list of binary encodings corresponding to the onehot array
@@ -30153,8 +30156,11 @@ class AutoMunge:
     
     FS_validations = {}
 
-    #but first real quick we'll just deal with PCA default functionality for FS
     FSML_cmnd = deepcopy(ML_cmnd)
+    #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
+    if ML_cmnd['autoML_type'] == 'customML':
+      FSML_cmnd['autoML_type'] = 'randomforest'
+
     FS_PCAn_components = False
 
     FS_assignparam = deepcopy(assignparam)
@@ -32587,7 +32593,7 @@ class AutoMunge:
         
     #___
 
-    #convert output to pandas
+    #convert output to pandas (note that the index is set externally with concat operation)
     PCAset_train = pd.DataFrame(PCAset_train, columns = columnnames)
     PCAset_test = pd.DataFrame(PCAset_test, columns = columnnames)
 
@@ -33409,7 +33415,7 @@ class AutoMunge:
       
       numeric_data_result = True
       
-      if postprocess_dict['printstatus'] != 'silent':
+      if printstatus != 'silent':
         print("error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
         print("Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
         print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
@@ -33422,7 +33428,7 @@ class AutoMunge:
       
       all_valid_entries_result = True
       
-      if postprocess_dict['printstatus'] != 'silent':
+      if printstatus != 'silent':
         print("error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
         print("Some transforms in library may not conduct infill, such as the passthrough transform excl.")
         print("Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
@@ -38322,6 +38328,7 @@ class AutoMunge:
       #first we'll populate some entries and then final aggregations performed after fully populating postprocess_dict
       labelsencoding_dict['transforms'].update({labels_column_entry : {labelscategory:{}}})
       for finalcolumn_label in columnkeylist:
+        # if finalcolumn_label == postprocess_dict['column_dict'][finalcolumn_label]['categorylist'][0]:
         labelsnormalization_dict_key = list(postprocess_dict['column_dict'][finalcolumn_label]['normalization_dict'])[0]
         #this populates a labelsnormalization_dict as {returnedcolumn : {}}
         #which later in the workflow are translated to column_dict entries in __populate_labelsencoding_dict_support3
@@ -38945,7 +38952,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.37'
+    automungeversion = '7.38'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -43290,7 +43297,7 @@ class AutoMunge:
         
       #apply transform to test set
       if qttf is not False:
-        mdf_test[suffixcolumn] = qttf.transform(pd.DataFrame(mdf_test[suffixcolumn]))
+        mdf_test[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_test[suffixcolumn])), index=mdf_test.index)
       
     else:
 
@@ -45309,7 +45316,7 @@ class AutoMunge:
           
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
         
-        mdf_test[DPnm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+        mdf_test[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
       
         #now inject noise
         mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
@@ -45426,7 +45433,7 @@ class AutoMunge:
         
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
-        mdf_test[DPmm_column] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+        mdf_test[DPmm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
 
         #cap outliers
         mdf_test = \
@@ -45654,7 +45661,7 @@ class AutoMunge:
 
         binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
-        mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples) * pd.DataFrame(binomial_samples)
+        mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
         
         #cap outliers
         mdf_test = \
@@ -49373,7 +49380,7 @@ class AutoMunge:
     
     #apply inverse_transform
     if qttf is not False:
-      df[inputcolumn] = qttf.inverse_transform(pd.DataFrame(df[inputcolumn]))
+      df[inputcolumn] = pd.DataFrame(qttf.inverse_transform(pd.DataFrame(df[inputcolumn])), index=df.index)
 
     #to align with inversion convention
     df[inputcolumn] = df[inputcolumn].fillna(np.nan)
