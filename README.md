@@ -5072,7 +5072,7 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : customML_predict_regressor}}
 ```
-Please note that for customML autoML_type, feature importance is performed with the default random forest.
+Please note that for customML autoML_type, feature importance is performed with the default random forest. (This was a design decision that benefits privacy of custom model training when sharing postprocess_dict with third party, this way only customML inference needs to be re-initialized when uploading postprocess_dict in a seperate notebook.)
 
 Note that the library has an internal suite of inference functions for different ML libraries 
 that can optionally be used in place of a user defined customML inference function. These can
