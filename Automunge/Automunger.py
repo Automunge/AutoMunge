@@ -30162,6 +30162,7 @@ class AutoMunge:
       FSML_cmnd['autoML_type'] = 'randomforest'
 
     FS_PCAn_components = False
+    FS_Binary = False
 
     FS_assignparam = deepcopy(assignparam)
 
@@ -30186,6 +30187,7 @@ class AutoMunge:
                   numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
                   featureselection = False, \
                   PCAn_components = FS_PCAn_components, \
+                  Binary = FS_Binary, \
                   ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
@@ -30253,52 +30255,93 @@ class AutoMunge:
         print("No labels returned from automunge(.), Feature Importance halted")
         print("")
 
-    if FSpostprocess_dict['labels_Binary_dict'] != {}:
-      FSmodel = False
-      am_labels = pd.DataFrame()
-
-      baseaccuracy = False
-
-      FS_validations.update({'FS_numeric_data_result': False})
-      FS_validations.update({'FS_all_valid_entries_result': False})
-
-      returned_label_set_for_featureselect_valresult = True
-      FS_validations.update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
-      
-      #printout display progress
-      if printstatus != 'silent':
-        print("_______________")
-        print("Feature importance not yet supported for consolidated categoric labels, Feature Importance halted")
-        print("")
-  
     #if am_labels is not an empty set
     if am_labels.empty is False:
 
       #find origcateogry of am_labels from FSpostprocess_dict
       labelcolumnkey = list(am_labels)[0]
-      origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-      origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
+      if labelcolumnkey in FSpostprocess_dict['column_dict']:
+        origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
+        origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-      #find labelctgy from process_dict based on this origcategory
-      labelctgy = FSprocess_dict[origcategory]['labelctgy']
+        #find labelctgy from process_dict based on this origcategory
+        labelctgy = FSprocess_dict[origcategory]['labelctgy']
 
-      am_categorylist = []
+        am_categorylist = []
 
-      for am_label_column in am_labels.columns:
+        for am_label_column in am_labels.columns:
 
-        if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
+          if am_label_column in FSpostprocess_dict['column_dict'] \
+          and FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
 
-          am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+            am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+
+            #we'll follow convention that if target label category MLinfilltype is concurrent
+            #we'll arbitrarily take the first column and use that as target
+            if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+            in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+
+              am_categorylist = [am_categorylist[0]]
+
+            break
+            
+      #same as if labelcolumnkey not in FSpostprocess_dict['column_dict']:
+      #only other scenario for labels is column originated from categoric consolidation
+      elif len(FSpostprocess_dict['labels_Binary_dict']) > 0:
+        
+        #for categoric consolidated labels, we are going to edit the column_dict and process_dict
+        #as a hack to enable __trainFSmodel support
+        #noting that in so doing there is a remote edge case of process_dict edit interfering with user overwrite to processdict
+        #so we have some additional accomodation there as well
+        
+        am_label_column = FSpostprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns'][0]
+        
+        am_categorylist = FSpostprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns']
+        
+        labelctgy = FSpostprocess_dict['labels_Binary_dict'][0]['Btype']
           
-          #we'll follow convention that if target label category MLinfilltype is concurrent
-          #we'll arbitrarily take the first column and use that as target
-          if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
-          in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
-            
-            am_categorylist = [am_categorylist[0]]
-            
-          break
-
+        #since process_dict only returns entries applied for transformations, there is chance a Binary transform isn't included
+        #so as part of the hack we'll add the associated Binary transform for purposes of inspecting the MLinfilltype
+        #FSpostprocess_dict['process_dict'] will only be inspected for MLinfilltype in __trainFSmodel and __shuffleaccuracy
+        
+        remote_overwrite_edge_case_marker = False
+        if labelctgy in FSpostprocess_dict['process_dict']:
+          remote_overwrite_edge_case_marker = True
+        
+        if labelctgy == 'ord3':
+          
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in FSpostprocess_dict['process_dict']:
+              labelctgy += 'B'
+          
+          FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'singlct'}})
+          
+        if labelctgy == 'onht':
+          
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in FSpostprocess_dict['process_dict']:
+              labelctgy += 'B'
+          
+          FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'multirt'}})
+          
+        if labelctgy == '1010':
+          
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in FSpostprocess_dict['process_dict']:
+          
+          FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : '1010'}})
+        
+        #this is a hack to support __trainFSmodel with categoric consolidations
+        FSpostprocess_dict['column_dict'].update({am_label_column : {'categorylist' : am_categorylist,
+                                                                     'columnslist' : list(am_labels), 
+                                                                     'category' : labelctgy,
+                                                                     'origcategory' : labelctgy}})
+          
+      #____________________
+          
       if len(am_categorylist) == 0:
 
         labelctgy_not_found_in_familytree_valresult = True
@@ -30383,24 +30426,27 @@ class AutoMunge:
         
         #assemble FScolumn_dict to support the feature evaluation
         for column in am_train_columns:
+          
+          #Binary and PCA consolidated columns don't get evaluated
+          if column in FSpostprocess_dict['column_dict']:
 
-          #pull categorylist, category, columnslist
-          categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
-          category = FSpostprocess_dict['column_dict'][column]['category']
-          columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
-          origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
+            #pull categorylist, category, columnslist
+            categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
+            category = FSpostprocess_dict['column_dict'][column]['category']
+            columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
+            origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
 
-          #create entry to FScolumn_dict
-          FScolumn_dict.update({column : {'categorylist' : categorylist, \
-                                          'category' : category, \
-                                          'columnslist' : columnslist, \
-                                          'origcolumn' : origcolumn, \
-                                          'FScomplete' : False, \
-                                          'shuffleaccuracy' : None, \
-                                          'shuffleaccuracy2' : None, \
-                                          'baseaccuracy' : baseaccuracy, \
-                                          'metric' : None, \
-                                          'metric2' : None}})
+            #create entry to FScolumn_dict
+            FScolumn_dict.update({column : {'categorylist' : categorylist, \
+                                            'category' : category, \
+                                            'columnslist' : columnslist, \
+                                            'origcolumn' : origcolumn, \
+                                            'FScomplete' : False, \
+                                            'shuffleaccuracy' : None, \
+                                            'shuffleaccuracy2' : None, \
+                                            'baseaccuracy' : baseaccuracy, \
+                                            'metric' : None, \
+                                            'metric2' : None}})
           
         #this is for assemblemadethecut
         FSprocess_dict = FSpostprocess_dict['process_dict']
@@ -30414,7 +30460,7 @@ class AutoMunge:
         #perform feature evaluation on each column
         for column in am_train_columns:
 
-          if column not in nonnumeric_columns:
+          if column not in nonnumeric_columns and column in FScolumn_dict:
 
             if FScolumn_dict[column]['FScomplete'] is False:
 
@@ -35514,6 +35560,9 @@ class AutoMunge:
 
           returned_Binary_columns = Binary_sublist_dict['returned_Binary_columns']
 
+          #Btype is the correspondign transformation category
+          Binary_sublist_dict.update({'Btype' : Btype})
+
         else:
           set_Binary_column_valresult = False
           Binary_sublist_dict = {'categoric_column_tuple' : ([], [], []),
@@ -38951,7 +39000,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.39'
+    automungeversion = '7.40'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -46549,7 +46598,6 @@ class AutoMunge:
     #primary goal here is to produce a processed dataframe for df_subset
     #with corresponding labels)
     
-        
     #printout display progress
     if printstatus is True:
       print("_______________")
@@ -46564,12 +46612,14 @@ class AutoMunge:
       testlabels.append(str(column))
     df_test.columns = testlabels
 
-    labelscolumn = False
-    if postprocess_dict['labels_column'] in list(df_test):
-      labelscolumn = postprocess_dict['labels_column']
+    labels_column_listofcolumns = postprocess_dict['labels_column_listofcolumns']
+    
+    labels_present = False
+    if set(labels_column_listofcolumns).issubset(set(df_test)):
+      labels_present = True
       
-    if labelscolumn is False:
-
+    else:
+      
       labelscolumn_for_postfeatureslect_valresult = True
       FS_validations.update({'labelscolumn_for_postfeatureslect_valresult' : labelscolumn_for_postfeatureslect_valresult})
       
@@ -46586,8 +46636,8 @@ class AutoMunge:
         print("_______________")
         print("No labels_column passed, Feature Importance halted")
         print("")
-        
-    elif labelscolumn is not False:
+    
+    if labels_present is True:
     
       #copy postprocess_dict to customize for feature importance evaluation
       FSpostprocess_dict = deepcopy(postprocess_dict)
@@ -46710,52 +46760,96 @@ class AutoMunge:
 
         returned_label_set_for_postfeatureselect_valresult = True
         FS_validations.update({'returned_label_set_for_postfeatureselect_valresult' : returned_label_set_for_postfeatureselect_valresult})
-
-      if FSpostprocess_dict['labels_Binary_dict'] != {}:
-        FSmodel = False
-        am_labels = pd.DataFrame()
-
-        baseaccuracy = False
-
-        FS_validations.update({'FS_numeric_data_result': False})
-        FS_validations.update({'FS_all_valid_entries_result': False})
-
-        returned_label_set_for_featureselect_valresult = True
-        FS_validations.update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
-        
-        #printout display progress
-        if printstatus != 'silent':
-          print("_______________")
-          print("Feature importance not yet supported for consolidated categoric labels, Feature Importance halted")
-          print("")
     
       #if am_labels is not an empty set
       if am_labels.empty is False:
 
         #find origcateogry of am_labels from FSpostprocess_dict
         labelcolumnkey = list(am_labels)[0]
-        origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
-        origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-        #find labelctgy from process_dict based on this origcategory
-        labelctgy = FSprocess_dict[origcategory]['labelctgy']
+        if labelcolumnkey in FSpostprocess_dict['column_dict']:
 
-        am_categorylist = []
+          origcolumn = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
+          origcategory = FSpostprocess_dict['column_dict'][labelcolumnkey]['origcategory']
 
-        for am_label_column in am_labels.columns:
+          #find labelctgy from process_dict based on this origcategory
+          labelctgy = FSprocess_dict[origcategory]['labelctgy']
 
-          if FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
+          am_categorylist = []
 
-            am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
+          for am_label_column in am_labels.columns:
             
-            #we'll follow convention that if target label category MLinfilltype is concurrent
-            #we'll arbitrarily take the first column and use that as target
-            if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
-            in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+            if am_label_column in FSpostprocess_dict['column_dict'] \
+            and FSpostprocess_dict['column_dict'][am_label_column]['category'] == labelctgy:
+
+              am_categorylist = FSpostprocess_dict['column_dict'][am_label_column]['categorylist']
               
-              am_categorylist = [am_categorylist[0]]
-              
-            break
+              #we'll follow convention that if target label category MLinfilltype is concurrent
+              #we'll arbitrarily take the first column and use that as target
+              if FSpostprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+              in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+                
+                am_categorylist = [am_categorylist[0]]
+                
+              break
+            
+        #same as if labelcolumnkey not in FSpostprocess_dict['column_dict']:
+        #only other scenario for labels is column originated from categoric consolidation
+        elif len(FSpostprocess_dict['labels_Binary_dict']) > 0:
+          
+          #for categoric consolidated labels, we are going to edit the column_dict and process_dict
+          #as a hack to enable __trainFSmodel support
+          #noting that in so doing there is a remote edge case of process_dict edit interfering with user overwrite to processdict
+          #so we have some additional accomodation there as well
+          
+          am_label_column = FSpostprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns'][0]
+          
+          am_categorylist = FSpostprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns']
+          
+          labelctgy = FSpostprocess_dict['labels_Binary_dict'][0]['Btype']
+            
+          #since process_dict only returns entries applied for transformations, there is chance a Binary transform isn't included
+          #so as part of the hack we'll add the associated Binary transform for purposes of inspecting the MLinfilltype
+          #FSpostprocess_dict['process_dict'] will only be inspected for MLinfilltype in __trainFSmodel and __shuffleaccuracy
+          
+          remote_overwrite_edge_case_marker = False
+          if labelctgy in FSpostprocess_dict['process_dict']:
+            remote_overwrite_edge_case_marker = True
+          
+          if labelctgy == 'ord3':
+            
+            if remote_overwrite_edge_case_marker is True:
+              #this is in case user specified by chance the same string in processdict
+              while labelctgy in FSpostprocess_dict['process_dict']:
+                labelctgy += 'B'
+            
+            FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'singlct'}})
+            
+          if labelctgy == 'onht':
+            
+            if remote_overwrite_edge_case_marker is True:
+              #this is in case user specified by chance the same string in processdict
+              while labelctgy in FSpostprocess_dict['process_dict']:
+                labelctgy += 'B'
+            
+            FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'multirt'}})
+            
+          if labelctgy == '1010':
+            
+            if remote_overwrite_edge_case_marker is True:
+              #this is in case user specified by chance the same string in processdict
+              while labelctgy in FSpostprocess_dict['process_dict']:
+                labelctgy += 'B'
+            
+            FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : '1010'}})
+          
+          #this is a hack to support __trainFSmodel with categoric consolidations
+          FSpostprocess_dict['column_dict'].update({am_label_column : {'categorylist' : am_categorylist,
+                                                                      'columnslist' : list(am_labels), 
+                                                                      'category' : labelctgy,
+                                                                      'origcategory' : labelctgy}})
+          
+      #____________________
 
         if len(am_categorylist) == 0:
           if printstatus != 'silent':
@@ -46845,23 +46939,26 @@ class AutoMunge:
           #assemble FScolumn_dict to support the feature evaluation
           for column in am_train_columns:
 
-            #pull categorylist, category, columnslist
-            categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
-            category = FSpostprocess_dict['column_dict'][column]['category']
-            columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
-            origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
+            #Binary and PCA consolidated columns don't get evaluated
+            if column in FSpostprocess_dict['column_dict']:
 
-            #create entry to FScolumn_dict
-            FScolumn_dict.update({column : {'categorylist' : categorylist, \
-                                            'category' : category, \
-                                            'columnslist' : columnslist, \
-                                            'origcolumn' : origcolumn, \
-                                            'FScomplete' : False, \
-                                            'shuffleaccuracy' : None, \
-                                            'shuffleaccuracy2' : None, \
-                                            'baseaccuracy' : baseaccuracy, \
-                                            'metric' : None, \
-                                            'metric2' : None}})
+              #pull categorylist, category, columnslist
+              categorylist = FSpostprocess_dict['column_dict'][column]['categorylist']
+              category = FSpostprocess_dict['column_dict'][column]['category']
+              columnslist = FSpostprocess_dict['column_dict'][column]['columnslist']
+              origcolumn = FSpostprocess_dict['column_dict'][column]['origcolumn']
+
+              #create entry to FScolumn_dict
+              FScolumn_dict.update({column : {'categorylist' : categorylist, \
+                                              'category' : category, \
+                                              'columnslist' : columnslist, \
+                                              'origcolumn' : origcolumn, \
+                                              'FScomplete' : False, \
+                                              'shuffleaccuracy' : None, \
+                                              'shuffleaccuracy2' : None, \
+                                              'baseaccuracy' : baseaccuracy, \
+                                              'metric' : None, \
+                                              'metric2' : None}})
 
           #printout display progress
           if printstatus is True:
@@ -46872,7 +46969,7 @@ class AutoMunge:
           #perform feature evaluation on each column
           for column in am_train_columns:
 
-            if column not in nonnumeric_columns:
+            if column not in nonnumeric_columns and column in FScolumn_dict:
 
   #             if FSpostprocess_dict['column_dict'][column]['category'] != 'NArw' \
   #             and FScolumn_dict[column]['FScomplete'] is False:
