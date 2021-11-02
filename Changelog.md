@@ -4861,3 +4861,10 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - (which was where we struck a redundant storage of normalization_dict in column_dict)
 - taking place with populating labelsencoding_dict
 - resolved by accessing targeted data structure entry through different path
+
+7.40
+- feature importance now supported with categoric consolidated labels
+- including feature importance applied in both of automunge(.) and postmunge(.)
+- categoric consolidation was accomodated by adding some condiitonals to feature importance column_dict inspections
+- and also as a hack some editing of data strucutre passed to the feature importance model training
+- such as to treat the consolidation transform as consistent to a transformation category
