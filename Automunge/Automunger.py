@@ -30304,6 +30304,7 @@ class AutoMunge:
         #so as part of the hack we'll add the associated Binary transform for purposes of inspecting the MLinfilltype
         #FSpostprocess_dict['process_dict'] will only be inspected for MLinfilltype in __trainFSmodel and __shuffleaccuracy
         
+        #in cases where labelctgy is already an entry in process_dict we'll add suffix until unique
         remote_overwrite_edge_case_marker = False
         if labelctgy in FSpostprocess_dict['process_dict']:
           remote_overwrite_edge_case_marker = True
@@ -30331,6 +30332,7 @@ class AutoMunge:
           if remote_overwrite_edge_case_marker is True:
             #this is in case user specified by chance the same string in processdict
             while labelctgy in FSpostprocess_dict['process_dict']:
+              labelctgy += 'B'
           
           FSpostprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : '1010'}})
         
@@ -46812,6 +46814,7 @@ class AutoMunge:
           #so as part of the hack we'll add the associated Binary transform for purposes of inspecting the MLinfilltype
           #FSpostprocess_dict['process_dict'] will only be inspected for MLinfilltype in __trainFSmodel and __shuffleaccuracy
           
+          #in cases where labelctgy is already an entry in process_dict we'll add suffix until unique
           remote_overwrite_edge_case_marker = False
           if labelctgy in FSpostprocess_dict['process_dict']:
             remote_overwrite_edge_case_marker = True
