@@ -4868,3 +4868,23 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - categoric consolidation was accomodated by adding some condiitonals to feature importance column_dict inspections
 - and also as a hack some editing of data strucutre passed to the feature importance model training
 - such as to treat the consolidation transform as consistent to a transformation category
+
+7.41
+- ML infill now available with XGBoost library and bayesian hyperparameter tuning by the Optuna library
+- can activate XGBoost by passing ML_cmnd['autoML_type'] = 'xgboost'
+- tuning can be activated by passing ML_cmnd['hyperparam_tuner'] = 'optuna_XGB1'
+- defaults to no tuning with default parameters associated with XGBoost's scikit api (XGBClassifier and XGBRegressor)
+- parameters can be passed to model training via ML_cmnd['MLinfill_cmnd']['xgboost_classifier_fit'] and ML_cmnd['MLinfill_cmnd']['xgboost_regressor_fit']
+- gpu support available by passing a CUDA gpu device id to ML_cmnd['xgboost_gpu_id'], which automatically activates tree_method to gpu_hist 
+- if you have one gpu the device id is probably the integer 0
+- (we recommend using ML_cmnd['xgboost_gpu_id'] instead of passing gpu parameters through ML_cmnd['MLinfill_cmnd'] so as to ensure consistent treatment between tuning and training)
+- note the read me demonstrates how to designate gpu training with cpu inference, as may be desired when intending to put the postprocess_dict into production
+- tuning applied via Bayesian optimization, making use of the Optuna library
+- tuning supported by parameters ML_cmnd['optuna_n_iter'] and ['optuna_timeout'] which set the maximum number of iterations and maximum tuning time for each feature in seconds
+- when not specified defaulting to ML_cmnd['optuna_n_iter'] = 100, ML_cmnd['optuna_timeout'] = 600 (i.e. 100 tuning iterations or 600 seconds for each feature, whichever comes first)
+- tuning implementation was partly inspired by the optuna tutorial at https://github.com/optuna/optuna-examples/blob/main/xgboost/xgboost_simple.py
+- currently based on a fixed validation split (possibly pending further research into incorporating cross validation / early stopping)
+- in the process of drafting xgboost wrappers, identified a potential inconsistency between customML implementation and documentation
+- we noted that customML receives ordinal encoded labels as str(int) with fully represented sequential range integer encodings from 0 to max of encoding space (which xgboost likes)
+- turned out there was a scenario where this conversion wasn't being performed, now resolved
+- *Please note we were having trouble validating the xgboost GPU support, possibly to issue with local hardware. For now please consider GPU support experimental, pending further validation.
