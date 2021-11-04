@@ -868,7 +868,7 @@ as a dictionary with first tier valid keys of:
 {'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'PCA_retain', 'leakage_tolerance',
 'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
-'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol', 'automungeversion'}
+'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol', 'automungeversion', 'optuna_n_iter', 'optuna_timeout', 'xgboost_gpu_id'}
 
 When a user passed ML_cmnd as an empty dictionary, any default values are populated internally.
 
@@ -979,6 +979,31 @@ ML_cmnd = {'autoML_type':'flaml',
            'MLinfill_cmnd' : {'flaml_classifier_fit'   : {'time_budget' : 15 },
                               'flaml_regressor_fit'    : {'time_budget' : 15}}}
 ```
+Another option is available for gradient boosting via the XGBoost library. Further information
+on the XGBoost library is available on arxiv as Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable 
+Tree Boosting System [arXiv:1603.02754](https://arxiv.org/abs/1603.02754).
+```
+#XGboost available by passing ML_cmnd as 
+ML_cmnd = {'autoML_type':'xgboost'}
+```
+
+The XGBoost implementation has Bayesian hyperparameter tuning available by way of the Optuna library by activating ML_cmnd['hyperparam_tuner'] = 'optuna_XGB1'. Optuna tuning accepts parameters for designating the max number of tuning iterations ('optuna_n_iter') and max tuning time in seconds ('optuna_timeout'), which are the values applied per target feature (tuning for a feature is halted when either of these conditions are met). Can pass specific parameters (such as selecting whether to run inference with GPU or CPU with 'predictor'), activate GPU training, tune other hyperparameters with optuna, and set tuning options from the shown defaults as:
+```
+ML_cmnd = {'autoML_type'      : 'xgboost', 
+           'MLinfill_cmnd'    : {'xgboost_classifier_fit'   : {'predictor' : 'cpu_predictor' },
+                                 'xgboost_regressor_fit'    : {'predictor' : 'cpu_predictor' }},
+           'xgboost_gpu_id'   : 0,
+           'hyperparam_tuner' : 'optuna_XG1',
+           'optuna_n_iter'    : 100,
+           'optuna_timeout'   : 600}
+```
+The implementation makes of XGBoost's "scikit-learn API", so accepted parameters are consistent with XGBClassifier and XGBRegressor. Please note that we recommend setting the gpu_id with ML_cmnd['xgboost_gpu_id'] (rather than passing through parameters) for consistent treatment between tuning and training, which automatically sets tree_method as gpu_hist. (If you intend to put the automunge(.) returned postprocess_dict into production you may want to set the predicter to cpu_predictor as shown so can run ML infill inference without a GPU.) If you don't know your gpu device id, they are usually integers (e.g. if you have one CUDA gpu the device id is usually the integer 0, you can verify this by passing "nvidia-smi" in a terminal window). 'xgboost_gpu_id' defaults to False when not specified, meaning training and inference are conducted on CPU.
+
+*Please note we were having trouble validating the GPU support, possibly to issue with local hardware. For now please consider GPU support experimental, pending further validation.
+
+For esoteric reason we don't yet have support for training feature importance models with xgboost, feature importance models will instead train with the default of random forest. Other built in autoML_types are supported.
+
+Further information on the Optuna library is available on arxiv as Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, Masanori Koyama. Optuna: A Next-generation Hyperparameter Optimization Framework. [arXiv:1907.10902](https://arxiv.org/abs/1907.10902#). Our tuning implementation owes a thank you to a tutorial provided by Optuna.
 
 Please note that model training by default incorporates a random random seed with each application,
 as can be deactivated by passing ML_cmnd['stochastic_training_seed'] = False to defer to the 
@@ -5146,6 +5171,11 @@ boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/
 Chi Wang, Qingyun Wu, Markus Weimer, Erkang Zhu. FLAML: A Fast and Lightweight AutoML Library
 [arXiv:1911.04706](https://arxiv.org/abs/1911.04706)
 
+Tianqi Chen, Carlos Guestrin. XGBoost: A Scalable Tree Boosting System
+[arXiv:1603.02754](https://arxiv.org/abs/1603.02754)
+
+Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, Masanori Koyama. Optuna: A Next-generation Hyperparameter Optimization Framework. Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (2019). [arXiv:1907.10902](https://arxiv.org/abs/1907.10902#)
+
 ...
 
 Please note that this list of citations is not exhaustive, we have had several additional influences that are cited in the papers of the [Automunge Medium Publication](https://medium.com/automunge).
@@ -5174,8 +5204,7 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
-Catboost, or AutoGluon libraries which are released under the Apache License 2.0, as well as
-an option for the FLAML library which is released under a MIT License.
+Catboost, AutoGluon, or XGBoost libraries libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
 
 ...
 
