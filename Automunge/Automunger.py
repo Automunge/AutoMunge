@@ -29,10 +29,11 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
-# from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_squared_log_error
 # from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 #stats may be used for cases where user elects RandomSearchCV hyperparameter tuning
 from scipy import stats
 
@@ -55,9 +56,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
-#these imports are only conducted when user has not previously conducted imports externally
-#sys used to check for prior external imports for these function specific imports
-import sys
+# import sys
 # from autogluon import TabularPrediction as task
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
@@ -65,6 +64,7 @@ import sys
 # import tensorflow as tf
 # from xgboost import XGBClassifier
 # from xgboost import XGBRegressor
+# import optuna
 
 class AutoMunge:
   """
@@ -214,6 +214,7 @@ class AutoMunge:
   __insertinfill
   __inspect_ML_cmnd
   __assemble_param_sets
+  __optuna_XG1
 
   #__FunctionBlock: halting criteria support functions
   __consolidate_multicolumn
@@ -255,6 +256,12 @@ class AutoMunge:
   _predict_catboost_classifier
   _train_catboost_regressor
   _predict_catboost_regressor
+  _train_xgboost_classifier
+  _train_xgboost_regressor
+  __train_xgboost
+  _predict_xgboost_classifier
+  _predict_xgboost_regressor
+  __predict_xgboost
 
   #__FunctionBlock: customML support functions
   _train_customML_classifier
@@ -276,6 +283,8 @@ class AutoMunge:
 
   #__FunctionBlock: data translations support
   __convert_onehot_to_singlecolumn
+  __sequential_range_integer
+  __sequential_range_integer_invert
   __convert_singlecolumn_to_onehot
   __convert_1010_to_onehot
   __convert_onehot_to_1010
@@ -26586,6 +26595,145 @@ class AutoMunge:
         
     return static_params, tune_params
 
+  def __optuna_XG1(self, train, labels, valratio, ML_cmnd, randomseed, classify_regress):
+    """
+    performs a bayesian hyperparameter tuning of XGBoost
+    using a validation ratio of valratio
+    and a number of iterations and max iterations time based on ML_cmnd['optuna_n_iter'] and ['optuna_timeout']
+    which default to 100 and 600. 
+    
+    To set a gpu for accelerated training can pass a gpu_id as 
+    ML_cmnd['xgboost_gpu_id'] = 0
+    (if you have one gpu this will probably be integer 0)
+    when a gpu is designated the tree_method will automatically apply gpu_hist
+    (I think that if a gpu is used for training it will be needed for inference)
+    
+    classify_regress is one of {'classify', 'regress'}
+    
+    can be activated for ml infill with XGBoost by ML_cmnd['hyperparam_tuner'] = 'optuna_XGB1'
+    
+    requires installation of the optuna library
+    this function is based on an optuna published tutorial shared on their github
+    #https://github.com/optuna/optuna-examples/blob/main/xgboost/xgboost_simple.py
+    
+    the github doesn't explicitly state license
+    since the optuna library is MIT licensed
+    I am operating on assumption that their tutorials are similar open source
+    
+    optuna license information and citation provided in read me
+    """
+    
+    if classify_regress in {'classify', 'boolean'}:
+      from xgboost import XGBClassifier
+    elif classify_regress == 'regress':
+      from xgboost import XGBRegressor
+    
+    import optuna
+
+    train_x, valid_x = self.__df_split(train, valratio, True, randomseed)
+    train_y, valid_y = self.__df_split(labels, valratio, True, randomseed)
+
+    #there is an edge case where this validation split results in not fully represented range integer classificaiotn labels
+    #which is an xgboost quirk
+    #since this is just for tuning we'll convert labels, noting that this means we won't be able to use saved model as final
+    if classify_regress in {'classify', 'boolean'}:
+      #train_y is a pandas series of integers
+      unique_set = set(train_y.unique())
+      intended_unique_set = set(range(train_y.astype(int).max()))
+      if len(intended_unique_set - unique_set) > 0:
+        range_conversion_dict = dict(zip(list(unique_set), list(range(len(unique_set)))))
+        train_y = train_y.replace(range_conversion_dict).astype(int)
+        valid_y = valid_y.replace(range_conversion_dict).astype(int)
+
+    def objective(trial):
+
+      param = {
+        "use_label_encoder" : False,
+        "verbosity": 0,
+        "tree_method": "exact",
+        # defines booster, gblinear for linear functions.
+        "booster": trial.suggest_categorical("booster", ["gbtree", "gblinear", "dart"]),
+        # L2 regularization weight.
+        "lambda": trial.suggest_float("lambda", 1e-8, 1.0, log=True),
+        # L1 regularization weight.
+        "alpha": trial.suggest_float("alpha", 1e-8, 1.0, log=True),
+        # sampling ratio for training data.
+        "subsample": trial.suggest_float("subsample", 0.2, 1.0),
+        # sampling according to each tree.
+        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.2, 1.0),
+      }
+      
+      if classify_regress == 'boolean':
+        param['objective'] = 'binary:logistic'
+
+      if ML_cmnd['xgboost_gpu_id'] is not False:
+        param.update({'tree_method'   : 'gpu_hist',
+                            'gpu_id' : ML_cmnd['xgboost_gpu_id'] })
+
+      if param["booster"] in ["gbtree", "dart"]:
+        # maximum depth of the tree, signifies complexity of the tree.
+        #(was thinking about tuning max_depth with step=1 but don't have sufficient expertise to make that judgment, 
+        #defering to optuna demonstration
+        #perhaps this would be suitable with higher iteration counts / timeout times)
+        param["max_depth"] = trial.suggest_int("max_depth", 3, 9, step=2)
+        # minimum child weight, larger the term more conservative the tree.
+        param["min_child_weight"] = trial.suggest_int("min_child_weight", 2, 10)
+        param["eta"] = trial.suggest_float("eta", 1e-8, 1.0, log=True)
+        # defines how selective algorithm is.
+        param["gamma"] = trial.suggest_float("gamma", 1e-8, 1.0, log=True)
+        param["grow_policy"] = trial.suggest_categorical("grow_policy", ["depthwise", "lossguide"])
+
+      if param["booster"] == "dart":
+        param["sample_type"] = trial.suggest_categorical("sample_type", ["uniform", "weighted"])
+        param["normalize_type"] = trial.suggest_categorical("normalize_type", ["tree", "forest"])
+        param["rate_drop"] = trial.suggest_float("rate_drop", 1e-8, 1.0, log=True)
+        param["skip_drop"] = trial.suggest_float("skip_drop", 1e-8, 1.0, log=True)
+      
+      if classify_regress in {'classify', 'boolean'}:
+        
+        model = XGBClassifier(**param)
+      
+        bst = model.fit(train_x, train_y)
+        preds = bst.predict(valid_x)
+        
+        #use of f1 as default is per recommendation from Deep Learning with Pytorch by Stevens and Antiga
+        metric = f1_score(valid_y, preds, zero_division=0, average='weighted')
+        
+      if classify_regress == 'regress':
+        
+        model = XGBRegressor(**param)
+        
+        bst = model.fit(train_x, train_y)
+        preds = bst.predict(valid_x)
+        
+        #this handles edge case for an overflow in derived metric
+        try:
+          metric = mean_squared_error(valid_y, preds)
+        except ValueError:
+          metric = 3.4E38
+        
+      return metric
+    
+    #initialized in __check_ML_cmnd when not user defined
+    optuna_n_iter = ML_cmnd['optuna_n_iter']
+    optuna_timeout = ML_cmnd['optuna_timeout']
+    
+    if classify_regress in {'classify', 'boolean'}:
+      #f1 score is in range 0-1, with 1 being the best score
+      study = optuna.create_study(direction="maximize")
+
+    elif classify_regress == 'regress':
+      #mean_squared_error is >=0, with 0 being the best score
+      study = optuna.create_study(direction="minimize")
+
+    study.optimize(objective, n_trials=optuna_n_iter, timeout=optuna_timeout)
+    
+    trial = study.best_trial
+    
+    tuned_params = trial.params
+    
+    return tuned_params
+
   #__FunctionBlock: halting criteria support functions
 
   def __consolidate_multicolumn(self, df_traininfill, column, MLinfilltype, postprocess_dict):
@@ -27598,7 +27746,15 @@ class AutoMunge:
                                        'onehotclassification'   : {'train'   : self._train_catboost_classifier,
                                                                    'predict' : self._predict_catboost_classifier},
                                        'regression'             : {'train'   : self._train_catboost_regressor,
-                                                                   'predict' : self._predict_catboost_regressor}}})
+                                                                   'predict' : self._predict_catboost_regressor}},
+                     'xgboost'      : {'booleanclassification'  : {'train'   : self._train_xgboost_classifier_boolean, \
+                                                                   'predict' : self._predict_xgboost_classifier}, \
+                                       'ordinalclassification'  : {'train'   : self._train_xgboost_classifier, \
+                                                                   'predict' : self._predict_xgboost_classifier}, \
+                                       'onehotclassification'   : {'train'   : self._train_xgboost_classifier, \
+                                                                   'predict' : self._predict_xgboost_classifier}, \
+                                       'regression'             : {'train'   : self._train_xgboost_regressor, \
+                                                                   'predict' : self._predict_xgboost_regressor}}})
     
     return autoMLer
 
@@ -28824,6 +28980,217 @@ class AutoMunge:
       
       return infill
 
+  def _train_xgboost_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'classification'
+    return self.__train_xgboost(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_xgboost_classifier_boolean(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'boolean'
+    return self.__train_xgboost(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+
+  def _train_xgboost_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
+    modeltype = 'regression'
+    return self.__train_xgboost(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+  
+  def __train_xgboost(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
+    """
+    this function adapted from the customML training function
+    and supports hyperparameter tuning by passing ML_cmnd['hyperparam_tuner'] = 'optuna_XG1' 
+    which also supports setting number of trials and max time via ML_cmnd['optuna_n_iter'] and ['optuna_timeout']
+
+    for classificaiton scenario, this function accepts both ordinal and one hot label target forms (1010 is converted to onehot externally)
+    onehot is converted to ordinal and provide labels as a fully represented sequential range integer set from 0 to max encoding
+
+    modeltype accepted as classification, boolean, and regression
+    where boolean differs from classificaiton by setting different xgboost objective in tuning
+    """
+
+    #xgboost tuning with optuna benefits from distinguishing between binary classification and multi target classificaiton
+    #booleantype is marker for this purpose and primary use is for passing entry to optuna tuner
+    booleantype = False
+    if modeltype == 'boolean':
+      booleantype = True
+      modeltype = 'classification'
+    
+    # columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
+    
+    #featurekey is a unique concatinated string of all column headers serving as basis for this model
+    featureskey = ''
+    for entry in df_train_filltrain.columns:
+      featureskey += entry
+    ML_cmnd['customML_inference_support'].update({featureskey : {'seq_ordinal_marker':True}})
+
+    df_train_filllabel = df_train_filllabel.copy()
+    
+    #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
+    df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
+    df_train_filllabel = df_train_filllabel.reset_index(drop=True)
+    
+    df_train_filltrain = df_train_filltrain.reset_index(drop=True)
+    
+    ML_label_columns = list(df_train_filllabel.columns)
+
+    if len(ML_label_columns) == 1:
+      #this will be ML_label_column = integer 0
+      ML_label_column = ML_label_columns[0]
+
+    else:
+      #note this scenario only occurs for classification
+      #returns a single column with str(int) entries encoding each distinct activation set
+      #(moved the featureskey methods to __sequential_range_integer)
+      df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=False)
+      ML_label_column = list(df_train_filllabel.columns)[0]
+
+    if modeltype == 'classification':
+      #convention is that regression will return labels with header of integer 0, classification with header of integer 1
+      df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
+      ML_label_column = 1
+
+      #convert to fully represented sequential ranged integer as str(int) type
+      df_train_filllabel, ML_cmnd = \
+      self.__sequential_range_integer(df_train_filllabel, ML_cmnd, stringtype = True, featureskey=featureskey)
+
+    #convert single column to a series
+    if df_train_filllabel.shape[1] == 1:
+      df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
+    
+    #note that we know that ML_label_column won't overlap with df_train_filltrain headers
+    #because df_train_filltrain headers are strings in suffix convention which include an underscore character
+    #and labels header is integer 0
+    #so if user wants to concatinate labels onto training set in their function it is ok
+    
+    #access any user passed parameters
+    commands = {}
+    if modeltype == 'classification':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'xgboost_Classifier' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['xgboost_Classifier']
+    if modeltype == 'regression':
+      if 'MLinfill_cmnd' in ML_cmnd:
+        if 'xgboost_Regressor' in ML_cmnd['MLinfill_cmnd']:
+          commands = ML_cmnd['MLinfill_cmnd']['xgboost_Regressor']
+    
+    #train the model
+    model = False
+    if modeltype == 'classification':
+
+      df_train_filllabel = df_train_filllabel.astype(int)
+
+      #classify_regress will be basis of optuna tuner
+      classify_regress = 'classify'
+      #for binary classification using different xgboost objective basis
+      if booleantype == True:
+        classify_regress = 'boolean'
+      
+      tuned_params = {"use_label_encoder" : False}
+      if ML_cmnd['hyperparam_tuner'] == 'optuna_XG1':
+        tuned_params = \
+        self.__optuna_XG1(df_train_filltrain, df_train_filllabel, 0.25, ML_cmnd, randomseed, classify_regress)
+      else:
+        #otherwise set any settings based on ML_cmnd['xgboost_gpu_id']
+        #noting that specific commands passed through ML_cmnd['MLinfill_cmnd'] still take precedence
+        if ML_cmnd['xgboost_gpu_id'] is not False:
+          tuned_params.update({'tree_method' : 'gpu_hist',
+                               'gpu_id'      : ML_cmnd['xgboost_gpu_id'] })
+
+      #now update with any commands passed through ML_cmnd['MLinfill_cmnd']
+      tuned_params.update(commands)
+
+      from xgboost import XGBClassifier
+      model = XGBClassifier(**tuned_params)
+
+      #train the model without validation set
+      model.fit(
+        df_train_filltrain, df_train_filllabel,
+      )
+      
+    elif modeltype == 'regression':
+
+      tuned_params = {}
+      if ML_cmnd['hyperparam_tuner'] == 'optuna_XG1':
+        tuned_params = \
+        self.__optuna_XG1(df_train_filltrain, df_train_filllabel, 0.25, ML_cmnd, randomseed, 'regress')
+      
+      tuned_params.update(commands)
+
+      from xgboost import XGBRegressor
+      model = XGBRegressor(**tuned_params)
+
+      #train the model without validation set
+      model.fit(
+        df_train_filltrain, df_train_filllabel,
+      )
+    
+    postprocess_dict['customML_inference_support'].update(ML_cmnd['customML_inference_support'])
+    
+    return model, postprocess_dict
+
+  def _predict_xgboost_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'classification'
+    return self.__predict_xgboost(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def _predict_xgboost_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
+    modeltype = 'regression'
+    return self.__predict_xgboost(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+
+  def __predict_xgboost(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
+    """
+    this function adapted from the customML predict function, 
+    and makes use of the xgboost default inference function to run inference
+    """
+    
+    if model is not False:
+
+      if modeltype == 'classification':
+        from xgboost import XGBClassifier
+      elif modeltype == 'regression':
+        from xgboost import XGBRegressor
+      
+      #featurekey is a unique concatinated string of all column headers serving as basis for this model
+      featureskey = ''
+      for entry in fillfeatures.columns:
+        featureskey += entry
+      
+      fillfeatures = fillfeatures.reset_index(drop=True)
+      
+      defaulttype = 'xgboost'
+      commands = {}
+      
+      infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands, ML_cmnd)
+              
+      #infill is expected as a single column, as either a pandas dataframe, pandas series, or numpy array
+      #we'll convert to a flattened array for common form
+      if type(infill) == type(pd.DataFrame()) or type(infill) == type(pd.Series([1])):
+        infill = infill.to_numpy()
+        
+      infill = infill.ravel()
+              
+      if modeltype == 'classification':
+        
+        #returned values from inference are accepted as either type int or type str(int)
+        #categorylist is a list of headers corresponding to onehot form, where if this is a 1010 set will be list before converting back to binarized
+        if len(categorylist) > 1:
+          
+          #this inverts any consolidations to sequential ranged integer from training
+          infill = self.__sequential_range_integer_invert(infill, ML_cmnd, featureskey=featureskey)
+          
+          #this will return a onehot encoded array with 0/1 integer entries
+          #note the featureskey method is now performed in __sequential_range_integer_invert
+          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
+        
+        else:
+          
+          #else for single column case if entries are str(int) we'll convert to int
+          #so this could result in a boolean integer set or ordinal integer set depending on label composition
+          infill = infill.astype(int)
+
+    elif model is False:
+      
+      #note that infill is not inserted when model is False
+      infill = np.zeros(shape=(1,len(categorylist)))
+      
+    return infill
+
   #__FunctionBlock: customML support functions
 
   def _train_customML_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
@@ -28908,19 +29275,23 @@ class AutoMunge:
       ML_label_column = ML_label_columns[0]
 
       if modeltype == 'classification':
-        df_train_filllabel[ML_label_column] = df_train_filllabel[ML_label_column].astype(str)
+        df_train_filllabel[ML_label_column] = df_train_filllabel[ML_label_column]
 
     else:
       #note this scenario only occurs for classification
-      #returns a single column with str(int) entries encoding each distinct activation set
-      df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True,
-                                                                         featureskey = featureskey)
+      #returns a single column with int entries
+      #(moved the featureskey methods to __sequential_range_integer)
+      df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=False)
       ML_label_column = list(df_train_filllabel.columns)[0]
-    
+
     if modeltype == 'classification':
       #convention is that regression will return labels with header of integer 0, classification with header of integer 1
       df_train_filllabel = df_train_filllabel.rename(columns = {ML_label_column:1})
       ML_label_column = 1
+
+      #convert to fully represented sequential ranged integer as str(int) type
+      df_train_filllabel, ML_cmnd = \
+      self.__sequential_range_integer(df_train_filllabel, ML_cmnd, stringtype = True, featureskey=featureskey)
 
     #convert single column to a series
     if df_train_filllabel.shape[1] == 1:
@@ -29072,11 +29443,14 @@ class AutoMunge:
         #returned values from inference are accepted as either type int or type str(int)
         #categorylist is a list of headers corresponding to onehot form, where if this is a 1010 set will be list before converting back to binarized
         if len(categorylist) > 1:
+
+          #this inverts any consolidations to sequential ranged integer from training
+          infill = self.__sequential_range_integer_invert(infill, ML_cmnd, featureskey=featureskey)
           
           #this will return a onehot encoded array with 0/1 integer entries
-          #this will return a onehot encoded array with 0/1 integer entries
-          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist, featureskey=featureskey)
-        
+          #note the featureskey method is now performed in __sequential_range_integer_invert
+          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
+
         else:
           
           #else for single column case if entries are str(int) we'll convert to int
@@ -29288,8 +29662,7 @@ class AutoMunge:
 
   #__FunctionBlock: data translations support
 
-  def __convert_onehot_to_singlecolumn(self, df, ML_cmnd, stringtype = True, 
-                                       featureskey = ''):
+  def __convert_onehot_to_singlecolumn(self, df, ML_cmnd, stringtype = True):
     """
     #support function for autoML libraries that don't accept multicolumn labels
     #converts onehot encoded sets to single column
@@ -29298,7 +29671,7 @@ class AutoMunge:
     #we'll populate with -1
     #which since these are dervied from a numpy set won't overlap with headers
     
-    #when featureskey is passed as a non empty string the conversion to sequential integers occurs
+    #(featureskey workflow now takes place in __sequential_range_integer)
     """
     
     df2 = pd.DataFrame({-1:[-1]*df.shape[0]}, index=df.index)
@@ -29312,20 +29685,44 @@ class AutoMunge:
     #this shifts register forward by 1, is associated with the -1 convention for onehot rows without activation
     #after this register shift entries are always non-negative
     df2 += 1
+
+    #(previously featureskey workflow took place here)
       
-    #the above conversion may result in cases of gaps in the set of sequential ranged integers
+    #this converts the integers to type str(int)
+    if stringtype is True:
+      df2['labels'] = df2['labels'].astype(int).astype(str)
+        
+    return df2, ML_cmnd
+
+  def __sequential_range_integer(self, df2, ML_cmnd, stringtype = True, featureskey = ''):
+    """
+    #when featureskey is passed as a non empty string the conversion to sequential integers occurs
+    
+    #expects df2 as a single column ordinal encoded labels which may have potential gaps in encoding space
+    #returns df compressed to a fully represented sequential range integer 
+    
+    #df2 is a dataframe with header of the integer 1
+    """
+    
+    #the ordinal encoding may have gaps in the set of sequential ranged integers
     #some learning libraries need a fully represented set of integers from 0-max
     #so this option translates from the gapped representation to sequential fully represented
     if featureskey != '':
       
-      original_labels = list(df2['labels'].unique())
-      sequential_labels = list(range(len(original_labels)))
+      seq_ordinal_dict = {}
+      inverse_seq_ordinal_dict = {}
+      original_labels = sorted(list(df2[1].unique()))
       
-      #'seq_ordinal_dict' : {original_label : sequential_label}
-      seq_ordinal_dict = dict(zip(original_labels, sequential_labels))
-      
-      #'inverse_seq_ordinal_dict' : {sequential_label : original_label}
-      inverse_seq_ordinal_dict = {value:key for key,value in seq_ordinal_dict.items()}
+      #this tests for fully represented encoding space
+      if len(set(df2[1].astype(int).unique()) - set(range(len(original_labels)))) == 0:
+
+        sequential_labels = list(range(len(original_labels)))
+
+        #'seq_ordinal_dict' : {original_label : sequential_label}
+        seq_ordinal_dict = dict(zip(original_labels, sequential_labels))
+        
+        #'inverse_seq_ordinal_dict' : {sequential_label : original_label}
+        inverse_seq_ordinal_dict = {value:key for key,value in seq_ordinal_dict.items()}
       
       if featureskey in ML_cmnd['customML_inference_support']:
 
@@ -29335,29 +29732,26 @@ class AutoMunge:
         })
         
       #now apply the conversion to fully represented sequential ranged integers
-      df2['labels'] = df2['labels'].replace(seq_ordinal_dict)
+      df2[1] = df2[1].replace(seq_ordinal_dict)
       
-    #this converts the integers to type str(int)
     if stringtype is True:
-      df2['labels'] = df2['labels'].astype(int).astype(str)
-        
+      
+      df2[1] = df2[1].astype(str)
+      
     return df2, ML_cmnd
 
-  def __convert_singlecolumn_to_onehot(self, df, ML_cmnd, columnslist, featureskey=''):
+  def __sequential_range_integer_invert(self, df, ML_cmnd, featureskey=''):
     """
-    #support function for autoML libraries that don't accept multicolumn labels
-    #converts single column encoded sets back to onehot
-    #with entries corresponding to the column header
-    #where the entries will be
-    #for cases where a row did not have an entry (such as all zeros)
-    #we'll populate with -1
-    #which since these are dervied from a numpy set won't overlap with headers
+    inverts to conversion to fully represented sequential ranged integer 
+    that for training was performed in __sequential_range_integer
+    expects df as a single column numpy array
+    with entries of either int or str(int)
+    and header of integer 0
     """
-
+    
     df = pd.DataFrame(df)
 
     df[0] = df[0].astype(int)
-    df = df.rename(columns = {0:'labels'})
     
     #if a sequential convert was applied for training it is now inverted
     #we have convention that featurekey='' signals no translation performed
@@ -29371,7 +29765,30 @@ class AutoMunge:
           inverse_seq_ordinal_dict = \
           ML_cmnd['customML_inference_support'][featureskey]['inverse_seq_ordinal_dict']
         
-          df['labels'] = df['labels'].astype(int).replace(inverse_seq_ordinal_dict)
+          df[0] = df[0].astype(int).replace(inverse_seq_ordinal_dict)
+    
+    return df
+
+  def __convert_singlecolumn_to_onehot(self, df, ML_cmnd, columnslist):
+    """
+    #support function for autoML libraries that don't accept multicolumn labels
+    #converts single column encoded sets back to onehot
+    #with entries corresponding to the column header
+    #where the entries will be
+    #for cases where a row did not have an entry (such as all zeros)
+    #we'll populate with -1
+    #which since these are dervied from a numpy set won't overlap with headers
+
+    #(featureskey workflow now takes place in __sequential_range_integer_invert)
+    """
+
+    df = pd.DataFrame(df)
+
+    if 0 in df.columns:
+      df[0] = df[0].astype(int)
+      df = df.rename(columns = {0:'labels'})
+
+    #(previously featureskey workflow took place here)
 
     if 'automungeversion' not in ML_cmnd \
     or 'automungeversion' in ML_cmnd and float(ML_cmnd['automungeversion']) >= 7.26:
@@ -30158,7 +30575,8 @@ class AutoMunge:
 
     FSML_cmnd = deepcopy(ML_cmnd)
     #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
-    if ML_cmnd['autoML_type'] == 'customML':
+    #don't yet have support for xgboost due to use of postprocess_dict['customML_inference_support']
+    if ML_cmnd['autoML_type'] in {'customML', 'xgboost'}:
       FSML_cmnd['autoML_type'] = 'randomforest'
 
     FS_PCAn_components = False
@@ -34170,7 +34588,7 @@ class AutoMunge:
                               printstatus, 
                               check_ML_cmnd_result,
                               default='randomforest', 
-                              valid_entries={'randomforest', 'customML', 'autogluon', 'flaml', 'catboost'},
+                              valid_entries={'randomforest', 'customML', 'autogluon', 'flaml', 'catboost', 'xgboost'},
                               valid_type=str)
     
     ML_cmnd, check_ML_cmnd_result = \
@@ -34298,7 +34716,7 @@ class AutoMunge:
                               printstatus,  
                               check_ML_cmnd_result,
                               default='gridCV', 
-                              valid_entries={'gridCV', 'randomCV'},
+                              valid_entries={'gridCV', 'randomCV', 'optuna_XG1'},
                               valid_type=str)
     
     ML_cmnd, check_ML_cmnd_result = \
@@ -34309,6 +34727,33 @@ class AutoMunge:
                               default=100, 
                               valid_entries=False,
                               valid_type=int)
+
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'optuna_n_iter', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=100, 
+                              valid_entries=False,
+                              valid_type=int)
+
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'optuna_timeout', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=600, 
+                              valid_entries=False,
+                              valid_type=int)
+
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'xgboost_gpu_id', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=False, 
+                              valid_entries=False,
+                              valid_type=(int, bool))
     
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
@@ -39002,7 +39447,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.40'
+    automungeversion = '7.41'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -46681,7 +47126,8 @@ class AutoMunge:
       'unspecified' : []}
 
       #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
-      if ML_cmnd['autoML_type'] == 'customML':
+      #don't yet have support for xgboost due to use of psotprocess_dict[''customML_inference_support']
+      if ML_cmnd['autoML_type'] in {'customML', 'xgboost'}:
         autoMLer = self.__assemble_autoMLer()
         FSpostprocess_dict['autoMLer'] = autoMLer
         ML_cmnd['autoML_type'] = 'randomforest'
