@@ -12466,6 +12466,10 @@ class AutoMunge:
       
       mdf_train.rename(columns = textlabelsdict, inplace = True)
       mdf_test.rename(columns = textlabelsdict, inplace = True)
+      
+    mlti_norm_params_column_dict = {}
+    for inputcolumn in textcolumns:
+      mlti_norm_params_column_dict.update({inputcolumn : deepcopy(mlti_norm_params)})
     
     #now apply one of custom_train / custom_test or dualprocess based on norm_category processdict entry
     
@@ -12480,11 +12484,11 @@ class AutoMunge:
         #any assignparam specifications to specific inputcolumn added here
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
-            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
+            mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
         
         mdf_train, mdf_test, column_dict_list_portion = \
         self.__custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
-                                     norm_category, postprocess_dict, mlti_norm_params)
+                                     norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
     
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12505,11 +12509,11 @@ class AutoMunge:
         #any assignparam specifications to specific inputcolumn added here
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
-            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
+            mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
 
         mdf_train, mdf_test, column_dict_list_portion = \
         postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
-                                                                       norm_category, postprocess_dict, mlti_norm_params)
+                                                                       norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
 
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12530,15 +12534,15 @@ class AutoMunge:
         #any assignparam specifications to specific inputcolumn added here
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
-            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
+            mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
 
         mdf_train, column_dict_list_portion =  \
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_train, inputcolumn, category, \
-                                                                         norm_category, postprocess_dict, mlti_norm_params)
+                                                                         norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
 
         mdf_test, _1 = \
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, category, \
-                                                                         norm_category, postprocess_dict, mlti_norm_params)
+                                                                         norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
 
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12590,7 +12594,7 @@ class AutoMunge:
     textnormalization_dict = {}
     if len(final_returned_columns) > 0:
       textnormalization_dict = {final_returned_columns[0] : {'norm_category' : norm_category, \
-                                                              'norm_params' : mlti_norm_params, \
+                                                              'norm_params' : mlti_norm_params_column_dict, \
                                                               'textlabelsdict' : textlabelsdict, \
                                                               'textcolumns' : textcolumns, \
                                                               'inputtextcolumns' : inputtextcolumns, \
@@ -39508,7 +39512,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.42'
+    automungeversion = '7.43'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -41505,7 +41509,7 @@ class AutoMunge:
               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
 
           mdf_test = \
-          self.__custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params)
+          self.__custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params[inputcolumn])
 
         if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
@@ -41527,7 +41531,7 @@ class AutoMunge:
 
           mdf_test = \
           postprocess_dict['process_dict'][norm_category]['postprocess'](mdf_test, inputcolumn, norm_postprocess_dict, \
-                                                                         columnkey_list, norm_params)
+                                                                         columnkey_list, norm_params[inputcolumn])
 
         if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
@@ -41554,7 +41558,7 @@ class AutoMunge:
 
           mdf_test, _1 = \
           postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, origcategory, \
-                                                                           norm_category, norm_postprocess_dict, norm_params)
+                                                                           norm_category, norm_postprocess_dict, norm_params[inputcolumn])
 
         if 'inplace_option' in postprocess_dict['process_dict'][norm_category] \
         and postprocess_dict['process_dict'][norm_category]['inplace_option'] is False:
