@@ -4888,3 +4888,23 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - we noted that customML receives ordinal encoded labels as str(int) with fully represented sequential range integer encodings from 0 to max of encoding space (which xgboost likes)
 - turned out there was a scenario where this conversion wasn't being performed, now resolved
 - *Please note we were having trouble validating the xgboost GPU support, possibly to issue with local hardware. For now please consider GPU support experimental, pending further validation.
+
+7.42
+- New parameter accepted to both automunge(.) and postmunge(.) as noise_augment
+- Accepts type int or float(int) >=0. Defaults to 0
+- Used to specify a count of additional duplicates of training data prepared and concatinated with the original train set. 
+- Intended for use in conjunction with noise injection, such that the increased size of training corpus can be a form of data augmentation. 
+- Note that injected noise will be uniquely randomly sampled with each duplicate. 
+- When noise_augment is received as a dtype of int, one of the duplicates will be prepared without noise. When noise_augment is received as a dtype of float(int), all of the duplicates will be prepared with noise. 
+- When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish between duplicates by the original df_train.shape in comparison to the ID set's Automunge_index.
+- Please be aware that with large dataframes a large duplicate count may run into memory constraints, in which case additional duplicates can be prepared seperately in postmunge(.).
+- The postmunge(.) noise_augment option takes into account traindata parameter for distinguishing whether to treat the duplicates as train or test data.
+- Additional updates:
+- mlti transform now takes account for assignparam specifications in parameters passed to normcategory
+- this is relevant to mlti's use in context of noise injection to multi column hashing, as now can update trainnoise or testnoise to global_assignparam in similar fashion to other noise injection transforms
+- this also has benefit that now can assign specific assignparam specifications to each of the normcategory column applications (mlti takes as input multi column sets)
+- new scenarios supported for postmunge(.) traindata parameter as 'train_no_noise' and 'test_no_noise'
+- used as you would expect, treating data passed to postmunge as train or test data but without noise injections
+- this setting is primarily intended to support workflow with new noise_augment parameter
+- added dupl_rows parameter support for validation data prep in automunge (treated consistently to training data)
+- added random seeding support for validation data prep, matched to automunge randomseed when it is manually specified
