@@ -12416,12 +12416,12 @@ class AutoMunge:
       inplace = False
 
     #this is to support accessing defaultparams from process_dict based on norm_category
-    norm_params = self.__grab_params({norm_category : {column : norm_params}}, 
-                                    norm_category, 
-                                    column, 
-                                    postprocess_dict['process_dict'][norm_category],
-                                    postprocess_dict
-                                   )
+    mlti_norm_params = self.__grab_params({norm_category : {column : norm_params}}, 
+                                          norm_category, 
+                                          column, 
+                                          postprocess_dict['process_dict'][norm_category],
+                                          postprocess_dict
+                                         )
       
     #this function is intended to be applied donstream of a multirt encoding
     #meaning there may be multiple columns serving as target
@@ -12436,9 +12436,17 @@ class AutoMunge:
     #the returned columns will each have consistent suffix appending
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
 
+    #now update the mlti_norm_params based on any relevant assignparam specifications to global and default
+    assignparam = postprocess_dict['assignparam']
+    if 'global_assignparam' in assignparam:
+      mlti_norm_params.update(assignparam['global_assignparam'])
+    if 'default_assignparam' in assignparam:
+      if norm_category in assignparam['default_assignparam']:
+        mlti_norm_params.update(assignparam['default_assignparam'][norm_category])
+
     #textcolumns are never returned, they just used to applky the intermediate suffix appender associated with this tree category
     #so we'll always pass inplace as True in norm_params and if not accepted based on inplace_option in process_dict delete textcolumns
-    norm_params.update({'inplace' : True})
+    mlti_norm_params.update({'inplace' : True})
     
     #this maps between received and returned columns
     textlabelsdict = dict(zip(inputtextcolumns, textcolumns))
@@ -12469,9 +12477,14 @@ class AutoMunge:
       
       for inputcolumn in textcolumns:
         
+        #any assignparam specifications to specific inputcolumn added here
+        if norm_category in assignparam:
+          if inputcolumn in assignparam[norm_category]:
+            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
+        
         mdf_train, mdf_test, column_dict_list_portion = \
         self.__custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
-                                     norm_category, postprocess_dict, norm_params)
+                                     norm_category, postprocess_dict, mlti_norm_params)
     
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12488,10 +12501,15 @@ class AutoMunge:
     and callable(postprocess_dict['process_dict'][norm_category]['dualprocess']):
       
       for inputcolumn in textcolumns:
+        
+        #any assignparam specifications to specific inputcolumn added here
+        if norm_category in assignparam:
+          if inputcolumn in assignparam[norm_category]:
+            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
 
         mdf_train, mdf_test, column_dict_list_portion = \
         postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
-                                                                       norm_category, postprocess_dict, norm_params)
+                                                                       norm_category, postprocess_dict, mlti_norm_params)
 
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12509,13 +12527,18 @@ class AutoMunge:
       
       for inputcolumn in textcolumns:
 
+        #any assignparam specifications to specific inputcolumn added here
+        if norm_category in assignparam:
+          if inputcolumn in assignparam[norm_category]:
+            mlti_norm_params.update(assignparam[norm_category][inputcolumn])
+
         mdf_train, column_dict_list_portion =  \
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_train, inputcolumn, category, \
-                                                                         norm_category, postprocess_dict, norm_params)
+                                                                         norm_category, postprocess_dict, mlti_norm_params)
 
         mdf_test, _1 = \
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, category, \
-                                                                         norm_category, postprocess_dict, norm_params)
+                                                                         norm_category, postprocess_dict, mlti_norm_params)
 
         norm_column_dict_list += deepcopy(column_dict_list_portion)
       
@@ -12567,7 +12590,7 @@ class AutoMunge:
     textnormalization_dict = {}
     if len(final_returned_columns) > 0:
       textnormalization_dict = {final_returned_columns[0] : {'norm_category' : norm_category, \
-                                                              'norm_params' : norm_params, \
+                                                              'norm_params' : mlti_norm_params, \
                                                               'textlabelsdict' : textlabelsdict, \
                                                               'textcolumns' : textcolumns, \
                                                               'inputtextcolumns' : inputtextcolumns, \
@@ -33072,7 +33095,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key):
+                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -33511,13 +33534,25 @@ class AutoMunge:
         print()
 
     miscparameters_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
-    
+
+    #check noise_augment
+    noise_augment_valresult = False
+    if not isinstance(noise_augment, (int, float)) \
+    or isinstance(noise_augment, (int, float)) and noise_augment < 0:
+      noise_augment_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for noise_augment parameter.")
+        print("Acceptable values are non-negative integers (or float integers)")
+        print()
+
+    miscparameters_results.update({'noise_augment_valresult' : noise_augment_valresult})
+
     return miscparameters_results
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, \
-                                testID_column, randomseed, encrypt_key):
+                                testID_column, randomseed, encrypt_key, noise_augment):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -33660,11 +33695,12 @@ class AutoMunge:
 
     #check traindata
     traindata_valresult = False
-    if traindata not in {True, False} or not isinstance(pandasoutput, bool):
+    if traindata not in {True, False, 'train_no_noise', 'test_no_noise'} \
+    or traindata in {True, False} and not isinstance(pandasoutput, bool):
       traindata_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for traindata parameter.")
-        print("Acceptable values are one of {True, False}")
+        print("Acceptable values are one of {True, False, 'train_no_noise', 'test_no_noise'}")
         print()
       
     pm_miscparameters_results.update({'traindata_valresult' : traindata_valresult})
@@ -33710,6 +33746,18 @@ class AutoMunge:
         print()
 
     pm_miscparameters_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
+
+    #check noise_augment
+    noise_augment_pm_valresult = False
+    if not isinstance(noise_augment, (int, float)) \
+    or isinstance(noise_augment, (int, float)) and noise_augment < 0:
+      noise_augment_pm_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for noise_augment parameter.")
+        print("Acceptable values are non-negative integers (or float integers)")
+        print()
+
+    pm_miscparameters_results.update({'noise_augment_pm_valresult' : noise_augment_pm_valresult})
     
     return pm_miscparameters_results
 
@@ -37637,7 +37685,7 @@ class AutoMunge:
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
-                valpercent=0.0, floatprecision = 32, shuffletrain = True,
+                valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -37697,6 +37745,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge Parameter validations
     #__WorkflowBlock: automunge Feature Importance
     #__WorkflowBlock: automunge Misc dataframe preps and validations
+    #__WorkflowBlock: automunge noise_augment duplicate extraction
     #__WorkflowBlock: automunge ID set extraction
     #__WorkflowBlock: automunge validation and label set extraction
     #__WorkflowBlock: automunge column validations and variable initializations
@@ -37713,6 +37762,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge excl suffix management
     #__WorkflowBlock: automunge populate postprocess_dict
     #__WorkflowBlock: automunge privacy encoding
+    #__WorkflowBlock: automunge noise_augment prep duplicate sets
     #__WorkflowBlock: automunge validation data prep
     #__WorkflowBlock: automunge final preps and return
     """
@@ -37789,7 +37839,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key)
+                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -38149,6 +38199,16 @@ class AutoMunge:
                                    'assignnan_actions_valresult'            : assignnan_actions_valresult})
 
     #_________________________________________________________
+    #__WorkflowBlock: automunge noise_augment duplicate extraction
+    #prior to extracting ID and label sets
+    #if the noise_augment parameter was passed as >0
+    #a copy of df_train is collected
+    #which will later be prepared in postmunge for one or more concatinations
+    
+    if noise_augment > 0:
+      df_augment_duplicate = df_train.copy()
+
+    #_________________________________________________________
     #__WorkflowBlock: automunge ID set extraction
     #this includes extraction of columns associated with trainID_column and testID_column
     #extraction of any non ranged integer indexes from the dataframes for the ID sets
@@ -38296,7 +38356,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge validation and label set extraction
     #this includes extraction of rows associated with the valpercent parameter
     #which will be prepared with an internal postmunge(.) call after populating postprocess_dict
-    #label sets are also extracted based on labels_column parameter
+    #and then label sets are extracted based on labels_column parameter
     #if labels aren't present in df_train we create an empty dataframe
     #if labels aren't present in df_test we create a dummy set based on first row of training labels
 
@@ -38495,6 +38555,7 @@ class AutoMunge:
                         'randomseed' : randomseed,
                         'application_number' : application_number,
                         'autoMLer' : autoMLer,
+                        'assignparam' : assignparam,
                         'customML_inference_support' : {} }
     
     #mirror assigncat which will populate the returned categories from eval function
@@ -39447,7 +39508,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.41'
+    automungeversion = '7.42'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39490,6 +39551,7 @@ class AutoMunge:
                              'powertransform' : powertransform,
                              'binstransform' : binstransform,
                              'numbercategoryheuristic' : numbercategoryheuristic,
+                             'noise_augment' : noise_augment,
                              'pandasoutput' : pandasoutput,
                              'NArw_marker' : NArw_marker,
                              'featureselection' : featureselection,
@@ -39527,7 +39589,6 @@ class AutoMunge:
                              'transform_dict' : mirror_dict['transform_dict'],
                              'process_dict' : mirror_dict['process_dict'],
                              'postprocess_assigninfill_dict' : postprocess_assigninfill_dict,
-                             'assignparam' : assignparam,
                              'assign_param' : assign_param,
                              'assignnan' : assignnan,
                              'ML_cmnd' : ML_cmnd,
@@ -39724,6 +39785,75 @@ class AutoMunge:
     postprocess_dict.update({'labelsencoding_dict' : labelsencoding_dict})
 
     #_________________________________________________________
+    #__WorkflowBlock: automunge noise_augment prep duplicate sets
+    #when noise_augment is passed as integer greater than 0
+    #the duplicate set that was extracted in #__WorkflowBlock: automunge noise_augment prep duplicate sets
+    #is prepared in postmunge and concatinated onto the train, ID, and label sets
+    #the convention is the first duplicate is prepared without noise
+    #unless noise_augment is float(int) type
+    #in which case all duplicates are prepared with noise
+    #after concatination the duplicates are collectively shuffled based on shuffletrain parameter
+
+    if noise_augment > 0:
+      
+      for i in range(noise_augment):
+        
+        #printout display progress
+        if printstatus is True:
+          print("_______________")
+          print("Preparing noise_augment duplicate number ", i+1)
+          print("")
+      
+        #if noise_augment was passed as integer dtype 
+        #then first duplicate is prepared without noise
+        #(if noise_augment is a float then all sets have noise)
+        if i == 0 and isinstance(noise_augment, int):
+          traindata = 'train_no_noise'
+        else:
+          traindata = True
+          
+        #note that np.random used for noise doesn't accept a random seed, this seed is for other operations
+        augrandomseed = False
+        if randomrandomseed is False:
+          augrandomseed = randomseed
+
+        duplicate_i, duplicate_i_ID, duplicate_i_labels, \
+        _1 = \
+        am.postmunge(postprocess_dict, df_augment_duplicate,
+                     printstatus = printstatus,
+                     dupl_rows = dupl_rows,
+                     traindata = traindata,
+                     randomseed = augrandomseed)
+
+        #this adjusts Automunge_index to avoid duplicates
+        #indexcolumn is 'Automunge_index' from automunge or may be adjusted in cases of overlap
+        #indexcolumn will be same in privacy_encode scenario (ID sets not anonymized)
+        duplicate_i_ID[indexcolumn] += (df_trainID[indexcolumn].max() + 1)
+
+        df_train = pd.concat([df_train, duplicate_i], axis=0, ignore_index=True)
+        df_trainID = pd.concat([df_trainID, duplicate_i_ID], axis=0, ignore_index=True)
+
+        if labels_column is not False:
+          #single column labels returned from postmunge will be a series instead of dataframe
+          df_labels = pd.concat([pd.DataFrame(df_labels), pd.DataFrame(duplicate_i_labels)], axis=0, ignore_index=True)
+
+        del duplicate_i, duplicate_i_ID, duplicate_i_labels, _1
+
+      del df_augment_duplicate
+      
+      #this is an additional shuffle to the one performed in #__WorkflowBlock: automunge row shuffling
+      #it results in the duplicates being intermingled
+      #to maintain distinct sets can turn off shuffletrain
+      #can still distinguish with shuffling by df_train.shape in comparison to Automunge_index
+      if shuffletrain in {True, 'traintest'}:
+        
+        df_train = self.__df_shuffle(df_train, randomseed)
+        df_trainID = self.__df_shuffle(df_trainID, randomseed)
+        
+        if labels_column is not False:
+          df_labels = self.__df_shuffle(df_labels, randomseed)
+
+    #_________________________________________________________
     #__WorkflowBlock: automunge validation data prep
     #when a validation set was extracted per valratio parameter
     #it is passed to postmunge to prepare using the recently populated postprocess_dict as the basis
@@ -39745,12 +39875,17 @@ class AutoMunge:
       #to recover index (postmunge partitions non-range index into ID set)
       temp_valindex = df_validation1.index
 
+      valrandomseed = False
+      if randomrandomseed is False:
+        valrandomseed = randomseed
+
       #process validation set consistent to train set with postmunge here
-      #note that traindata parameter consistent with what passed to automunge(.)
+      #note that traindata parameter consistent with postmunge(.) default (False)
       df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
-                    pandasoutput = True, printstatus = printstatus, \
-                    shuffletrain = False)
+                     pandasoutput = True, printstatus = printstatus, \
+                     shuffletrain = False, dupl_rows = dupl_rows,
+                     randomseed = valrandomseed)
 
       df_validation1.index = temp_valindex
       if len(list(df_validationlabels1)) > 0:
@@ -41213,7 +41348,7 @@ class AutoMunge:
         mdf_test.rename(columns = textlabelsdict, inplace = True)
 
       #label smoothing only applied if traindata postmunge(.) parameter is True
-      if traindata is True or testsmooth is True:
+      if traindata in {True, 'train_no_noise'} or testsmooth is True:
 
         categorycomplete_test_dict = dict(zip(textcolumns, [False]*len(textcolumns)))
 
@@ -45796,7 +45931,9 @@ class AutoMunge:
         flip_prob = test_flip_prob
         noisedistribution = test_noisedistribution
       
-      if (trainnoise is True and traindata is True) or testnoise is True:
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -45913,8 +46050,10 @@ class AutoMunge:
         flip_prob = test_flip_prob
         noisedistribution = test_noisedistribution
       
-      if (trainnoise is True and traindata is True) or testnoise is True:
-
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
+        
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
@@ -46140,8 +46279,9 @@ class AutoMunge:
         flip_prob = test_flip_prob
         noisedistribution = test_noisedistribution
       
-      #if this is train data we'll inject noise
-      if (trainnoise is True and traindata is True) or testnoise is True:
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -46276,7 +46416,9 @@ class AutoMunge:
       elif traindata is False:
         flip_prob = test_flip_prob
       
-      if (trainnoise is True and traindata is True) or testnoise is True:
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
         
         #first we'll derive our sampled noise for injection
         mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -46378,7 +46520,9 @@ class AutoMunge:
         flip_prob = test_flip_prob
         weighted = test_weighted
       
-      if (trainnoise is True and traindata is True) or testnoise is True:
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
         
         #now we'll derive our sampled noise for injection
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -46530,7 +46674,9 @@ class AutoMunge:
         flip_prob = test_flip_prob
         weighted = test_weighted
       
-      if (trainnoise is True and traindata is True) or testnoise is True:
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False):
         
         #inject noise to mdf_test
         mdf_test = \
@@ -47816,7 +47962,7 @@ class AutoMunge:
                 testID_column = False, pandasoutput = True, 
                 printstatus = True, inplace = False,
                 dupl_rows = False, TrainLabelFreqLevel = False, 
-                featureeval = False, traindata = False,
+                featureeval = False, traindata = False, noise_augment = 0,
                 driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False,
                 randomseed = False, encrypt_key = False):
@@ -47832,6 +47978,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge feature importance
     #__WorkflowBlock: postmunge misc initializations and conversions
     #__WorkflowBlock: postmunge inversion
+    #__WorkflowBlock: postmunge noise_augment duplicate extraction
     #__WorkflowBlock: postmunge ID set populated
     #__WorkflowBlock: postmunge labels and other variable initializations
     #__WorkflowBlock: postmunge validate data set headers
@@ -47848,6 +47995,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge float data type management
     #__WorkflowBlock: postmunge excl suffix management
     #__WorkflowBlock: postmunge privacy encoding
+    #__WorkflowBlock: postmunge noise_augment prep duplicate sets
     #__WorkflowBlock: postmunge final preps and return
     """
 
@@ -47902,7 +48050,9 @@ class AutoMunge:
 
     #initialize randomseed for default configuration of random random seed
     #this is used in row shuffling and other random seeds that don't need to match automunge random seed
+    randomrandomseed = False
     if randomseed is False:
+      randomrandomseed = True
       #pandas sample accepts between 0:2**32-1
       randomseed = random.randint(0,4294967295)
 
@@ -47911,8 +48061,8 @@ class AutoMunge:
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
-    if traindata is True:
-      postprocess_dict['traindata'] = True
+    if traindata is not False:
+      postprocess_dict['traindata'] = traindata
     else:
       postprocess_dict['traindata'] = False
 
@@ -47946,7 +48096,7 @@ class AutoMunge:
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                   dupl_rows, featureeval, driftreport, inplace, \
                                   returnedsets, shuffletrain, inversion, traindata, \
-                                  testID_column, randomseed, encrypt_key)
+                                  testID_column, randomseed, encrypt_key, noise_augment)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
@@ -48101,6 +48251,16 @@ class AutoMunge:
       
       return df_test, recovered_list, inversion_info_dict
     #_______
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge noise_augment duplicate extraction
+    #prior to extracting ID and label sets
+    #if the noise_augment parameter was passed as >0
+    #a copy of df_test is collected
+    #which will later be prepared in postmunge for one or more concatinations
+    
+    if noise_augment > 0:
+      df_augment_duplicate = df_test.copy()
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge ID set populated
@@ -48834,6 +48994,97 @@ class AutoMunge:
 
       # #this resets the Automunge_index column returned in ID sets
       # df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge noise_augment prep duplicate sets
+    #when noise_augment is passed as integer greater than 0
+    #the duplicate set that was extracted in #__WorkflowBlock: postmunge noise_augment duplicate extraction
+    #is prepared in postmunge and concatinated onto the test, ID, and label sets
+    #the convention is the first duplicate is prepared without noise
+    #unless noise_augment is float(int) type
+    #in which case all duplicates are prepared with noise
+    #after concatination the duplicates are collectively shuffled based on shuffletrain parameter
+
+    if noise_augment > 0:
+      
+      for i in range(noise_augment):
+        
+        #printout display progress
+        if printstatus is True:
+          print("_______________")
+          print("Preparing noise_augment duplicate number ", i+1)
+          print("")
+      
+        #if noise_augment was passed as integer dtype 
+        #then first duplicate is prepared without noise
+        #(if noise_augment is a float then all sets have noise)
+        
+        #this differs from approach in automunge(.) 
+        #in that noise augment can be applied to both train and test scenarios
+        #in case user set traindata to a no_noise scenario
+        #we'll retain convention that only one set has no noise (in that case the base set)
+        if i == 0 and isinstance(noise_augment, int):
+
+          if traindata is True:
+            aug_traindata = 'train_no_noise'
+            
+          elif traindata == 'train_no_noise':
+            aug_traindata = True
+            
+          elif traindata is False:
+            aug_traindata = 'test_no_noise'
+            
+          elif traindata == 'test_no_noise':
+            aug_traindata = False
+            
+        else:
+
+          if traindata in {True, 'train_no_noise'}:
+            aug_traindata = True
+            
+          elif traindata in {False, 'test_no_noise'}:
+            aug_traindata = False
+          
+        #note that np.random used for noise doesn't accept a random seed, this seed is for other operations
+        augrandomseed = False
+        if randomrandomseed is False:
+          augrandomseed = randomseed
+
+        duplicate_i, duplicate_i_ID, duplicate_i_labels, \
+        _1 = \
+        am.postmunge(deepcopy(postprocess_dict), df_augment_duplicate,
+                     printstatus = printstatus,
+                     dupl_rows = dupl_rows,
+                     traindata = aug_traindata,
+                     randomseed = augrandomseed)
+
+        #this adjusts Automunge_index to avoid duplicates
+        #indexcolumn is 'Automunge_index' from automunge or may be adjusted in cases of overlap
+        #indexcolumn will be same in privacy_encode scenario (ID sets not anonymized)
+        duplicate_i_ID[postprocess_dict['indexcolumn']] += (df_testID[postprocess_dict['indexcolumn']].max() + 1)
+
+        df_test = pd.concat([df_test, duplicate_i], axis=0, ignore_index=True)
+        df_testID = pd.concat([df_testID, duplicate_i_ID], axis=0, ignore_index=True)
+
+        if labelscolumn is not False:
+          #single column labels returned from postmunge will be a series instead of dataframe
+          df_testlabels = pd.concat([pd.DataFrame(df_testlabels), pd.DataFrame(duplicate_i_labels)], axis=0, ignore_index=True)
+
+        del duplicate_i, duplicate_i_ID, duplicate_i_labels, _1
+      
+      del df_augment_duplicate
+
+      #this is an additional shuffle to the one performed in #__WorkflowBlock: postmunge row shuffling
+      #it results in the duplicates being intermingled
+      #to maintain distinct sets can turn off shuffletrain 
+      #can still distinguish with shuffling by df_test.shape in comparison to Automunge_index
+      if shuffletrain is True:
+        
+        df_test = self.__df_shuffle(df_test, randomseed)
+        df_testID = self.__df_shuffle(df_testID, randomseed)
+        
+        if labelscolumn is not False:
+          df_testlabels = self.__df_shuffle(df_testlabels, randomseed)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge final preps and return
