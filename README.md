@@ -89,7 +89,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -173,7 +173,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True,
              dupl_rows = False, TrainLabelFreqLevel = False,
-             featureeval = False, traindata = False,
+             featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              randomseed = False, encrypt_key = False)
@@ -251,7 +251,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -335,7 +335,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-             featureeval = False, traindata = False,
+             featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              randomseed = False, encrypt_key = False
@@ -446,7 +446,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True,
+             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -597,6 +597,18 @@ deactivated validation data will be based on a partiion of sequential rows from
 the bottom of the train set. Note that row correspondance with shuffling is
 maintained between train / ID / label sets. Note that we recommend deactivating 
 shuffletrain for sequential (time-series) data.
+
+* noise_augment: accepts type int or float(int) >=0. Defaults to 0. Used to specify 
+a count of additional duplicates of training data prepared and concatinated with the
+original train set. Intended for use in conjunction with noise injection, such that
+the increased size of training corpus can be a form of data augmentation. Note that 
+injected noise will be uniquely randomly sampled with each duplicate. When noise_augment
+is received as a dtype of int, one of the duplicates will be prepared without noise. When
+noise_augment is received as a dtype of float(int), all of the duplicates will be prepared 
+with noise. When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish
+between duplicates by the original df_train.shape in comparison to the ID set's Automunge_index.
+Please be aware that with large dataframes a large duplicate count may run into memory constraints,
+in which case additional duplicates can be prepared seperately in postmunge(.).
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -1913,7 +1925,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-             featureeval = False, traindata = False,
+             featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              randomseed = False, encrypt_key = False
@@ -2046,7 +2058,7 @@ am.postmunge(postprocess_dict, df_test,
              testID_column = False,
              pandasoutput = True, printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
-             featureeval = False, traindata = False,
+             featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              randomseed = False, encrypt_key = False
@@ -2202,11 +2214,25 @@ process_dict.update({'mnmx' : {'dualprocess'    : self.process_mnmx,
                                'labelctgy'      : 'mnmx'}})
 ```
 
-* traindata: boolean _{True, False}_, defaults to False. Only inspected when a transformation
+* traindata: boolean _{True, False, 'train_no_noise', 'test_no_noise'}_, defaults to False. Only inspected when a transformation
 is called that treats train data different than test data (currently only relevant to 
 DP family of transforms for noise injection to train sets or label smoothing transforms in smth family). When passed 
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
-default of False treats df_test as a test set (which turns off noise injection for DP transforms).
+default of False treats df_test as a test set (which turns off noise injection for DP transforms). As you would expect, 'train_no_noise' and 'test_no_noise' designates data passed to postmunge(.) as train or test data but turns off noise injections.
+
+* noise_augment: accepts type int or float(int) >=0. Defaults to 0. Used to specify 
+a count of additional duplicates of test data prepared and concatinated with the
+original test set. Intended for use in conjunction with noise injection, such that
+the increased size of training corpus can be a form of data augmentation. 
+Takes into account the traindata parameter passed to postmunge(.) for
+distinguishing whether to treat the duplicates as train or test data for purposes of noise injections.
+Note that injected noise will be uniquely randomly sampled with each duplicate. When noise_augment
+is received as a dtype of int, one of the duplicates will be prepared without noise. When
+noise_augment is received as a dtype of float(int), all of the duplicates will be prepared 
+with noise. When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish
+between duplicates by the original df_test.shape in comparison to the ID set's Automunge_index.
+Please be aware that with large dataframes a large duplicate count may run into memory constraints,
+in which case additional duplicates can be prepared in additional postmunge(.) calls.
 
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
 Designates the composition of the sets returned
@@ -3546,9 +3572,12 @@ data augmentation, or also for model perturbation in assembly of ensembles.
 Note that if desired to treat data passed to postmunge as a train set can apply the traindata postmunge
 parameter to signal that postmunge is preparing training data. 
 Note that when passing parameters to these functions, the transformation
-category associated with the transformation function may be different than the root category.
+category associated with the transformation function may be different than the root category, as detailed below.
 Noise sampling is built on top of numpy.random which as of version 1.17.0 uses an algorithm called PCG 
 as a pseudo random number generator.
+Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
+parameter to automatically prepare additional concatinated duplicates as a form of data augmentation.
+
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
@@ -3845,7 +3874,7 @@ unless an additional transform is applied downstream.)
   - suffix appender: '\_mlti\_' + suffix associated with the normalization
   - assignparam parameters accepted:
     - 'norm_category': defaults to 'nmbr', used to specify type of normalizaiton applied to each column. Used to access transformation functions from process_dict.
-    - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}
+    - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}. Note that parameters can also be passed to the norm_category through the assignparam automunge(.) parameter, with any specifications (such as to global_assignparam or default_assignparam) taking precedence over specificaitons through norm_params.
     - 'dtype': accepts one of {'float', 'conditionalinteger', 'mlhs'}, defaults to float. conditionalinteger is for use with mlto. 'mlhs' is for use with mlhs.
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
