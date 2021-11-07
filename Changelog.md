@@ -4908,3 +4908,8 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - this setting is primarily intended to support workflow with new noise_augment parameter
 - added dupl_rows parameter support for validation data prep in automunge (treated consistently to training data)
 - added random seeding support for validation data prep, matched to automunge randomseed when it is manually specified
+
+7.43
+- 7.42 had noted that mlti now has support for assigning specific assignparam specifications to each of the normcategory column applications to the mlti multi column set
+- an additional code review idenitfied that this aspect was insufficiently validated
+- now working as intended
