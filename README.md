@@ -598,7 +598,7 @@ the bottom of the train set. Note that row correspondance with shuffling is
 maintained between train / ID / label sets. Note that we recommend deactivating 
 shuffletrain for sequential (time-series) data.
 
-* noise_augment: accepts type int or float(int) >=0. Defaults to 0. Used to specify 
+* noise_augment: accepts type int or float(int) >=0, defaults to 0 - used to specify 
 a count of additional duplicates of training data prepared and concatinated with the
 original train set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. Note that 
@@ -2220,7 +2220,7 @@ DP family of transforms for noise injection to train sets or label smoothing tra
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP transforms). As you would expect, 'train_no_noise' and 'test_no_noise' designates data passed to postmunge(.) as train or test data but turns off noise injections.
 
-* noise_augment: accepts type int or float(int) >=0. Defaults to 0. Used to specify 
+* noise_augment: accepts type int or float(int) >=0. Defaults to 0 - used to specify 
 a count of additional duplicates of test data prepared and concatinated with the
 original test set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. 
