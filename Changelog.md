@@ -4913,3 +4913,7 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - 7.42 had noted that mlti now has support for assigning specific assignparam specifications to each of the normcategory column applications to the mlti multi column set
 - an additional code review idenitfied that this aspect was insufficiently validated
 - now working as intended
+
+7.44
+- found another validation oversight from 7.42. Was a complex rollout.
+- now the float(int) scenario for noise_augment working as intended
