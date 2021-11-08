@@ -39512,7 +39512,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.43'
+    automungeversion = '7.44'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39800,7 +39800,7 @@ class AutoMunge:
 
     if noise_augment > 0:
       
-      for i in range(noise_augment):
+      for i in range(int(noise_augment)):
         
         #printout display progress
         if printstatus is True:
@@ -49011,7 +49011,7 @@ class AutoMunge:
 
     if noise_augment > 0:
       
-      for i in range(noise_augment):
+      for i in range(int(noise_augment)):
         
         #printout display progress
         if printstatus is True:
