@@ -4917,3 +4917,32 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 7.44
 - found another validation oversight from 7.42. Was a complex rollout.
 - now the float(int) scenario for noise_augment working as intended
+
+7.45
+- today's theme was edge case mitigations
+- for cases where df_train has only one feature, routed around ML infill
+- (prior this resulted in a printout and halt, now is just a printout without ML infill)
+- in the process found a material edge case associated with automated leakage detection carveouts from ML infill
+- now for cases where after leakage carveouts an ML infill model has less than two input features serving as basis, ML infill model not trained
+- which otherwise could have been a halt channel
+- also returns a corresponding validation result as 'not_enough_samples_or_features_for_MLinfill_result'
+- recorded as boolean for each ML infill target column as {column : boolean}
+- found an edge case associated with one of sorting methods used in evaluating entry frequecies in a few places
+- associated with column header found in df_train overlapping with use of an arbitrary string
+- now circumvented by adding suffix to the arbitrary string until overlap resolved
+- a few cleanups to postmunge noise_augment
+- now passing postprocess_dict to internal postmunge call directly instead of a deepcopy for reduced memory overhead
+- just needed to accomodate postmunge specific temporary entries that were struck as part of the internal call
+- in the process found a snafu with noise_augment
+- associated with calling am.postmunge instead of self.postmunge
+- which if user used different import procedure could have been error channel
+- performed an audit of index extractions for ID sets
+- including various scenarios of index mismatch between df_train and df_test
+- found that there was an edge case associated with dataframes with multiple indexes
+- now resolved
+- put some additional thought into renaming of unnamed non-range index for extraction to ID sets
+- originally had renamed to 'Orig_index_############', where # is the 12 digit application number associated with the automunge(.) call
+- relized this was kind of impractical, now defaulits to 'Orig_index', unless that results in an overlap with existing columns for index or ID set, in which case the prior convention applies 
+- (and in cases where prior convention is inadequate additional comma suffixes added until resolved)
+- in the process a few cleanups to the support function for deriving 'Automunge_index' string which has a similar convention
+- note that when these strings deviate from default a validation result is reported to indexcolumn_valresult and origindexcolumn_valresult
