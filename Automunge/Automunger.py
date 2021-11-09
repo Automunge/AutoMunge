@@ -9437,8 +9437,12 @@ class AutoMunge:
       elif defaultinfill in {'lcinfill'}:
 
         #(asdf as used here is just an arbitrary string)
+        tempstring = 'asdf'
+        if tempstring in df:
+          while tempstring in df:
+            tempstring += 'z'
         mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
-        mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = [suffixcolumn, 'asdf'], ascending = [False, True])
+        mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
         mode_valuecounts_list = list(mode_valuecounts_list.index)
 
         if len(mode_valuecounts_list) > 0:
@@ -9496,40 +9500,46 @@ class AutoMunge:
     
     return df, defaultinfill_dict
 
-  def __set_indexcolumn(self, trainID_column, testID_column, application_number):
+  def __set_indexcolumn(self, trainID_column, testID_column, application_number, indexcolumn_base = 'Automunge_index'):
     """
     #this either sets indexcolumn as 'Automunge_index' 
     #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
     #(this helps with a rare potential workflow when data sets are repeatedly run through automunge)
     """
     
-    indexcolumn = 'Automunge_index'
     indexcolumn_valresult = False
 
     fullset = set()
     
+    indexcolumn = indexcolumn_base
     if isinstance(trainID_column, list):
       fullset = fullset | set(trainID_column)
-      if 'Automunge_index' in trainID_column:
-        indexcolumn = 'Automunge_index_' + str(application_number)
-    elif 'Automunge_index' == trainID_column:
+      if indexcolumn_base in trainID_column:
+        indexcolumn = indexcolumn_base + str(application_number)
+    elif indexcolumn_base == trainID_column:
       fullset = fullset | {trainID_column}
-      indexcolumn = 'Automunge_index_' + str(application_number)
+      indexcolumn = indexcolumn_base + '_' + str(application_number)
         
+    testindexcolumn = indexcolumn_base
     if isinstance(testID_column, list):
       fullset = fullset | set(testID_column)
-      if 'Automunge_index' in testID_column:
-        indexcolumn = 'Automunge_index_' + str(application_number)
-    elif 'Automunge_index' == testID_column:
+      if indexcolumn_base in testID_column:
+        testindexcolumn = indexcolumn_base + str(application_number)
+    elif indexcolumn_base == testID_column:
       fullset = fullset | {testID_column}
-      indexcolumn = 'Automunge_index_' + str(application_number)
+      testindexcolumn = indexcolumn_base + '_' + str(application_number)
+      
+    if testindexcolumn != indexcolumn:
+      if len(testindexcolumn) > len(indexcolumn):
+        indexcolumn = testindexcolumn
 
     #this is a very remote edge case, just being comprehensive
     if indexcolumn in fullset:
+      
       while indexcolumn in fullset:
         indexcolumn = indexcolumn + ','
 
-    if indexcolumn != 'Automunge_index':
+    if indexcolumn != indexcolumn_base:
       indexcolumn_valresult = True
     
     return indexcolumn, indexcolumn_valresult
@@ -11494,9 +11504,13 @@ class AutoMunge:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
 
+    tempstring = 'asdf'
+    if tempstring in mdf_train:
+      while tempstring in mdf_train:
+        tempstring += 'z'
     #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
     valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-    valuecounts = valuecounts.rename_axis('asdf').sort_values(by = [suffixcolumn, 'asdf'], ascending = [False, True])
+    valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
     valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
@@ -11827,8 +11841,14 @@ class AutoMunge:
     #frequency_sort derives a sorting order based on frequency of entries found in set
     if ordered is False and frequency_sort is True:
       ordered = True
+      
+      tempstring = 'asdf'
+      if tempstring in df:
+        while tempstring in df:
+          tempstring += 'z'
+      
       labels_train_ordered = pd.DataFrame(df[column].value_counts())
-      labels_train_ordered = labels_train_ordered.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -17016,8 +17036,14 @@ class AutoMunge:
     #frequency_sort derives a sorting order based on frequency of entries found in set
     if ordered is False and frequency_sort is True:
       ordered = True
+      
+      tempstring = 'asdf'
+      if tempstring in df:
+        while tempstring in df:
+          tempstring += 'z'
+      
       labels_train_ordered = pd.DataFrame(df[column].value_counts())
-      labels_train_ordered = labels_train_ordered.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -25465,9 +25491,13 @@ class AutoMunge:
 
     if NArowtype in {'binary'}:
         
+      tempstring = 'asdf'
+      if tempstring in df2:
+        while tempstring in df2:
+          tempstring += 'z'
       #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
       valuecounts = pd.DataFrame(df2[column].value_counts())
-      valuecounts = valuecounts.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
+      valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       valuecounts = list(valuecounts.index)
 
       if len(valuecounts) == 0:
@@ -26118,6 +26148,18 @@ class AutoMunge:
     #accepts autoMLer populated with architecture options which is applied based on entries to ML_cmnd
     '''
 
+    #this is associated with calling this function in postmunge feature importance, 
+    #'temp_miscparameters_results' not present in postprocess_dict passed to postmunge
+    temp_temp_miscparameters_results_marker = False
+    if 'temp_miscparameters_results' not in postprocess_dict:
+      postprocess_dict['temp_miscparameters_results'] = {}
+      temp_temp_miscparameters_results_marker = True
+
+    #this validation result populated below may be relevant 
+    #when after leakage carveouts there aren't enough remaining features to serve as basis
+    if 'not_enough_samples_or_features_for_MLinfill_result' not in postprocess_dict['temp_miscparameters_results']:
+      postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'] = {}
+
     #note that randomseed is received as the global automunge seed, 
     #which may either be a specified value through randomseed parameter or derived as a random integer when not specified
     #to introduce an option for stochasticity between iterations, we'll have a stochastic random seed 
@@ -26144,13 +26186,28 @@ class AutoMunge:
     if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
-      if df_train_filltrain.shape[0] == 0:
+      #also returns model as False if after carveouts there was less than 2 input features
+      if df_train_filltrain.shape[0] == 0 or \
+      len(self.__column_convert_support(list(df_train_filltrain), postprocess_dict, convert_to='input')) < 2:
         df_traininfill = np.zeros(shape=(1,len(categorylist)))
         df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
+
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : True}
+        )
+
+        if printstatus is True:
+          print("ML infill model had insufficient features or samples to serve as basis, training halted.")
+          print("This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+          print()
       
       else:
+
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : False}
+        )
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -26194,13 +26251,28 @@ class AutoMunge:
     if MLinfilltype in {'singlct', 'binary', 'concurrent_act', 'concurrent_ordl'}:
       
       #edge case if training data has zero rows (such as if column was all NaN) 
-      if df_train_filltrain.shape[0] == 0:
+      #also returns model as False if after carveouts there was less than 2 input features
+      if df_train_filltrain.shape[0] == 0 or \
+      len(self.__column_convert_support(list(df_train_filltrain), postprocess_dict, convert_to='input')) < 2:
         df_traininfill = np.zeros(shape=(1,len(categorylist)))
         df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : True}
+        )
+
+        if printstatus is True:
+          print("ML infill model had insufficient features or samples to serve as basis, training halted.")
+          print("This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+          print()
+
       else:
+
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : False}
+        )
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -26233,13 +26305,29 @@ class AutoMunge:
     #if target is multi column categoric (onehot encoded) / (binary encoded handled seperately)
     if MLinfilltype in {'multirt'}:
 
-      if df_train_filltrain.shape[0] == 0:
+      #edge case if training data has zero rows (such as if column was all NaN) 
+      #also returns model as False if after carveouts there was less than 2 input features
+      if df_train_filltrain.shape[0] == 0 or \
+      len(self.__column_convert_support(list(df_train_filltrain), postprocess_dict, convert_to='input')) < 2:
         df_traininfill = np.zeros(shape=(1,len(categorylist)))
         df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : True}
+        )
+
+        if printstatus is True:
+          print("ML infill model had insufficient features or samples to serve as basis, training halted.")
+          print("This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+          print()
+
       else:
+
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : False}
+        )
         
         #future extension - Label Smoothing for ML infill
         #(might incorporate this into the training function to be activated by ML_cmnd)
@@ -26274,14 +26362,30 @@ class AutoMunge:
     #if target is a binary encoded categoric set
     if MLinfilltype in {'1010'}:
       
-      if df_train_filltrain.shape[0] == 0:
+      #edge case if training data has zero rows (such as if column was all NaN) 
+      #also returns model as False if after carveouts there was less than 2 input features
+      if df_train_filltrain.shape[0] == 0 or \
+      len(self.__column_convert_support(list(df_train_filltrain), postprocess_dict, convert_to='input')) < 2:
 
         df_traininfill = np.zeros(shape=(1,len(categorylist)))
         df_testinfill = np.zeros(shape=(1,len(categorylist)))
 
         model = False
 
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : True}
+        )
+
+        if printstatus is True:
+          print("ML infill model had insufficient features or samples to serve as basis, training halted.")
+          print("This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+          print()
+
       else:
+
+        postprocess_dict['temp_miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result'].update(
+          {column : False}
+        )
 
         #convert from binary to one-hot encoding
         df_train_filllabel = \
@@ -26339,6 +26443,11 @@ class AutoMunge:
       df_testinfill = pd.DataFrame({column : [0]}) 
 
       model = False
+
+    #this is associated with calling this function in postmunge feature importance, 
+    #'temp_miscparameters_results' not present in postprocess_dict passed to postmunge
+    if temp_temp_miscparameters_results_marker is True:
+      del postprocess_dict['temp_miscparameters_results']
     
     return df_traininfill, df_testinfill, model, postprocess_dict
 
@@ -31582,7 +31691,7 @@ class AutoMunge:
 
               infill_validations = \
               self.__check_ML_infill(printstatus, df_train, column, postprocess_dict, infill_validations)
-              
+                
               #added a returned df_traininfill, convention is df_traininfill will be False when infillcomplete is True to ensure only one entry per categorylist
               df_train, df_test, postprocess_dict, df_traininfill = \
               self.__MLinfillfunction(df_train, df_test, column, postprocess_dict, \
@@ -32489,18 +32598,29 @@ class AutoMunge:
       #initialize a column to store encodings
       #note this arbitrary column won't overlap with any
       #because categorylist all have suffixes with '_' character
-      tempdf['onehot'] = ''
+      #however just as good practice will build in an overlap mitigation
+      tempstring1 = 'onehot'
+      if tempstring1 in tempdf:
+        while tempstring1 in tempdf:
+          tempstring1 += 'z'
+      
+      tempdf[tempstring1] = ''
 
       #populate column to store aggregated encodings 
       for tempdf_column in tempdf.columns:
-        if tempdf_column != 'onehot':
-          tempdf['onehot'] = \
-          tempdf['onehot'] + tempdf[tempdf_column].astype(int).astype(str)
+        if tempdf_column != tempstring1:
+          tempdf[tempstring1] = \
+          tempdf[tempstring1] + tempdf[tempdf_column].astype(int).astype(str)
 
       #find mode of the aggregation
+      
+      tempstring2 = 'asdf'
+      if tempstring2 in tempdf:
+        while tempstring2 in tempdf:
+          tempstring2 += 'z'
       #binary_mode = tempdf['onehot'].mode()
-      mode_valuecounts_list = pd.DataFrame(tempdf['onehot'].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = ['onehot', 'asdf'], ascending = [False, True])
+      mode_valuecounts_list = pd.DataFrame(tempdf[tempstring1].value_counts())
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring2).sort_values(by = [tempstring1, tempstring2], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
 
       if len(mode_valuecounts_list) > 0:
@@ -32520,7 +32640,7 @@ class AutoMunge:
 #         binary_mode = 0
       
       #remove rows other than mode
-      tempdf = tempdf[tempdf['onehot'] == binary_mode]
+      tempdf = tempdf[tempdf[tempstring1] == binary_mode]
       
       #mode is the current columns value associated with that mode
       mode = binary_mode[categorylist.index(column)]
@@ -32538,8 +32658,12 @@ class AutoMunge:
       tempdf = tempdf[tempdf[NArw_columnname] != 1]
 
       #calculate mode of remaining rows
+      tempstring = 'asdf'
+      if tempstring in tempdf:
+        while tempstring in tempdf:
+          tempstring += 'z'
       mode_valuecounts_list = pd.DataFrame(tempdf[column].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis('asdf').sort_values(by = [column, 'asdf'], ascending = [False, True])
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
       if len(mode_valuecounts_list) > 0:
         mode = mode_valuecounts_list[-1]
@@ -33851,7 +33975,7 @@ class AutoMunge:
       if len(columnslist) == len(list(df_train)):
         
         if postprocess_dict['printstatus'] != 'silent':
-          print("Error: ML infill requires > 1 source features in df_train")
+          print("ML infill requires > 1 source features in df_train, proceeding without ML infill")
           print()
         
         infill_validations.update({'MLinfill_validations': True})
@@ -38232,9 +38356,11 @@ class AutoMunge:
 
     #this either sets indexcolumn for returned ID sets as 'Automunge_index' 
     #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
-    indexcolumn, indexcolumn_valresult = self.__set_indexcolumn(trainID_column, testID_column, application_number)
+    indexcolumn, indexcolumn_valresult = self.__set_indexcolumn(trainID_column, testID_column, application_number, indexcolumn_base = 'Automunge_index')
+    origindexcolumn, origindexcolumn_valresult = self.__set_indexcolumn(trainID_column, testID_column, application_number, indexcolumn_base = 'Orig_index')
     #this is not logged with other suffix overlaps because not an error channel, just results in different index column header
-    miscparameters_results.update({'indexcolumn_valresult' : indexcolumn_valresult})
+    miscparameters_results.update({'indexcolumn_valresult' : indexcolumn_valresult,
+                                   'origindexcolumn_valresult' : origindexcolumn_valresult})
     
     #we'll have convention that if testID_column=False, if trainID_column in df_test
     #then apply trainID_column to test set as well
@@ -38276,11 +38402,24 @@ class AutoMunge:
                                    'trainID_columns_in_df_test' : trainID_columns_in_df_test})
 
     #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
+    nonrange_extract_marker = False
     if type(df_train.index) != pd.RangeIndex:
+
+      nonrange_extract_marker = True
+
+      orig_index_names = list(df_train.index.names)
+
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
-        df_train = df_train.rename_axis('Orig_index_' +  str(application_number))
+
+        revised_index_names = deepcopy(orig_index_names)
+
+        revised_index_names[orig_index_names.index(None)] = origindexcolumn
+
+        df_train = df_train.rename_axis(revised_index_names)
+        
       trainID_column = trainID_column + list(df_train.index.names)
+
       df_train = df_train.reset_index(drop=False)
 
     #this just casts testID_column as list
@@ -38307,11 +38446,21 @@ class AutoMunge:
     miscparameters_results.update({'testID_column_subset_of_df_test_valresult' : testID_column_subset_of_df_test_valresult})
 
     #for unnamed non-range index we'll rename as 'Orig_index_###' and include that in ID sets
-    if type(df_test.index) != pd.RangeIndex:
+    if type(df_test.index) != pd.RangeIndex or nonrange_extract_marker is True:
+
+      orig_index_names = list(df_test.index.names)
+      
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
-        df_test = df_test.rename_axis('Orig_index_' +  str(application_number))
+
+        revised_index_names = deepcopy(orig_index_names)
+
+        revised_index_names[orig_index_names.index(None)] = origindexcolumn
+
+        df_test = df_test.rename_axis(revised_index_names)
+        
       testID_column = testID_column + list(df_test.index.names)
+
       df_test = df_test.reset_index(drop=False)
 
     #here we derive a range integer index for inclusion in the ID sets
@@ -39512,7 +39661,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.44'
+    automungeversion = '7.45'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39544,6 +39693,8 @@ class AutoMunge:
                              'testID_column_orig' : testID_column_orig,
                              'testID_column' : testID_column,
                              'indexcolumn' : indexcolumn,
+                             'origindexcolumn' : origindexcolumn, 
+                             'nonrange_extract_marker' : nonrange_extract_marker,
                              'valpercent' : valpercent,
                              'floatprecision' : floatprecision,
                              'shuffletrain' : shuffletrain,
@@ -39823,11 +39974,11 @@ class AutoMunge:
 
         duplicate_i, duplicate_i_ID, duplicate_i_labels, \
         _1 = \
-        am.postmunge(postprocess_dict, df_augment_duplicate,
-                     printstatus = printstatus,
-                     dupl_rows = dupl_rows,
-                     traindata = traindata,
-                     randomseed = augrandomseed)
+        self.postmunge(postprocess_dict, df_augment_duplicate,
+                      printstatus = printstatus,
+                      dupl_rows = dupl_rows,
+                      traindata = traindata,
+                      randomseed = augrandomseed)
 
         #this adjusts Automunge_index to avoid duplicates
         #indexcolumn is 'Automunge_index' from automunge or may be adjusted in cases of overlap
@@ -48012,7 +48163,7 @@ class AutoMunge:
     # #- setting traindata setting based on traindata parameter
     # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #- passing postmunge specific randomseed parameter through postmunge_randomseed
-    # #which are both reset after use
+    # #which are each reset after use
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge decryption support
@@ -48313,11 +48464,30 @@ class AutoMunge:
     postreports_dict['pm_miscparameters_results'].update({'pm_testID_column_subset_of_df_test_valresult' : pm_testID_column_subset_of_df_test_valresult})
 
     #if df_test has a non-range index we'll include that in ID sets as 'Orig_index_###'
-    if type(df_test.index) != pd.RangeIndex:
+    if type(df_test.index) != pd.RangeIndex or \
+    'nonrange_extract_marker' in postprocess_dict and postprocess_dict['nonrange_extract_marker'] is True:
+      
+      orig_index_names = list(df_test.index.names)
+      
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
-        df_test = df_test.rename_axis('Orig_index_' +  str(postprocess_dict['application_number']))
+        
+        if 'origindexcolumn' in postprocess_dict:
+          origindexcolumn = postprocess_dict['origindexcolumn']
+        else:
+          origindexcolumn = 'Orig_index'
+        if origindexcolumn in orig_index_names:
+          while origindexcolumn in orig_index_names:
+            origindexcolumn += ','
+
+        revised_index_names = deepcopy(orig_index_names)
+
+        revised_index_names[orig_index_names.index(None)] = origindexcolumn
+
+        df_test = df_test.rename_axis(revised_index_names)
+        
       testID_column = testID_column + list(df_test.index.names)
+
       df_test = df_test.reset_index(drop=False)
 
     #here we derive a range integer index for inclusion in the test ID sets
@@ -49053,14 +49223,25 @@ class AutoMunge:
         augrandomseed = False
         if randomrandomseed is False:
           augrandomseed = randomseed
+        
+        #these are postmunge specific temporary postprocess_dict entries, reset after this postmunge call
+        temp_pm_miscparameters_results = deepcopy(postprocess_dict['temp_pm_miscparameters_results'])
+        traindata = postprocess_dict['traindata']
+        postmunge_randomseed = postprocess_dict['postmunge_randomseed']
 
         duplicate_i, duplicate_i_ID, duplicate_i_labels, \
         _1 = \
-        am.postmunge(deepcopy(postprocess_dict), df_augment_duplicate,
-                     printstatus = printstatus,
-                     dupl_rows = dupl_rows,
-                     traindata = aug_traindata,
-                     randomseed = augrandomseed)
+        self.postmunge(postprocess_dict, df_augment_duplicate,
+                      printstatus = printstatus,
+                      dupl_rows = dupl_rows,
+                      traindata = aug_traindata,
+                      randomseed = augrandomseed)
+
+        #now reset the temporary postmunge postprocess_dict entries
+        #(postmunge will have struck any temporary entries)
+        postprocess_dict['postmunge_randomseed'] = postmunge_randomseed
+        postprocess_dict['temp_pm_miscparameters_results'] = temp_pm_miscparameters_results
+        postprocess_dict['traindata'] = traindata
 
         #this adjusts Automunge_index to avoid duplicates
         #indexcolumn is 'Automunge_index' from automunge or may be adjusted in cases of overlap
