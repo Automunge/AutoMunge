@@ -552,7 +552,8 @@ they will automatically be given comparable treatment unless otherwise specified
 column index or list of integer column indexes may also be passed such as if the source dataset 
 was a numpy array. Note that the returned ID sets (such as train_ID, val_ID, and test_ID) are automatically
 populated with an additional column with header 'Automunge_index' which may serve as an
-index column in cases of shuffling, validation partitioning, or oversampling.
+index column in cases of shuffling, validation partitioning, or oversampling. In cases of unnamed
+non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * testID_column: defaults to False, user can pass a string of the column header or list of string column headers
 for columns that are to be segregated from the df_test set for return in the test_ID
@@ -565,7 +566,8 @@ in which case they are automatically given comparable treatment. Thus, the prima
 of the testID_column parameter is for cases where a df_test has ID columns 
 different from those passed with df_train. Note that an integer column index 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
-(When passing data as numpy arrays one should match ID partitioning between df_test and df_train.)
+(When passing data as numpy arrays one should match ID partitioning between df_test and df_train.) In cases of unnamed
+non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
@@ -701,7 +703,7 @@ for the excl passthrough transform) are automatically excluded from ML infill ba
 Please note that an operation is performed to evaluate for cases of a kind of data 
 leakage accross features associated with correlated presence of missing data
 accross rows, documented further below with ML_cmnd parameter. This operation
-can be deactivated by passing ML_cmnd['leakage_tolerance'] = False.
+can be deactivated by passing ML_cmnd['leakage_tolerance'] = False. 
 
 Please note that for incorporating stochastic injections into the derived imputations, an
 option is on by default which is further documented below in the ML_cmnd entries for 'stochastic_impute_categoric'
@@ -1081,6 +1083,8 @@ for the target feature.
 Where target features are those input columns with some returned coumn serving 
 as target for ML infill. ML_cmnd['leakage_tolerance'] defaults to 0.85 when not 
 specified, and can be set as 1 or False to deactivate the assessment.
+
+If no ML infill model is trained due to insufficient features remaining after leakage carveouts for a target feature, a validation result is recorded in postprocess_dict['miscparameters_results']['not_enough_samples_or_features_for_MLinfill_result']['(feature)'].
 
 A user can also assign specific methods for PCA transforms. Current PCA_types
 supported include one of {'PCA', 'SparsePCA', 'KernelPCA'}, all via Scikit-Learn.
@@ -2096,7 +2100,8 @@ in which case they are automatically given comparable treatment. Thus, the prima
 of the postmunge(.) testID_column parameter is for cases where a df_test has ID columns 
 different from those passed with df_train in automunge(.). Note that an integer column index 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
-(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.)
+(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.) In cases of unnamed
+non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframes. If set to _True_ returns pandas dataframes
