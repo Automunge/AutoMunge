@@ -4946,3 +4946,14 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - (and in cases where prior convention is inadequate additional comma suffixes added until resolved)
 - in the process a few cleanups to the support function for deriving 'Automunge_index' string which has a similar convention
 - note that when these strings deviate from default a validation result is reported to indexcolumn_valresult and origindexcolumn_valresult
+
+7.46
+- simplified convention for use of postprocess_dict in postmunge to log validation results in support functions
+- now using same postprocess_dict entry as used in automunge for this purpose, as temp_miscparameters_results
+- previously we had struck this at conclusion of automunge(.), now it is simply reset after automunge and postmunge
+- which is now used in place of previous postmunge temporary entry temp_pm_miscparameters_results
+- the benefit of this approach is that now can use same support functions from automunge in postmunge without needing to accomodate different location for validation results
+- as for example is relevant to the new validaiton results logged in model training from 7.45
+- found and fixed an edge case for NArw aggregation for binary MLinfilltype assocated with cases of only one unique value in feature
+- comprehensive spell check of read me
+- in the process identified a few small spelling typos in code comment documentation for transformdict and processdict
