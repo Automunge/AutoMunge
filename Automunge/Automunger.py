@@ -680,7 +680,7 @@ class AutoMunge:
     #the transformation functions associated with the tree category are performed
 
     #if any tree categories are populated in the upstream replacement primitives
-    #their inclusion supercedes supplement primitive entries
+    #their inclusion supersedes supplement primitive entries
     #and so the input column to the transformation is not retained in the returned set
     #with the column replacement either achieved by an inplace transformation
     #or subsequent deletion operation
@@ -4362,7 +4362,7 @@ class AutoMunge:
     #                        returned data should be numerically encoded
     #              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
     #                            (e.g. NArw entries), included in other features' ML infill bases
-    #              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
+    #              'ordlexclude' ordinal set excluded from infill (note that in some cases in library 
     #                            ordlexclude may return a multi-column set), included in other features' ML infill bases
     #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
     #                             excluded from other features' ML infill bases
@@ -4373,11 +4373,11 @@ class AutoMunge:
     #defaultinfill, dtype_convert, and functionpointer.
 
     #___________________________________________________________________________
-    #info_retention: boolean marker associated with an inversion operation that helps inverison prioritize
+    #info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
     #transformation paths with full information recovery. (May pass as True when there is no information loss.)
 
     #___________________________________________________________________________
-    #inplace_option: boolean marker indicating whether a transform supports the inplace parameter recieved in params.
+    #inplace_option: boolean marker indicating whether a transform supports the inplace parameter received in params.
     #                When not specified this is assumed as True (which is always valid for the custom_train convention).
     #                In other words, in dualprocess/singleprocess convention, if your transform does not support inplace,
     #                need to specify inplace_option as False
@@ -4401,7 +4401,7 @@ class AutoMunge:
     #               as part of a custom_train entry
 
     #___________________________________________________________________________
-    #dtype_convert: this option is intended for the custom_train convention, aceepts boolean entries,
+    #dtype_convert: this option is intended for the custom_train convention, accepts boolean entries,
     #               defaults to True when not specified, False turns off a data type conversion
     #               that is applied after custom_train transformation functions based on MLinfilltype.
     #               May also be used to deactivate a floatprecision conversion for any category. 
@@ -8919,7 +8919,7 @@ class AutoMunge:
     And the normalization_dict populated based on mdf_train will be the saved version
     
     Receives dataframes of a train and test set as mdf_train and mdf_test
-    column is the recieved column that will serve as target for the transformation
+    column is the received column that will serve as target for the transformation
     category is the root category for original upstream primitive entries
     treecategory is the category entry to a family tree primitive that 
     was used to access this transformation
@@ -9238,7 +9238,7 @@ class AutoMunge:
     postprocess_dict is used to access process_dict
     treecategory is the tree category associated with the transform, which can be passed as False within postprocess functions
     (treecategory won't be inspected when defaultinfill_dict is populated)
-    defaultinfill_dict passed as False for train data, test data recieves entries populated from train data
+    defaultinfill_dict passed as False for train data, test data receives entries populated from train data
     
     note that defaultinfill_dict should be externally stored in normalization_dict
     
@@ -18322,7 +18322,7 @@ class AutoMunge:
     '''
     #processing funciton depending on input format of datetime data 
     #that defaults as a passthrough
-    #and when a 'timezone' parameter is recieved, 
+    #and when a 'timezone' parameter is received, 
     #converts timezone entries to UTC and then to the designated time zone
     #such as may be useful when a set of timestamps includes entries from multiple time zones
     '''
@@ -22908,8 +22908,8 @@ class AutoMunge:
     #adds data sampled from normal distribution with mean 0 and sigma 0.03 by default
     #the noise properties may be customized with parameters 'mu', 'sigma'
     #also accepts parameter 'flip_prob' for ratio of data that will be adjusted (defaults to 1.)
-    #noise is scaled based on the recieved points to keep within range 0-1
-    #(e.g. for recieved data point 0.1, noise is scaled so as not to fall below -0.1)
+    #noise is scaled based on the received points to keep within range 0-1
+    #(e.g. for received data point 0.1, noise is scaled so as not to fall below -0.1)
     #gaussian noise source is also capped to maintain the range -0.5 to 0.5 (rare outlier points)
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
@@ -25307,7 +25307,7 @@ class AutoMunge:
 
       #____
 
-      #now for categoric sets (where most common is string or we recieved column with pandas dtype of 'category')
+      #now for categoric sets (where most common is string or we received column with pandas dtype of 'category')
       #we have four scenarios
       if mostcommon_type == 'string' or mostcommon_type == 'number' and nunique == 2:
         
@@ -25529,14 +25529,21 @@ class AutoMunge:
                                        'binary_1' : binary_1, \
                                        'binary_2' : binary_2, \
                                        'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
-          
-      #consolidate the two targets to single entry to support next operation
-      df2 = \
-      self.__autowhere(df2, column, df2[column]==binary_1, binary_2, specified='replacement')
 
-      #populates as 1 for other data else 0 for the two targets
-      NArows = \
-      self.__autowhere(pd.DataFrame(index=df2.index), column+'_NArows', df2[column]!=binary_2, True, False, specified='replacementalternative')
+      if len(valuecounts) < 2:
+
+        #populates as 1 for other data else 0 for the targets
+        NArows = \
+        self.__autowhere(pd.DataFrame(index=df2.index), column+'_NArows', df2[column]==binary_1, False, True, specified='replacementalternative')
+
+      if len(valuecounts) >= 2:
+        #consolidate the two targets to single entry to support next operation
+        df2 = \
+        self.__autowhere(df2, column, df2[column]==binary_1, binary_2, specified='replacement')
+
+        #populates as 1 for other data else 0 for the two targets
+        NArows = \
+        self.__autowhere(pd.DataFrame(index=df2.index), column+'_NArows', df2[column]!=binary_2, True, False, specified='replacementalternative')
 
       # NArows[column+'_NArows'] = NArows[column+'_NArows'].astype(bool)
 
@@ -25827,7 +25834,7 @@ class AutoMunge:
 
           excluded_from_postmunge_getNArows.append(infill_origcolumn)
 
-      #unspecified is a redundant list so exluded
+      #unspecified is a redundant list so excluded
       elif infilltype != 'unspecified':
 
         for entry in postprocess_dict['postprocess_assigninfill_dict'][infilltype]:
@@ -26148,13 +26155,6 @@ class AutoMunge:
     #accepts autoMLer populated with architecture options which is applied based on entries to ML_cmnd
     '''
 
-    #this is associated with calling this function in postmunge feature importance, 
-    #'temp_miscparameters_results' not present in postprocess_dict passed to postmunge
-    temp_temp_miscparameters_results_marker = False
-    if 'temp_miscparameters_results' not in postprocess_dict:
-      postprocess_dict['temp_miscparameters_results'] = {}
-      temp_temp_miscparameters_results_marker = True
-
     #this validation result populated below may be relevant 
     #when after leakage carveouts there aren't enough remaining features to serve as basis
     if 'not_enough_samples_or_features_for_MLinfill_result' not in postprocess_dict['temp_miscparameters_results']:
@@ -26443,11 +26443,6 @@ class AutoMunge:
       df_testinfill = pd.DataFrame({column : [0]}) 
 
       model = False
-
-    #this is associated with calling this function in postmunge feature importance, 
-    #'temp_miscparameters_results' not present in postprocess_dict passed to postmunge
-    if temp_temp_miscparameters_results_marker is True:
-      del postprocess_dict['temp_miscparameters_results']
     
     return df_traininfill, df_testinfill, model, postprocess_dict
 
@@ -26757,6 +26752,8 @@ class AutoMunge:
     I am operating on assumption that their tutorials are similar open source
     
     optuna license information and citation provided in read me
+
+    a tradeoff of using the scikit api is there doesn't appear to be a native cross validation feature in xgboost
     """
     
     if classify_regress in {'classify', 'boolean'}:
@@ -26772,6 +26769,7 @@ class AutoMunge:
     #there is an edge case where this validation split results in not fully represented range integer classificaiotn labels
     #which is an xgboost quirk
     #since this is just for tuning we'll convert labels, noting that this means we won't be able to use saved model as final
+    #I do not know how this can translate to cross validation though, perhaps xgboost use_label_encoder could accomodate, but it said it is being depreciated
     if classify_regress in {'classify', 'boolean'}:
       #train_y is a pandas series of integers
       unique_set = set(train_y.unique())
@@ -27319,7 +27317,7 @@ class AutoMunge:
     _convert_leakage_sets is for purposes of converting the received form into a more useful data structure
     mapping columns in the returned form with suffix appenders
     by converting to form of leakage_dict
-    which will be recieved already populated with any entries from user specification or derived based on leakage tolerance
+    which will be received already populated with any entries from user specification or derived based on leakage tolerance
     
     leakage_dict = \
     {returnedcolumn : {set of returned columns to exclude from the key's basis}}
@@ -27473,7 +27471,7 @@ class AutoMunge:
     
     Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_categoric'] = True
 
-    Note that if the recieved encoding had a default infill based on a distinct activation set, 
+    Note that if the received encoding had a default infill based on a distinct activation set, 
     that set will be included in set of unique activaiton sets from df_unique
     """
     
@@ -29353,7 +29351,7 @@ class AutoMunge:
     #and labels for regression are passed to the custom function 
     #as a pandas dataframe with single column with header of integer 0 with continuous float entries
     
-    #and features is recieved as a pandas dataframe numerically encoded, 
+    #and features is received as a pandas dataframe numerically encoded, 
     #with categoric entries as integers, and headers matching the returned suffix convention
 
     #columntype_report is a dictionary reporting properties of the columns found in features
@@ -34634,7 +34632,7 @@ class AutoMunge:
     #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
     
     #where 'cat1' / 'cat2' are examples of root categories
-    #and 'col1' / 'col2' are examples of recieved source columns
+    #and 'col1' / 'col2' are examples of received source columns
     #and the lists contain entries for those source columns or root categories
     #which are to be converted to nan for purposes of infill
     
@@ -35754,7 +35752,7 @@ class AutoMunge:
     #distribution of the set is is a function of the activation column and target column
     
     #we'll follow convention that in both cases label smoothing applied to all columns in categorylist
-    #and return a dictionary indicating which columns have recieved
+    #and return a dictionary indicating which columns have received
     #(dictionary categorycomplete_dict initialized external to function)
     
     #we'll also return a dictionary containing any dervied parameters for LSfit such as for
@@ -35912,7 +35910,7 @@ class AutoMunge:
     #distribution of the set is is a function of the activation column and target column
     
     #we'll follow convention that in both cases label smoothing applied to all columns in categorylist
-    #and return a diciotnary indicating which columns have recieved
+    #and return a diciotnary indicating which columns have received
     #(dictionary categorycomplete_dict initialized external to function)
     
     #we'll also return a dictionary containing any dervied parameters for LSfit such as for
@@ -36496,7 +36494,7 @@ class AutoMunge:
     Binary_dict.update({'categoric_column_tuple' : categoric_column_tuple})
     Binary_dict.update({'ordinal_width_dict' : ordinal_width_dict})
     Binary_dict.update({'Binary_root' : Binary_root})
-    Binary_dict.update({'temp_pm_miscparameters_results' : {}})
+    Binary_dict.update({'temp_miscparameters_results' : {}})
     
     #(this is a bit of a hack to carry suffix overlap result for 'Binary' to final report)
     Binary_dict.update({'column_dict':{}})
@@ -36791,7 +36789,7 @@ class AutoMunge:
     #be given infill treatment for a given root category or source column
     #such as to supplement processdict NArowtype entries with values that may be 
     #special for a data set
-    #as an example, in some cases datasets may not be recieved with NaN for infill, 
+    #as an example, in some cases datasets may not be received with NaN for infill, 
     #and may instead be a designated value such as a number or string such as 'unknown'
     #assignnan_convert addresses this scenario by simply converting those designations to nan
 
@@ -36953,8 +36951,8 @@ class AutoMunge:
                   del df_mask
                   
             elif actionkey == 'minmax_range':
-              #minmax_range is similar to range but the max and min are recieved in range 0-1
-              #and applied corresponding to a minmax scaling of recieved set
+              #minmax_range is similar to range but the max and min are received in range 0-1
+              #and applied corresponding to a minmax scaling of received set
               #(set is returned without scaling)
               #range inserts nan in designated ranges of numeric set
               #accepts parameter for injection ratio, we'll actually use for our method 1-ratio
@@ -37949,7 +37947,7 @@ class AutoMunge:
     trainID_column = self.__parameter_str_convert(trainID_column)
     testID_column = self.__parameter_str_convert(testID_column)
 
-    #convert assignnan if not recieved as lists in bottom tiers
+    #convert assignnan if not received as lists in bottom tiers
     assignnan = self.__assignnan_list_convert(assignnan)
 
     #_________________________________________________________
@@ -39661,7 +39659,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.45'
+    automungeversion = '7.46'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -39761,7 +39759,7 @@ class AutoMunge:
     
     #consolidate miscparameters_results and temp_miscparameters_results
     postprocess_dict['miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
-    del postprocess_dict['temp_miscparameters_results']
+    postprocess_dict['temp_miscparameters_results'] = {}
 
     #support function to speed up postmunge when calling getNArows not needed
     excluded_from_postmunge_getNArows = \
@@ -39933,7 +39931,7 @@ class AutoMunge:
       # if totalvalidationratio > 0:
       #   df_validationID1[indexcolumn] = pd.DataFrame({indexcolumn:range(0,df_validationID1.shape[0])})
 
-    #final labelsencoding_dict prep to support label inverison when other entries encrypted
+    #final labelsencoding_dict prep to support label inversion when other entries encrypted
     labelsencoding_dict = \
     self.__populate_labelsencoding_dict_support3(labelsencoding_dict, postprocess_dict)
 
@@ -40498,7 +40496,7 @@ class AutoMunge:
     Which will be similar to the singleprocess convention in the library
     
     Receives dataframe of a test set as mdf_test
-    column is the recieved column that will serve as target for the transformation
+    column is the received column that will serve as target for the transformation
     postprocess_dict is the dictionary data structure passed between transforms
     columnkey is a list of columns returned from the correspondihng tranforms applied in _custom_process_wrapper
     params are the parameters passed through assignparam associated with this specific categoy and column
@@ -46133,8 +46131,8 @@ class AutoMunge:
     #adds data sampled from normal distribution with mean 0 and sigma 0.03 by default
     #the noise properties may be customized with parameters 'mu', 'sigma'
     #also accepts parameter 'flip_prob' for ratio of data that will be adjusted (defaults to 1.)
-    #noise is scaled based on the recieved points to keep within range 0-1
-    #(e.g. for recieved data point 0.1, noise is scaled so as not to fall below -0.1)
+    #noise is scaled based on the received points to keep within range 0-1
+    #(e.g. for received data point 0.1, noise is scaled so as not to fall below -0.1)
     #gaussian noise source is also capped to maintain the range -0.5 to 0.5 (rare outlier points)
     #note that the noise is only injected into the designated training data of df_train
     #for test data this is a pass-through operation
@@ -47227,11 +47225,11 @@ class AutoMunge:
                          columnslist = columnslist, \
                          categorylist = categorylist)
       
-      #run validations of all valid numeric, reported in postprocess_dict['temp_pm_miscparameters_results']
+      #run validations of all valid numeric, reported in postprocess_dict['temp_miscparameters_results']
       postprocess_dict = \
       self.__check_ML_infill_2(False, False, 
                              False, df_test_fillfeatures, printstatus,
-                             column, postprocess_dict, reportlocation = 'temp_pm_miscparameters_results', ampm = 'pm')
+                             column, postprocess_dict, reportlocation = 'temp_miscparameters_results', ampm = 'pm')
 
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
@@ -48161,7 +48159,7 @@ class AutoMunge:
     # #The only edits made to postproces_dict in postmunge are:
     # #- to track infill status (via column_dict infillcomplete marker)
     # #- setting traindata setting based on traindata parameter
-    # #- logging validation results to temp_pm_miscparameters_results (later consolidated with pm_miscparameters_results)
+    # #- logging validation results to temp_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #- passing postmunge specific randomseed parameter through postmunge_randomseed
     # #which are each reset after use
 
@@ -48196,7 +48194,7 @@ class AutoMunge:
     #_________________________________________________________
     #__WorkflowBlock: postmunge variable initializations and parameter validations
     #we have a few temporary entries stored in postprocess_dict for postmunge
-    #including postmunge_randomseed, traindata, and temp_pm_miscparameters_results
+    #including postmunge_randomseed, traindata, and temp_miscparameters_results
     #we have a few special conventions for privacy_encode which are addressed here
     #we also copy parameters passed as lists to internal state
     #perform some string conversions
@@ -48214,15 +48212,16 @@ class AutoMunge:
     #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
     postprocess_dict.update({'postmunge_randomseed' : randomseed})
 
+    #backward compatibility preceding 7.46
+    if 'temp_miscparameters_results' not in postprocess_dict:
+      postprocess_dict['temp_miscparameters_results'] = {}
+
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
     if traindata is not False:
       postprocess_dict['traindata'] = traindata
     else:
       postprocess_dict['traindata'] = False
-
-    #initialize store for validation results, later consolidated with pm_miscparameters_results and struck from ppd
-    postprocess_dict.update({'temp_pm_miscparameters_results' : {}})
 
     #a few special conventions for privacy_encode
     if postprocess_dict['privacy_encode'] is not False and printstatus is True:
@@ -48394,8 +48393,8 @@ class AutoMunge:
 
       #reset traindata entry in postprocess_dict to avoid overwrite of external
       postprocess_dict['traindata'] = False
+      postprocess_dict['temp_miscparameters_results'] = {}
       #strike temporary log from postprocess_dict
-      del postprocess_dict['temp_pm_miscparameters_results']
       del postprocess_dict['postmunge_randomseed']
 
       df_test = self.__inversion_header_support(df_test, postprocess_dict, inversion)
@@ -49225,7 +49224,7 @@ class AutoMunge:
           augrandomseed = randomseed
         
         #these are postmunge specific temporary postprocess_dict entries, reset after this postmunge call
-        temp_pm_miscparameters_results = deepcopy(postprocess_dict['temp_pm_miscparameters_results'])
+        temp_miscparameters_results = deepcopy(postprocess_dict['temp_miscparameters_results'])
         traindata = postprocess_dict['traindata']
         postmunge_randomseed = postprocess_dict['postmunge_randomseed']
 
@@ -49240,7 +49239,7 @@ class AutoMunge:
         #now reset the temporary postmunge postprocess_dict entries
         #(postmunge will have struck any temporary entries)
         postprocess_dict['postmunge_randomseed'] = postmunge_randomseed
-        postprocess_dict['temp_pm_miscparameters_results'] = temp_pm_miscparameters_results
+        postprocess_dict['temp_miscparameters_results'] = temp_miscparameters_results
         postprocess_dict['traindata'] = traindata
 
         #this adjusts Automunge_index to avoid duplicates
@@ -49352,9 +49351,9 @@ class AutoMunge:
     postprocess_dict['traindata'] = False
     del postprocess_dict['postmunge_randomseed']
 
-    #consolide validation results and strike temporary log from postprocess_dict
-    postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_pm_miscparameters_results'])
-    del postprocess_dict['temp_pm_miscparameters_results']
+    #consolide validation results and reset temporary log in postprocess_dict
+    postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
+    postprocess_dict['temp_miscparameters_results'] = {}
 
     #a few anonymizations for privacy_encode in returned postreports_dict
     if postprocess_dict['privacy_encode'] is not False:
@@ -49876,7 +49875,7 @@ class AutoMunge:
     #which serves the purpose of omitting transform_dict and process_dict entries not inspected for derivations
     #which benefits privacy
 
-    #the recieved category is a root category applied to an input feature or input label
+    #the received category is a root category applied to an input feature or input label
     #e.g. root category = postprocess_dict['origcolumn'][labels_column_entry]['category']
 
     #the family tree of that root category is inspected and upstream primitives are inspected with i=0
@@ -51246,7 +51245,7 @@ class AutoMunge:
 
   def _custom_inversion_onht(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
-    #rewrite of the onht inverison
+    #rewrite of the onht inversion
     #corresponding to _custom_train_onht
     """
     
@@ -51489,7 +51488,7 @@ class AutoMunge:
 
   def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
-    #rewrite of the ordl inverison
+    #rewrite of the ordl inversion
     #corresponding to _custom_train_ordl
     """
     
@@ -52402,7 +52401,7 @@ class AutoMunge:
             print("Inversion path selected based on returned column ", best_path)
             print("Inversion not available due to incomplete set of categorylist entries.")
             print("Please note that if entries are missing due to a Binary dimensionality reduction,")
-            print("The column may still be recovered by applying a full test set inverison (inversion='test').")
+            print("The column may still be recovered by applying a full test set inversion (inversion='test').")
           best_path = False
           
       if printstatus is True:
@@ -52510,7 +52509,7 @@ class AutoMunge:
       inversion_setlist_privacyencode_valresult = True
       if printstatus != 'silent':
         print("inversion list or set specification not supported in conjunction with privacy_encode")
-        print("inverison halted.")
+        print("inversion halted.")
       return
     pm_miscparameters_results.update({'inversion_setlist_privacyencode_valresult' : inversion_setlist_privacyencode_valresult})
 
@@ -52740,7 +52739,7 @@ class AutoMunge:
       if isinstance(postprocess_dict['labels_column'], list) and len(postprocess_dict['labels_column']) > 1:
         validate_denselabels_singlelabel = True
         if printstatus != 'silent':
-          print("error, inverison 'denselabels' option only supported for single label case, does not support consolidations.")
+          print("error, inversion 'denselabels' option only supported for single label case, does not support consolidations.")
         return
       pm_miscparameters_results.update({'validate_denselabels_singlelabel' : validate_denselabels_singlelabel})
 
