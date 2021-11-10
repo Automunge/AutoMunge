@@ -94,7 +94,7 @@ For simplicity just going to copy the code directly from code base where these d
     #the transformation functions associated with the tree category are performed
 
     #if any tree categories are populated in the upstream replacement primitives
-    #their inclusion supercedes supplement primitive entries
+    #their inclusion supersedes supplement primitive entries
     #and so the input column to the transformation is not retained in the returned set
     #with the column replacement either achieved by an inplace transformation
     #or subsequent deletion operation
@@ -3165,6 +3165,62 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['1010'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPh1' : {'parents'       : ['DPh1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPmc'],
+                                     'friends'       : []}})
+
+    #DPmc primarily intended for use as a downstream tree category
+    transform_dict.update({'DPmc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPo7' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPo7'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPhs' : {'parents'       : ['DPhs'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['mlhs'],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPh2' : {'parents'       : ['DPh2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPo7'],
+                                     'friends'       : []}})
+
+    #mlhs primarily intended for use as a downstream tree category
+    transform_dict.update({'mlhs' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['ordl'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'qbt1' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['qbt1'],
@@ -3722,7 +3778,7 @@ For simplicity just going to copy the code directly from code base where these d
     #                        returned data should be numerically encoded
     #              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
     #                            (e.g. NArw entries), included in other features' ML infill bases
-    #              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
+    #              'ordlexclude' ordinal set excluded from infill (note that in some cases in library 
     #                            ordlexclude may return a multi-column set), included in other features' ML infill bases
     #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
     #                             excluded from other features' ML infill bases
@@ -3733,11 +3789,11 @@ For simplicity just going to copy the code directly from code base where these d
     #defaultinfill, dtype_convert, and functionpointer.
 
     #___________________________________________________________________________
-    #info_retention: boolean marker associated with an inversion operation that helps inverison prioritize
+    #info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
     #transformation paths with full information recovery. (May pass as True when there is no information loss.)
 
     #___________________________________________________________________________
-    #inplace_option: boolean marker indicating whether a transform supports the inplace parameter recieved in params.
+    #inplace_option: boolean marker indicating whether a transform supports the inplace parameter received in params.
     #                When not specified this is assumed as True (which is always valid for the custom_train convention).
     #                In other words, in dualprocess/singleprocess convention, if your transform does not support inplace,
     #                need to specify inplace_option as False
@@ -3761,7 +3817,7 @@ For simplicity just going to copy the code directly from code base where these d
     #               as part of a custom_train entry
 
     #___________________________________________________________________________
-    #dtype_convert: this option is intended for the custom_train convention, aceepts boolean entries,
+    #dtype_convert: this option is intended for the custom_train convention, accepts boolean entries,
     #               defaults to True when not specified, False turns off a data type conversion
     #               that is applied after custom_train transformation functions based on MLinfilltype.
     #               May also be used to deactivate a floatprecision conversion for any category. 
@@ -6940,9 +6996,9 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
-    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPbn,
+    process_dict.update({'DPbn' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPbn,
+                                  'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
@@ -7021,6 +7077,69 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : '1010'}})
+    process_dict.update({'DPh1' : {'dualprocess' : self._process_hs10,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hs10,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
+                                  'labelctgy' : 'DPmc'}})
+    #if DPmc to be applied downstream of multirt or 1010 MLinfilltype recommend recasting MLinfilltype to match
+    process_dict.update({'DPmc' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'boolexclude',
+                                  'labelctgy' : 'DPmc'}})
+    process_dict.update({'DPo7' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'upstream_hsh2' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'singlct',
+                                  'labelctgy' : 'DPo7'}})
+    process_dict.update({'DPhs' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'mlhs'}})
+    process_dict.update({'DPh2' : {'dualprocess' : self._process_hash,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_hash,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'space' : '',
+                                                     'excluded_characters' : []},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'DPod'}})
+    #note that the default norm_category DPod is intended for use as a downstream tree category
+    process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'mlhs',
+                                                     'norm_params' : {'flip_prob' : 0.03,
+                                                                      'testnoise' : False,
+                                                                      'weighted' : True},
+                                                     'norm_category' : 'DPod'},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'ordlexclude',
+                                  'labelctgy' : 'mlhs'}})
     process_dict.update({'qbt1' : {'dualprocess' : None,
                                   'singleprocess' : self._process_qbt1,
                                   'postprocess' : None,
