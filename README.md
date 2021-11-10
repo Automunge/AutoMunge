@@ -33,7 +33,7 @@
 >  
 > We make machine learning easy.
 
-In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principle component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
+In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principal component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
 
 Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
 
@@ -182,7 +182,7 @@ am.postmunge(postprocess_dict, df_test,
 The functions accept pandas dataframe or numpy array input and return encoded dataframes
 with consistent order of columns between train and test data. 
 (For input numpy arrays any label column should be positioned as final column in set.)
-The functions return data with categoric features translated to numerical encodedings 
+The functions return data with categoric features translated to numerical encodings 
 and normalized numeric such as to make them suitable for direct application to a 
 machine learning model in the framework of a user's choice, including sets for 
 the various activities of a generic machine learning project such as training (train), 
@@ -386,7 +386,7 @@ as row identifiers or for pairing tabular data rows with a corresponding
 image file for instance. Also included in this set is a derived column
 titled 'Automunge_index', this column serves as an index identifier for order
 of rows as they were received in passed data, such as may be beneficial
-when data is shuffled. If the reveived df_train had a non-ranged integer index,
+when data is shuffled. If the received df_train had a non-ranged integer index,
 it is extracted and returned in this set. For more information please refer to writeup for the 
 trainID_column parameter.
 
@@ -515,7 +515,7 @@ dataset intended for use to generate predictions from a downstream machine
 learning model trained from the automunge returned sets. The set must be 
 consistently formatted as the train set with consistent column headers and
 order of columns. (This set may optionally contain a labels column if one 
-was included in the train set although it's inclusion is not required). If 
+was included in the train set although its inclusion is not required). If 
 desired the set may include one or more ID column(s) or column(s) intended 
 for use as labels. A user may pass False if this set is not available. The tool 
 supports the inclusion of non-index-range column as index or multicolumn index 
@@ -535,11 +535,11 @@ Note that a designated labels column will automatically be checked for in
 corresponding df_test data and partitioned to the returned test_labels set when 
 included. Note that labels_column can also be passed as a list of multiple
 label columns. Note that when labels_column is passed as a list, a first entry
-set bracket specificaiton comparable to as available for the Binary parameter
+set bracket specification comparable to as available for the Binary parameter
 can be applied to designate that multiple categoric labels in the list may be consolidated to a
 single categoric label, such as to train a single classification model for multiple classification targets,
 which form may then be recovered in a postmunge inversion='labels' operation, such as to convert the
-consoldiated form after an inference operation back to the form of seperate inferred labels.
+consolidated form after an inference operation back to the form of separate inferred labels.
 When passing data as numpy arrays the label column needs to be the final column (on far right of dataframe).
 
 * trainID_column:  defaults to False, user can pass a string of the column header or list of string column headers
@@ -553,7 +553,7 @@ column index or list of integer column indexes may also be passed such as if the
 was a numpy array. Note that the returned ID sets (such as train_ID, val_ID, and test_ID) are automatically
 populated with an additional column with header 'Automunge_index' which may serve as an
 index column in cases of shuffling, validation partitioning, or oversampling. In cases of unnamed
-non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * testID_column: defaults to False, user can pass a string of the column header or list of string column headers
 for columns that are to be segregated from the df_test set for return in the test_ID
@@ -567,7 +567,7 @@ of the testID_column parameter is for cases where a df_test has ID columns
 different from those passed with df_train. Note that an integer column index 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
 (When passing data as numpy arrays one should match ID partitioning between df_test and df_train.) In cases of unnamed
-non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
@@ -580,7 +580,7 @@ validation set will be pulled from the bottom sequential rows of the df_train da
 valpercent can also be passed as a two entry tuple in the form valpercent=(start, end),
 where start is a float in the range 0<=start<1, end is a float in the range 0<end<=1, and start < end.
 For example, if specified as valpercent=(0.2, 0.4), the returned training data would consist of the first 20% of rows and the last 60% of rows, while the validation set would consist of the remaining rows, and
-where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation, for example for a cross validaiton with k=3, automunge(.) could be called three times with valpercent passed for each as (0,0.33), (0.33,0.66), (0.66,1) respectively. Please note that when using automunge(.) in a cross-validation operation, we recommend using the postprocess_dict['final_assigncat'] entry populated in the first automunge(.) call associated with the first train/validation split as the assigncat entry passed to the automunge(.) assigncat parameter in each subsequent automunge(.) call associated with the remaining train/validation splits, which will speed up the remaining calls by eliminating the automated evaluation of data properties as well as mitigate risk of (remote) edge case when category assignment to a column under automation may differ between different validation set partitionings due to deviations in aggregate data properties associated with a column.
+where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation, for example for a cross validation with k=3, automunge(.) could be called three times with valpercent passed for each as (0,0.33), (0.33,0.66), (0.66,1) respectively. Please note that when using automunge(.) in a cross-validation operation, we recommend using the postprocess_dict['final_assigncat'] entry populated in the first automunge(.) call associated with the first train/validation split as the assigncat entry passed to the automunge(.) assigncat parameter in each subsequent automunge(.) call associated with the remaining train/validation splits, which will speed up the remaining calls by eliminating the automated evaluation of data properties as well as mitigate risk of (remote) edge case when category assignment to a column under automation may differ between different validation set partitions due to deviations in aggregate data properties associated with a column.
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
@@ -595,13 +595,13 @@ for shuffling the train data but not the test data. False deactivates. To shuffl
 both train and test data can pass as 'traintest'. Note that this impacts the
 validation split if a valpercent was passed, where under the default of True
 validation data will be randomly sampled and shuffled, or when shuffletrain is 
-deactivated validation data will be based on a partiion of sequential rows from 
-the bottom of the train set. Note that row correspondance with shuffling is
+deactivated validation data will be based on a partition of sequential rows from 
+the bottom of the train set. Note that row correspondence with shuffling is
 maintained between train / ID / label sets. Note that we recommend deactivating 
 shuffletrain for sequential (time-series) data.
 
 * noise_augment: accepts type int or float(int) >=0, defaults to 0 - used to specify 
-a count of additional duplicates of training data prepared and concatinated with the
+a count of additional duplicates of training data prepared and concatenated with the
 original train set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. Note that 
 injected noise will be uniquely randomly sampled with each duplicate. When noise_augment
@@ -610,7 +610,7 @@ noise_augment is received as a dtype of float(int), all of the duplicates will b
 with noise. When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish
 between duplicates by the original df_train.shape in comparison to the ID set's Automunge_index.
 Please be aware that with large dataframes a large duplicate count may run into memory constraints,
-in which case additional duplicates can be prepared seperately in postmunge(.).
+in which case additional duplicates can be prepared separately in postmunge(.).
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -701,8 +701,8 @@ Please note that columns returned from transforms with MLinfilltype 'totalexclud
 for the excl passthrough transform) are automatically excluded from ML infill basis.
 
 Please note that an operation is performed to evaluate for cases of a kind of data 
-leakage accross features associated with correlated presence of missing data
-accross rows, documented further below with ML_cmnd parameter. This operation
+leakage across features associated with correlated presence of missing data
+across rows, documented further below with ML_cmnd parameter. This operation
 can be deactivated by passing ML_cmnd['leakage_tolerance'] = False. 
 
 Please note that for incorporating stochastic injections into the derived imputations, an
@@ -733,7 +733,7 @@ for each numeric feature the ratio of mean(abs(delta)) between imputation iterat
 the mean(abs(entries)) of the current iteration, which are then weighted between features 
 by the quantity of imputations associated with each feature and compared to a numeric 
 tolerance value, and the categoric halting criteria is based on comparing the ratio of 
-number of inequal imputations between iterations to the total number of imputations accross 
+number of inequal imputations between iterations to the total number of imputations across 
 categoric features to a categoric tolerance value. Early stopping is applied as soon as
 the tolerances are met for both numeric and categoric features. If early stopping criteria 
 is not reached the specified infilliterate will serve as the maximum number of iterations.
@@ -810,9 +810,9 @@ postprocess_dict = \
 am.automunge(df_train, df_test=df_test, inplace=True)
 ```
 Note that this "inplace" option is not to be confused with the default inplace conduction of transforms
-that may impact grouping coherence of columns dervied from same feature.
+that may impact grouping coherence of columns derived from same feature.
 That other inplace option can be deactivated in assignparam, as may be desired for grouping coherence.
-Note that all custom_train transforms have build in support for optional deactivating of inplace parameter 
+Note that all custom_train transforms have built in support for optional deactivating of inplace parameter 
 through assignparam which is applied external to function call.
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
@@ -837,12 +837,12 @@ _{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
 A user can also pass a list of target column headers if consolidation is only desired on 
 a subset of the categoric features. The column headers may be as received column headers or returned column headers with suffix appenders included. To allow distinguishing between the other conventions
 such as 'retain', 'ordinal', etc. in conjunction with passing a subset list of column headers,
-a user may optionally include the specification embeded in set brackets {} as the first entry to the list, e.g. [{'ordinal'}, 'targetcolumn', ...], where specification may be one of
+a user may optionally include the specification embedded in set brackets {} as the first entry to the list, e.g. [{'ordinal'}, 'targetcolumn', ...], where specification may be one of
 True, 'retain', 'ordinal', etc. Otherwise when the first value in list is just a column 
 header string the binarization convention consistent with Binary=True is applied. 
-In order to seperately consolidate multiple sets of categoric features, one
-can pass Binary as a list of lists, with the sublists matching criteria noted preceding (such as allowance for first entry to embed specification in set brackets). For cases where a consolidation with replacement is perfomed these sets should be nonoverlapping. Note that each sublist may include a distinct specification convention.
-Note that postmunge(.) inversion is supported in conjunction with any of these Binary options. When applying inversion based on a specified list of columns (as opposed to inversion='test' for instance), if the specificaiton includes a Binary returned column it should include the entire set of Binary columns associated with that consolidation, and if the Binary application was in the retain convention the inversion list should specify the Binary input columns instead of the Binary output columns.
+In order to separately consolidate multiple sets of categoric features, one
+can pass Binary as a list of lists, with the sub lists matching criteria noted preceding (such as allowance for first entry to embed specification in set brackets). For cases where a consolidation with replacement is performed these sets should be nonoverlapping. Note that each sub list may include a distinct specification convention.
+Note that postmunge(.) inversion is supported in conjunction with any of these Binary options. When applying inversion based on a specified list of columns (as opposed to inversion='test' for instance), if the specification includes a Binary returned column it should include the entire set of Binary columns associated with that consolidation, and if the Binary application was in the retain convention the inversion list should specify the Binary input columns instead of the Binary output columns.
 (One may wish to abstain from stochastic_impute_categoric in conjunction with Binary since it may 
 interfere with the extent of contraction by expanding the number of activation sets.)
 
@@ -890,9 +890,9 @@ The most relevant entries here are 'autoML_type' to choose the autoML framework 
 models, and ML_cmnd to pass parameters to the models. The default option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
 Forest implementation, other options are supported as one of {'randomforest', 'customML',
 'autogluon', 'catboost', 'flaml'}, each discussed further below. The customML scenario is for user defined
-machine learning algorithms, and documented seperately later in this document in the section [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions).
+machine learning algorithms, and documented separately later in this document in the section [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions).
 
-(Other ML_cmnd options beside autoML_type, like for early stopping thorugh iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc, are documented a few paragraphs down after discussing the autoML_type scenarios.)
+(Other ML_cmnd options beside autoML_type, like for early stopping through iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc, are documented a few paragraphs down after discussing the autoML_type scenarios.)
 
 Here is an example of the core components of specification, which include the 
 autoML_type to specify the learning library, the MLinfill_cmnd to pass parameters
@@ -934,7 +934,7 @@ ML_cmnd = {'autoML_type':'randomforest',
                             'RandomForestRegressor' :{'max_depth':[3,6,12]}}}
 ```
 Other autoML options besides random forest are also supported, each of which requires installing
-the associated library (which aren't listed in the automunge dependancies). Citations associated with each
+the associated library (which aren't listed in the automunge dependencies). Citations associated with each
 of these libraries are provided for reference. 
 
 First we'll highlight AutoGluon. 
@@ -1069,9 +1069,9 @@ for the excl passthrough transform) are automatically excluded from model traini
 Note that entries to 'full_exclude' are also excluded from PCA.
 
 Please note that an operation is performed to evaluate for cases of a kind of data 
-leakage accross features associated with correlated presence of missing data
-accross rows. Leakage tolerance is associated with an automated evaluation for a 
-potential source of data leakage accross features in their respective imputation 
+leakage across features associated with correlated presence of missing data
+across rows. Leakage tolerance is associated with an automated evaluation for a 
+potential source of data leakage across features in their respective imputation 
 model basis. The method compares aggregated NArw activations from a target feature 
 in a train set to the surrounding features in a train set and for cases where 
 separate features share a high correlation of missing data based on the shown 
@@ -1080,7 +1080,7 @@ for the target feature.
 
 ((Narw1 + Narw2) == 2).sum() / NArw1.sum() > leakage_tolerance
 
-Where target features are those input columns with some returned coumn serving 
+Where target features are those input columns with some returned column serving 
 as target for ML infill. ML_cmnd['leakage_tolerance'] defaults to 0.85 when not 
 specified, and can be set as 1 or False to deactivate the assessment.
 
@@ -1099,9 +1099,9 @@ ML_cmnd = {'PCA_type':'KernelPCA',
 ```
 Note that for the default of ML_cmnd['PCA_type'] = 'default', PCA will default to KernelPCA 
 for all non-negative sets or otherwise Sparse PCA (unless PCAn_components was passed as float 
-between 0-1 in whcih case will apply as 'PCA'.
+between 0-1 in which case will apply as 'PCA'.
 
-By default, ML_cmnd['PCA_cmnd'] is initalized internal to library with {'bool_ordl_PCAexcl':True},
+By default, ML_cmnd['PCA_cmnd'] is initialized internal to library with {'bool_ordl_PCAexcl':True},
 which designates that returned ordinal and boolean encoded columns are to be excluded from PCA.
 This convention by be turned off by passing as False, or to only exclude boolean integer but 
 not ordinal encoded columns can pass ML_cmnd['PCA_cmnd'] as {'bool_PCA_excl':True}.
@@ -1185,7 +1185,7 @@ which parameters are intended. The second layer keys are string identifiers
 for the columns for which the parameters are intended. The third layer keys 
 are the parameters whose values are to be passed. To specify new default
 parameters for a given transformation category 'default_assignparam' can
-be applied, or to specificy global parameters for all transformation functions
+be applied, or to specify global parameters for all transformation functions
 'global_assignparam' can be applied. Transforms that do not accept a particular 
 parameter will just ignore the specification.
 
@@ -1429,7 +1429,7 @@ For clarity transformdict refers to the user passed data structure which is subs
     #the transformation functions associated with the tree category are performed
 
     #if any tree categories are populated in the upstream replacement primitives
-    #their inclusion supercedes supplement primitive entries
+    #their inclusion supersedes supplement primitive entries
     #and so the input column to the transformation is not retained in the returned set
     #with the column replacement either achieved by an inplace transformation
     #or subsequent deletion operation
@@ -1647,7 +1647,7 @@ associated automunge(.) call.
 #                        returned data should be numerically encoded
 #              'boolexclude' boolean integer set suitable for Binary transform but excluded from all infill 
 #                            (e.g. NArw entries), included in other features' ML infill bases
-#              'ordlexclude' ordinal set exluded from infill (note that in some cases in library 
+#              'ordlexclude' ordinal set excluded from infill (note that in some cases in library 
 #                            ordlexclude may return a multi-column set), included in other features' ML infill bases
 #              'totalexclude' for complete passthroughs (excl) without datatype conversions, infill, 
 #                             excluded from other features' ML infill bases
@@ -1658,11 +1658,11 @@ associated automunge(.) call.
 #defaultinfill, dtype_convert, and functionpointer.
 
 #___________________________________________________________________________
-#info_retention: boolean marker associated with an inversion operation that helps inverison prioritize
+#info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
 #transformation paths with full information recovery. (May pass as True when there is no information loss.)
 
 #___________________________________________________________________________
-#inplace_option: boolean marker indicating whether a transform supports the inplace parameter recieved in params.
+#inplace_option: boolean marker indicating whether a transform supports the inplace parameter received in params.
 #                When not specified this is assumed as True (which is always valid for the custom_train convention).
 #                In other words, in dualprocess/singleprocess convention, if your transform does not support inplace,
 #                need to specify inplace_option as False
@@ -1686,7 +1686,7 @@ associated automunge(.) call.
 #               as part of a custom_train entry
 
 #___________________________________________________________________________
-#dtype_convert: this option is intended for the custom_train convention, aceepts boolean entries,
+#dtype_convert: this option is intended for the custom_train convention, accepts boolean entries,
 #               defaults to True when not specified, False turns off a data type conversion
 #               that is applied after custom_train transformation functions based on MLinfilltype.
 #               May also be used to deactivate a floatprecision conversion for any category. 
@@ -1776,8 +1776,8 @@ the transformation functions and other entries that are not already specified ar
 automatically populated based on entries found in processdict entries of the pointer. 
 For cases where a functionpointer points to a processdict entry that itself has a functionpointer 
 entry, chains of pointers are followed until an entry without functionpointer is reached. 
-defaultparam entries of each pointer link are also accessed for update, and if the prior category 
-specification contains any redundant defaultparam entries with those found in a pointer target 
+defaultparams entries of each pointer link are also accessed for update, and if the prior category 
+specification contains any redundant defaultparams entries with those found in a pointer target 
 category the prior category entries take precedence. Similarly for chains of pointers the entries 
 specified in nearer links take precedence over entries further down the chain.
 
@@ -1797,7 +1797,7 @@ processdict =  {'newt' : {'functionpointer' : 'DLmm'}}
 ```
 We can also use functionpointer when overwriting a category defined internal to library. For
 example, if we wanted to change the default parameters applied with the mnmx category, we
-could overwerite the mnmx process_dict entry such as to match the current entry but with 
+could overwrite the mnmx process_dict entry such as to match the current entry but with 
 updated defaultparams.
 ```
 processdict =  {'mnmx' : {'functionpointer' : 'mnmx',
@@ -1811,7 +1811,7 @@ numeric sets under automation, whose family tree has nmbr as a tree category ent
 (Other default root categories under automation are detailed further below in the 
 "[Default Tranformations](https://github.com/Automunge/AutoMunge#default-transformations)" section.) This approach differs
 from overwriting the nmbr transformdict entry as demonstrated above in that the update would be carried through to all instances where nmbr is
-accessed as a tree category accross the library of family trees.
+accessed as a tree category across the library of family trees.
 ```
 processdict =  {'nmbr' : {'functionpointer' : 'mnmx'}}
 ```
@@ -1885,10 +1885,10 @@ When privacy_encode is activated postmunge(.) printstatus is only available as F
 The 'private' option also activates shuffling of rows in train and test data for both automunge(.) and postmunge(.)
 and resets the dataframe indexes (although retains the Automunge_index column returned in the ID set).
 Thus prepared data in the 'private' option can be kept row-wise anonymous by not sharing the returned ID set.
-We recomend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
+We recommend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
 privacy_encode is activated postmunge options for featureeval and driftreport are not available to avoid data leakage channel.
 
-* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or basecd on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
+* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
@@ -1967,7 +1967,7 @@ in this set is a derived column titled 'Automunge_index',
 this column serves as an index identifier for order of rows as they were 
 received in passed data, such as may be beneficial when data is shuffled.
 For more information please refer to writeup for the testID_column parameter.
-If the reveived df_test had a non-ranged integer index,
+If the received df_test had a non-ranged integer index,
 it is extracted and returned in this set. 
 
 * test_labels: a set of numerically encoded labels corresponding to the
@@ -2100,8 +2100,8 @@ in which case they are automatically given comparable treatment. Thus, the prima
 of the postmunge(.) testID_column parameter is for cases where a df_test has ID columns 
 different from those passed with df_train in automunge(.). Note that an integer column index 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
-(In general though when passing data as numpy arrays we recomend matching ID columns to df_train.) In cases of unnamed
-non-range integer intexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+(In general though when passing data as numpy arrays we recommend matching ID columns to df_train.) In cases of unnamed
+non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframes. If set to _True_ returns pandas dataframes
@@ -2226,7 +2226,7 @@ as True treats df_test as a train set for purposes of these specific transforms,
 default of False treats df_test as a test set (which turns off noise injection for DP transforms). As you would expect, 'train_no_noise' and 'test_no_noise' designates data passed to postmunge(.) as train or test data but turns off noise injections.
 
 * noise_augment: accepts type int or float(int) >=0. Defaults to 0 - used to specify 
-a count of additional duplicates of test data prepared and concatinated with the
+a count of additional duplicates of test data prepared and concatenated with the
 original test set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. 
 Takes into account the traindata parameter passed to postmunge(.) for
@@ -2266,7 +2266,7 @@ postprocess_dict['finalcolumns_trainID']
 the returned sets will be (consistently) shuffled. This value defaults to False.
 
 * randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, randomseed is based on a uniform randomly sampled integer within that range.
-This value is used as the postmunge(.) seed of randomness for operations that don't required matched random seeding to automunge(.).
+This value is used as the postmunge(.) seed of randomness for operations that don't require matched random seeding to automunge(.).
 
 * encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
 
@@ -2278,7 +2278,7 @@ appropriate means of feature engineering and numerical encoding. The default
 categories of transformations are as follows:
 - nmbr: for numeric data, columns are treated with z-score normalization. If 
 binstransform parameter was activated this will be supplemented by a collection
-of bins indicating number of standard deviations from the mean. Note that deafult infill
+of bins indicating number of standard deviations from the mean. Note that default infill
 performed prior to ML infill is imputation with negative zero. The exception is for
 numeric data received in a column with pandas 'categoric' data type, which are instead binarized 
 consistent to categoric sets (as 1010 or bnry). Note that numerical sets with 2 unique values in train
@@ -2358,8 +2358,8 @@ numerical columns with a default mean scaling ('mean') instead of z-score
 normalization ('nmbr'), the user may copy the transform_dict entries from the code-base 
 for 'mean' root category and assign as a definition of the 'nmbr' root category, and then 
 pass that defined transformdict in the automunge call. (Note that we don't need to 
-overwrite the processdict for nmbr if we don't intend to overwrite it's use as an entry 
-in other root category family trees. Also it's good practice to retain any downstream 
+overwrite the processdict for nmbr if we don't intend to overwrite its use as an entry 
+in other root category family trees. Also it is good practice to retain any downstream 
 entries such as in case the default for nmbr is used as an entry in some other root 
 category's family tree.) Here's a demonstration.
 
@@ -2493,7 +2493,7 @@ label set encodings is support by the postmunge(.) inversion parameter.
 * lb10: for categoric label sets, entries are given a binary encoding via '1010'
 * lbos: for categoric label sets, entries are given an ordinal encoding via 'ordl' followed by a conversion to
 string by 'strg' (some ML libraries prefer string encoded labels to recognize the classification application)
-* lbte: for categoric label sets, entries are given a one-hot encoding (this has some interpretabiltiy benefits over ordinal)
+* lbte: for categoric label sets, entries are given a one-hot encoding (this has some interpretability benefits over ordinal)
 * lbbn: for categoric label sets with 2 unique values, entries are given a binarization via 'bnry'
 * lbsm: for categoric encoding with smoothed labels (i.e. "label smoothing"), further described in smth transform below (accepts activation parameter for activation threshold)
 * lbfs: for categoric encoding with fitted smoothed labels (i.e. fitted label smoothing), further described in fsmh transform below (accepts activation parameter for activation threshold)
@@ -2511,7 +2511,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
+    - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'abs_zero', defaults to True, deactivate to turn off conversion of negative zeros to positive zeros applied prior to infill (this is included to supplement negzeroinfill)
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2531,7 +2531,7 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
+    - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / mean / std
@@ -2577,7 +2577,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
 * retn: related to min/max scaling but retains +/- of values, based on conditions
 if max>=0 and min<=0, x=x/(max-min), elif max>=0 and min>=0 x=(x-min)/(max-min),
 elif max<=0 and min<=0 x=(x-max)/(max-min)
-  - useful for: normalization with sign retention for iterpretability
+  - useful for: normalization with sign retention for interpretability
   - default infill: mean
   - default NArowtype: numeric
   - suffix appender: '_retn' in base configuration or based on the family tree category
@@ -2586,7 +2586,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
-    - 'muilitplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
+    - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
@@ -2765,7 +2765,7 @@ qttf converts to a normal output distribution, qtt2 converts to a uniform output
   - driftreport postmunge metrics: mean
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with partial recovery
-* trigometric functions sint/cost/tant/arsn/arcs/artn: performs trigometric trasnformations.
+* trigometric functions sint/cost/tant/arsn/arcs/artn: performs trigometric transformations.
 Transforms are built on top of numpy np.sin/np.cos/np.tan/np.arcsin/np.arccos/np.arctan respectively.
   - useful for: common mathematic transform
   - default infill: adjinfill
@@ -3113,7 +3113,7 @@ and d2d2), all returned sets include 'retn' normalization
   - inversion available: no
 * nmdx/nmd2/nmd3/nmd4/nmd5/nmd6: comparable to dxdt but includes upstream of sequential transforms a 
 nmrc numeric string parsing top extract numbers from string sets
-* mmdx/mmd2/mmd3/mmd4/mmd5/mmd6: comparable to dxdt but uses z-score normalizaitons via 'nbr2' instead of 'retn'
+* mmdx/mmd2/mmd3/mmd4/mmd5/mmd6: comparable to dxdt but uses z-score normalizations via 'nbr2' instead of 'retn'
 * dddt/ddd2/ddd3/ddd4/ddd5/ddd6: comparable to dxdt but no normalizations applied
 * dedt/ded2/ded3/ded4/ded5/ded6: comparable to dxd2 but no normalizations applied
   - inversion available: no
@@ -3173,9 +3173,9 @@ Note that text and onht are implemented with the same functions by updates to th
     - 'null_activation': applied as False in text suffix_convention for no activations for missing data
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
-    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'ordered_overide': default to True, accepts boolean indicating if columns received as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
     - 'frequency_sort': boolean defaults to True, when activated the order of returned columns is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
 (like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents). Note that text and onht are implemented with the same functions by updates to the suffix_convention parameter.
@@ -3190,9 +3190,9 @@ Note that text and onht are implemented with the same functions by updates to th
     - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set.  (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
-    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'ordered_overide': default to True, accepts boolean indicating if columns received as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
     - 'frequency_sort': boolean defaults to True, when activated the order of returned columns is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic
   - driftreport postmunge metrics: textlabelsdict_text / <column> + '_ratio' (column specific)
 			           text_categorylist is key between columns and target entries
@@ -3209,9 +3209,9 @@ Note that text and onht are implemented with the same functions by updates to th
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
-    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'ordered_overide': default to True, accepts boolean indicating if columns received as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
     - 'frequency_sort': boolean defaults to True but set as False for ordl, when activated the order of integer activations is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic.  The 0 activation is reserved for missing data.
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -3230,9 +3230,9 @@ occurrence, second basis for common count entries is alphabetical
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
-    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation
-    - 'ordered_overide': default to True, accepts boolean indicating if columns recieved as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
+    - 'ordered_overide': default to True, accepts boolean indicating if columns received as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
     - 'frequency_sort': boolean defaults to True, when activated the order of integer activations is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic. The 0 activation is reserved for missing data.
   - driftreport postmunge metrics: ordinal_dict / ordinal_overlap_replace / ordinal_activations_dict
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
@@ -3254,7 +3254,7 @@ efficient than one-hot encoding)
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set), note NaN missing data representation will be added
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
-    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead recieve no activation)
+    - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation. For consolidation with NaN missing data representation user should instead apply an assignnan conversion.
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
@@ -3315,7 +3315,7 @@ and comparable to test set independent of test set row count
   - default NArowtype: justNaN
   - suffix appender: '_smt0\_(entry)\_smth\_#' where # is integer in base configuration or based on the family tree category
   - assignparam parameters accepted: 
-    - note that parameters for the upstream onehot encoding can be passed in assignparam to the smt0 category (consistent to text trasnform), and smoothing parameters can be passed to the smth category
+    - note that parameters for the upstream onehot encoding can be passed in assignparam to the smt0 category (consistent to text transform), and smoothing parameters can be passed to the smth category
     - 'activation' defaults to 0.9, a float between 0.5-1 to designate activation value
     - 'LSfit' defaults to False, when True applies fitted label smoothing (consistent with fsmh)
     - 'testsmooth' defaults to False, when True applies smoothing to test data in both automunge and postmunge
@@ -3323,7 +3323,7 @@ and comparable to test set independent of test set row count
   - driftreport postmunge metrics: comparable to onht
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
-* fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter. (Note that parameters for the upstream onehot encoding can be passed in assignparam to the fsm0 category (consistent to text trasnform), and smoothing parameters can be passed to the fsmh category
+* fsmh: comparable to smth but applies by default a fitted label smoothing, in which null values are fit to ratio of activations corresponding to current activation. The smoothing is applied to train data but not validation or test data. Smoothing can be applied to test data in postmunge(.) by activating the traindata parameter. (Note that parameters for the upstream onehot encoding can be passed in assignparam to the fsm0 category (consistent to text transform), and smoothing parameters can be passed to the fsmh category
 * hash: applies "the hashing trick" to convert high cardinality categoric sets to set of columns with integer word encodings
 e.g. for an entry "Three word quote" may return three columns with integers corresponding to each of three words
 where integer is determined by hashing, and also based on passed parameter vocab_size.
@@ -3581,7 +3581,7 @@ category associated with the transformation function may be different than the r
 Noise sampling is built on top of numpy.random which as of version 1.17.0 uses an algorithm called PCG 
 as a pseudo random number generator.
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
-parameter to automatically prepare additional concatinated duplicates as a form of data augmentation.
+parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
 
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
@@ -3658,7 +3658,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPbn' transformation category from family tree
@@ -3678,7 +3678,7 @@ on number of activations)
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPod' transformation category from family tree
@@ -3691,7 +3691,7 @@ on number of activations)
 flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a one-hot encoding. Note that assignparam for noise injection
-can be passed to the intermediate category DPo2 which applies the DPod trasnform.
+can be passed to the intermediate category DPo2 which applies the DPod transform.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo5) cleans data
   - default NArowtype: justNaN
@@ -3699,7 +3699,7 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo2' transformation category from family tree
@@ -3712,7 +3712,7 @@ can be passed to the intermediate category DPo2 which applies the DPod trasnform
 flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations), followed by a 1010 binary encoding.  Note that assignparam for noise injection
-can be passed to the intermediate category DPo3 which applies the DPod trasnform.
+can be passed to the intermediate category DPo3 which applies the DPod transform.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo6) cleans data
   - default NArowtype: justNaN
@@ -3720,7 +3720,7 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo3' transformation category from family tree
@@ -3733,7 +3733,7 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
 flips the activation sets per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activation sets (including the current activation set so actual flip percent is < flip_prob based
 on number of activations).  Note that assignparam for noise injection
-can be passed to the intermediate category DPo3 which applies the DPod trasnform. Defaults to weighted sampling.
+can be passed to the intermediate category DPo3 which applies the DPod transform. Defaults to weighted sampling.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
   - default NArowtype: justNaN
@@ -3741,7 +3741,7 @@ can be passed to the intermediate category DPo3 which applies the DPod trasnform
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
@@ -3761,16 +3761,16 @@ on number of activations).
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
-    - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embeeded in a dicionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
+    - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embedded in a dictionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
   - driftreport postmunge metrics: hash metrics
-  - returned datatype: conditional integer based on hasing vocab size
+  - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
-* DPh2: applies a single column hash binarization via hsh2 followed by a single column categoric noise injection via DPod funstion (as DPo7), which
+* DPh2: applies a single column hash binarization via hsh2 followed by a single column categoric noise injection via DPod function (as DPo7), which
 flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
 on number of activations).
@@ -3781,18 +3781,18 @@ on number of activations).
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
-    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more coputationally efficient).
+    noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo7' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
   - driftreport postmunge metrics: hash metrics
-  - returned datatype: conditional integer based on hasing vocab size
+  - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
 
 ### Misc. Functions
-* excl: passes source column un-altered, no transforms, data type conversion, or infill. The feature is excluded from ML infill basis of all other features. If a passthrough column is desired to be included in ML infill basis for surrounding features, it should instead be passed to one of the other passthorugh trasnforms, such as exc2 for continuous numeric, exc5 for ordinal encoded integers, or exc8 for continuous integers. Data returned from excl may be non-numeric. excl has a special suffix convention in the library in that the column is returned without a suffix appender (to signify full pass-through), if suffix retention is desired it is available by the automunge(.) excl_suffix parameter.
+* excl: passes source column un-altered, no transforms, data type conversion, or infill. The feature is excluded from ML infill basis of all other features. If a passthrough column is desired to be included in ML infill basis for surrounding features, it should instead be passed to one of the other passthrough transforms, such as exc2 for continuous numeric, exc5 for ordinal encoded integers, or exc8 for continuous integers. Data returned from excl may be non-numeric. excl has a special suffix convention in the library in that the column is returned without a suffix appender (to signify full pass-through), if suffix retention is desired it is available by the automunge(.) excl_suffix parameter.
 Note that for assignnan designation of infill conversions, excl is excluded from 'global' assignments
 (although may still be assigned explicitly under assignnan columns or categories entries). excl also retains original form of entries that for other transforms are converted to missing data markers, such as None or inf.
   - useful for: full passthrough sets
@@ -3872,14 +3872,14 @@ unless an additional transform is applied downstream.)
   - driftreport postmunge metrics: none
   - returned datatype: consistent with input
   - inversion available: no
-* mlti: mlti is a category that may take as input a set of one or more columns returned from an upstream transform, for example this could be a multi-clumn set returned from a concurrent_nmbr containing multiple columns of continous numeric entries (or otherwise take a single column input when applied to an upstream primitive). mlti applies a normalization to each of the columns on an independant basis. The normalization defaults to z-score via nmbr or alternate trasnforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.) mlti is defined in process_dict based on concurrent_nmbr MLinfilltype. mlti may be use to apply an arbitrary trasnformation category to each column from a set of columns returned from a trasnform (such as for a concurrent MLinfilltype). The MLinfilltype basis for mlti is concurrent_nmbr, meaning it assumes returned columns are continuous numeric. For concurrent_ordl MLinfilltype can either overwrite processdict or make use of mlto. Returned concurrent_act support is available by overwriting the processdict entry.
+* mlti: mlti is a category that may take as input a set of one or more columns returned from an upstream transform, for example this could be a multi-column set returned from a concurrent_nmbr containing multiple columns of continuous numeric entries (or otherwise take a single column input when applied to an upstream primitive). mlti applies a normalization to each of the columns on an independent basis. The normalization defaults to z-score via nmbr or alternate transforms may be designated by assignparam. (Currently mlti is not defined as a root category, but is available for use as a tree category.) mlti is defined in process_dict based on concurrent_nmbr MLinfilltype. mlti may be used to apply an arbitrary transformation category to each column from a set of columns returned from a transform (such as for a concurrent MLinfilltype). The MLinfilltype basis for mlti is concurrent_nmbr, meaning it assumes returned columns are continuous numeric. For concurrent_ordl MLinfilltype can either overwrite processdict or make use of mlto. Returned concurrent_act support is available by overwriting the processdict entry.
   - useful for: normalizing a set of numeric features returned from an upstream transform
   - default infill: consistent with the type of normalization selected
   - default NArowtype: justNaN
   - suffix appender: '\_mlti\_' + suffix associated with the normalization
   - assignparam parameters accepted:
-    - 'norm_category': defaults to 'nmbr', used to specify type of normalizaiton applied to each column. Used to access transformation functions from process_dict.
-    - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}. Note that parameters can also be passed to the norm_category through the assignparam automunge(.) parameter, with any specifications (such as to global_assignparam or default_assignparam) taking precedence over specificaitons through norm_params.
+    - 'norm_category': defaults to 'nmbr', used to specify type of normalization applied to each column. Used to access transformation functions from process_dict.
+    - 'norm_params': defaults to empty dictionary {}, used to pass parameters to the normalization transform, e.g. as {parameter : value}. Note that parameters can also be passed to the norm_category through the assignparam automunge(.) parameter, with any specifications (such as to global_assignparam or default_assignparam) taking precedence over specifications through norm_params.
     - 'dtype': accepts one of {'float', 'conditionalinteger', 'mlhs'}, defaults to float. conditionalinteger is for use with mlto. 'mlhs' is for use with mlhs.
   - driftreport postmunge metrics: records drift report metrics included with the normalization transform
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
@@ -3903,27 +3903,27 @@ unless an additional transform is applied downstream.)
   - suffix appender: '_bnst'
   - assignparam parameters accepted:
     - suffix: defaults to tree category, accepts string
-    - upstreaminteger: defaults to True for boolean integer input, when False can recieve other single character entries, although inversion not support for the False scenario
+    - upstreaminteger: defaults to True for boolean integer input, when False can receive other single character entries, although inversion not supported for the False scenario
   - driftreport postmunge metrics: none
   - returned datatype: bnst returns string, bnso conditional integer per downstream ordinal encoding
-  - inversion available: supported for upstreaminteger True scenario, False perfoms a passthrough inversion without recovery
-* GPS1: for converting sets of GPS coordinates to normalized lattitude and longitude, relies on comma seperated inputs, with lattitude/longitude reported as DDMM.... or DDDMM.... and direction as one of 'N'/'S' or 'E'/'W'. Note that with GPS data, depending on the application, there may be benefit to setting the automunge(.) floatprecision parameter to 64 instead of the default 32. If you want to apply ML infill or some other assigninfill on the returned sets, we recommend ensuring missing data is recieved as NaN, otherwise missing entries will receive adjinfill.
-  - useful for: converting GPS coordinates to normalized lattitude and normalized longitude
+  - inversion available: supported for upstreaminteger True scenario, False performs a passthrough inversion without recovery
+* GPS1: for converting sets of GPS coordinates to normalized latitude and longitude, relies on comma separated inputs, with latitude/longitude reported as DDMM.... or DDDMM.... and direction as one of 'N'/'S' or 'E'/'W'. Note that with GPS data, depending on the application, there may be benefit to setting the automunge(.) floatprecision parameter to 64 instead of the default 32. If you want to apply ML infill or some other assigninfill on the returned sets, we recommend ensuring missing data is received as NaN, otherwise missing entries will receive adjinfill.
+  - useful for: converting GPS coordinates to normalized latitude and normalized longitude
   - default infill: adjinfill
   - default NArowtype: justNaN
   - suffix appender: \_GPS1\_latt\_mlti\_nmbr and \_GPS1\_long\_mlti\_nmbr
   - assignparam parameters accepted:
     - 'GPS_convention': accept one of {'default', 'nonunique'}, under default all rows are individually parsed. nonunique is used in GPS3 and GPS4.
-    - 'comma_addresses': accepts as list of 4 integers, defaulting to [2,3,4,5], which corresponds to default where lattitude located after comma 2, lattitude direction after comma 3, longitude after comma 4, longitude direction after comma 5
+    - 'comma_addresses': accepts as list of 4 integers, defaulting to [2,3,4,5], which corresponds to default where latitude located after comma 2, latitude direction after comma 3, longitude after comma 4, longitude direction after comma 5
     - 'comma_count': an integer, defaulting to 14, used in inversion to pad out commas on the recovered data format
   - driftreport postmunge metrics: metrics included with the downstream normalization transforms
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with partial recovery e.g. for default configuration recovers data in the form ",,DDMM.MMMMMMM,C,DDMM.MMMMMMM,C,,,,,,,,," (where C is the direction)
 * GPS2: comparable to GPS1 but without the downstream normalization, so returns floats in units of arc minutes. (If you want missing data returned as NaN instead of adjinfill, can set process_dict entry NArowtype to 'exclude'.)
-* GPS3: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in both the train and test set. This may benefit latency in cases of redundent entries.
+* GPS3: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in both the train and test set. This may benefit latency in cases of redundant entries.
 * GPS4: comparable to GPS1, including downstream normalization, but only unique entries are parsed instead of all rows. Parses unique entries in the train set and relies on assumption that the set of unique entries in test set will be the same or a subset of the train set, which may benefit latency for this scenario.
-* GPS5: comparable to GPS3 but performs a downstream ordinal encoding instead of normalization, as may be desired when treating a fixed range of GPS coordinates as a categoric feature, lattitude and longitude encoded seperately.
-* GPS6: comparable to GPS3 but performs both a downstream ordinal encoding and a downstream normalizaiton, such as to treat lattitude and longitude both as categoric and continuous numeric features. This is probably a better default than GPS3 or GPS5 for fixed range of entries.
+* GPS5: comparable to GPS3 but performs a downstream ordinal encoding instead of normalization, as may be desired when treating a fixed range of GPS coordinates as a categoric feature, latitude and longitude encoded separately.
+* GPS6: comparable to GPS3 but performs both a downstream ordinal encoding and a downstream normalization, such as to treat latitude and longitude both as categoric and continuous numeric features. This is probably a better default than GPS3 or GPS5 for fixed range of entries.
 * NArw: produces a column of boolean integer identifiers for rows in the source
 column with missing or improperly formatted values. Note that when NArw
 is assigned in a family tree it bases NArowtype on the root category, 
@@ -4185,7 +4185,7 @@ for identified overlap entries. (Note for multiple activations encoding priority
   - driftreport postmunge metrics: overlap_dict / mean / maximum / minimum
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
-* nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands deliminator and comma decimal
+* nmEU/nmE2/nmE3: similar to nmcm, but recognizes numbers with period or space thousands delimiter and comma decimal
   - useful for: extracting numeric character subsets of entries, recognizes EU format
   - default infill: mean
   - default NArowtype: parsenumeric
@@ -4668,11 +4668,11 @@ it will instead populate as 'Automunge_index_' + a 12 digit random integer assoc
 Note that results of various validation checks such as for column header overlaps and other potential bugs are returned from 
 automunge(.) in closing printouts and in the postprocess_dict as postprocess_dict['miscparameters_results'], and returned 
 from postmunge(.) in the postreports_dict as postreports_dict['pm_miscparameters_results']. (If the function fails to compile 
-check the printouts.) It is not a requirement, but we also recommend ommiting underscore characters in strings used for 
+check the printouts.) It is not a requirement, but we also recommend omitting underscore characters in strings used for 
 transformation category identifiers for interpretation purposes.
  ___ 
 ### Root Category Family Tree Definitions
-The family tree definitions reference documentation are now recorded in a seperate file in the github repo titled "FamilyTrees.md".
+The family tree definitions reference documentation are now recorded in a separate file in the github repo titled "FamilyTrees.md".
 
  ___ 
 
@@ -4712,7 +4712,7 @@ transformdict = {'newt' : {'parents'       : [],
 Note that since this newt requires passing normalization parameters derived
 from the train set to process the test set, we'll need to create two separate 
 transformation functions, the first a "custom_train" function that processes
-the train set and records normalization paramters, and the second
+the train set and records normalization parameters, and the second
 a "custom_test" that only processes the test set on its own using the parameters
 derived during custom_train. (Note that if we don't need properties from the 
 train set to process the test set we would only need to define a custom_train.)
@@ -4720,7 +4720,7 @@ train set to process the test set we would only need to define a custom_train.)
 So what's being demonstrated here is that we're populating a processdict entry
 which will pass the custom transformation functions that we'll define below
 to associate them with the category for use when that category is entered in one
-of the family tree primitives associated with a root categoy. Note that the entries
+of the family tree primitives associated with a root category. Note that the entries
 for custom_test and custom_inversion are both optional, and info_retention is associated
 with the inversion.
 
@@ -4744,7 +4744,7 @@ with the transformation category, as one of {'adjinfill', 'meaninfill', 'mediani
 when a custom infill is applied as part of the custom transform. If naninfill retention is
 desired for the returned data, either it may be assigned in assigninfill, or the 'NArowtype' 
 processdict entry can be cast as 'exclude', noting that the latter may interfere with ML infill
-unless the feature is excluded from ML infill bases thorugh ML_cmnd['full_exclude'].
+unless the feature is excluded from ML infill bases through ML_cmnd['full_exclude'].
 
 Note that for transforms in the custom_train convention, after the transformation function
 is applied, a data type casting is performed based on the MLinfilltype 
@@ -4800,7 +4800,7 @@ def custom_train_template(df, column, normalization_dict):
   #(when custom_test not defined) then the quantity, headers, and order of returned columns 
   #will need to be consistent independent of data properties
   
-  #Note that the assumptions for data type of recieved data
+  #Note that the assumptions for data type of received data
   #Should align with the NArowtype specified in processdict
   
   #Note that the data types and quantity of returned columns 
@@ -4818,7 +4818,7 @@ def custom_train_template(df, column, normalization_dict):
   #and returns a single column of continuous numeric data 
   #so corresponding MLinfilltype processdict entry will need to be 'numeric'
 
-  #where we'll include the option for a parameter 'muiltiplier'
+  #where we'll include the option for a parameter 'multiplier'
   #which is an arbitrary example to demonstrate accessing parameters
   
   #basically we check if that parameter had been passed in assignparam or defaultparams
@@ -5131,7 +5131,7 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : customML_predict_regressor}}
 ```
-Please note that for customML autoML_type, feature importance is performed with the default random forest. (This was a design decision that benefits privacy of custom model training when sharing postprocess_dict with third party, this way only customML inference needs to be re-initialized when uploading postprocess_dict in a seperate notebook.)
+Please note that for customML autoML_type, feature importance is performed with the default random forest. (This was a design decision that benefits privacy of custom model training when sharing postprocess_dict with third party, this way only customML inference needs to be re-initialized when uploading postprocess_dict in a separate notebook.)
 
 Note that the library has an internal suite of inference functions for different ML libraries 
 that can optionally be used in place of a user defined customML inference function. These can
@@ -5156,7 +5156,7 @@ And thus ML infill can run with any tabular learning library or algorithm. BYOML
 
 ## Conclusion
 
-And there you have it, you now have all you need to prepare data for 
+And there you have it; you now have all you need to prepare data for 
 machine learning with the Automunge platform. Feedback is welcome.
 
 ...
@@ -5238,7 +5238,7 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
-Catboost, AutoGluon, or XGBoost libraries libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
+Catboost, AutoGluon, or XGBoost libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
 
 ...
 
