@@ -9515,7 +9515,7 @@ class AutoMunge:
     if isinstance(trainID_column, list):
       fullset = fullset | set(trainID_column)
       if indexcolumn_base in trainID_column:
-        indexcolumn = indexcolumn_base + str(application_number)
+        indexcolumn = indexcolumn_base + '_' + str(application_number)
     elif indexcolumn_base == trainID_column:
       fullset = fullset | {trainID_column}
       indexcolumn = indexcolumn_base + '_' + str(application_number)
@@ -9524,7 +9524,7 @@ class AutoMunge:
     if isinstance(testID_column, list):
       fullset = fullset | set(testID_column)
       if indexcolumn_base in testID_column:
-        testindexcolumn = indexcolumn_base + str(application_number)
+        testindexcolumn = indexcolumn_base + '_' + str(application_number)
     elif indexcolumn_base == testID_column:
       fullset = fullset | {testID_column}
       testindexcolumn = indexcolumn_base + '_' + str(application_number)
@@ -24354,6 +24354,13 @@ class AutoMunge:
       abs_zero = params['abs_zero']
     else:
       abs_zero = True
+
+    #angle_bits accepts boolean to indicate that activations are returned as pi instead of 1
+    #(as may be suitable for encoding binary decimal in a qubit angle of 0 for |0> and pi for |1>)
+    if 'angle_bits' in params:
+      angle_bits = params['angle_bits']
+    else:
+      angle_bits = False
       
     qbt1_column = column + '_' + suffix
     
@@ -24475,6 +24482,11 @@ class AutoMunge:
       df[fractional_columns[i]] = df[fractional_columns[i]].astype(np.int8)
 
       df[qbt1_column] -= df[fractional_columns[i]] * fractional
+
+    if angle_bits is True:
+      for allcolumn in allcolumns:
+        #this results in 0 for |0> and pi for |1>
+        df[allcolumn] *= np.pi
     
     #delete support column
     del df[qbt1_column]
@@ -24491,6 +24503,7 @@ class AutoMunge:
                                             'suffix' : suffix, \
                                             'integer_bits' : integer_bits, \
                                             'fractional_bits' : fractional_bits, \
+                                            'angle_bits' : angle_bits, \
                                             'sign_bit' : sign_bit, \
                                             'minimum' : minimum, \
                                             'maximum' : maximum, \
@@ -39659,7 +39672,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.46'
+    automungeversion = '7.47'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -52160,6 +52173,18 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['fractional_bits']
     sign_bit = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sign_bit']
+    if 'angle_bits' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+      angle_bits = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['angle_bits']
+    else:
+      #backward compatibility preceding 7.47
+      angle_bits = False
+
+    if angle_bits is True:
+      for column in categorylist:
+        #this translates entries of 0/pi to 0/1
+        df[column] /= np.pi
+        df[column] = df[column].astype(int)
     
     #sign_columns / integer_columns / fractional_columns
     #suffix / integer_bits / fractional_bits / sign_bit
