@@ -2792,6 +2792,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to True to include sign register
     - integer_bits: defaults to 3 for number of bits in register
     - fractional_bits: defaults to 12 for number of bits in register
+    - angle_bits: boolean, defaults to False, when activated records activations as angles 0/pi instead of 0/1
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - returned datatype: int8
@@ -2806,6 +2807,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to True to include sign register
     - integer_bits: defaults to 15 for number of bits in register
     - fractional_bits: defaults to 0 for number of bits in register
+    - angle_bits: boolean, defaults to False, when activated records activations as angles 0/pi instead of 0/1
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - returned datatype: int8
@@ -2820,6 +2822,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to False, activate to include sign register
     - integer_bits: defaults to 3 for number of bits in register
     - fractional_bits: defaults to 13 for number of bits in register
+    - angle_bits: boolean, defaults to False, when activated records activations as angles 0/pi instead of 0/1
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - returned datatype: int8
   - inversion available: yes with full recovery
@@ -2833,6 +2836,7 @@ standard deviations from mean and approximately 4 significant figures in decimal
     - sign_bit: boolean defaults to False, activate to include sign register
     - integer_bits: defaults to 16 for number of bits in register
     - fractional_bits: defaults to 0 for number of bits in register
+    - angle_bits: boolean, defaults to False, when activated records activations as angles 0/pi instead of 0/1
   - driftreport postmunge metrics: maximum, minimum, mean, stdev
   - returned datatype: int8
   - inversion available: yes with full recovery
