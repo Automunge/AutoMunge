@@ -4957,3 +4957,9 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - found and fixed an edge case for NArw aggregation for binary MLinfilltype assocated with cases of only one unique value in feature
 - comprehensive spell check of read me
 - in the process identified a few small spelling typos in code comment documentation for transformdict and processdict
+
+7.47
+- apparent process flaw, 7.46 did not get uploaded to pypi, this update includes 7.46 rollouts
+- new parameter accepted for qbt1 family of transforms as 'angle_bits', encodes activations as pi instead of 1
+- may have more detail on this provided in blog, pending
+- update to string naming for one of index column overlap scenarios for consistency
