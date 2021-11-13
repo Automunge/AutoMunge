@@ -4963,3 +4963,12 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - new parameter accepted for qbt1 family of transforms as 'angle_bits', encodes activations as pi instead of 1
 - may have more detail on this provided in blog, pending
 - update to string naming for one of index column overlap scenarios for consistency
+
+7.48
+- new option for noise injection transforms
+- now the noise distribution parameters can be passed as scipy.stats distributions
+- such that a unique noise distribution parameter is sampled with each automunge and postmunge call
+- this is primarily intended as a resource for data augmentation via the noise_augment option
+- as we suspect there may be benefit to variations in noise profiles across duplicates
+- this is somewhat of a hypothesis for now
+- fixed test_flip_prob normalization_dict entry for DPbn
