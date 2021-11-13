@@ -22809,6 +22809,53 @@ class AutoMunge:
     else:
       suffix = treecategory
       
+    #________
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    mu_dist = False
+    if isinstance(mu, type(stats.expon(1))):
+      mu_dist = mu
+      mu = mu.rvs()
+
+    test_mu_dist = False
+    if isinstance(test_mu, type(stats.expon(1))):
+      test_mu_dist = test_mu
+      test_mu = test_mu.rvs()
+
+    sigma_dist = False
+    if isinstance(sigma, type(stats.expon(1))):
+      sigma_dist = sigma
+      sigma = sigma.rvs()
+      if sigma < 0:
+        sigma = 0
+
+    test_sigma_dist = False
+    if isinstance(test_sigma, type(stats.expon(1))):
+      test_sigma_dist = test_sigma
+      test_sigma = test_sigma.rvs()
+      if test_sigma < 0:
+        test_sigma = 0
+
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+        
+    #________
+
     DPnm_column = column + '_' + suffix
     
     suffixoverlap_results = \
@@ -22874,6 +22921,12 @@ class AutoMunge:
                                              'test_sigma' : test_sigma, \
                                              'test_flip_prob' : test_flip_prob, \
                                              'test_noisedistribution' : test_noisedistribution, \
+                                             'mu_dist' : mu_dist, \
+                                             'sigma_dist' : sigma_dist, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_mu_dist' : test_mu_dist, \
+                                             'test_sigma_dist' : test_sigma_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -22984,6 +23037,53 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+      
+    #________
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    mu_dist = False
+    if isinstance(mu, type(stats.expon(1))):
+      mu_dist = mu
+      mu = mu.rvs()
+
+    test_mu_dist = False
+    if isinstance(test_mu, type(stats.expon(1))):
+      test_mu_dist = test_mu
+      test_mu = test_mu.rvs()
+
+    sigma_dist = False
+    if isinstance(sigma, type(stats.expon(1))):
+      sigma_dist = sigma
+      sigma = sigma.rvs()
+      if sigma < 0:
+        sigma = 0
+
+    test_sigma_dist = False
+    if isinstance(test_sigma, type(stats.expon(1))):
+      test_sigma_dist = test_sigma
+      test_sigma = test_sigma.rvs()
+      if test_sigma < 0:
+        test_sigma = 0
+
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+        
+    #________
       
     DPmm_column = column + '_' + suffix
     DPmm_column_temp1 = column + '_' + suffix + '_tmp1'
@@ -23192,6 +23292,12 @@ class AutoMunge:
                                              'test_sigma' : test_sigma, \
                                              'test_flip_prob' : test_flip_prob, \
                                              'test_noisedistribution' : test_noisedistribution, \
+                                             'mu_dist' : mu_dist, \
+                                             'sigma_dist' : sigma_dist, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_mu_dist' : test_mu_dist, \
+                                             'test_sigma_dist' : test_sigma_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -23344,6 +23450,53 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+      
+    #________
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    mu_dist = False
+    if isinstance(mu, type(stats.expon(1))):
+      mu_dist = mu
+      mu = mu.rvs()
+
+    test_mu_dist = False
+    if isinstance(test_mu, type(stats.expon(1))):
+      test_mu_dist = test_mu
+      test_mu = test_mu.rvs()
+
+    sigma_dist = False
+    if isinstance(sigma, type(stats.expon(1))):
+      sigma_dist = sigma
+      sigma = sigma.rvs()
+      if sigma < 0:
+        sigma = 0
+
+    test_sigma_dist = False
+    if isinstance(test_sigma, type(stats.expon(1))):
+      test_sigma_dist = test_sigma
+      test_sigma = test_sigma.rvs()
+      if test_sigma < 0:
+        test_sigma = 0
+
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+        
+    #________
       
     DPrt_column = column + '_' + suffix
     DPrt_column_temp1 = column + '_' + suffix + '_tmp1'
@@ -23727,6 +23880,12 @@ class AutoMunge:
                                              'test_sigma' : test_sigma, \
                                              'test_flip_prob' : test_flip_prob, \
                                              'test_noisedistribution' : test_noisedistribution, \
+                                             'mu_dist' : mu_dist, \
+                                             'sigma_dist' : sigma_dist, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_mu_dist' : test_mu_dist, \
+                                             'test_sigma_dist' : test_sigma_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -23795,6 +23954,29 @@ class AutoMunge:
     else:
       suffix = treecategory
       
+    #___
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+      
+    #___
+      
     DPbn_column = column + '_' + suffix
     
     suffixoverlap_results = \
@@ -23827,7 +24009,9 @@ class AutoMunge:
     nmbrcolumns = [DPbn_column]
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
-                                             'test_flip_prob' : flip_prob, \
+                                             'test_flip_prob' : test_flip_prob, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise}}
@@ -23918,6 +24102,29 @@ class AutoMunge:
     else:
       upstream_hsh2 = False
       
+    #___
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+      
+    #___
+      
     DPod_column = column + '_' + suffix
     DPod_tempcolumn1 = 1
     DPod_tempcolumn2 = 2
@@ -23999,6 +24206,8 @@ class AutoMunge:
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
                                              'test_flip_prob' : test_flip_prob, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
                                              'ord_encodings' : ord_encodings, \
                                              'weighted' : weighted, \
                                              'test_weighted' : test_weighted, \
@@ -24111,6 +24320,29 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+      
+    #___
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+      
+    #___
       
     #this function is intended to be applied donstream of a potentially multi column non current encoding 
     #(e.g. muiltirt, 1010) - (for concurrent scenario we recomend applying noise injection through mlti)
@@ -24270,6 +24502,8 @@ class AutoMunge:
                                               'textlabelsdict' : textlabelsdict, \
                                               'flip_prob' : flip_prob, \
                                               'test_flip_prob' : test_flip_prob, \
+                                              'flip_prob_dist' : flip_prob_dist, \
+                                              'test_flip_prob_dist' : test_flip_prob_dist, \
                                               'testnoise' : testnoise, \
                                               'trainnoise' : trainnoise, \
                                               'weighted' : weighted, \
@@ -39672,7 +39906,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.47'
+    automungeversion = '7.48'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -46070,6 +46304,63 @@ class AutoMunge:
         test_sigma = sigma
         test_flip_prob = flip_prob
         test_noisedistribution = noisedistribution
+        
+      if 'mu_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu_dist']
+        sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_dist']
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu_dist']
+        test_sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        mu_dist = False
+        sigma_dist = False
+        flip_prob_dist = False
+        test_mu_dist = False
+        test_sigma_dist = False
+        test_flip_prob_dist = False
+        
+      #___
+        
+      #scenarios where parameters passed as a scipy stats distribution
+      if isinstance(mu_dist, type(stats.expon(1))):
+        mu = mu_dist.rvs()
+
+      if isinstance(test_mu_dist, type(stats.expon(1))):
+        test_mu = test_mu_dist.rvs()
+
+      if isinstance(sigma_dist, type(stats.expon(1))):
+        sigma = sigma_dist.rvs()
+        if sigma < 0:
+          sigma = 0
+
+      if isinstance(test_sigma_dist, type(stats.expon(1))):
+        test_sigma = test_sigma_dist.rvs()
+        if test_sigma < 0:
+          test_sigma = 0
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+          
+      #___
 
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
@@ -46188,6 +46479,63 @@ class AutoMunge:
         test_sigma = sigma
         test_flip_prob = flip_prob
         test_noisedistribution = noisedistribution
+        
+      if 'mu_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu_dist']
+        sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_dist']
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu_dist']
+        test_sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        mu_dist = False
+        sigma_dist = False
+        flip_prob_dist = False
+        test_mu_dist = False
+        test_sigma_dist = False
+        test_flip_prob_dist = False
+        
+      #___
+        
+      #scenarios where parameters passed as a scipy stats distribution
+      if isinstance(mu_dist, type(stats.expon(1))):
+        mu = mu_dist.rvs()
+
+      if isinstance(test_mu_dist, type(stats.expon(1))):
+        test_mu = test_mu_dist.rvs()
+
+      if isinstance(sigma_dist, type(stats.expon(1))):
+        sigma = sigma_dist.rvs()
+        if sigma < 0:
+          sigma = 0
+
+      if isinstance(test_sigma_dist, type(stats.expon(1))):
+        test_sigma = test_sigma_dist.rvs()
+        if test_sigma < 0:
+          test_sigma = 0
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+          
+      #___
       
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
@@ -46378,6 +46726,63 @@ class AutoMunge:
         test_sigma = sigma
         test_flip_prob = flip_prob
         test_noisedistribution = noisedistribution
+        
+      if 'mu_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mu_dist']
+        sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_dist']
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_mu_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_mu_dist']
+        test_sigma_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        mu_dist = False
+        sigma_dist = False
+        flip_prob_dist = False
+        test_mu_dist = False
+        test_sigma_dist = False
+        test_flip_prob_dist = False
+        
+      #___
+        
+      #scenarios where parameters passed as a scipy stats distribution
+      if isinstance(mu_dist, type(stats.expon(1))):
+        mu = mu_dist.rvs()
+
+      if isinstance(test_mu_dist, type(stats.expon(1))):
+        test_mu = test_mu_dist.rvs()
+
+      if isinstance(sigma_dist, type(stats.expon(1))):
+        sigma = sigma_dist.rvs()
+        if sigma < 0:
+          sigma = 0
+
+      if isinstance(test_sigma_dist, type(stats.expon(1))):
+        test_sigma = test_sigma_dist.rvs()
+        if test_sigma < 0:
+          test_sigma = 0
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+          
+      #___
 
       suffix = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
@@ -46561,6 +46966,36 @@ class AutoMunge:
       else:
         #backward compatibility preceding 7.37
         test_flip_prob = flip_prob
+        
+      #___
+        
+      if 'flip_prob_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        flip_prob_dist = False
+        test_flip_prob_dist = False
+        
+      #scenarios where parameters passed as a scipy stats distribution
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+        
+      #___
       
       testnoise = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
@@ -46671,6 +47106,36 @@ class AutoMunge:
         #backward compatibility preceding 7.37
         test_flip_prob = flip_prob
         test_weighted = weighted
+        
+      #___
+        
+      if 'flip_prob_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        flip_prob_dist = False
+        test_flip_prob_dist = False
+        
+      #scenarios where parameters passed as a scipy stats distribution
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+        
+      #___
 
       DPod_column = column + '_' + suffix
       DPod_tempcolumn1 = 1
@@ -46786,6 +47251,36 @@ class AutoMunge:
         #backward compatibility preceding 7.37
         test_flip_prob = flip_prob
         test_weighted = weighted
+        
+      #___
+        
+      if 'flip_prob_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+        test_flip_prob_dist = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+      else:
+        #backward compatibility preceding 7.48
+        flip_prob_dist = False
+        test_flip_prob_dist = False
+        
+      #scenarios where parameters passed as a scipy stats distribution
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+        
+      #___
       
       if inplace is not True:
         for inputtextcolumn in inputtextcolumns:
