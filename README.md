@@ -3604,6 +3604,7 @@ on flip_prob parameter.
     - parameters should be passed to 'DPnb' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3625,6 +3626,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - parameters should be passed to 'DPmm' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3647,6 +3649,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - Parameters should be passed to 'DPrt' transformation category from family tree.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3668,6 +3671,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - noise injection parameters should be passed to 'DPbn' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3688,6 +3692,7 @@ on number of activations)
     - noise injection parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes
@@ -3709,6 +3714,7 @@ can be passed to the intermediate category DPo2 which applies the DPod transform
     - noise injection parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
   - returned datatype: int8
   - inversion available: yes
@@ -3730,6 +3736,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
     - noise injection parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
   - returned datatype: int8
   - inversion available: yes
@@ -3751,6 +3758,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: hs10 metrics
   - returned datatype: int8
   - inversion available: yes
@@ -3771,6 +3779,7 @@ on number of activations).
     - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embedded in a dictionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
@@ -3791,6 +3800,7 @@ on number of activations).
     - noise injection parameters should be passed to 'DPo7' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
