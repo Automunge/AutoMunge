@@ -4972,3 +4972,16 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - as we suspect there may be benefit to variations in noise profiles across duplicates
 - this is somewhat of a hypothesis for now
 - fixed test_flip_prob normalization_dict entry for DPbn
+
+7.49
+- new "swap noise" noise injection option
+- swap noise can be applied to both categoric and continuous numeric features
+- the implementation can be applied downstream of a single or multi column encoding
+- swap noise, instead of sampling from a distribution, replaces noise targets with a random draw from the rows in a feature
+- implemented by new swap_noise assignparam option in DPmc transform
+- swap_noise accepts boolean, defaulting to False
+- DPmc otherwise performs a categoric injection in a manner similar to other categoric injecitons, with exception that DPmc is neutral to whether it is applied downstream of a single or multi-column transform
+- note that when swap_noise is activated, the weighted and test_weighted DPmc options are reset to False
+- new root categories DPns and DP1s, which are for numeric z-score normalization with swap noise and categoric 1010 binarization with swap noise
+- note that DPmc can also be applied downstream of concurrent MLinfilltypes in context of mlti trasnform to inject swap noise into each column in a multi column set individually
+- the swap noise option was inspired by seeing a description in the paper "SubTab: Subsetting Features of Tabular Data for Self-Supervised Representation Learning" by Talip Ucar, Ehsan Hajiramezanali, Lindsay Edwards
