@@ -3211,6 +3211,44 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['DPo7'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPns' : {'parents'       : ['DPn4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    #DPn4 primarily intended for use as a tree category
+    transform_dict.update({'DPn4' : {'parents'       : ['DPn4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPns'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DP1s' : {'parents'       : ['DPo8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    #DPo8 primarily intended for use as a tree category
+    transform_dict.update({'DPo8' : {'parents'       : ['DPo8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DP1s'],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -7124,6 +7162,45 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'DPod'}})
+    process_dict.update({'DPn4' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPns'}})
+    process_dict.update({'DPns' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPns'}})
+    process_dict.update({'DPo8' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP1s'}})
+    process_dict.update({'DP1s' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP1s'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
