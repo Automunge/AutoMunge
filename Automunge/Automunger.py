@@ -3797,6 +3797,44 @@ class AutoMunge:
                                      'coworkers'     : ['DPo7'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPns' : {'parents'       : ['DPn4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    #DPn4 primarily intended for use as a tree category
+    transform_dict.update({'DPn4' : {'parents'       : ['DPn4'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPns'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DP1s' : {'parents'       : ['DPo8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    #DPo8 primarily intended for use as a tree category
+    transform_dict.update({'DPo8' : {'parents'       : ['DPo8'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DP1s'],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -7708,6 +7746,45 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'ordlexclude',
                                   'labelctgy' : 'DPod'}})
+    process_dict.update({'DPn4' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPns'}})
+    process_dict.update({'DPns' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPns'}})
+    process_dict.update({'DPo8' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP1s'}})
+    process_dict.update({'DP1s' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP1s'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
@@ -24285,6 +24362,11 @@ class AutoMunge:
     else:
       test_flip_prob = flip_prob
       
+    if 'swap_noise' in params:
+      swap_noise = params['swap_noise']
+    else:
+      swap_noise = False
+      
     if 'testnoise' in params:
       testnoise = params['testnoise']
     else:
@@ -24353,7 +24435,12 @@ class AutoMunge:
       inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
     else:
       #origcolumn scenario when not applied as downstream transform
+      #note that this scenario also is automatically applied 
+      #when this transform applied downstream of a concurrent MLinfilltype with mlti
+      #since at that point column won't be in column_dict
+      #which is desired behavior for that use case
       inputtextcolumns = [column]
+      
     
     #the returned columns will each have consistent suffix appending
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
@@ -24397,36 +24484,46 @@ class AutoMunge:
       
       for textcolumn in textcolumns:
         maxencodings.update({textcolumn : maxencoding})
-      
-    #now we'll create a support dataframe df_unique from df_train
-    #which we'll consolidate redundant rows in df_unique before saving to normalization_dict
-    df_unique = mdf_train[textcolumns].copy()
     
-    #first we derive a mask based on presence of duplicate rows
-    mask = pd.DataFrame(df_unique.duplicated())
+    if swap_noise is False:
+
+      #now we'll create a support dataframe df_unique from df_train
+      #which we'll consolidate redundant rows in df_unique before saving to normalization_dict
+      df_unique = mdf_train[textcolumns].copy()
+
+      #first we derive a mask based on presence of duplicate rows
+      mask = pd.DataFrame(df_unique.duplicated())
+
+      #this operation inverts True and False in the mask for next operation
+      mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
+
+      #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
+      #which may be much fewer rows than received df_unique 
+      df_unique = df_unique.iloc[mask.to_numpy()]
+
+      #reset index in df_unique to a range index
+      df_unique = df_unique.reset_index(drop=True)
     
-    #this operation inverts True and False in the mask for next operation
-    mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
-    
-    #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
-    #which may be much fewer rows than received df_unique 
-    df_unique = df_unique.iloc[mask.to_numpy()]
-    
-    #reset index in df_unique to a range index
-    df_unique = df_unique.reset_index(drop=True)
-    
-    weights = []
-    if weighted is True:
-      #for each unique row in the consolidated df_unique calculate a weight
-      #by count of that row in mdf_train[textcolumns]
-      #note this is applied in same order as unique_range fed to np.random.choice
-      for i in range(df_unique.shape[0]):
-        #to derive, we'll create a comparably shaped dataframe with all same row for comparison to mdf_train[textcolumns]
-        df_allonerow = pd.concat([df_unique[i:i+1]]*mdf_train.shape[0], axis=0)
-        df_allonerow.index = mdf_train.index
-        count = ((mdf_train[textcolumns] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
-        weight = count / mdf_train.shape[0]
-        weights.append(weight)
+      weights = []
+      if weighted is True:
+        #for each unique row in the consolidated df_unique calculate a weight
+        #by count of that row in mdf_train[textcolumns]
+        #note this is applied in same order as unique_range fed to np.random.choice
+        for i in range(df_unique.shape[0]):
+          #to derive, we'll create a comparably shaped dataframe with all same row for comparison to mdf_train[textcolumns]
+          df_allonerow = pd.concat([df_unique[i:i+1]]*mdf_train.shape[0], axis=0)
+          df_allonerow.index = mdf_train.index
+          count = ((mdf_train[textcolumns] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
+          weight = count / mdf_train.shape[0]
+          weights.append(weight)
+          
+    elif swap_noise is True:
+      #df_unique not used in swap_noise scenario
+      df_unique = False
+      #swap_noise doesn't have weighted support
+      weighted = False
+      test_weighted = False
+      weights = []
     
     def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights):
       """
@@ -24466,32 +24563,44 @@ class AutoMunge:
       return df
     
     if trainnoise is True:
-
-      #inject noise to mdf_train
-      mdf_train = \
-      _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
+      
+      if swap_noise is False:
+        #inject noise to mdf_train
+        mdf_train = \
+        _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
+      #in swap_noise scenario we replace df_unique with the full dataframe
+      elif swap_noise is True:
+        mdf_train = \
+        _noise_inject(mdf_train, textcolumns, mdf_train, flip_prob, weighted, weights)
     
     #inspect testnoise for determination of whether to inject noise to mdf_test
     if testnoise is True:
       
-      #inject noise to mdf_test
-      mdf_test = \
-      _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights)
+      if swap_noise is False:
+        #inject noise to mdf_test
+        mdf_test = \
+        _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights)
+      #in swap_noise scenario we replace df_unique with the full dataframe
+      elif swap_noise is True:
+        mdf_test = \
+        _noise_inject(mdf_test, textcolumns, mdf_test, test_flip_prob, test_weighted, weights)
     
     #now apply data type conversion, this should align with received data types, just applying in case of drift
-    for textcolumn in textcolumns:
+    #in swap_noise scenario we'll default to the input data type since this might be applied downstream of floats
+    if swap_noise is False:
+      for textcolumn in textcolumns:
 
-      max_encoding_for_dtype_convert = maxencodings[textcolumn]
+        max_encoding_for_dtype_convert = maxencodings[textcolumn]
 
-      if max_encoding_for_dtype_convert <= 255:
-        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint8)
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
-      elif max_encoding_for_dtype_convert <= 65535:
-        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint16)
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
-      else:
-        mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint32)
-        mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
+        if max_encoding_for_dtype_convert <= 255:
+          mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint8)
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
+        elif max_encoding_for_dtype_convert <= 65535:
+          mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint16)
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
+        else:
+          mdf_train[textcolumn] = mdf_train[textcolumn].astype(np.uint32)
+          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
       
     column_dict_list = []
 
@@ -24504,6 +24613,7 @@ class AutoMunge:
                                               'test_flip_prob' : test_flip_prob, \
                                               'flip_prob_dist' : flip_prob_dist, \
                                               'test_flip_prob_dist' : test_flip_prob_dist, \
+                                              'swap_noise' : swap_noise, \
                                               'testnoise' : testnoise, \
                                               'trainnoise' : trainnoise, \
                                               'weighted' : weighted, \
@@ -39906,7 +40016,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.48'
+    automungeversion = '7.49'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -47252,6 +47362,13 @@ class AutoMunge:
         test_flip_prob = flip_prob
         test_weighted = weighted
         
+      if 'swap_noise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        swap_noise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['swap_noise']
+      else:
+        #backward compatibility preceding 7.49
+        swap_noise = False
+        
       #___
         
       if 'flip_prob_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
@@ -47339,21 +47456,27 @@ class AutoMunge:
       if (trainnoise is True and traindata is True) \
       or (testnoise is True and traindata is False):
         
-        #inject noise to mdf_test
-        mdf_test = \
-        _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+        if swap_noise is False:
+          #inject noise to mdf_test
+          mdf_test = \
+          _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+        elif swap_noise is True:
+          mdf_test = \
+          _noise_inject(mdf_test, textcolumns, mdf_test, flip_prob, weighted, weights)
         
       #now apply data type conversion, this should align with received data types, just applying in case of drift
-      for textcolumn in textcolumns:
+      #in swap_noise scenario will defer to the upstream data type
+      if swap_noise is False:
+        for textcolumn in textcolumns:
 
-        max_encoding_for_dtype_convert = maxencodings[textcolumn]
+          max_encoding_for_dtype_convert = maxencodings[textcolumn]
 
-        if max_encoding_for_dtype_convert <= 255:
-          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
-        elif max_encoding_for_dtype_convert <= 65535:
-          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
-        else:
-          mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
+          if max_encoding_for_dtype_convert <= 255:
+            mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint8)
+          elif max_encoding_for_dtype_convert <= 65535:
+            mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint16)
+          else:
+            mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
       
     else:
 
