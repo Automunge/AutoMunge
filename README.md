@@ -3751,6 +3751,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
   - suffix appender: '\DPh1\_#\_DPmc' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'swap_noise' boolean defaults False, instead of a random flip to alternate activation, randomly samples from feature rows (we recommend the default for categoric to take advantage of weighted sampling)
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
@@ -3803,6 +3804,42 @@ on number of activations).
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
+  - inversion available: yes
+* DPns: applies a z-score normalization via nmbr followed by a swap_noise injection by DPmc, which for noise targets randomly samples between other rows in the feature. Swap noise is an alternate convention than the distribution sampling applied in DPnb.
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: the DP function does not apply a default infill assume upstream transform cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '\DPn4\_DPns' 
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'swap_noise' boolean defaults True, randomly samples from rows (we don't recommend the False scenario when applied downstream of continuous features which is intended for injection to categoric features)
+    - 'weighted' - not supported in conjunction with swap_noise = True
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - noise injection parameters should be passed to 'DPmc' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
+    - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+  - driftreport postmunge metrics: nmbr metrics
+  - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
+  - inversion available: yes
+* DP1s: applies a 1010 binarization followed by a swap_noise injection by DPmc, which for noise targets randomly samples between other rows in the feature. Swap noise is an alternate convention than the weighted sampling applied in DP10.
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: the DP function does not apply a default infill assume upstream transform cleans data
+  - default NArowtype: justNaN
+  - suffix appender: '\DPo8\_#\_DP1s' where # is integer for each column which collectively encode categoric entries
+  - assignparam parameters accepted: 
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'swap_noise' boolean defaults True, randomly samples from rows (the False scenario results in an encoding comparable to DP10)
+    - 'weighted' - not supported in conjunction with swap_noise = True
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - noise injection parameters should be passed to 'DPmc' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
+    - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+  - driftreport postmunge metrics: 1010 metrics
+  - returned datatype: int8
   - inversion available: yes
 
 ### Misc. Functions
@@ -4280,6 +4317,7 @@ avoid unintentional duplication.
 - 'DLnb',
 - 'DLrt',
 - 'DP10',
+- 'DP1s',
 - 'DPb2',
 - 'DPbn',
 - 'DPh1',
@@ -4290,14 +4328,17 @@ avoid unintentional duplication.
 - 'DPmm',
 - 'DPn2',
 - 'DPn3',
+- 'DPn4',
 - 'DPnb',
 - 'DPnm',
+- 'DPns',
 - 'DPo2',
 - 'DPo3',
 - 'DPo4',
 - 'DPo5',
 - 'DPo6',
 - 'DPo7',
+- 'DPo8',
 - 'DPod',
 - 'DPoh',
 - 'DPrt',
