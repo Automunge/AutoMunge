@@ -1056,8 +1056,6 @@ ML_cmnd = {'autoML_type'      : 'xgboost',
 ```
 The implementation makes of XGBoost's "scikit-learn API", so accepted parameters are consistent with XGBClassifier and XGBRegressor. Please note that we recommend setting the gpu_id with ML_cmnd['xgboost_gpu_id'] (rather than passing through parameters) for consistent treatment between tuning and training, which automatically sets tree_method as gpu_hist. (If you intend to put the automunge(.) returned postprocess_dict into production you may want to set the predicter to cpu_predictor as shown so can run ML infill inference without a GPU.) If you don't know your gpu device id, they are usually integers (e.g. if you have one CUDA gpu the device id is usually the integer 0, you can verify this by passing "nvidia-smi" in a terminal window). 'xgboost_gpu_id' defaults to False when not specified, meaning training and inference are conducted on CPU.
 
-*Please note we were having trouble validating the GPU support, possibly to issue with local hardware. For now please consider GPU support experimental, pending further validation.
-
 For esoteric reason we don't yet have support for training feature importance models with xgboost, feature importance models will instead train with the default of random forest. Other built in autoML_types are supported.
 
 Further information on the Optuna library is available on arxiv as Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, Masanori Koyama. Optuna: A Next-generation Hyperparameter Optimization Framework. [arXiv:1907.10902](https://arxiv.org/abs/1907.10902#). Our tuning implementation owes a thank you to a tutorial provided by Optuna.
