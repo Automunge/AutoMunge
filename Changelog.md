@@ -4985,3 +4985,11 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - new root categories DPns and DP1s, which are for numeric z-score normalization with swap noise and categoric 1010 binarization with swap noise
 - note that DPmc can also be applied downstream of concurrent MLinfilltypes in context of mlti trasnform to inject swap noise into each column in a multi column set individually
 - the swap noise option was inspired by seeing a description in the paper "SubTab: Subsetting Features of Tabular Data for Self-Supervised Representation Learning" by Talip Ucar, Ehsan Hajiramezanali, Lindsay Edwards
+
+7.50
+- found a small snafu with default initializations for ML_cmnd
+- cases of setting defaults as False were not being populated as intended
+- which turns out was impacting the xgboost autoML_type in cases of CPU training
+- due to a missing entry for ML_cmnd['xgboost_gpu_id']
+- which didn't show up in our testing since we had externally initialized the default
+- xgboost cpu training now working as intended
