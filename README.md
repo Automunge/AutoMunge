@@ -596,7 +596,7 @@ for i in range(k):
   elif i > 0:
     #after first fold use the final assigncat from prior
     #to turn off automated category assignments
-    #which will speed it up and eliminate edge case
+    #which will speed it up and eliminate an edge case
     assigncat = postprocess_dict['final_assigncat']
 
   train, train_ID, labels, \
