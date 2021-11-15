@@ -581,6 +581,49 @@ valpercent can also be passed as a two entry tuple in the form valpercent=(start
 where start is a float in the range 0<=start<1, end is a float in the range 0<end<=1, and start < end.
 For example, if specified as valpercent=(0.2, 0.4), the returned training data would consist of the first 20% of rows and the last 60% of rows, while the validation set would consist of the remaining rows, and
 where the train and validation sets may then be subsequently individually shuffled when activated by the shuffletrain parameter. The purpose of this valpercent tuple option is to support integration into a cross validation operation, for example for a cross validation with k=3, automunge(.) could be called three times with valpercent passed for each as (0,0.33), (0.33,0.66), (0.66,1) respectively. Please note that when using automunge(.) in a cross-validation operation, we recommend using the postprocess_dict['final_assigncat'] entry populated in the first automunge(.) call associated with the first train/validation split as the assigncat entry passed to the automunge(.) assigncat parameter in each subsequent automunge(.) call associated with the remaining train/validation splits, which will speed up the remaining calls by eliminating the automated evaluation of data properties as well as mitigate risk of (remote) edge case when category assignment to a column under automation may differ between different validation set partitions due to deviations in aggregate data properties associated with a column.
+```
+#example of preparing k folds in a cross validation:
+k=3
+for i in range(k):
+  print('processing fold #', i)
+
+  #valpercent accepts a tuple of float ratios to set boundaries of validation split
+  valpercent = (i/k, (i+1)/k)
+
+  if i == 0:
+    #can also populate any manual assignments here
+    assigncat = {}
+  elif i > 0:
+    #after first fold use the final assigncat from prior
+    #to turn off automated category assignments
+    #which will speed it up and eliminate edge case
+    assigncat = postprocess_dict['final_assigncat']
+
+  train, train_ID, labels, \
+  val, val_ID, val_labels, \
+  test, test_ID, test_labels, \
+  postprocess_dict = \
+  am.automunge(df_train,
+               labels_column = labels_column,
+               valpercent = valpercent,
+               assigncat = assigncat)
+  
+  #train and evaluate model with train/labels and val/val_labels
+
+#note that in edge case number of columns may vary between folds
+#which could arrise from e.g. 1010 binarization exposed to different range of entries in a feature
+#if this becomes an obstacle can manually specify the range of activation targets in assignparam
+#e.g. assignparam = {'1010' : {'<targetfeature>' : {'all_activations' : list_of_unique_values_for_targetfeature}}}
+
+#or by just manually specifying ordinal encoding to categoric features in assigncat
+#e.g. assigncat = {'ordl' : list_of_categoric_features}
+
+#it is also possible to process folds for i>0 with train and validation data prepared seperately in postmunge
+#this would run faster e.g. by eliminating redundant ML infill model training
+#and ensure that each fold has same number of columns
+#albeit with tradeoff of not strictly adhering to segregation of train/validation basis
+#for avoidance of data leakage
+```
 
 * floatprecision: an integer with acceptable values of _16/32/64_ designating
 the memory precision for returned float values. (A tradeoff between memory
