@@ -3737,48 +3737,50 @@ on number of activations)
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes
-* DPoh: applies an ordinal encoding (ord3) followed by a noise injection to train data which
+* DPoh: applies a one hot encoding followed by a noise injection to train data which
 flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
-on number of activations), followed by a one-hot encoding. Note that assignparam for noise injection
-can be passed to the intermediate category DPo2 which applies the DPod transform.
+on number of activations). Note that assignparam for noise injection
+can be passed directly to DPoh.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo5) cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo5\DPo2\_onht\_#' where # is integer for each categoric entry
+  - suffix appender: '\DPo5\_#\_DPoh' where # is integer for each categoric entry
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
+    - 'swap_noise' boolean defaults False, instead of a random flip to alternate activation, randomly samples from feature rows. Has a similar effect as weighted sampling, however when injecting to test data requires multiple samples for comparable effect
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
-  - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream onht for others
+  - driftreport postmunge metrics: comparable to onht
   - returned datatype: int8
   - inversion available: yes
-* DP10: applies an ordinal encoding (ord3) followed by a noise injection to train data which
+* DP10: applies a binarization followed by a noise injection to train data which
 flips the activations per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
-on number of activations), followed by a 1010 binary encoding.  Note that assignparam for noise injection
-can be passed to the intermediate category DPo3 which applies the DPod transform.
+on number of activations).  Note that assignparam for noise injection
+can be passed directly to DP10.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo6) cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo6\_DPo3\_1010\_#' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\DPo6\_#\_DP10' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
+    - 'swap_noise' boolean defaults False, instead of a random flip to alternate activation, randomly samples from feature rows. Has a similar effect as weighted sampling, however when injecting to test data requires multiple samples for comparable effect
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to matching the train data parameters
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
-  - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 and downstream 1010 for others
+  - driftreport postmunge metrics: comparable to 1010
   - returned datatype: int8
   - inversion available: yes
 * DPh1: applies a multi column hash binarization via hs10 followed by a multi column categoric noise injection via DPmc,  which
@@ -3792,7 +3794,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
   - suffix appender: '\DPh1\_#\_DPmc' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
-    - 'swap_noise' boolean defaults False, instead of a random flip to alternate activation, randomly samples from feature rows (we recommend the default for categoric to take advantage of weighted sampling)
+    - 'swap_noise' boolean defaults False, instead of a random flip to alternate activation, randomly samples from feature rows. Has a similar effect as weighted sampling, however when injecting to test data requires multiple samples for comparable effect
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
     noise sampling is by a uniform draw from set of unique entries as found in train data (which is a little more computationally efficient).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
@@ -4373,8 +4375,6 @@ avoid unintentional duplication.
 - 'DPnb',
 - 'DPnm',
 - 'DPns',
-- 'DPo2',
-- 'DPo3',
 - 'DPo4',
 - 'DPo5',
 - 'DPo6',
