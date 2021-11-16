@@ -4993,3 +4993,11 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - due to a missing entry for ML_cmnd['xgboost_gpu_id']
 - which didn't show up in our testing since we had externally initialized the default
 - xgboost cpu training now working as intended
+
+7.51
+- DP10 and DPoh reframed to make use of DPmc for noise injection instead of DPod, with comparable functionality
+- this results in an updated convention for passing assignparam parameters to these transforms, now parameter assignments for noise injection can be passed directly to DP10 and DPoh
+- purpose was for a material latency benefits for these transforms, on order of 20%
+- primary source of benefit is fewer tiers of transforms, the prior config applied 3 tiers, now since DPmc accepts multi column input, only needed 2
+- comparable parameter support, with addded benefit that now DP10 and DPoh have access to the swap_noise parameter
+- small cleanup to 7.50 update to resolve a printout
