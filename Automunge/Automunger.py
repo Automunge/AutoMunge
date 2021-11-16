@@ -3692,12 +3692,12 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : ['DPod'],
                                      'friends'       : []}})
-    
+
     transform_dict.update({'DPoh' : {'parents'       : ['DPo5'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
-                                     'children'      : ['onht'],
+                                     'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
@@ -3707,26 +3707,16 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
-                                     'children'      : ['DPo2'],
-                                     'niecesnephews' : [],
-                                     'coworkers'     : [],
-                                     'friends'       : []}})
-    
-    #DPo2 primarily intended for use as a tree category
-    transform_dict.update({'DPo2' : {'parents'       : ['onht'],
-                                     'siblings'      : [],
-                                     'auntsuncles'   : [],
-                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['onht'],
+                                     'coworkers'     : ['DPoh'],
                                      'friends'       : []}})
-    
+
     transform_dict.update({'DP10' : {'parents'       : ['DPo6'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
-                                     'children'      : ['1010'],
+                                     'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
@@ -3736,19 +3726,9 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
-                                     'children'      : ['DPo3'],
-                                     'niecesnephews' : [],
-                                     'coworkers'     : [],
-                                     'friends'       : []}})
-    
-    #DPo3 primarily intended for use as a tree category
-    transform_dict.update({'DPo3' : {'parents'       : [],
-                                     'siblings'      : [],
-                                     'auntsuncles'   : ['ordl'],
-                                     'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['1010'],
+                                     'coworkers'     : ['DP10'],
                                      'friends'       : []}})
 
     transform_dict.update({'DPh1' : {'parents'       : ['DPh1'],
@@ -7645,60 +7625,43 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
-    process_dict.update({'DPo5' : {'custom_train' : self._custom_train_ordl,
-                                  'custom_test' : self._custom_test_ordl,
-                                  'custom_inversion' : self._custom_inversion_ordl,
+    process_dict.update({'DPo5' : {'custom_train' : self._custom_train_onht,
+                                  'custom_test' : self._custom_test_onht,
+                                  'custom_inversion' : self._custom_inversion_onht,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'suffix_convention' : 'onht'},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
+                                  'labelctgy' : 'DPoh'}})
+    process_dict.update({'DPoh' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'multirt',
+                                  'labelctgy' : 'DPoh'}})
+    process_dict.update({'DP10' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP10'}})
+    process_dict.update({'DPo6' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'onht'}})
-    process_dict.update({'DPo2' : {'dualprocess' : self._process_DPod,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPod,
-                                  'inverseprocess' : self._inverseprocess_UPCS,
-                                  'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'onht'}})
-    process_dict.update({'DPoh' : {'dualprocess' : self._process_DPod,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPod,
-                                  'inverseprocess' : self._inverseprocess_UPCS,
-                                  'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : 'onht'}})
-    process_dict.update({'DP10' : {'dualprocess' : self._process_DPod,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPod,
-                                  'inverseprocess' : self._inverseprocess_UPCS,
-                                  'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : '1010'}})
-    process_dict.update({'DPo6' : {'custom_train' : self._custom_train_ordl,
-                                  'custom_test' : self._custom_test_ordl,
-                                  'custom_inversion' : self._custom_inversion_ordl,
-                                  'info_retention' : True,
-                                  'inplace_option' : True,
-                                  'defaultinfill' : 'naninfill',
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : '1010'}})
-    process_dict.update({'DPo3' : {'dualprocess' : self._process_DPod,
-                                  'singleprocess' : None,
-                                  'postprocess' : self._postprocess_DPod,
-                                  'inverseprocess' : self._inverseprocess_UPCS,
-                                  'info_retention' : True,
-                                  'inplace_option' : False,
-                                  'NArowtype' : 'justNaN',
-                                  'MLinfilltype' : 'singlct',
-                                  'labelctgy' : '1010'}})
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : 'DP10'}})
     process_dict.update({'DPh1' : {'dualprocess' : self._process_hs10,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_hs10,
@@ -35108,7 +35071,7 @@ class AutoMunge:
               print("acceptable value type is", valid_type)
               print()
         
-      elif default is not 'no_default_populated':
+      elif default != 'no_default_populated':
         ML_cmnd.update({parameter : default})
         
       return ML_cmnd, check_ML_cmnd_result
@@ -40016,7 +39979,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.50'
+    automungeversion = '7.51'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
