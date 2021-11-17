@@ -22810,7 +22810,7 @@ class AutoMunge:
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
-      test_sigma = sigma
+      test_sigma = 0.03
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -23034,7 +23034,7 @@ class AutoMunge:
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
-      test_sigma = sigma
+      test_sigma = 0.02
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -23447,7 +23447,7 @@ class AutoMunge:
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
-      test_sigma = sigma
+      test_sigma = 0.02
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -23977,7 +23977,7 @@ class AutoMunge:
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
-      test_flip_prob = flip_prob
+      test_flip_prob = 0.01
       
     if 'testnoise' in params:
       testnoise = params['testnoise']
@@ -24110,7 +24110,7 @@ class AutoMunge:
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
-      test_flip_prob = flip_prob
+      test_flip_prob = 0.01
       
     if 'testnoise' in params:
       testnoise = params['testnoise']
@@ -24323,7 +24323,7 @@ class AutoMunge:
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
-      test_flip_prob = flip_prob
+      test_flip_prob = 0.01
       
     if 'swap_noise' in params:
       swap_noise = params['swap_noise']
@@ -39979,7 +39979,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.51'
+    automungeversion = '7.52'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
