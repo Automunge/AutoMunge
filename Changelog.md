@@ -5001,3 +5001,24 @@ and from ML_cmnd['MLinfill_cmnd']['customRegressor'] to ML_cmnd['MLinfill_cmnd']
 - primary source of benefit is fewer tiers of transforms, the prior config applied 3 tiers, now since DPmc accepts multi column input, only needed 2
 - comparable parameter support, with addded benefit that now DP10 and DPoh have access to the swap_noise parameter
 - small cleanup to 7.50 update to resolve a printout
+
+7.52
+- based on findings from essay "Noise Injection Benchmarks" am updating a few default parameter settings for noise distributions targeting test data
+
+Numeric
+DPnb
+sigma: 0.06
+test_sigma: 0.06 => 0.03
+flip_prob: 0.03
+test_flip_prob: 0.03
+
+DPmm/DPrt
+sigma: 0.03
+test_sigma: 0.03 => 0.02
+flip_prob: 0.03
+test_flip_prob: 0.03
+
+Categoric
+DP10/DPoh/DPod/DPmc
+flip_prob: 0.03
+test_flip_prob: 0.03 => 0.01
