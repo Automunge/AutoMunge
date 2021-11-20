@@ -136,7 +136,7 @@ am.automunge(df_train, df_test = False,
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
-             transformdict = {}, processdict = {}, evalcat = False,
+             transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -298,7 +298,7 @@ am.automunge(df_train, df_test = False,
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
-             transformdict = {}, processdict = {}, evalcat = False,
+             transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -493,7 +493,7 @@ am.automunge(df_train, df_test = False,
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
-             transformdict = {}, processdict = {}, evalcat = False,
+             transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -1914,6 +1914,26 @@ defaults to False to use built-in \_evalcategory function. Note evalcat will onl
 applied to columns not assigned in assigncat. (Note that columns assigned to 'eval' / 'ptfm'
 in assigncat will be passed to this function for evaluation with powertransform = False / True
 respectively.) Note that function currently uses python collections library and datetime as dt.
+
+* ppd_append: defaults to False, accepts as input a prior populated postprocess_dict for
+purposes of adding new features to a prior trained model. Basically the intent is that there 
+are some specialized workflows where models in decision tree paradigms may have new features 
+incorporated without retraining the model with the prior training data.
+In such cases a user may desire to add new features to a prior populated postprocess_dict to enable 
+pushbutton preprocessing including the original training data basis coupled with basis of newly added features.
+In order to do so, automunge(.) should be called with just the new features passed as df_train, and the prior
+populated postprocess_dict passed to ppd_append. This will result in the newly populated postprocess_dict being saved
+as a new subentry in the returned original postprocess_dict, such that to prepare additional data including the original
+features and new features, they combined features can be colletively passed as df_test to postmunge(.) (which should 
+have new features appended on right side of original features). postmunge(.) will prepare the original features 
+and new features seperately, including a seperate basis for ML infill, Binary, and etc, and will return a 
+combined prepared test data. Includes inversion support and support for performing more than one round of new 
+feature appendings. Note that newly added features are
+limited to training features, labels and ID input should be excluded. Note that inversion numpy support not available with
+combined features and test feature inversion support is limited to the inversion='test' case. (If it is desired to include 
+new features in the prior features' ML infill basis and visa versa, instead of applying ppd_append just pass everything
+to automunge(.) and populate a new postprocess_dict - noting this might justify retraining the original model due to 
+a new ML infill basis of original features).
 
 * privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
