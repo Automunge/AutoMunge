@@ -413,6 +413,9 @@ class AutoMunge:
   __encrypt_postprocess_dict
   __decrypt_postprocess_dict
 
+  #__FunctionBlock: automunge ppd_append
+  __ppd_append_support
+
   #__FunctionBlock: automunge(.) definition
   automunge
 
@@ -33541,7 +33544,7 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment):
+                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment, ppd_append):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -33992,6 +33995,18 @@ class AutoMunge:
         print()
 
     miscparameters_results.update({'noise_augment_valresult' : noise_augment_valresult})
+
+    #check ppd_append
+    ppd_append_valresult = False
+    if not isinstance(ppd_append, (bool, dict)) \
+    or isinstance(ppd_append, (bool)) and ppd_append is not False:
+      ppd_append_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for ppd_append parameter.")
+        print("Acceptable values are False or dictionary")
+        print()
+
+    miscparameters_results.update({'ppd_append_valresult' : ppd_append_valresult})
 
     return miscparameters_results
     
@@ -38127,6 +38142,67 @@ class AutoMunge:
     
     return postprocess_dict, decode_valresult
 
+  #__FunctionBlock: automunge ppd_append
+
+  def __ppd_append_support(self, ppd_append, postprocess_dict, encrypt_key, printstatus):
+    """
+    when ppd_append receives input of a prior populated postprocess_dict
+    the current postprocess_dict is appended as an entry to the prior populated version
+    and the postprocess_dict returned from automunge(.) is the prior with the new one as an entry
+    
+    the purpose of this operation is support use case where a model has already been trained
+    and user wishes to add new features to the basis of that model
+    as is possible in some decision tree paradigms
+    
+    thus the postprocess_dict assocaited with the prior trained model
+    can be integrated with this new ppd with the new features
+    in order to prepare both prior and new features in a single operation
+    
+    there is some reduced functionality associated with adding features to a prior populated ppd
+    ML infill basis will be limited to boundaries between prior and new features
+    if user wishes to extend prior ML infill basis to inlcude new features and visa versa
+    will need to prepare the entries data set collectively with old and new features
+    which is associated with an alternate workflow where user wqould need to retrain the associated model
+    to account for the alternate ML infill basis of the original features
+    
+    if the prior postprocess_dict is recieved as encrypted
+    then user needs to pass encrypt_key as the bitstring key
+    which will result in the newly returned postprocess_dict
+    having the same encryptioun key as the one prior
+    
+    the newly populated postprocess_dict is stored in ppd_append['new_feature_ppd']
+    and then ppd_append is the automunge(.) returned postprocess_dict
+    
+    in postmunge, if 'new_feature_ppd' is populated
+    the new features will be carved out from df_test
+    and then processed seperately at the end of the workflow and concatinated
+    note this approach supports multiple rounds of adding new features
+    """
+    
+    #if prior postprocess_dict was recieved encrypted first we decrypt
+    if 'encryption' in ppd_append and ppd_append['encryption'] is True:
+      
+      ppd_append = deepcopy(ppd_append)
+
+      ppd_append, decode_valresult = \
+      self.__decrypt_postprocess_dict(ppd_append, encrypt_key, printstatus)
+      
+    #now simply append newly populated ppd onto the original and return the original
+    
+    if 'new_feature_ppd' not in ppd_append:
+      #backward compatibility preceding 7.53
+      ppd_append.update({'new_feature_ppd' : {}})
+      
+    i = 0
+    
+    if ppd_append['new_feature_ppd'] != {}:
+      
+      i = int(pd.DataFrame({'getmax':list(ppd_append['new_feature_ppd'])}).astype(int).max()) + 1
+      
+    ppd_append['new_feature_ppd'].update({i : postprocess_dict})
+    
+    return ppd_append
+
   #__FunctionBlock: automunge(.) definition
   
   def automunge(self, df_train, df_test = False,
@@ -38178,7 +38254,7 @@ class AutoMunge:
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
-                transformdict = {}, processdict = {}, evalcat = False,
+                transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
                 privacy_encode = False, encrypt_key = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
@@ -38285,7 +38361,7 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment)
+                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment, ppd_append)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -39979,7 +40055,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.52'
+    automungeversion = '7.53'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40069,6 +40145,7 @@ class AutoMunge:
                              'miscparameters_results' : miscparameters_results,
                              'randomrandomseed' : randomrandomseed,
                              'printstatus' : printstatus,
+                             'new_feature_ppd' : {},
                              'automungeversion' : automungeversion,
                              'application_number' : application_number,
                              'application_timestamp' : application_timestamp,
@@ -40390,6 +40467,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge final preps and return
     #final preps include any numpy conversion based on pandasoutput parameter
     #any flattenting (like with ravel or casting as series) for single column sets
+    #if ppd_append received a prior populated postprocess_dict the new version is combined
     #and any encryption of the postprocess_dict based on encrypt_key parameter
     #Automunge Complete
 
@@ -40460,6 +40538,12 @@ class AutoMunge:
                                         'excl_suffixoverlap_results']:
 
         postprocess_dict['miscparameters_results'][valresult_leakage_channel] = {}
+
+    #if the prepared features are to be appended onto a prior populated postprocess_dict based on ppd_append
+    if ppd_append is not False and isinstance(ppd_append, dict):
+      
+      postprocess_dict = \
+      self.__ppd_append_support(ppd_append, postprocess_dict, encrypt_key, printstatus)
 
     #perform postprocess_dict encryption if elected by encrypt_key
     if encrypt_key is not False:
@@ -48726,6 +48810,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge misc initializations and conversions
     #__WorkflowBlock: postmunge inversion
     #__WorkflowBlock: postmunge noise_augment duplicate extraction
+    #__WorkflowBlock: postmunge ppd_append additional features extraction
     #__WorkflowBlock: postmunge ID set populated
     #__WorkflowBlock: postmunge labels and other variable initializations
     #__WorkflowBlock: postmunge validate data set headers
@@ -48742,6 +48827,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge float data type management
     #__WorkflowBlock: postmunge excl suffix management
     #__WorkflowBlock: postmunge privacy encoding
+    #__WorkflowBlock: postmunge ppd_append additional features processing and concatination
     #__WorkflowBlock: postmunge noise_augment prep duplicate sets
     #__WorkflowBlock: postmunge final preps and return
     """
@@ -48768,7 +48854,9 @@ class AutoMunge:
     #if postprocess_dict contained encrypted entries then we decode them here
     #if encryption was performed in automunge the encryption key was either user specified or returned in automunge(.) printouts
     decode_valresult = False
-    if 'encryption' in postprocess_dict and postprocess_dict['encryption'] is True:
+    if 'encryption' in postprocess_dict \
+    and postprocess_dict['encryption'] is True \
+    and encrypt_key is not False:
       
       #label inversion is available without encryption key unless privacy_encode = 'private'
       if inversion in {'labels', 'denselabels'} and encrypt_key is False and postprocess_dict['privacy_encode'] != 'private':
@@ -48980,23 +49068,83 @@ class AutoMunge:
     #preceded by some inversion specific column header prep in __inversion_header_support
     #with inversion channeled through __inversion_header_support
     #and then a postmunge(.) return of the recovered sets
+    #note that we have a special convention support for cases where ppd_append was applied in automunge
+    #which has support for test data inversion limited to inversion = 'test' scenario
+    #which we'll apply the additional feature inversions prior to the other inversion scenarios
 
     #_______
     #here is where inversion is performed if selected
     if inversion is not False:
-
+      
       #reset traindata entry in postprocess_dict to avoid overwrite of external
       postprocess_dict['traindata'] = False
       postprocess_dict['temp_miscparameters_results'] = {}
       #strike temporary log from postprocess_dict
       del postprocess_dict['postmunge_randomseed']
+      
+      new_feature_ppd_case = False
+      
+      #_________
+      #we'll have convention that only inversion == 'test' has test features support with ppd_append 
+      #meaning can't specify sub lists
+      #(label inversions still available through regular channel)
+      if inversion == 'test' \
+      and 'new_feature_ppd' in postprocess_dict \
+      and postprocess_dict['new_feature_ppd'] != {}:
+        
+        new_feature_ppd_case = True
+        
+        aggregate_recovered_df = pd.DataFrame(index=df_test.index)
+        aggregate_recovered_list = []
+        aggregate_inversion_info_dict = {}
+        
+        for i in postprocess_dict['new_feature_ppd']:
+          
+          new_feature_ppd_extract_headers = \
+          postprocess_dict['new_feature_ppd'][i]['finalcolumns_train']
+          
+          df_new_feature_df = df_test[new_feature_ppd_extract_headers].copy()
 
+          #now drop the extracted columns from df_test
+          for new_feature_ppd_extract_header in new_feature_ppd_extract_headers:
+            del df_test[new_feature_ppd_extract_header]
+          
+          #now apply the inversion to the extraction
+          
+          #first do any column header preps
+          #noting that for ppd_append case numpy header conversion not supported
+          df_new_feature_df = \
+          self.__inversion_header_support(df_new_feature_df, postprocess_dict['new_feature_ppd'][i], inversion)
+          
+          #then invert
+          df_new_feature_df, recovered_list, inversion_info_dict = \
+          self.__inversion_parent(inversion, df_new_feature_df, postprocess_dict['new_feature_ppd'][i], printstatus, \
+                                  pandasoutput, pm_miscparameters_results)
+          
+          aggregate_recovered_df = pd.concat([aggregate_recovered_df, df_new_feature_df], axis=1)
+          aggregate_recovered_list += recovered_list
+          aggregate_inversion_info_dict.update(inversion_info_dict)
+          
+        #then one more inversion to the original features
+      #_________
+
+      #this is all other inversion scenarios
+      
+      #this performs any header preps (such as privacy encode invert or numpy recovery)
       df_test = self.__inversion_header_support(df_test, postprocess_dict, inversion)
-
+      
+      #then the master inversion function
       df_test, recovered_list, inversion_info_dict = \
       self.__inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
                             pandasoutput, pm_miscparameters_results)
       
+      #then if this was a new_feature_ppd_case concat the other results
+      if new_feature_ppd_case is True:
+        df_test = pd.concat([df_test, aggregate_recovered_df], axis=1)
+        recovered_list += aggregate_recovered_list
+        aggregate_inversion_info_dict.update(inversion_info_dict)
+        inversion_info_dict = aggregate_inversion_info_dict
+
       return df_test, recovered_list, inversion_info_dict
     #_______
 
@@ -49009,6 +49157,36 @@ class AutoMunge:
     
     if noise_augment > 0:
       df_augment_duplicate = df_test.copy()
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge ppd_append additional features extraction
+    #when the ppd_append option was elected in automunge(.)
+    #that means additional features were incorporated into a prior populated postprocess_dict
+    #those features will be extracted and later processed seperately in an internal postmunge call
+    
+    if 'new_feature_ppd' in postprocess_dict and postprocess_dict['new_feature_ppd'] != {}:
+      
+      new_feature_ppd_extract_headers_dict = {}
+      new_feature_ppd_extract_df_dict = {}
+      
+      #first tier of postprocess_dict['new_feature_ppd'] will be an integer asscoiated with each set of new features
+      for i in postprocess_dict and postprocess_dict['new_feature_ppd']:
+        
+        new_feature_ppd_extract_headers = \
+        postprocess_dict['new_feature_ppd'][i]['origtraincolumns']
+        
+        new_feature_ppd_extract_headers_dict.update(
+          {i : new_feature_ppd_extract_headers}
+        )
+        
+        new_feature_ppd_extract_df_dict.update(
+          {i : df_test[new_feature_ppd_extract_headers]}
+        )
+        
+        #now drop the extracted columns from df_test
+        for new_feature_ppd_extract_header in new_feature_ppd_extract_headers:
+          
+          del df_test[new_feature_ppd_extract_header]
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge ID set populated
@@ -49761,6 +49939,34 @@ class AutoMunge:
 
       # #this resets the Automunge_index column returned in ID sets
       # df_testID[postprocess_dict['indexcolumn']] = pd.DataFrame({postprocess_dict['indexcolumn']:range(0,df_testID.shape[0])})
+
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge ppd_append additional features processing and concatination
+    #when the automunge(.) ppd_append option was applied to add additional features onto a prior populated postprocess_dict
+    #those features are extracted earlier in workflow at #__WorkflowBlock: postmunge ppd_append additional features extraction
+    #here those extractions are passed to an internal postmunge(.) call
+    #and then concatinated onto the right side of df_test in order of addition
+    #(i.e., when multiple new features were added in multiple ppd_append's, they are registered in an order)
+
+    if 'new_feature_ppd' in postprocess_dict and postprocess_dict['new_feature_ppd'] != {}:
+      
+      for i in postprocess_dict['new_feature_ppd']:
+        
+        #printout display progress
+        if printstatus is True:
+          print("_______________")
+          print("Preparing additional features from ppd_append ", i)
+          print("")
+          
+        new_feature_df, _1, _2, _3 = \
+        self.postmunge(postprocess_dict['new_feature_ppd'][i], new_feature_ppd_extract_df_dict[i],
+                      printstatus = printstatus,
+                      dupl_rows = dupl_rows,
+                      traindata = traindata,
+                      shuffletrain = shuffletrain,
+                      randomseed = randomseed)
+
+        df_test = pd.concat([df_test, new_feature_df], axis=1)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge noise_augment prep duplicate sets
