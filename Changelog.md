@@ -5027,3 +5027,18 @@ test_flip_prob: 0.03 => 0.01
 - new ppd_append automunge(.) parameter
 * ppd_append: defaults to False, accepts as input a prior populated postprocess_dict for purposes of adding new features to a prior trained model. Basically the intent is that there are some specialized workflows where models in decision tree paradigms may have new features incorporated without retraining the model with the prior training data. In such cases a user may desire to add new features to a prior populated postprocess_dict to enable pushbutton preprocessing including the original training data basis coupled with basis of newly added features. In order to do so, automunge(.) should be called with just the new features passed as df_train, and the prior populated postprocess_dict passed to ppd_append. This will result in the newly populated postprocess_dict being saved as a new subentry in the returned original postprocess_dict, such that to prepare additional data including the original features and new features, they combined features can be colletively passed as df_test to postmunge(.) (which should have new features appended on right side of original features). postmunge(.) will prepare the original features and new features seperately, including a seperate basis for ML infill, Binary, and etc, and will return a combined prepared test data. Includes inversion support and support for performing more than one round of new feature appendings. Note that newly added features are limited to training features, labels and ID input should be excluded. Note that inversion numpy support not available with combined features and test feature inversion support is limited to the inversion='test' case. (If it is desired to include new features in the prior features' ML infill basis and visa versa, instead of applying ppd_append just pass everything to automunge(.) and populate a new postprocess_dict - noting this might justify retraining the original model due to a new ML infill basis of original features).
 - inspired by a comment by Jensen Huang in the Nvidia keynote regarding potential for decision tree paradigms to incorporate new features into a prior trained model
+
+7.54
+- new ML_cmnd options available for XGBoost tuning with optuna
+- optuna_kfolds: defaults to 1, can pass an integer to select a number of cross validation folds for tuning (may help with overfit)
+- optuna_early_stop: defaults to 50, can pass an integer to select a max number of tuning cycles without improved performance metric to trigger early stopping
+- optuna_max_depth_tuning_stepsize: defaults to 2 based on an optuna demonstration, we expect setting to 1 could be beneficial with higher tuning durations
+- here are the current optuna tuning options shown with their defaults:
+ML_cmnd = {'autoML_type'      : 'xgboost', 
+           'hyperparam_tuner' : 'optuna_XG1',
+           'optuna_n_iter'    : 100,
+           'optuna_timeout'   : 600,
+           'optuna_kfolds'    : 1,
+           'optuna_early_stop': 50,
+           'optuna_max_depth_tuning_stepsize' : 2,
+           }
