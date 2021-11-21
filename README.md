@@ -99,37 +99,11 @@ am.automunge(df_train, df_test = False,
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
                         'PCA_type':'default',
                         'PCA_cmnd':{}},
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
-                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
-                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
-                          'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
-                          'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
-                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
-                          'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
-                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
-                          'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
-                          'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
-                          'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
-                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
-                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
-                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
-                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
-                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
-                          'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
-                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
-                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]},
+             assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+                          'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+                          'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+                          'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+                          'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]},
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
@@ -261,37 +235,11 @@ am.automunge(df_train, df_test = False,
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
                         'PCA_type':'default',
                         'PCA_cmnd':{}},
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
-                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
-                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
-                          'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
-                          'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
-                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
-                          'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
-                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
-                          'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
-                          'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
-                          'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
-                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
-                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
-                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
-                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
-                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
-                          'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
-                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
-                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]},
+             assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+                          'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+                          'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+                          'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+                          'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]},
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
@@ -456,37 +404,11 @@ am.automunge(df_train, df_test = False,
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
                         'PCA_type':'default',
                         'PCA_cmnd':{}},
-             assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
-                          'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                          'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
-                          'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
-                          'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
-                          'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
-                          'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
-                          'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
-                          'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
-                          'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
-                          'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
-                          'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
-                          'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
-                          'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
-                          'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
-                          'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
-                          'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
-                          'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
-                          'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
-                          'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
-                          'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
-                          'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
-                          'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
-                          'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
-                          'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
-                          'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
-                          'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
-                          'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
-                          'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
-                          'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
-                          'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]},
+             assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+                          'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+                          'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+                          'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+                          'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]},
              assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
@@ -646,7 +568,9 @@ shuffletrain for sequential (time-series) data.
 * noise_augment: accepts type int or float(int) >=0, defaults to 0 - used to specify 
 a count of additional duplicates of training data prepared and concatenated with the
 original train set. Intended for use in conjunction with noise injection, such that
-the increased size of training corpus can be a form of data augmentation. Note that 
+the increased size of training corpus can be a form of data augmentation. (Noise injection
+still needs to be assigned, e.g. by assigning root categories in assigncat or could
+turn on automated noise with powertransform = 'DP1'). Note that 
 injected noise will be uniquely randomly sampled with each duplicate. When noise_augment
 is received as a dtype of int, one of the duplicates will be prepared without noise. When
 noise_augment is received as a dtype of float(int), all of the duplicates will be prepared 
@@ -1153,46 +1077,26 @@ not ordinal encoded columns can pass ML_cmnd['PCA_cmnd'] as {'bool_PCA_excl':Tru
 
 For the PCA aggregation to be performed without replacement, can pass ML_cmnd['PCA_retain']=True.
 
-* assigncat:
+* assigncat: assigncat accepts a dictionary used to assign root categories of transformation to
+input features. The keys of the dictionary accept root transformation categories and the corresponding
+values should be assigned as a string or list of strings representing column headers of input features.
 
 ```
-#Here are the current transformation options built into our library, which
-#we are continuing to build out. A user may also define their own.
+#Here are a few representative root categories.
+#first row: categoric encodings
+#second row: corresponding categoric encodings with noise injection
+#third row: numeric normalizaitons and corresponding normalizations with noise
+#fourth row: examples of binning transforms (as could be added to a normalization family tree)
+#fifth row: miscellaneous, including integer sets, search, string parsing, explainability support, and passthrough
 
-assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
-             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
-             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
-             'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
-             'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
-             'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
-             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
-             'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
-             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
-             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
-             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
-             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
-             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
-             'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
-             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
-             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
-             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
-             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
-             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
-             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
-             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
-             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
-             'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
-             'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
-             'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
-             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
-             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
-             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
-             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
-             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]}
+assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+             'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+             'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+             'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+             'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]}
 ```         
 
-Descriptions of these transformations are provided in document below (in section
+Full options are provided in document below (in section
 titled "Library of Transformations"). [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
 
 A user may add column header identifier strings to each of these lists to assign 
@@ -1200,11 +1104,10 @@ a distinct specific processing approach to any column (including labels). Note
 that this processing category will serve as the "root" of the tree of transforms 
 as defined in the transformdict. Note that additional categories may be passed if 
 defined in the passed transformdict and processdict. An example of usage here 
-could be if a user wanted to only process numerical columns 'nmbrcolumn1' and 
-'nmbrcolumn2' with z-score normalization instead of the full range of numerical 
-derivations when implementing the binstransform parameter they could pass 
+could be to assign the numeric noise injection transform 'DPnb' to two input features
+we'll call 'input_column_1' and 'input_column_2'.
 ```
-assigncat = {'nbr2':['nmbrcolumn1', 'nmbrcolumn2']}
+assigncat = {'DPnb':['input_column_1', 'input_column_2']}
 ```
 Note that for single entry column assignments a user can just pass the string or integer 
 of the column header without the list brackets.
