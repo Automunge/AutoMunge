@@ -38343,37 +38343,11 @@ class AutoMunge:
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
                            'PCA_type':'default',
                            'PCA_cmnd':{}},
-                assigncat = {'nmbr':[], 'retn':[], 'mnmx':[], 'mean':[], 'MAD3':[], 'lgnm':[],
-                             'bins':[], 'bsor':[], 'pwrs':[], 'pwr2':[], 'por2':[], 'bxcx':[],
-                             'addd':[], 'sbtr':[], 'mltp':[], 'divd':[], 'mxab':[], 'qttf':[],
-                             'log0':[], 'log1':[], 'logn':[], 'sqrt':[], 'rais':[], 'absl':[],
-                             'bnwd':[], 'bnwK':[], 'bnwM':[], 'bnwo':[], 'bnKo':[], 'bnMo':[],
-                             'bnep':[], 'bne7':[], 'bne9':[], 'bneo':[], 'bn7o':[], 'bn9o':[],
-                             'bkt1':[], 'bkt2':[], 'bkt3':[], 'bkt4':[],
-                             'nbr2':[], 'nbr3':[], 'MADn':[], 'MAD2':[], 'tlbn':[],
-                             'mnm2':[], 'mnm3':[], 'mnm4':[], 'mnm5':[], 'mnm6':[],
-                             'ntgr':[], 'ntg2':[], 'ntg3':[], 'mea2':[], 'mea3':[], 'bxc2':[],
-                             'dxdt':[], 'd2dt':[], 'd3dt':[], 'dxd2':[], 'd2d2':[], 'd3d2':[],
-                             'nmdx':[], 'nmd2':[], 'nmd3':[], 'mmdx':[], 'mmd2':[], 'mmd3':[],
-                             'shft':[], 'shf2':[], 'shf3':[], 'shf4':[], 'shf7':[], 'shf8':[],
-                             'bnry':[], 'onht':[], 'text':[], 'txt2':[], '1010':[], 'smth':[],
-                             'ordl':[], 'ord3':[], 'hash':[], 'hsh2':[], 'hs10':[],
-                             'Unht':[], 'Utxt':[], 'Utx2':[], 'Uor3':[], 'Uor6':[], 'U101':[],
-                             'splt':[], 'spl2':[], 'spl5':[], 'sp15':[], 'sp19':[], 'sbst':[],
-                             'spl8':[], 'spl9':[], 'sp10':[], 'sp16':[], 'sp20':[], 'sbs2':[],
-                             'srch':[], 'src2':[], 'src4':[], 'strn':[], 'lngt':[], 'aggt':[],
-                             'nmrc':[], 'nmr2':[], 'nmcm':[], 'nmc2':[], 'nmEU':[], 'nmE2':[],
-                             'nmr7':[], 'nmr8':[], 'nmc7':[], 'nmc8':[], 'nmE7':[], 'nmE8':[],
-                             'ors2':[], 'ors5':[], 'ors6':[], 'ors7':[], 'ucct':[], 'Ucct':[],
-                             'or15':[], 'or17':[], 'or19':[], 'or20':[], 'or21':[], 'or22':[],
-                             'date':[], 'dat2':[], 'dat6':[], 'wkdy':[], 'bshr':[], 'hldy':[],
-                             'wkds':[], 'wkdo':[], 'mnts':[], 'mnto':[],
-                             'yea2':[], 'mnt2':[], 'mnt6':[], 'day2':[], 'day5':[],
-                             'hrs2':[], 'hrs4':[], 'min2':[], 'min4':[], 'scn2':[], 'DPrt':[],
-                             'DPnb':[], 'DPmm':[], 'DPbn':[], 'DPod':[], 'DP10':[], 'DPoh':[],
-                             'qbt1':[], 'qbt2':[], 'qbt3':[], 'qbt4':[], 'nmqb':[], 'mmqb':[],
-                             'excl':[], 'exc2':[], 'exc3':[], 'exc4':[], 'exc5':[],
-                             'null':[], 'copy':[], 'shfl':[], 'eval':[], 'ptfm':[]},
+                assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+                             'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+                             'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+                             'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+                             'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]},
                 assignparam = {'default_assignparam' : {'(category)' : {'(parameter)' : 42}},
                                         '(category)' : {'(column)'   : {'(parameter)' : 42}}},
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
@@ -40181,7 +40155,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.54'
+    automungeversion = '7.55'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -50073,6 +50047,7 @@ class AutoMunge:
     #here those extractions are passed to an internal postmunge(.) call
     #and then concatinated onto the right side of df_test in order of addition
     #(i.e., when multiple new features were added in multiple ppd_append's, they are registered in an order)
+    #note this uses the postmunge randomseed to prepare the additional data
 
     if 'new_feature_ppd' in postprocess_dict and postprocess_dict['new_feature_ppd'] != {}:
       
