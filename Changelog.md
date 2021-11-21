@@ -5042,3 +5042,21 @@ ML_cmnd = {'autoML_type'      : 'xgboost',
            'optuna_early_stop': 50,
            'optuna_max_depth_tuning_stepsize' : 2,
            }
+
+7.55
+- primarily a cleanup to read me
+- went ahead and updated a function definition in code base to align
+- the demonstrations of assigncat parameter are now streamlined
+- basically this demonstration had started as a comprehensive set of transforms
+- and as progressed in building out the library it gradually got kind of excessive
+- now streamlined to a few core root categories, selected for potential common use
+- first row are categoric encodings
+- second row are corresponding categoric encodings with noise injection
+- third row are numeric normalizations / corresponding normalization with noise
+- fourth row are examples of binning options (as could be added to a normalization family tree)
+- fifth row is misc, including integer encoding, search, string parsing, tlbn for explainability support, and passthrough trasnforms (excl is direct passthrough, exc2 is passthrough with force to numeric)
+assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
+             'DP10':[], 'DPoh':[], 'DPod':[], 'DPbn':[], 'DPhs':[], 'DPh2':[],
+             'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
+             'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
+             'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]}
