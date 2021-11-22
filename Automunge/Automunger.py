@@ -3005,6 +3005,24 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
+
+    transform_dict.update({'DPqt' : {'parents'       : ['qtt1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'qtt1' : {'parents'       : ['qtt1'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPqt'],
+                                     'friends'       : []}})
     
     transform_dict.update({'bxcx' : {'parents'       : ['bxcx'],
                                      'siblings'      : [],
@@ -3049,6 +3067,33 @@ class AutoMunge:
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : ['nbr2', 'bins'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPbx' : {'parents'       : ['bxc6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'bxc6' : {'parents'       : ['bxc6'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['bxc7'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+    
+    transform_dict.update({'bxc7' : {'parents'       : ['bxc7'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['DPbx'],
                                      'friends'       : []}})
 
     transform_dict.update({'ntgr' : {'parents'       : ['ntgr'],
@@ -6429,6 +6474,26 @@ class AutoMunge:
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'qtt2'}})
+    process_dict.update({'qtt1' : {'dualprocess' : self._process_qttf,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_qttf,
+                                  'inverseprocess' : self._inverseprocess_qttf,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
+                                  'defaultparams' : {'output_distribution' : 'normal'},
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPqt'}})
+    process_dict.update({'DPqt' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPqt'}})
     process_dict.update({'bxcx' : {'dualprocess' : self._process_bxcx,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_bxcx,
@@ -6932,6 +6997,33 @@ class AutoMunge:
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'nbr2'}})
+    process_dict.update({'bxc6' : {'dualprocess' : self._process_bxcx,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_bxcx,
+                                  'inplace_option' : False,
+                                  'defaultinfill' : 'meaninfill',
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPbx'}})
+    process_dict.update({'bxc7' : {'dualprocess' : self._process_numerical,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_numerical,
+                                  'inverseprocess' : self._inverseprocess_nmbr,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'negzeroinfill',
+                                  'NArowtype' : 'numeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPbx'}})
+    process_dict.update({'DPbx' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'positivenumeric',
+                                  'MLinfilltype' : 'numeric',
+                                  'labelctgy' : 'DPbx'}})
     process_dict.update({'ntgr' : {'custom_train' : self._custom_train_ordl,
                                   'custom_test' : self._custom_test_ordl,
                                   'custom_inversion' : self._custom_inversion_ordl,
@@ -40155,7 +40247,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.55'
+    automungeversion = '7.56'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
