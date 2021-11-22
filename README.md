@@ -3624,6 +3624,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
 * DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but defaults to laplace distributed noise instead of gaussian (normal)
 with same parameters accepted (where mu is center of noise, sigma is scale, and flip-prob is ratio)
 and with same default parameter values
+* DPqt/DPbx: numeric noise injections with distribution conversions by the qttf/bxcx transforms 
 * DPbn: applies a two value binary encoding (bnry) followed by a noise injection to train data which
 flips the activation per parameter flip_prob which defaults to 0.03
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
@@ -4290,6 +4291,7 @@ avoid unintentional duplication.
 - 'DP1s',
 - 'DPb2',
 - 'DPbn',
+- 'DPbx',
 - 'DPh1',
 - 'DPh2',
 - 'DPhs',
@@ -4309,6 +4311,7 @@ avoid unintentional duplication.
 - 'DPo8',
 - 'DPod',
 - 'DPoh',
+- 'DPqt',
 - 'DPrt',
 - 'GPS1',
 - 'GPS2',
@@ -4381,6 +4384,8 @@ avoid unintentional duplication.
 - 'bxc3',
 - 'bxc4',
 - 'bxc5',
+- 'bxc6',
+- 'bxc7',
 - 'bxcx',
 - 'copy',
 - 'cost',
@@ -4598,6 +4603,7 @@ avoid unintentional duplication.
 - 'qbt3',
 - 'qbt4',
 - 'qbt5',
+- 'qtt1',
 - 'qttf',
 - 'qtt2',
 - 'rais',
