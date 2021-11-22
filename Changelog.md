@@ -5060,3 +5060,12 @@ assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
              'nmbr':[], 'mnmx':[], 'retn':[], 'DPnb':[], 'DPmm':[], 'DPrt':[],
              'bins':[], 'pwr2':[], 'bnep':[], 'bsor':[], 'por2':[], 'bneo':[],
              'ntgr':[], 'srch':[], 'or19':[], 'tlbn':[], 'excl':[], 'exc2':[]}
+
+7.56
+- new root categories DPqt and DPbx
+- DPqt is for quantile transform with noise injection
+- (quantile transform is built on top of sklearn QuantileTransformer)
+- DPbx is for box-cox transform with noise injections
+- (box-cox is built on top of scipy.stats boxcox)
+- both of these are options for translating numeric distributions to closer resemble normal
+- as may be beneficial in presence of fat tails
