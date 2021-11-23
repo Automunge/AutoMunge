@@ -3543,13 +3543,13 @@ holiday
   - inversion available: pending
 
 ### Differential Privacy Noise Injections
-The DP family of transforms are special in that they treat train sets different than test sets, 
+The DP family of transforms are special in that they default to treating train sets different than test sets, 
 specifically they apply a noise injection to train sets such as may benefit differential privacy,
 data augmentation, or also for model perturbation in assembly of ensembles.
 Note that if desired to treat data passed to postmunge as a train set can apply the traindata postmunge
-parameter to signal that postmunge is preparing training data. 
+parameter to signal that postmunge is preparing training data. Please refer to the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2) for further detail. 
 Note that when passing parameters to these functions, the transformation
-category associated with the transformation function may be different than the root category, as detailed below.
+category associated with the transformation function may be different than the root category, as noted below with hashing injections.
 Noise sampling is built on top of numpy.random which as of version 1.17.0 uses an algorithm called PCG 
 as a pseudo random number generator.
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
