@@ -3209,9 +3209,10 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    #DPo7 primarily intended for use as a downstream tree category
     transform_dict.update({'DPo7' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['DPo7'],
+                                     'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
