@@ -5069,3 +5069,8 @@ assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
 - (box-cox is built on top of scipy.stats boxcox)
 - both of these are options for translating numeric distributions to closer resemble normal
 - as may be beneficial in presence of fat tails
+
+7.57
+- found an immaterial family tree that was interfering with a validation test
+- updated DPo7 family tree 
+- (DPo7 primarily intended for use as a downstream tree category)
