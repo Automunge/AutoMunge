@@ -111,6 +111,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
+             entropy_seeds = False, random_generator = False, 
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -247,6 +248,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
+             entropy_seeds = False, random_generator = False, 
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -416,6 +418,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
+             entropy_seeds = False, random_generator = False, 
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -1842,6 +1845,10 @@ new features in the prior features' ML infill basis and visa versa, instead of a
 to automunge(.) and populate a new postprocess_dict - noting this might justify retraining the original model due to 
 a new ML infill basis of original features).
 
+* entropy_seeds: defaults to False, accepts integer or list of integers which may serve as supplemental sources of entropy for noise injections with DP transforms. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict.
+
+* random_generator: defaults to False, accepts numpy.random.Generator formatted random samplers which are applied for noise injections with DP transforms. Note that random_generator may optionally be applied in conjunction with entropy_seeds. When not specified applies numpy.random.PCG64. Examples of alternate generators could be np.random.MT19937 for Mersenne Twister. Note that alternate libraries with numpy.random formatted generators can also be accessed for this purpose, such as for example for sampling with support of quantum circuits. Or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit. random_generator is specific to an automunge(.) or postmunge(.) call, in other words it is not returned in the populated postprocess_dict.
+
 * privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
 column headers of received data are anonymized. This parameter when activated as True shuffles the order of columns and 
@@ -1855,6 +1862,8 @@ and resets the dataframe indexes (although retains the Automunge_index column re
 Thus prepared data in the 'private' option can be kept row-wise anonymous by not sharing the returned ID set.
 We recommend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
 privacy_encode is activated postmunge options for featureeval and driftreport are not available to avoid data leakage channel.
+It may be beneficial in privacy sensitive applications to inject noise via DP transforms and apply distribution conversions to
+numeric features e.g. via DPqt or DPbx.
 
 * encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
@@ -3554,6 +3563,8 @@ Noise sampling is built on top of numpy.random which as of version 1.17.0 uses a
 as a pseudo random number generator.
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
 parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
+Note that both automunge(.) and postmunge(.) have additional parameters entropy_seeds and random_generator to
+support alternate noise sampling algorithms and entropy sources.
 
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
