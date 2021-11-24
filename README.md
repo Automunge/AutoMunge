@@ -35,7 +35,7 @@
 
 In addition to data preparations under automation, Automunge may also serve as a platform for custom engineered data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may even be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principal component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features.
 
-Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials).
+Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials). A high level overview of Automunge was provided in the paper [Automunge: The preprint](https://medium.com/automunge/automunge-6f33161353b4). See also the video presentations [Automunge Explained (in depth)](https://medium.com/automunge/automunge-explained-in-depth-77ff777f12d7) or [Automunge Explained (in brief)](https://medium.com/automunge/automunge-explained-in-brief-354c9b92aa1c).
 
 ## Install, Initialize, and Basics
 
@@ -681,6 +681,8 @@ and 'stochastic_impute_numeric'. Please note that by default the random seed pas
 training is stochastic between applications, as further documented below in the ML_cmnd entry for
 'stochastic_training_seed'.
 
+Further detail on ML infill provided in the paper [Missing Data Infill with Automunge](https://medium.com/automunge/missing-data-infill-with-automunge-ec94d6b13433).
+
 * infilliterate: an integer indicating how many applications of the ML
 infill processing are to be performed for purposes of predicting infill.
 The assumption is that for sets with high frequency of missing values
@@ -783,7 +785,8 @@ Note that this "inplace" option is not to be confused with the default inplace c
 that may impact grouping coherence of columns derived from same feature.
 That other inplace option can be deactivated in assignparam, as may be desired for grouping coherence.
 Note that all custom_train transforms have built in support for optional deactivating of inplace parameter 
-through assignparam which is applied external to function call.
+through assignparam which is applied external to function call. Further detail on this other inplace 
+option is provided in the essay [Automunge Inplace](https://medium.com/automunge/automunge-inplace-a85766404bb7).
 ```
 assignparam = {'global_assignparam' : {'inplace' : False}}
 ```
@@ -796,7 +799,7 @@ may be tradeoffs associated with ability of the model to handle outliers,
 as for any new combination of boolean set in the test data the collection
 will be subject to zeroinfill. 
 Defaults to _False_, can be passed as one of
-_{False, True, 'retain', 'ordinal', 'ordinalretain', [list of column headers]}_.
+_{False, True, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list of column headers]}_.
 - False: the default, Binary dimensionality reduction not performed
 - True: consolidates Boolean integer sets into a single common binarization encoding with replacement
 - 'retain': comparable to True, but original columns are retained instead of replaced
@@ -815,6 +818,7 @@ can pass Binary as a list of lists, with the sub lists matching criteria noted p
 Note that postmunge(.) inversion is supported in conjunction with any of these Binary options. When applying inversion based on a specified list of columns (as opposed to inversion='test' for instance), if the specification includes a Binary returned column it should include the entire set of Binary columns associated with that consolidation, and if the Binary application was in the retain convention the inversion list should specify the Binary input columns instead of the Binary output columns.
 (One may wish to abstain from stochastic_impute_categoric in conjunction with Binary since it may 
 interfere with the extent of contraction by expanding the number of activation sets.)
+Some additional detail on Binary provided in the essay [Tabular Engineering with Automunge](https://medium.com/automunge/tabular-engineering-with-automunge-4cf9c43510e).
 
 * PCAn_components: defaults to False for no PCA dimensionality reduction performed.
 A user can pass _an integer_ to define the number of PCA returned features for 
@@ -1490,6 +1494,8 @@ transformdict =  {'nmbr' : {'auntsuncles' : 'mnmx',
 Note that when we define a new root category family tree such as the 'newt' example shown above, we also need 
 to define a corresponding processdict entry for the new category, which we detail next.
 
+Further detail on the transformdict data format provided in the essay [Data Structure](https://medium.com/automunge/data-structure-59e52f141dd6). For tutorials on defining a family tree, see also the essay [Specification of Derivations with Automunge](https://medium.com/automunge/specification-of-derivations-with-automunge-6174ca227184).
+
 * processdict: a dictionary allowing a user to specify transformation category properties corresponding
 to new categories defined in transformdict or to overwrite process_dict entries defined internal to the library.
 Defaults to _{}_ (an empty dictionary). The types of properties specified include the associated transformation
@@ -1796,6 +1802,8 @@ processdict =  {'newt' : {'dualprocess'    : am._process_text,
 
 The optional labelctgy specification for a category's processdict entry is intended for use in featureselection when the category is applied as a root category to a label set and the category's family tree returns the labels in multiple configurations. The labelcty entry serves as a specification of a specific primitive entry category either as entered in the upstream primitives of the root category or one of the downstream primitives of subsequent generations, which primitive entry category will serve as the label basis when applying feature selection. (labelctgy is also inspected with oversampling in current implementation.) 
 
+Further detail on the processdict data format provided in the essay [Data Structure](https://medium.com/automunge/data-structure-59e52f141dd6).
+
 * evalcat: modularizes the automated evaluation of column properties for assignment 
 of root transformation categories, allowing user to pass custom functions for this 
 purpose. Passed functions should follow format:
@@ -1863,7 +1871,7 @@ Thus prepared data in the 'private' option can be kept row-wise anonymous by not
 We recommend considering use of the encrypt_key parameter in conjunction with privacy_encode. Please note that when
 privacy_encode is activated postmunge options for featureeval and driftreport are not available to avoid data leakage channel.
 It may be beneficial in privacy sensitive applications to inject noise via DP transforms and apply distribution conversions to
-numeric features e.g. via DPqt or DPbx.
+numeric features e.g. via DPqt or DPbx. Further detail on privacy encoding provided in the essay [Private Encodings with Automunge](https://medium.com/automunge/private-encodings-with-automunge-f73dcdb57289).
 
 * encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
@@ -2119,7 +2127,8 @@ this feature may be applied to numerical label sets if the assigncat processing
 applied to the set in automunge(.) had included aggregated bins, such
 as for example 'exc3' for pass-through numeric with standard deviation bins,
 or 'exc4' for pass-through numeric with powers of ten bins. Note this 
-method requires the inclusion of a designated label column.
+method requires the inclusion of a designated label column. Further detail 
+on oversampling provided in the essay [Oversampling with Automunge](https://medium.com/automunge/oversampling-with-automunge-3e69e500a32e).
 
 * featureeval: a boolean identifier _(True/False)_ to activate a feature
 importance evaluation, comparable to one performed in automunge but based on the 
@@ -2130,13 +2139,16 @@ feature importance results are returned in postreports_dict['FS_sorted'], includ
 columns sorted by metric and metric2. Relies on ML_cmnd parameters from original
 automunge(.) call.
 
-* driftreport: activates a drift report evaluation, in which drift statistics are collected
+* driftreport: defaults to False, accepts one of {False, True, 'efficient', 'report_effic', 'report_full'}. 
+Activates a drift report evaluation, in which drift statistics are collected
 for comparison between features in the train data that was passed to automunge(.) verses test data
 passed to postmunge(.). May include drift statistics associated with the raw data found 
 in the input features, and may also include drift statistics associated with the returned
 data derived features as collected during derivations and recorded in the normalization 
 parameters of a transformation. The results are returned in the
 postreports_dict object returned from postmunge as postreports_dict['driftreport'] and postreports_dict['sourcecolumn_drift']. 
+Additional drift statistics for columns returned from a PCA or Binary dimensionality reduction are
+available in conjunction with the driftreport = True scenario, which are returned in postreports_dict['dimensionality_reduction_driftstats'].
 The results will also be printed out if printstatus is activated. Defaults to _False_, and:
   - _False_ means no postmunge drift assessment is performed
   - _True_ means an assessment is performed for both the source column and derived column 
@@ -2149,6 +2161,7 @@ The results will also be printed out if printstatus is activated. Defaults to _F
   and returned with no processing of data
 Note that for transforms returning multi column sets, the drift stats will only be reported for first 
 column in the categorylist.  Note that driftreport is not available in conjunction with privacy encoding.
+Further detail on drift reports are provided in the essay [Drift Reporting with Automunge](https://medium.com/automunge/drift-reporting-with-automunge-6a83eecbb253).
 
 * inversion: defaults to False, may be passed as one of {False, 'test', 'labels', 'denselabels', a list, or a set}, 
 where ‘test’ or ‘labels’ activate an inversion operation to recover, by a set of transformations 
@@ -2173,7 +2186,8 @@ pandasoutput, and/or printstatus. Note that in an inversion operation the
 postmunge(.) function returns three sets: a recovered set, a list of recovered columns, and 
 a dictionary logging results of the path selection process and validation results. Please note that the general 
 convention in library is that entries not successfully recovered from inversion may be recorded 
-corresponding to the imputation value from the forward pass, NaN, or some other transformation function specific convention.
+corresponding to the imputation value from the forward pass, NaN, or some other transformation function specific convention. Further 
+details on inversion is provided in the essay [Announcing Automunge Inversion](https://medium.com/automunge/announcing-automunge-inversion-18226956dc).
 
 Here is an example of a postmunge call with inversion.
 ```
@@ -2477,6 +2491,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
 * lbda: for date-time label sets, entries are encoded comparable to 'dat6' described further below
 
 ### Numeric Set Normalizations
+Please note that a survey of numeric transforms was provided in the paper [Numeric Encoding Options with Automunge](https://medium.com/automunge/a-numbers-game-b68ac261c40d).
 * nmbr/nbr2/nbr3/nmdx/nmd2/nmd3: z-score normalization<br/>
 (x - mean) / (standard deviation)
   - useful for: normalizing numeric sets of unknown distribution
@@ -2492,7 +2507,7 @@ string by 'strg' (some ML libraries prefer string encoded labels to recognize th
       note that multiplier is applied prior to offset
     - 'abs_zero', defaults to True, deactivate to turn off conversion of negative zeros to positive zeros applied prior to infill (this is included to supplement negzeroinfill)
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: mean / std / max / min
+  - driftreport postmunge metrics: mean / std / max / min / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * nbr4: z-score normalization similar to nmbr but with defaultinfill of zeroinfill instead of negzeroinfill and with abs_zero parameter deactivated<br/>
@@ -2511,7 +2526,7 @@ My intuition says z-score has some benefits but really up to the user which they
     - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: minimum / maximum / mean / std
+  - driftreport postmunge metrics: minimum / maximum / mean / std / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * mnmx/mnm2/mnm5/mmdx/mmd2/mmd3: vanilla min-max scaling<br/>
@@ -2526,7 +2541,7 @@ My intuition says z-score has some benefits but really up to the user which they
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor
+  - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * mnm3/mnm4: min-max scaling with outliers capped at 0.01 and 0.99 quantiles
@@ -2537,7 +2552,7 @@ My intuition says z-score has some benefits but really up to the user which they
   - assignparam parameters accepted: 
     - qmax or qmin to change the quantiles from 0.99/0.01
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: quantilemin / quantilemax / mean / std
+  - driftreport postmunge metrics: quantilemin / quantilemax / mean / std / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
 * mnm6: min-max scaling with test floor set capped at min of train set (ensures
@@ -2548,7 +2563,7 @@ test set returned values >= 0, such as might be useful for kernel PCA for instan
   - suffix appender: '_mnm6' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: minimum / maximum / mean / std
+  - driftreport postmunge metrics: minimum / maximum / mean / std / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
 * retn: related to min/max scaling but retains +/- of values, based on conditions
@@ -2568,7 +2583,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
 	std based on scaling by divisor of standard deviation and mad by median absolute deviation
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: minimum / maximum / mean / std
+  - driftreport postmunge metrics: minimum / maximum / mean / std / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * rtbn: retain normalization supplemented by ordinal encoded standard deviation bins
@@ -2581,7 +2596,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - suffix appender: '_MADn' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: mean / MAD / maximum / minimum
+  - driftreport postmunge metrics: mean / MAD / maximum / minimum / median
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * MAD3: mean absolute deviation normalization, subtract set maximum<br/>
@@ -2592,7 +2607,7 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
   - suffix appender: '_MAD3' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'suffix': to change suffix appender (leading underscore added internally)
-  - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum
+  - driftreport postmunge metrics: mean / MAD / datamax / maximum / minimum / median
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes with full recovery
 * mxab: max absolute scaling normalization (just including this one for completeness, retn is a much better option to ensure consistent scaling between sets)<br/>
@@ -2759,6 +2774,7 @@ Transforms accept parameters integer_bits / fractional_bits / sign_bit for regis
 adequate registers to avoid overflow (overflow entries have values replaced with max or min capacity based on register sizes). 
 Default register sizes were selected to accommodate z-score normalized data with +/-6 
 standard deviations from mean and approximately 4 significant figures in decimals. For example, with default parameters an input column 'floats' will return columns: ['floats_qbt1_sign', 'floats_qbt1_2^2', 'floats_qbt1_2^1', 'floats_qbt1_2^0', 'floats_qbt1_2^-1', 'floats_qbt1_2^-2', 'floats_qbt1_2^-3', 'floats_qbt1_2^-4', 'floats_qbt1_2^-5', 'floats_qbt1_2^-6', 'floats_qbt1_2^-7', 'floats_qbt1_2^-8', 'floats_qbt1_2^-9', 'floats_qbt1_2^-10', 'floats_qbt1_2^-11', 'floats_qbt1_2^-12'].
+Further details on the Q notation family of transforms provided in the essay [A New Kind of Data](https://medium.com/automunge/a-new-kind-of-data-1f1bcf90822d).
 * qbt1: binary encoded signed floats with registers for sign, integers, and fractionals, default overflow at +/- 8.000
   - useful for: feeding normalized floats to quantum circuits
   - default infill: negative zero
@@ -3048,7 +3064,8 @@ binary  : bkb3, bkb4, bsbn, bnwb, bnKb, bnMb, bneb, bn7b, bn9b, pwbn, por3
 * tlbn: returns equal population bins in separate columns with activations replaced by min-max scaled 
 values within that segment's range (between 0-1) and other values subject to an infill of -1 
 (intended for use to evaluate feature importance of different segments of a numerical set's distribution
-with metric2 results from a feature importance evaluation)
+with metric2 results from a feature importance evaluation). Further detail on the tlbn transform provided
+in the essay [Automunge Influence](https://medium.com/automunge/automunge-influence-382d44786e43).
   - useful for: evaluating relative feature importance between different segments of a numeric set distribution
   - default infill: no activation (this is the recommended infill for this transform)
   - default NArowtype: numeric
@@ -3314,7 +3331,8 @@ vocab_size calculated based on number of unique words found in train set times a
 is greater than cap then reverts to cap. The hashing transforms are intended as an alternative to other categoric 
 encodings which doesn't require a conversion dictionary assembly for consistent processing of subsequent data, as 
 may benefit sets with high cardinality (i.e. high number of unique entries). The tradeoff is that inversion
-is not supported as there is possibility of redundant encodings for different unique entries.
+is not supported as there is possibility of redundant encodings for different unique entries. Further detail on hashing 
+provided in the essay [Hashed Categoric Encodings with Automunge](https://medium.com/automunge/hashed-categoric-encodings-with-automunge-92c0c4b7668c).
   - useful for: categoric sets with very high cardinality, default for categoric sets with (nearly) all unique entries
   - default infill: none
   - default NArowtype: justNaN
@@ -3565,6 +3583,7 @@ Note that DP transforms can be applied in conjunction with the automunge(.) or p
 parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
 Note that both automunge(.) and postmunge(.) have additional parameters entropy_seeds and random_generator to
 support alternate noise sampling algorithms and entropy sources.
+Further detail on noise injections provided in the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2).
 
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
@@ -4028,7 +4047,8 @@ Please note I recommend caution on using splt/spl2/spl5/spl6 transforms on categ
 sets that may include scientific units for instance, as prefixes will not be noted
 for overlaps, e.g. this wouldn't distinguish between kilometer and meter for instance.
 Note that overlap lengths below 5 characters are ignored unless that value is overridden
-by passing 'minsplit' parameter through assignparam.
+by passing 'minsplit' parameter through assignparam. Further detail on parsed categoric
+encodings provided in the essay [Parsed Categoric Encodings with Automunge](https://medium.com/automunge/string-theory-acbd208eb8ca).
 * splt: searches categorical sets for overlaps between string character subsets and returns new boolean column
 for identified overlap categories. Note this treats numeric values as strings e.g. 1.3 = '1.3'.
 Note that priority is given to overlaps of higher length, and by default overlap go down to 5 character length.
@@ -5025,6 +5045,8 @@ like for custom_train transformation functions, they will need
 to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
 in a new notebook. (This was a design decision for security considerations.)
 
+Further details on custom transformations provided in the essay [Custom Transformations with Automunge](https://medium.com/automunge/custom-transformations-with-automunge-ae694c635a7e).
+
  ___ 
 
 ## Custom ML Infill Functions
@@ -5043,7 +5065,8 @@ applied for ML infill and feature importance. Please note that if you included e
 initialized functions in an automunge(.) call, like for customML inference functions 
 (but not customML training functions), they will need to be reinitialized by user prior to 
 uploading an externally saved postprocess_dict with pickle in a new notebook. These demonstrations
-are shown with scikit Random Forest models for simplicity.
+are shown with scikit Random Forest models for simplicity. Further details on Custom ML is 
+provided in the essay [Custom ML Infill with Automunge](https://medium.com/automunge/custom-ml-infill-with-automunge-5b31d7cfd4d2).
 
 ```
 def customML_train_classifier(labels, features, columntype_report, commands, randomseed):
