@@ -511,6 +511,8 @@ class AutoMunge:
   __postfeatureselect
 
   #__FunctionBlock: postmunge driftreport
+  __PCA_drift_stats
+  __Binary_drift_stats
   __prepare_driftreport
 
   #__FunctionBlock: postmunge(.) definition
@@ -10121,6 +10123,9 @@ class AutoMunge:
     maximum = mdf_train[suffixcolumn].max()
     #get minimum value of training column
     minimum = mdf_train[suffixcolumn].min()
+    #median and median absolute deviation
+    median = mdf_train[suffixcolumn].median()
+    MAD = mdf_train[suffixcolumn].mad()
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -10193,6 +10198,7 @@ class AutoMunge:
     nmbrcolumns = [suffixcolumn]
 
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'std' : std, \
+                                              'median' : median, 'MAD' : MAD, \
                                               'max' : maximum, 'min' : minimum, \
                                               'offset' : offset, 'multiplier': multiplier, \
                                               'cap' : cap, 'floor' : floor, \
@@ -10641,6 +10647,7 @@ class AutoMunge:
     maximum = mdf_train[suffixcolumn].max()
     #get minimum value of training column
     minimum = mdf_train[suffixcolumn].min()
+    median = mdf_train[suffixcolumn].median()
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean() 
@@ -10687,7 +10694,7 @@ class AutoMunge:
     nmbrcolumns = [suffixcolumn]
 
     nmbrnormalization_dict = {suffixcolumn : {'mean' : mean, 'MAD' : MAD, 'center' : center, \
-                                              'maximum':maximum, 'minimum':minimum, \
+                                              'maximum':maximum, 'minimum':minimum, 'median' : median, \
                                               'inplace' : inplace, 'suffix' : suffix, \
                                               'defaultinfill_dict' : defaultinfill_dict}}
 
@@ -10789,6 +10796,10 @@ class AutoMunge:
     if mean != mean:
       mean = 0
 
+    #additional drift stats
+    median = mdf_train[suffixcolumn].median()
+    MAD = mdf_train[suffixcolumn].mad()
+
     #apply defaultinfill based on processdict entry
     mdf_train, defaultinfill_dict = \
     self.__apply_defaultinfill(mdf_train, suffixcolumn, postprocess_dict, treecategory=treecategory, defaultinfill_dict=False)
@@ -10851,6 +10862,8 @@ class AutoMunge:
                                               'maxminusmin' : maxminusmin, \
                                               'mean' : mean, \
                                               'std' : std, \
+                                              'median' : median, \
+                                              'MAD' : MAD, \
                                               'cap' : cap, \
                                               'floor' : floor, \
                                               'suffix' : suffix, \
@@ -11081,6 +11094,8 @@ class AutoMunge:
     #a few more metrics collected for driftreport
     #get standard deviation of training data
     std = mdf_train[suffixcolumn].std()
+    median = mdf_train[suffixcolumn].median()
+    MAD = mdf_train[suffixcolumn].mad()
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean()   
@@ -11121,6 +11136,8 @@ class AutoMunge:
                                               'maxabs' : maxabs, \
                                               'mean' : mean, \
                                               'std' : std, \
+                                              'median' : median, \
+                                              'MAD' : MAD, \
                                               'suffix' : suffix, \
                                               'defaultinfill_dict' : defaultinfill_dict, 
                                               'inplace' : inplace}}
@@ -11245,9 +11262,9 @@ class AutoMunge:
     mdf_test[suffixcolumn] = pd.to_numeric(mdf_test[suffixcolumn], errors='coerce')
     
     #a few more metrics collected for driftreport
-    #get standard deviation of training data
+    #stdev, median, mad
     std = mdf_train[suffixcolumn].std()
-    
+    median = mdf_train[suffixcolumn].median()
     mad = mdf_train[suffixcolumn].mad()
     
     #get maximum value of training column
@@ -11372,7 +11389,8 @@ class AutoMunge:
                                               'maximum' : maximum, \
                                               'mean' : mean, \
                                               'std' : std, \
-                                              'mad' : mad, \
+                                              'median' : median, \
+                                              'MAD' : mad, \
                                               'scalingapproach' : scalingapproach, \
                                               'offset' : offset, \
                                               'multiplier': multiplier, \
@@ -11516,6 +11534,9 @@ class AutoMunge:
     #a few more metrics collected for driftreport
     #get standard deviation of training data
     std = mdf_train[suffixcolumn].std()
+    #median and median absolute deviation
+    median = mdf_train[suffixcolumn].median()
+    MAD = mdf_train[suffixcolumn].mad()
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean()
@@ -11552,6 +11573,8 @@ class AutoMunge:
                                               'maxminusmin' : maxminusmin, \
                                               'mean' : mean, \
                                               'std' : std, \
+                                              'median' : median, \
+                                              'MAD' : MAD, \
                                               'offset' : offset, \
                                               'multiplier': multiplier, \
                                               'cap' : cap, \
@@ -12134,17 +12157,21 @@ class AutoMunge:
       df_cat[activation_column] = df_cat[activation_column].astype(np.int8)
     
     labels_dict = {}
+    onht_returned_columns = []
     if suffix_convention == 'onht':
       i = 0
       for entry in labels_train:
         labels_dict.update({entry : column + '_' + str(i)})
+        onht_returned_columns.append(column + '_' + str(i))
         i += 1
     elif suffix_convention == 'text':
       for entry in labels_train:
         #str conversion is to accomodate missing data marker which will return as column + '_nan'
         labels_dict.update({entry : column + '_' + entry})
+        onht_returned_columns.append(column + '_' + entry)
       
-    normalization_dict.update({'labels_dict' : labels_dict})
+    normalization_dict.update({'labels_dict' : labels_dict,
+                               'onht_returned_columns' : onht_returned_columns})
       
     #concatinate the sparse set with the rest of our training data
     df = pd.concat([df, df_cat], axis=1)
@@ -12153,6 +12180,15 @@ class AutoMunge:
     
     #now convert coloumn headers from text convention to onht convention
     df = df.rename(columns=labels_dict)
+
+    #this is a drift stat for activaiton ratios
+    onht_activations_dict = {}
+    for onht_returned_column in onht_returned_columns:
+      sumcalc = (df[onht_returned_column] == 1).sum() 
+      ratio = sumcalc / df[onht_returned_column].shape[0]
+      onht_activations_dict.update({onht_returned_column : ratio})
+      
+    normalization_dict.update({'onht_activations_dict' : onht_activations_dict})
     
     return df, normalization_dict
 
@@ -40193,6 +40229,13 @@ class AutoMunge:
         del PCAset_train
         del PCAset_test
 
+        #here PCA drift stats are recorded for potential inspection with a postmunge driftreport
+        if 'dimensionality_reduction_driftstats' not in postprocess_dict:
+          postprocess_dict.update({'dimensionality_reduction_driftstats' : {}})
+        postprocess_dict['dimensionality_reduction_driftstats'].update({
+          'PCA_drift' : {'orig_stats' : self.__PCA_drift_stats(df_train, returned_PCA_columns)}
+        })
+
         #printout display progress
         if printstatus is True:
           print("returned PCA columns: ")
@@ -40216,6 +40259,9 @@ class AutoMunge:
 
         miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
+        if 'dimensionality_reduction_driftstats' not in postprocess_dict:
+          postprocess_dict.update({'dimensionality_reduction_driftstats' : {}})
+
     else:
       #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
       postprocess_dict.update({'PCAmodel' : None})
@@ -40230,6 +40276,9 @@ class AutoMunge:
 
       miscparameters_results.update({'PCA_suffixoverlap_results':{}})
 
+      if 'dimensionality_reduction_driftstats' not in postprocess_dict:
+        postprocess_dict.update({'dimensionality_reduction_driftstats' : {}})
+
     #_____
 
     #_________________________________________________________
@@ -40241,6 +40290,13 @@ class AutoMunge:
     #Binary dimensionality reduction to train and test data goes here
     df_train, df_test, Binary_dict, postprocess_dict, final_returned_Binary_columns, final_returned_Binary_sets, Binary_orig, Binary = \
     self.__BinaryConsolidate(df_train, df_test, Binary, postprocess_dict, 'Binary')
+
+    #record Binary drift stats for potential inspection with postmunge driftreport
+    if Binary is not False:
+
+      postprocess_dict['dimensionality_reduction_driftstats'].update({
+        'Binary_drift' : {'orig_stats' : self.__Binary_drift_stats(df_train, Binary_dict)}
+      })
 
     #Binary dimensionality reduction to df_labels and df_testlabels data goes here
     if isinstance(labels_column, list) and len(labels_column) > 1 and isinstance(labels_column[0], set):
@@ -40532,7 +40588,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.58'
+    automungeversion = '7.59'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -49257,6 +49313,94 @@ class AutoMunge:
 
   #__FunctionBlock: postmunge driftreport
 
+  def __PCA_drift_stats(self, df, returned_PCA_columns):
+    """
+    returns a dictionary of drift stats for the list of columns in returned_PCA_columns
+    as will be recorded in postprocess_dict['dimensionality_reduction_driftstats']['PCA_drift']
+    which will later be transferred to postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats']
+    or postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['new_stats']
+
+
+    """
+    
+    drift_dict = {}
+    
+    for returned_PCA_column in returned_PCA_columns:
+      
+      drift_dict.update({returned_PCA_column : 
+                          {
+                            'mean'    : df[returned_PCA_column].mean(),
+                            'std'     : df[returned_PCA_column].std(),
+                            'median'  : df[returned_PCA_column].median(),
+                            'MAD'     : df[returned_PCA_column].mad(),
+                            'maximum' : df[returned_PCA_column].max(),
+                            'minimum' : df[returned_PCA_column].min(),
+                          }
+                        })
+    
+    return drift_dict
+    
+  def __Binary_drift_stats(self, df, Binary_dict):
+    """
+    returns a dictionary of drift stats for the columns returned from Binary dimensionality reduction
+    note that since they may be multiple Binary consolidations specified, the first tier will be an integer
+    
+    the results will be recorded in postprocess_dict['dimensionality_reduction_driftstats']['Binary_drift']
+    which will later be transferred to postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats']
+    or postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['new_stats']
+    
+    input columns are recorded in Binary_dict's categoric_column_tuple, omitting because with ordinal treatent recovery is not simple
+    
+    note that Binary_dict records normalization_dict entries from transform as well as Binary specific entries
+    """
+    
+    drift_dict = {}
+    
+    for i in Binary_dict:
+      
+      drift_dict.update({i : {}})
+      
+      if Binary_dict[i]['Btype'] == '1010':
+        
+        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+        unique_ratio = Binary_dict[i]['_1010_activations_dict']
+        nunique = len(list(Binary_dict[i]['_1010_activations_dict']))
+        conversion_dict = Binary_dict[i]['binary_encoding_dict']
+        
+        unique_ratio_clean = {}
+        for key in unique_ratio:
+          unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
+
+      elif Binary_dict[i]['Btype'] == 'ord3':
+        
+        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+        unique_ratio = Binary_dict[i]['ordl_activations_dict']
+        nunique = len(list(Binary_dict[i]['ordl_activations_dict']))
+        conversion_dict = Binary_dict[i]['ordinal_dict']
+        
+        unique_ratio_clean = {}
+        for key in unique_ratio:
+          unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
+            
+      elif Binary_dict[i]['Btype'] == 'onht':
+        
+        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+        unique_ratio = Binary_dict[i]['onht_activations_dict']
+        nunique = len(returned_Binary_columns)
+        conversion_dict = Binary_dict[i]['labels_dict']
+        
+        unique_ratio_clean = unique_ratio
+        
+      drift_dict[i].update(
+        {
+          'returned_Binary_columns' : returned_Binary_columns,
+          'unique_ratio' : unique_ratio_clean,
+          'nunique' : nunique,
+        }
+      )
+      
+    return drift_dict
+
   def __prepare_driftreport(self, df_test, postprocess_dict, printstatus):
     """
     #driftreport uses the processfamily functions as originally implemented
@@ -49699,6 +49843,7 @@ class AutoMunge:
                         'FS_sorted' : FS_sorted, \
                         'finalcolumns_test':[], \
                         'driftreport':{}, \
+                        'dimensionality_reduction_driftstats' : {}, \
                         'pm_miscparameters_results':pm_miscparameters_results}
 
     #copy input dataframes to internal state so as not to edit exterior objects
@@ -50096,6 +50241,8 @@ class AutoMunge:
     #or both, as based on driftreport parameter
     #driftreport may either be returned without further processing of data 
     #or postmunge may proceed and return results in postreports_dict
+    #note that PCA or Binary drift stats only available for driftreport = True 
+    #and are recorded after application of dimensionality reduction
 
     #__________
     #here we'll perform drift report if elected
@@ -50136,6 +50283,9 @@ class AutoMunge:
 
       postreports_dict.update({'rowcount_basis' : {'automunge_train_rowcount' : postprocess_dict['train_rowcount'], \
                                                    'postmunge_test_rowcount' : df_test.shape[0]}})
+
+      #dimensionality_reduction_driftstats populated with PCA or Binary and only available with driftreport=True
+      postreports_dict.update({'dimensionality_reduction_driftstats' : {}})
 
       if printstatus is True:
         print("_______________")
@@ -50413,7 +50563,46 @@ class AutoMunge:
           print("")
 
         del PCAset_test
-        
+
+        if driftreport is True:
+
+          if printstatus is True:
+            print("_______________")
+            print('Preparing PCA Column Drift Report:')
+          
+          #record orig PCA drift stats
+          if 'dimensionality_reduction_driftstats' in postprocess_dict:
+            postreports_dict['dimensionality_reduction_driftstats'].update({
+                'PCA_drift' : {
+                  'orig_stats' : postprocess_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats'],
+                }
+              })
+          else:
+            #backward compatibility preceding 7.59
+            postreports_dict['dimensionality_reduction_driftstats'].update({
+                'PCA_drift' : {
+                  'orig_stats' : {},
+                }
+              })
+
+          #record new PCA drift stats
+          postreports_dict['dimensionality_reduction_driftstats']['PCA_drift'].update(
+            {
+              'new_stats' : self.__PCA_drift_stats(df_test, postprocess_dict['returned_PCA_columns'])
+            })
+
+          if printstatus is True:
+            for returned_PCA_column in postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats']:
+              print()
+              print("drift stats for PCA column ", returned_PCA_column)
+              print()
+              print("original drift stats:")
+              print(postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats'][returned_PCA_column])
+              print()
+              print("new drift stats:")
+              print(postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['new_stats'][returned_PCA_column])
+              print()
+
       else:
         
         postreports_dict['pm_miscparameters_results'].update({'PCA_test_numeric_data_result': False})
@@ -50437,6 +50626,48 @@ class AutoMunge:
     meta_Binary_dict = postprocess_dict['Binary_dict']
       
     df_test = self.__postBinaryConsolidate(df_test, meta_Binary_dict, Binary, printstatus)
+
+    if driftreport is True \
+    and 'dimensionality_reduction_driftstats' in postprocess_dict \
+    and 'Binary_drift' in postprocess_dict['dimensionality_reduction_driftstats']:
+
+      if printstatus is True:
+        print("_______________")
+        print('Preparing Binary Column Drift Report:')
+
+      #record orig Binary drift stats
+      if 'dimensionality_reduction_driftstats' in postprocess_dict:
+        postreports_dict['dimensionality_reduction_driftstats'].update({
+            'Binary_drift' : {
+              'orig_stats' : postprocess_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats'],
+            }
+          })
+      else:
+        #backward compatibility preceding 7.59
+        postreports_dict['dimensionality_reduction_driftstats'].update({
+            'Binary_drift' : {
+              'orig_stats' : {},
+            }
+          })
+
+      #record new Binary drift stats
+      postreports_dict['dimensionality_reduction_driftstats']['Binary_drift'].update(
+        {
+          'new_stats' : self.__Binary_drift_stats(df_test, meta_Binary_dict)
+        })
+
+      if printstatus is True:
+
+        for Binary_number in postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats']:
+          print()
+          print("drift stats for Binary consolidation ", Binary_number)
+          print()
+          print("original drift stats:")
+          print(postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats'][Binary_number])
+          print()
+          print("new drift stats:")
+          print(postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['new_stats'][Binary_number])
+          print()
     
     #_________
     
