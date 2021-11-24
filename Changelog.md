@@ -5083,7 +5083,29 @@ assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
 - examples of alternate generators could be np.random.MT19937 for Mersenne Twister
 - in both cases these generators on their own are not truly random, they rely on seedings of entropy provided by the operating system which are then enhanced through their use
 - note that alternate libraries with numpy.random formatted generators can also be accessed for this purpose, such as for example for sampling with support of quantum circuits
+- an example of a library that can serve as an alternate resource for np.random generator is QRAND
 - or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit
 - the two parameters can also be passed in tangent, for sampling with a custom generator with custom supplemental entropy seeds
 - entropy_seeds and random_generator are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict
 - also found and fixed a bug in DPrt associated with test_mu specification
+
+7.59
+- drift stats now available for columns returned from PCA and Binary in conjunction with a postmunge driftreport
+- PCA and Binary drift stats supported with the driftreport = True scenario
+- (in the other driftreport scenarios postmunge returns prior to applying dimensionality reductions)
+- results are returned as postreports_dict['dimensionality_reduction_driftstats']
+- more particularly:
+postreports_dict['dimensionality_reduction_driftstats'] = \
+{
+  'Binary_drift' : {
+    'orig_stats' : {drift stats},
+    'new_stats' : {drift stats},
+  },
+  'PCA_drift' : {
+    'orig_stats' : {drift stats},
+    'new_stats' : {drift stats},
+  },
+}
+- added additional numeric drift stats to nmbr/mnmx/retn/mean/MADn/mxab as median and MAD (median absolute deviation)
+- added onht_returned_columns and onht_activations_dict to drift stats for onht
+- also updated the read me to include links of a few essays from last two years to serve as reference for various features
