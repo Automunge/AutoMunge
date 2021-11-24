@@ -5074,3 +5074,16 @@ assigncat = {'1010':[], 'onht':[], 'ordl':[], 'bnry':[], 'hash':[], 'hsh2':[],
 - found an immaterial family tree that was interfering with a validation test
 - updated DPo7 family tree 
 - (DPo7 primarily intended for use as a downstream tree category)
+
+7.58
+- new automunge(.) and postmunge(.) parameters supported for noise injection
+- entropy_seeds: defaults to False, accepts integer or list of integers which may serve as a supplemental source of entropy for numpy.random sampling
+- random_generator: defaults to False, accepts input of a numpy.random.Generator formatted random sampler
+- the default generator is np.random.PCG64 which applies the PCG pseudo random number generator (and is also the default applied by numpy)
+- examples of alternate generators could be np.random.MT19937 for Mersenne Twister
+- in both cases these generators on their own are not truly random, they rely on seedings of entropy provided by the operating system which are then enhanced through their use
+- note that alternate libraries with numpy.random formatted generators can also be accessed for this purpose, such as for example for sampling with support of quantum circuits
+- or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit
+- the two parameters can also be passed in tangent, for sampling with a custom generator with custom supplemental entropy seeds
+- entropy_seeds and random_generator are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict
+- also found and fixed a bug in DPrt associated with test_mu specification
