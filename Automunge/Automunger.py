@@ -361,6 +361,10 @@ class AutoMunge:
   __check_processdict3_support
   __check_processdict4
 
+  #__FunctionBlock: entropy_seeds and random_generator support
+  __random_parameters_assignparam_append
+  __random_parameters_assignparam_strike
+
   #__FunctionBlock: functionpointer support
   __grab_functionpointer_entries_support
   __grab_functionpointer_entries
@@ -22944,6 +22948,36 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+    
+    #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
       
     #________
       
@@ -23000,16 +23034,16 @@ class AutoMunge:
     if trainnoise is True:
       #first we'll derive our sampled noise for injection
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(mdf_train.shape[0]))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
       if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
         normal_samples = (-1) * abs(normal_samples)
         
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
+      binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
       
       mdf_train[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_train.index) * pd.DataFrame(binomial_samples, index=mdf_train.index)
       
@@ -23027,16 +23061,16 @@ class AutoMunge:
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
       if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = np.random.normal(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
+        normal_samples = nprandom.normal(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
       elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = np.random.laplace(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
+        normal_samples = nprandom.laplace(loc=test_mu, scale=test_sigma, size=(mdf_test.shape[0]))
 
       if test_noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
       if test_noisedistribution in {'negabs_normal', 'negabs_laplace'}:
         normal_samples = (-1) * abs(normal_samples)
 
-      binomial_samples = np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
+      binomial_samples = nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
 
       mdf_test[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
       
@@ -23175,6 +23209,36 @@ class AutoMunge:
       suffix = treecategory
       
     #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+    #________
       
     #scenarios where parameters passed as a scipy stats distribution
     mu_dist = False
@@ -23237,9 +23301,9 @@ class AutoMunge:
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -23335,16 +23399,16 @@ class AutoMunge:
 
       #first we'll derive our sampled noise for injection
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
       if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
         normal_samples = (-1) * abs(normal_samples)
 
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
+      binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
       df[DPmm_column] = pd.DataFrame(normal_samples, index=df.index) * pd.DataFrame(binomial_samples, index=df.index)
 
@@ -23588,6 +23652,36 @@ class AutoMunge:
       suffix = treecategory
       
     #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+    #________
       
     #scenarios where parameters passed as a scipy stats distribution
     mu_dist = False
@@ -23785,9 +23879,9 @@ class AutoMunge:
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -23899,16 +23993,16 @@ class AutoMunge:
 
       #first we'll derive our sampled noise for injection
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
       if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
         normal_samples = (-1) * abs(normal_samples)
 
-      binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(df.shape[0]))
+      binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
 
       df[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=df.index) * pd.DataFrame(binomial_samples, index=df.index)
 
@@ -23975,7 +24069,7 @@ class AutoMunge:
       else:
         #single row case is when no df_test was passed to automunge(.)
         if mdf_test.shape[0] > 1:
-          test_mu = debiasmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_noisedistribution)
+          test_mu = debiasrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_noisedistribution)
     
     if trainnoise is True:
       mdf_train = _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution)
@@ -24090,7 +24184,37 @@ class AutoMunge:
     else:
       suffix = treecategory
       
-    #___
+    #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+    #________
       
     #scenarios where parameters passed as a scipy stats distribution
     flip_prob_dist = False
@@ -24119,7 +24243,7 @@ class AutoMunge:
     self.__df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results, postprocess_dict['printstatus'])
       
     #first we'll derive our sampled noise for injection
-    mdf_train[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+    mdf_train[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
     
     #now inject noise
     if trainnoise is True:
@@ -24132,7 +24256,7 @@ class AutoMunge:
       mdf_test[DPbn_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
@@ -24238,7 +24362,37 @@ class AutoMunge:
     else:
       upstream_hsh2 = False
       
-    #___
+    #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+    #________
       
     #scenarios where parameters passed as a scipy stats distribution
     flip_prob_dist = False
@@ -24289,11 +24443,11 @@ class AutoMunge:
     if trainnoise is True:  
     
       #derive our sampled noise for injection
-      mdf_train[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
       if weighted is False:
-        mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
+        mdf_train[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
       elif weighted is True:
-        mdf_train[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
+        mdf_train[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -24311,11 +24465,11 @@ class AutoMunge:
       mdf_test[DPod_column] = mdf_test[column].copy()
     elif testnoise is True:
       #first we'll derive our sampled noise for injection
-      mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       if test_weighted is False:
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
       elif test_weighted is True:
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
+        mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -24462,7 +24616,37 @@ class AutoMunge:
     else:
       inplace = False
       
-    #___
+    #________
+    
+    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'entropy_seeds' in params:
+      entropy_seeds = params['entropy_seeds']
+    else:
+      entropy_seeds = False
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    #initialize random number generator
+    #only include entropy seeding when specified
+    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+    if entropy_seeds is False:
+      #initialize without seeds
+      nprandom = np.random.Generator(random_generator())
+    else:
+      #shuffle entropy seeds
+      if isinstance(entropy_seeds, list):
+        random.shuffle(entropy_seeds)
+        
+      #initialize generator including supplemental entropy seeds
+      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+    #________
       
     #scenarios where parameters passed as a scipy stats distribution
     flip_prob_dist = False
@@ -24598,13 +24782,13 @@ class AutoMunge:
       df_noise_tempcolumn2 = 2
 
       #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
-      df_noise[df_noise_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+      df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
 
       if weighted is False:
         #df_noise_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-        df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+        df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
       elif weighted is True:
-        df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+        df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
 
       #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
       df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
@@ -31199,7 +31383,7 @@ class AutoMunge:
                     numbercategoryheuristic, assigncat, transformdict, \
                     processdict, featurethreshold, featureselection, \
                     ML_cmnd, process_dict, valpercent, printstatus, \
-                    NArw_marker, assignparam):
+                    NArw_marker, assignparam, entropy_seeds, random_generator):
     """
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -31258,7 +31442,7 @@ class AutoMunge:
                   ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-                  assignparam = FS_assignparam, \
+                  assignparam = FS_assignparam, entropy_seeds = entropy_seeds, random_generator = random_generator, \
                   transformdict = transformdict, processdict = processdict, printstatus=printstatus)
 
     #record validation results from automunge call internal to featureselect
@@ -33736,7 +33920,8 @@ class AutoMunge:
                              infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment, ppd_append):
+                             trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
+                             noise_augment, ppd_append, entropy_seeds, random_generator):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -34200,12 +34385,39 @@ class AutoMunge:
 
     miscparameters_results.update({'ppd_append_valresult' : ppd_append_valresult})
 
+    #check entropy_seeds
+    entropy_seeds_valresult = False
+    if not isinstance(entropy_seeds, (bool, int, list)) \
+    or isinstance(entropy_seeds, (bool)) and entropy_seeds is not False:
+      entropy_seeds_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for entropy_seeds parameter.")
+        print("Acceptable values are False, integer, or list of integers")
+        print()
+
+    miscparameters_results.update({'entropy_seeds_valresult' : entropy_seeds_valresult})
+
+    #check random_generator
+    random_generator_valresult = False
+    if random_generator is not False:
+      try:
+        np.random.Generator(random_generator()).standard_normal()
+      except TypeError:
+        random_generator_valresult = True
+        if printstatus != 'silent':
+          print("Error: invalid entry passed for random_generator parameter.")
+          print("Acceptable values are False or np.random formatted generator")
+          print()        
+    
+    miscparameters_results.update({'random_generator_valresult' : random_generator_valresult})
+
     return miscparameters_results
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, \
-                                testID_column, randomseed, encrypt_key, noise_augment):
+                                testID_column, randomseed, encrypt_key, noise_augment, \
+                                entropy_seeds, random_generator):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -34411,6 +34623,32 @@ class AutoMunge:
         print()
 
     pm_miscparameters_results.update({'noise_augment_pm_valresult' : noise_augment_pm_valresult})
+
+    #check entropy_seeds
+    entropy_seeds_pm_valresult = False
+    if not isinstance(entropy_seeds, (bool, int, list)) \
+    or isinstance(entropy_seeds, (bool)) and entropy_seeds is not False:
+      entropy_seeds_pm_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for entropy_seeds parameter.")
+        print("Acceptable values are False, integer, or list of integers")
+        print()
+
+    pm_miscparameters_results.update({'entropy_seeds_pm_valresult' : entropy_seeds_pm_valresult})
+
+    #check random_generator
+    random_generator_pm_valresult = False
+    if random_generator is not False:
+      try:
+        np.random.Generator(random_generator()).standard_normal()
+      except TypeError:
+        random_generator_pm_valresult = True
+        if printstatus != 'silent':
+          print("Error: invalid entry passed for random_generator parameter.")
+          print("Acceptable values are False or np.random formatted generator")
+          print()        
+    
+    pm_miscparameters_results.update({'random_generator_pm_valresult' : random_generator_pm_valresult})
     
     return pm_miscparameters_results
 
@@ -35921,6 +36159,46 @@ class AutoMunge:
 
     return check_processdict4_valresult, check_processdict4_valresult2
 
+  #__FunctionBlock: entropy_seeds and random_generator support
+
+  def __random_parameters_assignparam_append(self, assignparam, entropy_seeds, random_generator):
+    """
+    if automunge(.) recieved specificaiton in either of parameters entropy_seeds, random_generator
+    those specifications are added to assignparam as global entries
+    which will later be struck in __random_parameters_assignparam_strike 
+    so as not to retain in the returned postprocess_dict
+    """
+    
+    if entropy_seeds is not False and random_generator is not False:
+      
+      if 'global_assignparam' not in assignparam:
+        assignparam.update({'global_assignparam' : {}})
+        
+      if entropy_seeds is not False:
+        assignparam['global_assignparam'].update({'entropy_seeds' : entropy_seeds})
+        
+      if random_generator is not False:
+        assignparam['global_assignparam'].update({'random_generator' : random_generator})
+        
+    return assignparam
+
+  def __random_parameters_assignparam_strike(self, assignparam):
+    """
+    if automunge(.) recieved specificaiton in either of parameters entropy_seeds, random_generator
+    those specifications were added to assignparam as global entries in __random_parameters_assignparam_append
+    which are now struck so as not to retain in the returned postprocess_dict
+    """
+    
+    if 'global_assignparam' in assignparam:
+      
+      if 'entropy_seeds' in assignparam['global_assignparam']:
+        del assignparam['global_assignparam']['entropy_seeds']
+        
+      if 'random_generator' in assignparam['global_assignparam']:
+        del assignparam['global_assignparam']['random_generator']
+        
+    return assignparam
+  
   #__FunctionBlock: functionpointer support
 
   def __grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict, process_dict, \
@@ -38448,6 +38726,7 @@ class AutoMunge:
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
+                entropy_seeds = False, random_generator = False, 
                 privacy_encode = False, encrypt_key = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
@@ -38554,7 +38833,8 @@ class AutoMunge:
                                  infilliterate, randomseed, eval_ratio, numbercategoryheuristic, pandasoutput, \
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
-                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, noise_augment, ppd_append)
+                                 trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
+                                 noise_augment, ppd_append, entropy_seeds, random_generator)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -38735,7 +39015,7 @@ class AutoMunge:
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurethreshold, featureselection, \
                           ML_cmnd, process_dict, valpercent, printstatus, NArw_marker, \
-                          assignparam)
+                          assignparam, entropy_seeds, random_generator)
 
       #the final returned featureimportance report consolidates the sorted results with raw data
       featureimportance = {'FS_sorted'     : FS_sorted, \
@@ -39268,10 +39548,10 @@ class AutoMunge:
     masterNArows_train = pd.DataFrame()
     masterNArows_test = pd.DataFrame()
 
-    #we originally had the convention that some preprocessing was done on assignparam
-    #to create assign_param
-    #keeping the assign_param convention in cases we later reintroduce
-    assign_param = assignparam
+    #any preprocessing on assignparam done here
+    #if user specified either of entropy_seeds or random_generator they are added here and then struck before return
+    #note that this renames the variable from assignparam to assign_param which is a legacy convention
+    assign_param = self.__random_parameters_assignparam_append(assignparam, entropy_seeds, random_generator)
     
     #initialize postprocess_dict
     #the dictionary / list values are populated through processing
@@ -40237,6 +40517,7 @@ class AutoMunge:
     #in a few cases some entries will first need to be derived
     #including excluded_from_postmunge_getNArows, categorytree, inverse_categorytree, inputcolumn_dict
     #we also populate the returned column reports here including columntype_report, label_columntype_report, column_map
+    #and strike and assignparam entries associated with entropy_seeds and random_generator
 
     #here's a list of final column names saving here since if a translation to 
     #numpy arrays is performed below based on pandasoutput it scrubs the column headers
@@ -40244,11 +40525,14 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
     finalcolumns_labels = list(df_labels)
 
+    #the random seeding parameters entropy_seeds and random_generator are struck here prior to return
+    assign_param = self.__random_parameters_assignparam_strike(assign_param)
+
     #we'll create some tags specific to the application to support postprocess_dict versioning
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.57'
+    automungeversion = '7.58'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40566,6 +40850,8 @@ class AutoMunge:
                       printstatus = printstatus,
                       dupl_rows = dupl_rows,
                       traindata = traindata,
+                      entropy_seeds = entropy_seeds,
+                      random_generator = random_generator,
                       randomseed = augrandomseed)
 
         #this adjusts Automunge_index to avoid duplicates
@@ -40628,6 +40914,8 @@ class AutoMunge:
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                      pandasoutput = True, printstatus = printstatus, \
                      shuffletrain = False, dupl_rows = dupl_rows,
+                     entropy_seeds = entropy_seeds,
+                     random_generator = random_generator,
                      randomseed = valrandomseed)
 
       df_validation1.index = temp_valindex
@@ -46677,6 +46965,38 @@ class AutoMunge:
         test_sigma_dist = False
         test_flip_prob_dist = False
         
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
+        
       #___
         
       #scenarios where parameters passed as a scipy stats distribution
@@ -46744,16 +47064,16 @@ class AutoMunge:
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
         if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
           normal_samples = (-1) * abs(normal_samples)
           
-        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+        binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
         
         mdf_test[DPnm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
       
@@ -46852,7 +47172,37 @@ class AutoMunge:
         test_sigma_dist = False
         test_flip_prob_dist = False
         
-      #___
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
         
       #scenarios where parameters passed as a scipy stats distribution
       if isinstance(mu_dist, type(stats.expon(1))):
@@ -46920,16 +47270,16 @@ class AutoMunge:
         
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
         if noisedistribution in {'abs_normal', 'negabs_laplace'}:
           normal_samples = (-1) * abs(normal_samples)
         
-        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+        binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
         mdf_test[DPmm_column] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
 
@@ -47099,7 +47449,37 @@ class AutoMunge:
         test_sigma_dist = False
         test_flip_prob_dist = False
         
-      #___
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
         
       #scenarios where parameters passed as a scipy stats distribution
       if isinstance(mu_dist, type(stats.expon(1))):
@@ -47206,16 +47586,16 @@ class AutoMunge:
 
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(mdf_test.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
         if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
           normal_samples = (-1) * abs(normal_samples)
 
-        binomial_samples = np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
+        binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
 
         mdf_test[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=mdf_test.index) * pd.DataFrame(binomial_samples, index=mdf_test.index)
         
@@ -47329,6 +47709,38 @@ class AutoMunge:
         flip_prob_dist = False
         test_flip_prob_dist = False
         
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
+        
       #scenarios where parameters passed as a scipy stats distribution
 
       if isinstance(flip_prob_dist, type(stats.expon(1))):
@@ -47372,7 +47784,7 @@ class AutoMunge:
       or (testnoise is True and traindata is False):
         
         #first we'll derive our sampled noise for injection
-        mdf_test[DPbn_column] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+        mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
         mdf_test[DPbn_column] = abs(mdf_test[column] - mdf_test[DPbn_column])
@@ -47469,6 +47881,38 @@ class AutoMunge:
         flip_prob_dist = False
         test_flip_prob_dist = False
         
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
+        
       #scenarios where parameters passed as a scipy stats distribution
 
       if isinstance(flip_prob_dist, type(stats.expon(1))):
@@ -47506,12 +47950,12 @@ class AutoMunge:
       or (testnoise is True and traindata is False):
         
         #now we'll derive our sampled noise for injection
-        mdf_test[DPod_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+        mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
         if weighted is False:
-          mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+          mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
         elif weighted is True:
-          mdf_test[DPod_tempcolumn2] = pd.DataFrame(np.random.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
+          mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
         #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -47621,6 +48065,38 @@ class AutoMunge:
         flip_prob_dist = False
         test_flip_prob_dist = False
         
+      #________
+
+      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'entropy_seeds' in params:
+        entropy_seeds = params['entropy_seeds']
+      else:
+        entropy_seeds = False
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+      #initialize random number generator
+      #only inlcude entropy seeding when specified
+      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
+      if entropy_seeds is False:
+        #initialize generator without seeds
+        nprandom = np.random.Generator(random_generator())
+      
+      else:
+        
+        #shuffle entropy seeds
+        if isinstance(entropy_seeds, list):
+          random.shuffle(entropy_seeds)
+
+        #initialize generator including supplemental entropy seeds
+        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #________
+        
       #scenarios where parameters passed as a scipy stats distribution
 
       if isinstance(flip_prob_dist, type(stats.expon(1))):
@@ -47662,13 +48138,13 @@ class AutoMunge:
         df_noise_tempcolumn2 = 2
 
         #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
-        df_noise[df_noise_tempcolumn1] = pd.DataFrame(np.random.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+        df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
 
         if weighted is False:
           #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-          df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, size=(df.shape[0])), index=df.index)
+          df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
         elif weighted is True:
-          df_noise[df_noise_tempcolumn2] = pd.DataFrame(np.random.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+          df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
 
         #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
         df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
@@ -48200,7 +48676,7 @@ class AutoMunge:
   #__FunctionBlock: postmunge feature selection
 
   def __postfeatureselect(self, df_test, testID_column, \
-                        postprocess_dict, printstatus):
+                        postprocess_dict, printstatus, entropy_seeds, random_generator):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -48313,7 +48789,7 @@ class AutoMunge:
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                      pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
-                     shuffletrain = True)
+                     shuffletrain = True, entropy_seeds = entropy_seeds, random_generator = random_generator)
 
       #record validation results from postmunge call
       FS_validations.update({'postfeatureselect_automungecall_validationresults' : FSpostreports_dict['pm_miscparameters_results']})
@@ -48989,6 +49465,7 @@ class AutoMunge:
                 featureeval = False, traindata = False, noise_augment = 0,
                 driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False,
+                entropy_seeds = False, random_generator = False, 
                 randomseed = False, encrypt_key = False):
     """
     #This function documented in READ ME, available online at:
@@ -49071,6 +49548,7 @@ class AutoMunge:
     #we have a few temporary entries stored in postprocess_dict for postmunge
     #including postmunge_randomseed, traindata, and temp_miscparameters_results
     #we have a few special conventions for privacy_encode which are addressed here
+    #similarly special conventions for random seeding parameters entropy_seeds, random_generator
     #we also copy parameters passed as lists to internal state
     #perform some string conversions
     #and perform bulk parameter validations via __check_pm_miscparameters
@@ -49086,6 +49564,10 @@ class AutoMunge:
 
     #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
     postprocess_dict.update({'postmunge_randomseed' : randomseed})
+
+    #random seeding parameters entropy_seeds, random_generator are added to assign_param and later struck before return
+    postprocess_dict['assign_param'] = \
+    self.__random_parameters_assignparam_append(postprocess_dict['assign_param'], entropy_seeds, random_generator)
 
     #backward compatibility preceding 7.46
     if 'temp_miscparameters_results' not in postprocess_dict:
@@ -49125,7 +49607,8 @@ class AutoMunge:
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                   dupl_rows, featureeval, driftreport, inplace, \
                                   returnedsets, shuffletrain, inversion, traindata, \
-                                  testID_column, randomseed, encrypt_key, noise_augment)
+                                  testID_column, randomseed, encrypt_key, noise_augment, \
+                                  entropy_seeds, random_generator)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
@@ -49184,7 +49667,7 @@ class AutoMunge:
 
         FSmodel, FScolumn_dict, FS_sorted, FS_validations = \
         self.__postfeatureselect(df_test, testID_column, \
-                               postprocess_dict, printstatus)
+                               postprocess_dict, printstatus, entropy_seeds, random_generator)
 
         madethecut = postprocess_dict['madethecut']
 
@@ -49274,6 +49757,9 @@ class AutoMunge:
       postprocess_dict['temp_miscparameters_results'] = {}
       #strike temporary log from postprocess_dict
       del postprocess_dict['postmunge_randomseed']
+      #strike temporary assign_param entries for random seeding parameters entropy_seeds, random_generator
+      postprocess_dict['assign_param'] = \
+      self.__random_parameters_assignparam_strike(postprocess_dict['assign_param'])
       
       new_feature_ppd_case = False
       
@@ -50158,6 +50644,8 @@ class AutoMunge:
                       dupl_rows = dupl_rows,
                       traindata = traindata,
                       shuffletrain = shuffletrain,
+                      entropy_seeds = entropy_seeds, 
+                      random_generator = random_generator,
                       randomseed = randomseed)
 
         df_test = pd.concat([df_test, new_feature_df], axis=1)
@@ -50228,6 +50716,8 @@ class AutoMunge:
                       printstatus = printstatus,
                       dupl_rows = dupl_rows,
                       traindata = aug_traindata,
+                      entropy_seeds = entropy_seeds, 
+                      random_generator = random_generator,
                       randomseed = augrandomseed)
 
         #now reset the temporary postmunge postprocess_dict entries
@@ -50344,6 +50834,10 @@ class AutoMunge:
     #reset traindata entry in postprocess_dict to avoid overwrite of external
     postprocess_dict['traindata'] = False
     del postprocess_dict['postmunge_randomseed']
+
+    #strike temporary assign_param entries for random seeding parameters entropy_seeds, random_generator
+    postprocess_dict['assign_param'] = \
+    self.__random_parameters_assignparam_strike(postprocess_dict['assign_param'])
 
     #consolide validation results and reset temporary log in postprocess_dict
     postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
