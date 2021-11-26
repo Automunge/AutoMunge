@@ -5109,3 +5109,15 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - added additional numeric drift stats to nmbr/mnmx/retn/mean/MADn/mxab as median and MAD (median absolute deviation)
 - added onht_returned_columns and onht_activations_dict to drift stats for onht
 - also updated the read me to include links of a few essays from last two years to serve as reference for various features
+
+7.60
+- updates to numeric noise injection for purposes of reducing sampling costs when using quantum resources
+- only sample noise if flip_prob > 0 and sigma > 0
+- only sample binomial if flip_prob != 1
+- only sample normal a number of times based on binomial activation count instead of number of entries
+- new recorded drift stats for binomial_sample_count and test_binomial_sample_count
+- corrected the convention in DPmm and DPrt associated with noise_scaling_bias_offset
+- now when test_mu != mu and deriving a scaling offset for test_mu, basing the derivation on train data instead of test data
+- turned off categoric noise sampling for flip_prob = 0 for similar reasons
+- rewrote a few portions of DPrt to corect an interence between scaling operations and multiplier or offset parameters
+- small cleanup to DPbn transform, moved noise sampling to within the trainnoise loop to eliminate possible sampling without injection
