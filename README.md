@@ -3570,20 +3570,11 @@ holiday
   - inversion available: pending
 
 ### Differential Privacy Noise Injections
-The DP family of transforms are special in that they default to treating train sets different than test sets, 
-specifically they apply a noise injection to train sets such as may benefit differential privacy,
-data augmentation, or also for model perturbation in assembly of ensembles.
-Note that if desired to treat data passed to postmunge as a train set can apply the traindata postmunge
-parameter to signal that postmunge is preparing training data. Please refer to the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2) for further detail. 
-Note that when passing parameters to these functions, the transformation
-category associated with the transformation function may be different than the root category, as noted below with hashing injections.
-Noise sampling is built on top of numpy.random which as of version 1.17.0 uses an algorithm called PCG 
-as a pseudo random number generator.
+The DP family of transformations are for purposes of stochastic noise injection to train and/or test features. Noise is sampled by default with support of numpy.random (which as of version 1.17.0 defaults to the PCG pseudo random number generator). Supplemental entropy seedings or alternate random samplers can be applied with the automunge(.)/postmunge(.) parameters entropy_seeds and random_generator. The transforms default to injecting noise to training data and not test data, although trainnoise/testnoise parameters can be activated for any combination of the two. For cases where test data injections are not defaulted with the testnoise parameter, test data can be treated as train data for purposes of noise with the postmunge(.) traindata parameter. Please refer to the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2) for further detail. 
+Note that when passing parameters to a few of these functions (specifically the hashing varients), the transformation
+category associated with the transformation function may be different than the root category, as noted below DPh1/DPh2/DPhs.
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
 parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
-Note that both automunge(.) and postmunge(.) have additional parameters entropy_seeds and random_generator to
-support alternate noise sampling algorithms and entropy sources.
-Further detail on noise injections provided in the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2).
 
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
