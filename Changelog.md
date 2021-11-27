@@ -5135,3 +5135,8 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - with the exception that automunge(.) will still record suffix appenders on the returned columns 
 - and DPne will convert any non-numeric entries to NaN and return rest as floats
 - in the process added support to DPnb and DPmc for input columns with any data type
+
+7.62
+- added inplace support for DPnb
+- this was primarily to support use case of applying some combination of DPne, DPse, excl for injecting noise to a set of passthrough columns
+- now that DPnb has inplace support, the order of columns in returned set will match the input
