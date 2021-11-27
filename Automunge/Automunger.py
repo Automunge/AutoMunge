@@ -6515,7 +6515,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPqt'}})
@@ -7045,7 +7045,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPbx'}})
@@ -7624,7 +7624,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
@@ -7672,7 +7672,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7873,7 +7873,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPne'}})
@@ -23021,6 +23021,11 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
     
     #________
     
@@ -23132,13 +23137,26 @@ class AutoMunge:
       
       #now multiply activations by the normal samples
       mdf_train.loc[mdf_train[DPnm_column] == 1, DPnm_column] = normal_samples
-      
+
       #now inject noise
-      mdf_train[DPnm_column] = mdf_train[DPnm_column] + pd.to_numeric(mdf_train[column], errors='coerce')
+      if inplace is True:
+        #this inplace support is a little different from convention
+        #due to DPnm_column already being used to hold support data
+        #has the same effect
+        #note the suffix overlap already checked above
+        mdf_train[column] = mdf_train[DPnm_column] + pd.to_numeric(mdf_train[column], errors='coerce')
+        del mdf_train[DPnm_column]
+        mdf_train.rename(columns = {column : DPnm_column}, inplace = True)
+        
+      elif inplace is False:
+        mdf_train[DPnm_column] = mdf_train[DPnm_column] + pd.to_numeric(mdf_train[column], errors='coerce')
 
     #else train data is just pass-through
     else:
-      mdf_train[DPnm_column] = pd.to_numeric(mdf_train[column], errors='coerce').copy()
+      if inplace is True:
+        mdf_train.rename(columns = {column : DPnm_column}, inplace = True)
+      elif inplace is False:
+        mdf_train[DPnm_column] = pd.to_numeric(mdf_train[column], errors='coerce').copy()
     
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
     
@@ -23165,13 +23183,26 @@ class AutoMunge:
     
       #now multiply activations by the normal samples
       mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
-      
+
       #now inject noise
-      mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
-      
+      if inplace is True:
+        #this inplace support is a little different from convention
+        #due to DPnm_column already being used to hold support data
+        #has the same effect
+        #note the suffix overlap already checked above
+        mdf_test[column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
+        del mdf_test[DPnm_column]
+        mdf_test.rename(columns = {column : DPnm_column}, inplace = True)
+        
+      elif inplace is False:
+        mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
+
     #else test data is just pass-through
     else:
-      mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
+      if inplace is True:
+        mdf_test.rename(columns = {column : DPnm_column}, inplace = True)
+      elif inplace is False:
+        mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
     
     #create list of columns
     nmbrcolumns = [DPnm_column]
@@ -23182,6 +23213,7 @@ class AutoMunge:
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'suffix' : suffix, \
+                                             'inplace' : inplace, \
                                              'noisedistribution' : noisedistribution, \
                                              'test_mu' : test_mu, \
                                              'test_sigma' : test_sigma, \
@@ -40657,7 +40689,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.61'
+    automungeversion = '7.62'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -47089,6 +47121,13 @@ class AutoMunge:
         test_mu_dist = False
         test_sigma_dist = False
         test_flip_prob_dist = False
+
+      if 'inplace' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        inplace = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+      else:
+        #backward compatibility preceding 7.62
+        inplace = False
         
       #________
 
@@ -47213,12 +47252,23 @@ class AutoMunge:
         mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
 
         #now inject noise
-        mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
+        #this inplace support is a little different from convention
+        #due to DPnm_column already being used to hold support data
+        #has the same effect
+        if inplace is True:
+          mdf_test[column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
+          del mdf_test[DPnm_column]
+          mdf_test.rename(columns = {column : DPnm_column}, inplace = True)
+
+        elif inplace is False:
+          mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
         
       else:
-        
         #else test data is just pass-through
-        mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
+        if inplace is True:
+          mdf_test.rename(columns = {column : DPnm_column}, inplace = True)
+        elif inplace is False:
+          mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
 
     else:
 
