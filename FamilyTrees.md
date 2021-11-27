@@ -3275,6 +3275,24 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['DP1s'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPne' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPne'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPse' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPse'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -7257,6 +7275,25 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP1s'}})
+    process_dict.update({'DPne' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPne'}})
+    process_dict.update({'DPse' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPse'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
