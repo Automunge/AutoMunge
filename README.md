@@ -3642,6 +3642,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
+* DPne: for full pass-through other than numeric noise injection (i.e. no normalization applied). Comparable parameters supported to DPnb, samples gaussian by default also has laplace support. Note that if data is not received z-score normalized then the noise scaling (sigma / test_sigma) should be adjusted accordingly. Only other edits are conversion to float dtype / non numeric to NaN and suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPne may be suitable for incorporating noise injections to numeric test features into a prior prepared pipeline. A similar pass-through transform for categoric features with swap noise injections is available as DPse as noted below.
 * DLmm/DLnb/DLrt: comparable to DPmm/DPnb/DPrt but defaults to laplace distributed noise instead of gaussian (normal)
 with same parameters accepted (where mu is center of noise, sigma is scale, and flip-prob is ratio)
 and with same default parameter values
@@ -3833,6 +3834,7 @@ on number of activations).
   - driftreport postmunge metrics: 1010 metrics
   - returned datatype: int8
   - inversion available: yes
+* DPse: for full pass-through other than swap noise injection (i.e. may be applied to numeric or categoric features with string entries). Comparable parameters supported to DPmc (swap_noise defaults to True). Only other edits are suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPse may be suitable for incorporating noise injections to categoric test features into a prior prepared pipeline. A similar pass-through transform for numeric features with distribution sampled injections is available as DPne as noted above.
 
 ### Misc. Functions
 * excl: passes source column un-altered, no transforms, data type conversion, or infill. The feature is excluded from ML infill basis of all other features. If a passthrough column is desired to be included in ML infill basis for surrounding features, it should instead be passed to one of the other passthrough transforms, such as exc2 for continuous numeric, exc5 for ordinal encoded integers, or exc8 for continuous integers. Data returned from excl may be non-numeric. excl has a special suffix convention in the library in that the column is returned without a suffix appender (to signify full pass-through), if suffix retention is desired it is available by the automunge(.) excl_suffix parameter.
@@ -4324,6 +4326,7 @@ avoid unintentional duplication.
 - 'DPn3',
 - 'DPn4',
 - 'DPnb',
+- 'DPne',
 - 'DPnm',
 - 'DPns',
 - 'DPo4',
@@ -4335,6 +4338,7 @@ avoid unintentional duplication.
 - 'DPoh',
 - 'DPqt',
 - 'DPrt',
+- 'DPse',
 - 'GPS1',
 - 'GPS2',
 - 'GPS3',
