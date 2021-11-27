@@ -5121,3 +5121,17 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - turned off categoric noise sampling for flip_prob = 0 for similar reasons
 - rewrote a few portions of DPrt to corect an interence between scaling operations and multiplier or offset parameters
 - small cleanup to DPbn transform, moved noise sampling to within the trainnoise loop to eliminate possible sampling without injection
+
+7.61
+- new root categories DPne and DPse
+- DPne and DPse are for features given full pass-through other than noise injections
+- DPne converts entries to numeric and applies noise injection similar to DPnb
+- as can be sampled from either a gaussian or laplace and other comparable parameters
+- note that if data is recieved in form other than z-score normalization, we recommend adjusting noise profiles accordingly, otherwise can apply DPnb to inject noise in conjunction with z-score
+- DPse applies swap noise, as could be appropriate for categoric features with string entries
+- DPne and DPse are excluded from other conventions common in library, such as ML infill, NArw aggregations, etc
+- they are primarily intended for features that are already prepared for ML
+- for example, if you are intending to incorporate noise injections to test data into a prior prepared data pipeline, these transforms could be applied without otherwise editing the features
+- with the exception that automunge(.) will still record suffix appenders on the returned columns 
+- and DPne will convert any non-numeric entries to NaN and return rest as floats
+- in the process added support to DPnb and DPmc for input columns with any data type
