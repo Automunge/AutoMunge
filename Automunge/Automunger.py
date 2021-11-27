@@ -3870,6 +3870,24 @@ class AutoMunge:
                                      'coworkers'     : ['DP1s'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPne' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPne'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'DPse' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPse'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -7850,6 +7868,25 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP1s'}})
+    process_dict.update({'DPne' : {'dualprocess' : self._process_DPnb,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPnb,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPne'}})
+    process_dict.update({'DPse' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'swap_noise' : True},
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPse'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
@@ -23097,11 +23134,11 @@ class AutoMunge:
       mdf_train.loc[mdf_train[DPnm_column] == 1, DPnm_column] = normal_samples
       
       #now inject noise
-      mdf_train[DPnm_column] = mdf_train[DPnm_column] + mdf_train[column]
+      mdf_train[DPnm_column] = mdf_train[DPnm_column] + pd.to_numeric(mdf_train[column], errors='coerce')
 
     #else train data is just pass-through
     else:
-      mdf_train[DPnm_column] = mdf_train[column].copy()
+      mdf_train[DPnm_column] = pd.to_numeric(mdf_train[column], errors='coerce').copy()
     
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
     
@@ -23130,11 +23167,11 @@ class AutoMunge:
       mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
       
       #now inject noise
-      mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
+      mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
       
     #else test data is just pass-through
     else:
-      mdf_test[DPnm_column] = mdf_test[column].copy()
+      mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
     
     #create list of columns
     nmbrcolumns = [DPnm_column]
@@ -24779,21 +24816,22 @@ class AutoMunge:
       
     #subsequent data type conversion relies on max encoding, we'll apply this before noise injection
     maxencodings = {}
-    if upstream_hs10 is False:
-      for textcolumn in textcolumns:
-        maxencoding = mdf_train[textcolumn].max()
-        maxencodings.update({textcolumn : maxencoding})
-    elif upstream_hs10 is True:
-      
-      if column in postprocess_dict['column_dict'] \
-      and column in postprocess_dict['column_dict'][column]['normalization_dict'] \
-      and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
-        maxencoding = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
-      else:
-        maxencoding = mdf_train[column].max()
-      
-      for textcolumn in textcolumns:
-        maxencodings.update({textcolumn : maxencoding})
+    if swap_noise is False:
+      if upstream_hs10 is False:
+        for textcolumn in textcolumns:
+          maxencoding = mdf_train[textcolumn].max()
+          maxencodings.update({textcolumn : maxencoding})
+      elif upstream_hs10 is True:
+        
+        if column in postprocess_dict['column_dict'] \
+        and column in postprocess_dict['column_dict'][column]['normalization_dict'] \
+        and 'vocab_size' in postprocess_dict['column_dict'][column]['normalization_dict'][column]:
+          maxencoding = postprocess_dict['column_dict'][column]['normalization_dict'][column]['vocab_size']
+        else:
+          maxencoding = mdf_train[column].max()
+        
+        for textcolumn in textcolumns:
+          maxencodings.update({textcolumn : maxencoding})
     
     if swap_noise is False:
 
@@ -40619,7 +40657,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.60'
+    automungeversion = '7.61'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -47175,12 +47213,12 @@ class AutoMunge:
         mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
 
         #now inject noise
-        mdf_test[DPnm_column] = mdf_test[DPnm_column] + mdf_test[column]
+        mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
         
       else:
         
         #else test data is just pass-through
-        mdf_test[DPnm_column] = mdf_test[column].copy()
+        mdf_test[DPnm_column] = pd.to_numeric(mdf_test[column], errors='coerce').copy()
 
     else:
 
