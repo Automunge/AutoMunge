@@ -5140,3 +5140,48 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - added inplace support for DPnb
 - this was primarily to support use case of applying some combination of DPne, DPse, excl for injecting noise to a set of passthrough columns
 - now that DPnb has inplace support, the order of columns in returned set will match the input
+
+7.63
+- new report returned in postprocess_dict in conjunction with noise injections as postprocess_dict['sampling_report_dict']
+- sampling_report_dict is used to inform a recommended budget for external entropy seeding
+- such that can apply automunge(.) without seeding to generate the report, and use to inform entropy seed budget for an additional application
+- in cases of insufficent seeding to support any of the scenarios, additional seeds are sampled from default or custom generator as per specification noted below
+- in cases where one of sampling_type operations as noted below is applied, the automunge(.) data will receive an internal automunge(.) call to populate this report without custom generators or seedings or infill and options other than noise, and then that report will be used to support the sampling_seed scenarios in automunge(.) or postmunge(.)
+- if a report has already been populated it can be passed to sampling_dict['sampling_report_dict'] as noted below
+- note that 'sampling_report_dict' is a new public entry in the privacy_encode=True scenario
+- the sampling_report_dict reports requirements seperately for train and test data and in the bulk_seeds case will have a row count basis
+- Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate.
+
+- new automunge(.) and postmunge(.) parameter sampling_dict, accepts a dictionary including possible keys of {'sampling_type', 'sampling_report_dict', 'stochastic_count_safety_factor', 'sampling_generator', 'extra_seed_generator'}:
+- sampling_type accepts a string as one of {'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
+- **default**: every sampling receives a common set of entropy_seeds per user specification which are shuffled and passed to each call (same as prior config)
+- **bulk_seeds**: every sampling receives a unique supplemental seed for every sampled entry for sampling from sampling_generator
+- **sampling_seed**: every sampling operation receives one supplemental seed for sampling from sampling_generator
+- **transform_seed**: every noise transform receives one supplemental seed for sampling from sampling_generator
+- sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'], for an automunge(.) call if this is not received it will be generated when needed
+- stochastic_count_safety_factor is assocated with bulk case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries, defaults to 0.15
+- sampling_generator is associated with which generator will be applied in the transforms. (in some cases a user may desire a custom generator to sample entropy seeds and PCG to sample in the transform or visa versa) accepts one of {'custom', 'PCG64'}, defaults to custom which applied the custom passed random_generator when specified or otherwise PCG64, This is also the generator applied for other random operationis like shuffling.
+- extra_seed_generator is associated with sampling_type specification without sufficient entropy seeds, (or without any entropy seeds), and specifies which generator will be used to sample additional entropy seeds to reach the count needed per sampling_resource_dict
+- extra_seed_generator defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'sampling_generator'}, where sampling_type applies consistent to the sampling_generator specification
+
+- for automunge(.) and postmunge(.) randomseed parameter
+- when randomseed received as False, one is sampled, using an entropy_seed if some are provided
+- note that extra_seed_generator convention is the same applied for sampling a randomseed for automunge(.) and postmunge(.) with respect to use of PCG64 or custom generator when specified
+- in a future extension we will likely create option to have a distinct entropy_seed associated with each use of randomseed
+
+- note that when insufficient entropy_seeds are received in order to perform one of these configurations, the received seeds are used to sample additional seeds in order to reach sufficient scale
+- alternatively, a user can populate the sampling_resource_dict report in an initial automunge(.) call without a custom generator and use that to inform how many entropy seeds are needed
+
+- new convention for noise injection transforms, they now optionally receive an additional assignparam specification populated based on sampling_type as sampling_resource_dict
+- sampling_resource_dict used to pass specific entropy seeds and designate which generator to  use for each sampling operation
+- sampling_resource_dict is populated with entropy seeds and generator specifications based on the specified sampling_type
+- noise transforms now count each call to a generator with sample count for purposes of the sampling_resource_dict report
+
+- new process_dict classificaiton as 'noise_transform'
+- accepts specificaiton as one of {'numeric', 'categoric', 'binary', False}
+- used to support aggregation of sampling_resource_dict's to populate sampling_report_dict
+
+- new convention for DPmm and DPrt, noise_scaling_bias_offset performed with default generator and without entropy seeds even when custom generator specified
+- renamed variable binomial_sample_count to binomial_activation_count for clarity
+- DPhs support for sampling_dict['sampling_type'] specification pending
+- automunge(.) validation data processing support for sampling_dict['sampling_type'] specification pending further consideration
