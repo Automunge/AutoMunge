@@ -3868,7 +3868,7 @@ For simplicity just going to copy the code directly from code base where these d
     #___________________________________________________________________________
     #Other optional entries for processdict include:
     #info_retention, inplace_option, defaultparams, labelctgy, 
-    #defaultinfill, dtype_convert, and functionpointer.
+    #defaultinfill, dtype_convert, functionpointer, and noise_transform.
 
     #___________________________________________________________________________
     #info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
@@ -3926,6 +3926,16 @@ For simplicity just going to copy the code directly from code base where these d
     #                 that may be helpful in cases where a new entry is very similar to some existing entry.
     #                 (**As the exception labelctgy not accessed from functionpointer 
     #                 since it is specific to a root category's family tree.)
+
+    #___________________________________________________________________________
+    #noise_transform: this option serves to specify the noise injection types for noise transforms
+    #                 used to support an entropy seeding based on sampling_dict['sampling_type'] specification
+    #                 defaults to False when not specified, can also pass as one of
+    #                 {'numeric', 'categoric', 'binary', False}
+    #                 numeric is for transforms similar to DPnb/DPmm/DPrt which have a binomial and distribution sampling
+    #                 categoric is for transforms similar to DPod/DPmc which have a binomial and a choice sampling
+    #                 binary is for transforms similar to an alternate DPbn configuration which only have a binomial sampling
+    #                 False is for transforms without sampling_dict['sampling_type'] specification support
 
     #___________________________________________________________________________
     #Other clarifications:
@@ -5922,7 +5932,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPqt'}})
@@ -6452,7 +6463,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPbx'}})
@@ -7031,7 +7043,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
@@ -7051,6 +7064,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
@@ -7060,6 +7074,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7079,7 +7094,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7100,6 +7116,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7110,6 +7127,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
@@ -7131,6 +7149,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
@@ -7149,6 +7168,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
@@ -7168,6 +7188,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'DPoh'}})
@@ -7177,6 +7198,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP10'}})
@@ -7204,6 +7226,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
@@ -7214,6 +7237,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'upstream_hsh2' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
@@ -7252,6 +7276,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7271,6 +7296,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -7280,7 +7306,8 @@ For simplicity just going to copy the code directly from code base where these d
                                   'postprocess' : self._postprocess_DPnb,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPne'}})
@@ -7290,6 +7317,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
