@@ -354,6 +354,8 @@ class AutoMunge:
   __check_assignnan
   __check_assignnan_injections
   __check_ML_cmnd
+  __check_sampling_dict
+  __check_entropy_seeds
   __check_assignparam
   __check_columnheaders
   __check_processdict
@@ -362,8 +364,11 @@ class AutoMunge:
   __check_processdict4
 
   #__FunctionBlock: entropy_seeds and random_generator support
-  __random_parameters_assignparam_append
-  __random_parameters_assignparam_strike
+  __initialize_sampling_report_dict
+  __populate_sampling_report_dict
+  __prepare_seeds
+  __random_parameters_params_append
+  __populate_randomseed
 
   #__FunctionBlock: functionpointer support
   __grab_functionpointer_entries_support
@@ -4461,7 +4466,7 @@ class AutoMunge:
     #___________________________________________________________________________
     #Other optional entries for processdict include:
     #info_retention, inplace_option, defaultparams, labelctgy, 
-    #defaultinfill, dtype_convert, and functionpointer.
+    #defaultinfill, dtype_convert, functionpointer, and noise_transform.
 
     #___________________________________________________________________________
     #info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
@@ -4519,6 +4524,16 @@ class AutoMunge:
     #                 that may be helpful in cases where a new entry is very similar to some existing entry.
     #                 (**As the exception labelctgy not accessed from functionpointer 
     #                 since it is specific to a root category's family tree.)
+
+    #___________________________________________________________________________
+    #noise_transform: this option serves to specify the noise injection types for noise transforms
+    #                 used to support an entropy seeding based on sampling_dict['sampling_type'] specification
+    #                 defaults to False when not specified, can also pass as one of
+    #                 {'numeric', 'categoric', 'binary', False}
+    #                 numeric is for transforms similar to DPnb/DPmm/DPrt which have a binomial and distribution sampling
+    #                 categoric is for transforms similar to DPod/DPmc which have a binomial and a choice sampling
+    #                 binary is for transforms similar to an alternate DPbn configuration which only have a binomial sampling
+    #                 False is for transforms without sampling_dict['sampling_type'] specification support
 
     #___________________________________________________________________________
     #Other clarifications:
@@ -6516,6 +6531,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPqt'}})
@@ -7046,6 +7062,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'positivenumeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPbx'}})
@@ -7625,6 +7642,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPnb'}})
@@ -7644,6 +7662,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
                                   'labelctgy' : 'DPmm'}})
@@ -7653,6 +7672,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultinfill' : 'meaninfill',
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7673,6 +7693,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7693,6 +7714,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7703,6 +7725,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_retn,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'numeric',
                                   'defaultinfill' : 'meaninfill',
                                   'defaultparams' : {'noisedistribution' : 'laplace'},
                                   'NArowtype' : 'numeric',
@@ -7724,6 +7747,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'DPbn'}})
@@ -7742,6 +7766,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
                                   'labelctgy' : 'DPod'}})
@@ -7761,6 +7786,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'multirt',
                                   'labelctgy' : 'DPoh'}})
@@ -7770,6 +7796,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP10'}})
@@ -7797,6 +7824,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
@@ -7807,6 +7835,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : False,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'upstream_hsh2' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
@@ -7845,6 +7874,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'numeric',
                                   'MLinfilltype' : 'numeric',
@@ -7864,6 +7894,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
@@ -7874,6 +7905,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'numeric',
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPne'}})
@@ -7883,6 +7915,7 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_DPmc,
                                   'info_retention' : True,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'swap_noise' : True},
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
@@ -8661,6 +8694,13 @@ class AutoMunge:
       inplacecandidate = True
 
     params = self.__grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
+
+    #now populate params entries associated with entropy seeding for noise transforms
+    params, postprocess_dict = \
+    self.__random_parameters_params_append(params, postprocess_dict, \
+                                      column, cousin, 'traintest', \
+                                      df_train.shape[0], df_test.shape[0], \
+                                      postprocess_dict['printstatus'])
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[cousin] \
@@ -8807,6 +8847,13 @@ class AutoMunge:
       inplacecandidate = True
     
     params = self.__grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
+
+    #now populate params entries associated with entropy seeding for noise transforms
+    params, postprocess_dict = \
+    self.__random_parameters_params_append(params, postprocess_dict, \
+                                          column, parent, 'traintest', \
+                                          df_train.shape[0], df_test.shape[0], \
+                                          postprocess_dict['printstatus'])
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[parent] \
@@ -12670,7 +12717,7 @@ class AutoMunge:
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
 
     #now update the mlti_norm_params based on any relevant assignparam specifications to global and default
-    assignparam = postprocess_dict['assignparam']
+    assignparam = postprocess_dict['assign_param']
     if 'global_assignparam' in assignparam:
       mlti_norm_params.update(assignparam['global_assignparam'])
     if 'default_assignparam' in assignparam:
@@ -22978,21 +23025,25 @@ class AutoMunge:
     if 'sigma' in params:
       sigma = params['sigma']
     else:
+      #default also populated in __random_parameters_params_append
       sigma = 0.06
       
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
+      #default also populated in __random_parameters_params_append
       test_sigma = 0.03
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = flip_prob
       
     if 'noisedistribution' in params:
@@ -23028,13 +23079,6 @@ class AutoMunge:
       inplace = False
     
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -23042,21 +23086,61 @@ class AutoMunge:
       random_generator = params['random_generator']
     else:
       random_generator = np.random.PCG64
+    
+    #note that in the random_generator == False scenario 
+    #__random_parameters_params_append will have set to np.random.PCG64
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
-      
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
+
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -23109,8 +23193,8 @@ class AutoMunge:
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, DPnm_column, suffixoverlap_results, postprocess_dict['printstatus'])
     
-    binomial_sample_count = 0
-    test_binomial_sample_count = 0
+    binomial_activation_count = 0
+    test_binomial_activation_count = 0
     
     if trainnoise is True and flip_prob > 0 and sigma > 0:
       
@@ -23118,14 +23202,22 @@ class AutoMunge:
       if flip_prob == 1:
         binomial_samples = np.ones(mdf_train.shape[0]).astype(int)
       else:
+        sampling_id = 'binomial_train'
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
-      binomial_sample_count = np.sum(binomial_samples)
+      binomial_activation_count = np.sum(binomial_samples)
       
       #now derive our sampled noise for injection
+      sampling_id = 'distribution_train'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
@@ -23164,14 +23256,22 @@ class AutoMunge:
       if test_flip_prob == 1:
         binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
       else:
+        sampling_id = 'binomial_test'
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         binomial_samples = nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
-      test_binomial_sample_count = np.sum(binomial_samples)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+      test_binomial_activation_count = np.sum(binomial_samples)
     
       #now derive our sampled noise for injection
+      sampling_id = 'distribution_test'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += test_binomial_activation_count
       if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = nprandom.normal(loc=test_mu, scale=test_sigma, size=(test_binomial_sample_count))
+        normal_samples = nprandom.normal(loc=test_mu, scale=test_sigma, size=(test_binomial_activation_count))
       elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = nprandom.laplace(loc=test_mu, scale=test_sigma, size=(test_binomial_sample_count))
+        normal_samples = nprandom.laplace(loc=test_mu, scale=test_sigma, size=(test_binomial_activation_count))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
@@ -23196,7 +23296,7 @@ class AutoMunge:
         
       elif inplace is False:
         mdf_test[DPnm_column] = mdf_test[DPnm_column] + pd.to_numeric(mdf_test[column], errors='coerce')
-
+    
     #else test data is just pass-through
     else:
       if inplace is True:
@@ -23206,6 +23306,8 @@ class AutoMunge:
     
     #create list of columns
     nmbrcolumns = [DPnm_column]
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPnm_column : {'mu' : mu, \
                                              'sigma' : sigma, \
@@ -23225,8 +23327,9 @@ class AutoMunge:
                                              'test_mu_dist' : test_mu_dist, \
                                              'test_sigma_dist' : test_sigma_dist, \
                                              'test_flip_prob_dist' : test_flip_prob_dist, \
-                                             'binomial_sample_count' : binomial_sample_count, \
-                                             'test_binomial_sample_count' : test_binomial_sample_count, \
+                                             'binomial_activation_count' : binomial_activation_count, \
+                                             'test_binomial_activation_count' : test_binomial_activation_count, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -23289,21 +23392,25 @@ class AutoMunge:
     if 'sigma' in params:
       sigma = params['sigma']
     else:
+      #default also populated in __random_parameters_params_append
       sigma = 0.03
       
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
+      #default also populated in __random_parameters_params_append
       test_sigma = 0.02
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = flip_prob
       
     if 'noisedistribution' in params:
@@ -23339,13 +23446,6 @@ class AutoMunge:
       suffix = treecategory
       
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -23354,19 +23454,57 @@ class AutoMunge:
     else:
       random_generator = np.random.PCG64
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
       
     #________
       
@@ -23426,14 +23564,15 @@ class AutoMunge:
       #2) measure mean, re sample noise with that mean as an offset
       #3) meansure the resulting mean, linear interpolate between to get final mean
       #4) the resulting mean returned for the final sampling
+      #note that debiasmmnoise uses default numpy sampling without entropy seeds via np.random
       
       def noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, mu, sigma, noisedistribution):
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -23524,21 +23663,29 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectmmnoise(df, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution):
+    def _injectmmnoise(df, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, traintest):
       #support function for noise injection
       
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
       if flip_prob == 1:
         binomial_samples = np.ones(df.shape[0]).astype(int)
       else:
+        sampling_id = 'binomial_' + traintest
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
-      binomial_sample_count = np.sum(binomial_samples)
+      binomial_activation_count = np.sum(binomial_samples)
       
       #now derive our sampled noise for injection
+      sampling_id = 'distribution_' + traintest
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
@@ -23588,7 +23735,7 @@ class AutoMunge:
       #remove support column
       del df[DPmm_column_temp1]
       
-      return df, binomial_sample_count
+      return df, binomial_activation_count, sampling_resource_dict
     
     mu_orig = mu
     test_mu_orig = test_mu
@@ -23607,25 +23754,27 @@ class AutoMunge:
           if mdf_test.shape[0] > 1:
             test_mu = debiasmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_noisedistribution)
     
-    binomial_sample_count = 0
-    test_binomial_sample_count = 0
+    binomial_activation_count = 0
+    test_binomial_activation_count = 0
     
     if trainnoise is True and flip_prob > 0 and sigma > 0:
-      mdf_train, binomial_sample_count = \
-      _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution)
+      mdf_train, binomial_activation_count, sampling_resource_dict = \
+      _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, 'train')
     else:
       #else train data is pass-through
       mdf_train[DPmm_column] = mdf_train[column].copy()
     
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
-      mdf_test, test_binomial_sample_count = \
-      _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_flip_prob, test_noisedistribution)
+      mdf_test, test_binomial_activation_count, sampling_resource_dict = \
+      _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_flip_prob, test_noisedistribution, sampling_resource_dict, nprandom_dict, 'test')
     else:
       #else test data is pass-through
       mdf_test[DPmm_column] = mdf_test[column].copy()
 
     #create list of columns
     nmbrcolumns = [DPmm_column]
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPmm_column : {'mu' : mu, \
                                              'mu_orig' : mu_orig, \
@@ -23647,8 +23796,9 @@ class AutoMunge:
                                              'test_mu_dist' : test_mu_dist, \
                                              'test_sigma_dist' : test_sigma_dist, \
                                              'test_flip_prob_dist' : test_flip_prob_dist, \
-                                             'binomial_sample_count' : binomial_sample_count, \
-                                             'test_binomial_sample_count' : test_binomial_sample_count, \
+                                             'binomial_activation_count' : binomial_activation_count, \
+                                             'test_binomial_activation_count' : test_binomial_activation_count, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -23753,21 +23903,25 @@ class AutoMunge:
     if 'sigma' in params:
       sigma = params['sigma']
     else:
+      #default also populated in __random_parameters_params_append
       sigma = 0.03
       
     if 'test_sigma' in params:
       test_sigma = params['test_sigma']
     else:
+      #default also populated in __random_parameters_params_append
       test_sigma = 0.02
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = flip_prob
       
     if 'noisedistribution' in params:
@@ -23803,13 +23957,6 @@ class AutoMunge:
       suffix = treecategory
       
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -23818,19 +23965,57 @@ class AutoMunge:
     else:
       random_generator = np.random.PCG64
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
       
     #________
       
@@ -24010,14 +24195,15 @@ class AutoMunge:
       #2) measure mean, re sample noise with that mean as an offset
       #3) meansure the resulting mean, linear interpolate between to get final mean
       #4) the resulting mean returned for the final sampling
+      #note that debiasmmnoise uses default numpy sampling without entropy seeds via np.random
       
       def noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, noisedistribution):
       
         #first we'll derive our sampled noise for injection
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+          normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -24108,21 +24294,29 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution):
+    def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, traintest):
       #support function for DPrt noise injection
       
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
       if flip_prob == 1:
         binomial_samples = np.ones(df.shape[0]).astype(int)
       else:
+        sampling_id = 'binomial_' + traintest
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
-      binomial_sample_count = np.sum(binomial_samples)
+      binomial_activation_count = np.sum(binomial_samples)
 
       #now derive our sampled noise for injection
+      sampling_id = 'distribution_' + traintest
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+        normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
       if noisedistribution in {'abs_normal', 'abs_laplace'}:
         normal_samples = abs(normal_samples)
@@ -24169,7 +24363,7 @@ class AutoMunge:
       del df[DPrt_column_temp1]
       del df[DPrt_column_temp2]
         
-      return df, binomial_sample_count
+      return df, binomial_activation_count, sampling_resource_dict
     
     mu_orig = mu
     test_mu_orig = test_mu
@@ -24188,17 +24382,17 @@ class AutoMunge:
           if mdf_test.shape[0] > 1:
             test_mu = debiasrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_noisedistribution)
 
-    binomial_sample_count = 0
-    test_binomial_sample_count = 0
+    binomial_activation_count = 0
+    test_binomial_activation_count = 0
             
     if trainnoise is True and flip_prob > 0 and sigma > 0:
-      mdf_train, binomial_sample_count = \
-      _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution)
+      mdf_train, binomial_activation_count, sampling_resource_dict = \
+      _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, 'train')
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
-      mdf_test, test_binomial_sample_count = \
-      _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_flip_prob, test_noisedistribution)
+      mdf_test, test_binomial_activation_count, sampling_resource_dict = \
+      _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_flip_prob, test_noisedistribution, sampling_resource_dict, nprandom_dict, 'test')
       
     #now that we've injected noise, will convert the minmax representation to 'retain' normalization
     if scalingapproach == 'retn':
@@ -24216,6 +24410,8 @@ class AutoMunge:
     
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
     
     nmbrnormalization_dict = {DPrt_column : {'mu' : mu, \
                                              'mu_orig' : mu_orig, \
@@ -24249,8 +24445,9 @@ class AutoMunge:
                                              'test_mu_dist' : test_mu_dist, \
                                              'test_sigma_dist' : test_sigma_dist, \
                                              'test_flip_prob_dist' : test_flip_prob_dist, \
-                                             'binomial_sample_count' : binomial_sample_count, \
-                                             'test_binomial_sample_count' : test_binomial_sample_count, \
+                                             'binomial_activation_count' : binomial_activation_count, \
+                                             'test_binomial_activation_count' : test_binomial_activation_count, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -24297,11 +24494,13 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = 0.01
       
     if 'testnoise' in params:
@@ -24320,13 +24519,6 @@ class AutoMunge:
       suffix = treecategory
       
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -24335,19 +24527,57 @@ class AutoMunge:
     else:
       random_generator = np.random.PCG64
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
       
     #________
       
@@ -24380,6 +24610,10 @@ class AutoMunge:
     #now inject noise
     if trainnoise is True and flip_prob > 0:
       #first we'll derive our sampled noise for injection
+      sampling_id = 'binomial_train'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       mdf_train[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
       #now inject
       mdf_train[DPbn_column] = abs(mdf_train[column] - mdf_train[DPbn_column])
@@ -24391,6 +24625,10 @@ class AutoMunge:
       mdf_test[DPbn_column] = mdf_test[column].copy()
     elif testnoise is True and test_flip_prob > 0:
       #first we'll derive our sampled noise for injection
+      sampling_id = 'binomial_test'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
       #now inject noise
@@ -24402,6 +24640,8 @@ class AutoMunge:
     
     #create list of columns
     nmbrcolumns = [DPbn_column]
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
                                              'test_flip_prob' : test_flip_prob, \
@@ -24409,7 +24649,9 @@ class AutoMunge:
                                              'test_flip_prob_dist' : test_flip_prob_dist, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise, \
-                                             'trainnoise' : trainnoise}}
+                                             'trainnoise' : trainnoise, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
+                                            }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -24460,11 +24702,13 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = 0.01
       
     if 'testnoise' in params:
@@ -24498,13 +24742,6 @@ class AutoMunge:
       upstream_hsh2 = False
       
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -24513,19 +24750,57 @@ class AutoMunge:
     else:
       random_generator = np.random.PCG64
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
       
     #________
       
@@ -24578,7 +24853,16 @@ class AutoMunge:
     if trainnoise is True and flip_prob > 0:  
     
       #derive our sampled noise for injection
+      sampling_id = 'binomial_train'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      
+      sampling_id = 'choice_train'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       if weighted is False:
         mdf_train[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
       elif weighted is True:
@@ -24600,8 +24884,18 @@ class AutoMunge:
     if testnoise is False:
       mdf_test[DPod_column] = mdf_test[column].copy()
     elif testnoise is True and test_flip_prob > 0:
+      
       #first we'll derive our sampled noise for injection
+      sampling_id = 'binomial_test'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      
+      sampling_id = 'choice_test'
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       if test_weighted is False:
         mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
       elif test_weighted is True:
@@ -24629,6 +24923,8 @@ class AutoMunge:
 
     #create list of columns
     nmbrcolumns = [DPod_column]
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
                                              'test_flip_prob' : test_flip_prob, \
@@ -24640,7 +24936,9 @@ class AutoMunge:
                                              'weights' : weights, \
                                              'suffix' : suffix, \
                                              'testnoise' : testnoise, \
-                                             'trainnoise' : trainnoise}}
+                                             'trainnoise' : trainnoise, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
+                                            }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
@@ -24704,11 +25002,13 @@ class AutoMunge:
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       flip_prob = 0.03
       
     if 'test_flip_prob' in params:
       test_flip_prob = params['test_flip_prob']
     else:
+      #default also populated in __random_parameters_params_append
       test_flip_prob = 0.01
       
     if 'swap_noise' in params:
@@ -24753,13 +25053,6 @@ class AutoMunge:
       inplace = False
       
     #________
-    
-    #note that entropy_seeds accessed from automunge(.) parameter and not passed to postmunge
-    #postmunge(.) has a corresponding parameter to support
-    if 'entropy_seeds' in params:
-      entropy_seeds = params['entropy_seeds']
-    else:
-      entropy_seeds = False
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
     #postmunge(.) has a corresponding parameter to support
@@ -24768,19 +25061,57 @@ class AutoMunge:
     else:
       random_generator = np.random.PCG64
       
-    #initialize random number generator
-    #only include entropy seeding when specified
-    #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-    if entropy_seeds is False:
-      #initialize without seeds
-      nprandom = np.random.Generator(random_generator())
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
     else:
-      #shuffle entropy seeds
-      if isinstance(entropy_seeds, list):
-        random.shuffle(entropy_seeds)
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
         
-      #initialize generator including supplemental entropy seeds
-      nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
       
     #________
       
@@ -24905,7 +25236,7 @@ class AutoMunge:
       test_weighted = False
       weights = []
     
-    def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights):
+    def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest):
       """
       common support function used to inject noise to either mdf_train or mdf_test when applicable
       """
@@ -24919,8 +25250,16 @@ class AutoMunge:
       df_noise_tempcolumn2 = 2
 
       #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+      sampling_id = 'binomial_' + traintest
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
       df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
 
+      sampling_id = 'choice_' + traintest
+      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
       if weighted is False:
         #df_noise_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
         df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
@@ -24940,30 +25279,30 @@ class AutoMunge:
         df = \
         self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
       
-      return df
+      return df, sampling_resource_dict
     
     if trainnoise is True and flip_prob > 0:
       
       if swap_noise is False:
         #inject noise to mdf_train
-        mdf_train = \
-        _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights)
+        mdf_train, sampling_resource_dict = \
+        _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
-        mdf_train = \
-        _noise_inject(mdf_train, textcolumns, mdf_train, flip_prob, weighted, weights)
+        mdf_train, sampling_resource_dict = \
+        _noise_inject(mdf_train, textcolumns, mdf_train, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
     
     #inspect testnoise for determination of whether to inject noise to mdf_test
     if testnoise is True and test_flip_prob > 0:
       
       if swap_noise is False:
         #inject noise to mdf_test
-        mdf_test = \
-        _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights)
+        mdf_test, sampling_resource_dict = \
+        _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
-        mdf_test = \
-        _noise_inject(mdf_test, textcolumns, mdf_test, test_flip_prob, test_weighted, weights)
+        mdf_test, sampling_resource_dict = \
+        _noise_inject(mdf_test, textcolumns, mdf_test, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
     
     #now apply data type conversion, this should align with received data types, just applying in case of drift
     #in swap_noise scenario we'll default to the input data type since this might be applied downstream of floats
@@ -24983,6 +25322,8 @@ class AutoMunge:
           mdf_test[textcolumn] = mdf_test[textcolumn].astype(np.uint32)
       
     column_dict_list = []
+    
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
 
     normalization_dict = {}
     if len(textcolumns) > 0:
@@ -25003,7 +25344,8 @@ class AutoMunge:
                                               'suffix' : suffix, \
                                               'maxencodings' : maxencodings, \
                                               'upstream_hs10' : upstream_hs10, \
-                                              'inplace' : inplace}}
+                                              'inplace' : inplace, \
+                                              'sampling_resource_dict' : sampling_resource_dict}}
     
     for textcolumn in textcolumns:
 
@@ -31520,7 +31862,7 @@ class AutoMunge:
                     numbercategoryheuristic, assigncat, transformdict, \
                     processdict, featurethreshold, featureselection, \
                     ML_cmnd, process_dict, valpercent, printstatus, \
-                    NArw_marker, assignparam, entropy_seeds, random_generator):
+                    NArw_marker, assignparam, entropy_seeds, random_generator, sampling_dict):
     """
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -31579,7 +31921,7 @@ class AutoMunge:
                   ML_cmnd = FSML_cmnd, assigncat = assigncat, \
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
-                  assignparam = FS_assignparam, entropy_seeds = entropy_seeds, random_generator = random_generator, \
+                  assignparam = FS_assignparam, entropy_seeds = entropy_seeds, random_generator = random_generator, sampling_dict = sampling_dict, \
                   transformdict = transformdict, processdict = processdict, printstatus=printstatus)
 
     #record validation results from automunge call internal to featureselect
@@ -34058,7 +34400,7 @@ class AutoMunge:
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                              trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                             noise_augment, ppd_append, entropy_seeds, random_generator):
+                             noise_augment, ppd_append, random_generator):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -34522,18 +34864,6 @@ class AutoMunge:
 
     miscparameters_results.update({'ppd_append_valresult' : ppd_append_valresult})
 
-    #check entropy_seeds
-    entropy_seeds_valresult = False
-    if not isinstance(entropy_seeds, (bool, int, list)) \
-    or isinstance(entropy_seeds, (bool)) and entropy_seeds is not False:
-      entropy_seeds_valresult = True
-      if printstatus != 'silent':
-        print("Error: invalid entry passed for entropy_seeds parameter.")
-        print("Acceptable values are False, integer, or list of integers")
-        print()
-
-    miscparameters_results.update({'entropy_seeds_valresult' : entropy_seeds_valresult})
-
     #check random_generator
     random_generator_valresult = False
     if random_generator is not False:
@@ -34554,7 +34884,7 @@ class AutoMunge:
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, \
                                 testID_column, randomseed, encrypt_key, noise_augment, \
-                                entropy_seeds, random_generator):
+                                random_generator):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -34760,18 +35090,6 @@ class AutoMunge:
         print()
 
     pm_miscparameters_results.update({'noise_augment_pm_valresult' : noise_augment_pm_valresult})
-
-    #check entropy_seeds
-    entropy_seeds_pm_valresult = False
-    if not isinstance(entropy_seeds, (bool, int, list)) \
-    or isinstance(entropy_seeds, (bool)) and entropy_seeds is not False:
-      entropy_seeds_pm_valresult = True
-      if printstatus != 'silent':
-        print("Error: invalid entry passed for entropy_seeds parameter.")
-        print("Acceptable values are False, integer, or list of integers")
-        print()
-
-    pm_miscparameters_results.update({'entropy_seeds_pm_valresult' : entropy_seeds_pm_valresult})
 
     #check random_generator
     random_generator_pm_valresult = False
@@ -35967,6 +36285,122 @@ class AutoMunge:
                               valid_type=dict)
     
     return check_ML_cmnd_result, ML_cmnd
+
+  def __check_sampling_dict(self, sampling_dict, printstatus):
+    """
+    #Here we'll do a quick check for any entries in the user passed
+    #sampling_dict and add any missing entries with default values
+    #a future extension should validate any entries
+
+    #note that current first tier commands accepted in sampling_dict are:
+    #{sampling_type, sampling_report_dict, stochastic_count_safety_factor, 
+    #extra_seed_generator, sampling_generator}
+    """
+    
+    if not isinstance(sampling_dict, dict):
+      sampling_dict = {}
+    
+    check_sampling_dict_result = False
+    
+    def _populate_sampling_dict_default(sampling_dict, parameter, printstatus, check_sampling_dict_result, default = False, valid_entries=False, valid_type = False):
+      if parameter in sampling_dict:
+        if valid_entries is not False:
+          if sampling_dict[parameter] not in valid_entries:
+            check_sampling_dict_result = True
+            if printstatus != 'silent':
+              print("invalid entry passed to sampling_dict key ", parameter)
+              print("acceptable values are one of", valid_entries)
+              print()
+              
+        if valid_type is not False:
+          if not isinstance(sampling_dict[parameter], valid_type):
+            check_sampling_dict_result = True
+            if printstatus != 'silent':
+              print("invalid entry type passed to sampling_dict key ", parameter)
+              print("acceptable value type is", valid_type)
+              print()
+        
+      elif default != 'no_default_populated':
+        sampling_dict.update({parameter : default})
+        
+      return sampling_dict, check_sampling_dict_result
+            
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'sampling_type', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default='default', 
+                              valid_entries={'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'},
+                              valid_type=str)
+    
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'sampling_report_dict', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default=False, 
+                              valid_entries=False,
+                              valid_type=(bool, dict))
+    
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'stochastic_count_safety_factor', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default=0.15, 
+                              valid_entries=False,
+                              valid_type=float)
+    
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'extra_seed_generator', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default='custom', 
+                              valid_entries={'custom', 'PCG64', 'sampling_generator'},
+                              valid_type=str)
+    
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'sampling_generator', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default='custom', 
+                              valid_entries={'custom', 'PCG64'},
+                              valid_type=str)
+    
+    return check_sampling_dict_result, sampling_dict
+
+  def __check_entropy_seeds(self, entropy_seeds, printstatus):
+    """
+    quick alignment to common form of np.array for entropy_seeds
+    """
+    
+    entropy_seeds_result = False
+    
+    if entropy_seeds is False:
+      entropy_seeds = np.array([])
+      
+    elif isinstance(entropy_seeds, int):
+      entropy_seeds = np.array([entropy_seeds])
+      
+    elif isinstance(entropy_seeds, list):
+      entropy_seeds = np.array(entropy_seeds)
+      
+    elif isinstance(entropy_seeds, type(np.array([]))):
+      entropy_seeds = entropy_seeds.ravel()
+    
+    else:
+      entropy_seeds_result = True
+      
+      if printstatus is True:
+        print("invalid entry received for entropy_seeds parameter")
+        print("accepted types are bool False, int, list, np.array")
+        
+    entropy_seeds = entropy_seeds.astype(int)
+
+    return entropy_seeds, entropy_seeds_result
   
   def __check_assignparam(self, assignparam, process_dict, printstatus):
     """
@@ -36298,43 +36732,945 @@ class AutoMunge:
 
   #__FunctionBlock: entropy_seeds and random_generator support
 
-  def __random_parameters_assignparam_append(self, assignparam, entropy_seeds, random_generator):
+  def __initialize_sampling_report_dict(self, df_train, assigncat, 
+                                        assignparam, transformdict, processdict, 
+                                        sampling_dict, printstatus, numbercategoryheuristic,
+                                        powertransform, evalcat):
     """
-    if automunge(.) recieved specificaiton in either of parameters entropy_seeds, random_generator
-    those specifications are added to assignparam as global entries
-    which will later be struck in __random_parameters_assignparam_strike 
-    so as not to retain in the returned postprocess_dict
-    """
-    
-    if entropy_seeds is not False and random_generator is not False:
-      
-      if 'global_assignparam' not in assignparam:
-        assignparam.update({'global_assignparam' : {}})
-        
-      if entropy_seeds is not False:
-        assignparam['global_assignparam'].update({'entropy_seeds' : entropy_seeds})
-        
-      if random_generator is not False:
-        assignparam['global_assignparam'].update({'random_generator' : random_generator})
-        
-    return assignparam
+    when a sampling_dict['sampling_type'] specification was received in automunge(.)
+    there won't be a sampling_resource_dict in postprocess_dict yet
+    so user can either run autounge(.) externally to populate one and pass to sampling_dict['sampling_report_dict']
+    or when such entry wasn't received, if sampling_dict['sampling_type'] != default
+    we run an internal simplified automunge(.) call to populate one
+    and return in sampling_dict['sampling_report_dict']
+    this may also be applied in postmunge(.) in conjunction with privacy_encoding when don't have access to sampling_report_dict externally
+    in order to speed this operation up, if number of rows >5000, we'll do so with a 5000 row sample
 
-  def __random_parameters_assignparam_strike(self, assignparam):
-    """
-    if automunge(.) recieved specificaiton in either of parameters entropy_seeds, random_generator
-    those specifications were added to assignparam as global entries in __random_parameters_assignparam_append
-    which are now struck so as not to retain in the returned postprocess_dict
+    if this function is accessed inside the internal automunge(.) call we'll break the loop 
+    by passing the sampling_dict['sampling_type'] as 'default'
+    which will still populate the returned sampling_report_dict
+    without needing to inspect an initial sampling_report_dict
+
+    the reason we are using an internal automunge call to populate sampling_report_dict
+    instead of the methods applied to generate counts in __prepare_seeds
+    is that the __prepare_seeds method requires inspection of params
+    and in order to access params need to navigate family trees
     """
     
-    if 'global_assignparam' in assignparam:
+    #in order to speed this operation up, if number of rows >5000, we'll do so with a 5000 row sample
+    train_rowcount_orig = df_train.shape[0]
+    if train_rowcount_orig > 5000:
+      df_train_temp = df_train[:5000]
+    else:
+      df_train_temp = df_train.copy()
       
-      if 'entropy_seeds' in assignparam['global_assignparam']:
-        del assignparam['global_assignparam']['entropy_seeds']
+    #we'll use df_train_temp as both train and test data for this purpose
+    #in case user didn't pass a df_test
+    
+    if isinstance(sampling_dict, dict) \
+    and 'sampling_type' in sampling_dict \
+    and sampling_dict['sampling_type'] not in {'default'}:
+      
+      if 'sampling_report_dict' not in sampling_dict \
+      or 'sampling_report_dict' in sampling_dict \
+      and not isinstance(sampling_dict['sampling_report_dict'], dict):
         
-      if 'random_generator' in assignparam['global_assignparam']:
-        del assignparam['global_assignparam']['random_generator']
+        if printstatus is True:
+          print("Received sampling_dict['sampling_type'] specification other than default")
+          print("populating a sampling_resource_dict with an initial internal automunge(.) call")
+          print()
+
+        _1, _2, _3, _4, _5, _6, _7, _8, _9, temp_ppd = \
+        am.automunge(df_train_temp,
+                     df_test = df_train_temp,
+                     assigncat = assigncat,
+                     assignparam = assignparam,
+                     sampling_dict = {'sampling_type' : 'default'},
+                     entropy_seeds = False,
+                     random_generator = False,
+                     MLinfill = False,
+                     NArw_marker = False,
+                     printstatus = False,
+                     eval_ratio = 1.,
+                     numbercategoryheuristic = numbercategoryheuristic,
+                     transformdict = transformdict,
+                     processdict = processdict,
+                     evalcat=evalcat,
+                    )
         
-    return assignparam
+        sampling_dict['sampling_report_dict'] = temp_ppd['sampling_report_dict']
+    
+    return sampling_dict
+
+  def __populate_sampling_report_dict(self, postprocess_dict, sampling_dict):
+    """
+    #sampling_report_dict
+    #is intended as a resource 
+    #for determining how many entropy seeds are needed 
+    #to support various sampling_dict['sampling_type'] specification options
+    #so will derive a specific number of seeds needed for each scenario
+    
+    #noting that if fewer seeds are received they will still be extracted to reach the desired threshold
+    #(e.g. if you need 5 seeds for a scenario but only passed 3, 
+    #we'll use those 3 seeds in a sampling of 5)
+
+    #and if more seeds are received 
+    #the extras will be unused
+    
+    #we'll have convention of adding one to the final number
+    #which extra seed will be used as a seed to shuffle the other seeds
+    
+    #the derivation will be conducted by collecting the sampling_resource_dict reports 
+    #recorded in noise transforms' normalization_dict
+    #and aggregating counts from those results into a single master_sampling_resource_dict
+    
+    #note that in some cases the number of samples may be a stochastic property
+    #such as when gaussian sample counts are based on result of a binomial sampling
+    #so we'll follow convention that for stochastic sampling counts
+    #we'll report a value with and without a 10% safety factor
+    
+    #note that noise transforms support passing noise parameters 
+    #as distributions instead of static values
+    #for now am assuming static noise parameters
+    #as that option was primarily implemented to support future experiments
+    
+    #note that this applies a 15% contingency factor on bulk samples with a stochastic count
+    #e.g. for when distribution sampling count is ap-plied as a funciton of binomial activations
+
+    the +3 in the final counts are for an extra seed to shuffle the other seeds and sample a global randomseed
+
+    note that the sampling_resource_dict saved in normalization_dict's
+    will have a different format than the sampling_report_dict
+
+    note that this report will be generated with each automunge call
+    while the report included in sampling_dict['sampling_report_dict']
+    will either be based on user specificaiton or a single internal automunge call
+    due to some of the counts being derived as a function of stochastic sampling
+    it is possible that the returned postprocess_dict['sampling_report_dict'] 
+    may slightly differ to the sampling_dict['sampling_report_dict']
+    this stochastic sampling basis is the reason for applying the sampling_dict['stochastic_count_safety_factor']
+    """
+
+    #note that sampling_dict will already have been initialized with any missing defaults in __check_sampling_dict
+    stochastic_contingency = sampling_dict['stochastic_count_safety_factor']
+    
+    #master_sampling_resource_dict will be used to aggregate counts from sampling_resource_dict's populated in normalization_dict's
+    master_sampling_resource_dict = {'binomial_train_call_count' : 0,
+                                     'binomial_train_sample_count' : 0,
+                                     'binomial_test_call_count' : 0,
+                                     'binomial_test_sample_count' : 0,
+                                     'distribution_train_call_count' : 0,
+                                     'distribution_train_sample_count' : 0,
+                                     'distribution_test_call_count' : 0,
+                                     'distribution_test_sample_count' : 0,
+                                     'choice_train_call_count' : 0,
+                                     'choice_train_sample_count' : 0,
+                                     'choice_test_call_count' : 0,
+                                     'choice_test_sample_count' : 0,
+                                    }
+    
+    noise_transform_count = 0
+    
+    #first we'll aggregate all of the sampling_resource_dict reports 
+    #note this will include label sets when applicable
+    for derived_column in postprocess_dict['column_dict']:
+      #check if comes from a noise transform
+      process_dict_entry = \
+      postprocess_dict['process_dict'][postprocess_dict['column_dict'][derived_column]['category']]
+      
+      if 'noise_transform' in process_dict_entry \
+      and process_dict_entry['noise_transform'] in {'numeric', 'categoric', 'binary'}:
+        
+        if derived_column in postprocess_dict['column_dict'][derived_column]['normalization_dict']:
+          sampling_resource_dict = \
+          postprocess_dict['column_dict'][derived_column]['normalization_dict'][derived_column]['sampling_resource_dict']
+          
+          noise_transform_count += 1
+
+          for master_key in master_sampling_resource_dict:
+            
+            master_sampling_resource_dict[master_key] += sampling_resource_dict[master_key]
+          
+    #now derive total counts of generator calls and samples based on the different sampling operations apploied in transforms
+    total_generator_calls_train = \
+    master_sampling_resource_dict['binomial_train_call_count'] \
+    + master_sampling_resource_dict['distribution_train_call_count'] \
+    + master_sampling_resource_dict['choice_train_call_count']
+    
+    total_generator_calls_test = \
+    master_sampling_resource_dict['binomial_test_call_count'] \
+    + master_sampling_resource_dict['distribution_test_call_count'] \
+    + master_sampling_resource_dict['choice_test_call_count']
+    
+    total_samples_train = \
+    master_sampling_resource_dict['binomial_train_sample_count'] \
+    + master_sampling_resource_dict['distribution_train_sample_count'] \
+    + master_sampling_resource_dict['choice_train_sample_count']
+    
+    total_samples_test = \
+    master_sampling_resource_dict['binomial_test_sample_count'] \
+    + master_sampling_resource_dict['distribution_test_sample_count'] \
+    + master_sampling_resource_dict['choice_test_sample_count']
+    
+    #currently only distribution sampling has a stochastic count
+    #but choice sampling update is pending so will include choice in the safety factor
+    stochastic_count_train = \
+    master_sampling_resource_dict['distribution_train_sample_count']
+    #this update pending
+    # + master_sampling_resource_dict['choice_train_sample_count']
+    
+    stochastic_count_test = \
+    master_sampling_resource_dict['distribution_test_sample_count']
+    #this update pending
+    # + master_sampling_resource_dict['choice_test_sample_count']
+    
+    #_____
+    
+    #here are the results we'll populate
+    
+    rowcount_basis_train = postprocess_dict['train_rowcount']
+    rowcount_basis_test = postprocess_dict['test_rowcount']
+    
+    #bulk_seeds scenario is a seed for every sampling for every entry
+    #we're adding the conginency (defauilts to 0.15) for stochastic sample counts here
+    #the plus 3 is one for __prepare_seeds shuffle seed and 2 for setting the default randomseed
+    #(the __prepare_seeds spawn seed is not budgeted since not used when entropy_seeds provided complete)
+    #the total_generator_calls_train as used here is associated with a shuffle for each genrator's seeds performed in __random_parameters_params_append
+    bulk_seeds_total_train = \
+    total_samples_train + 3 + int(stochastic_contingency * stochastic_count_train) + total_generator_calls_train
+
+    bulk_seeds_total_test = \
+    total_samples_test + 3 + int(stochastic_contingency * stochastic_count_test) + total_generator_calls_test
+    
+    #the stochastic counts serving as basis for the contingency are returned for reference
+    bulk_seeds_stochastic_count_train = stochastic_count_train
+    bulk_seeds_stochastic_count_test = stochastic_count_test
+    
+    #sampling_seed scenario is a single seed for every generator call (*2 due to a shuffling in __random_parameters_params_append)
+    #the plus 3 is one for __prepare_seeds shuffle seed and 2 for setting the default randomseed
+    sampling_seed_total_train = (2 * total_generator_calls_train) + 3
+    sampling_seed_total_test = (2 * total_generator_calls_test) + 3
+    
+    #transform_seed scenario is a single seed for every noise transform, (*2 due to a shuffling in __random_parameters_params_append)
+    #the plus 3 is one for __prepare_seeds shuffle seed and 2 for setting the default randomseed
+    transform_seed_total = (2 * noise_transform_count) + 3
+
+    #please note that the "+ 3" seeds used for a shuffle and setting the default randomseed 
+    #are redundantly budgetted in train and test buckets
+    #this is due to potential alternate workflows of only applying train or test injections
+    #such as in automunge with df_test = False or postmunge traindata scenarios
+
+    #_____
+    
+    #now populate sampling_report_dict and save to postprocess_dict
+    sampling_report_dict = \
+    {
+      'rowcount_basis_train' : rowcount_basis_train,
+      'rowcount_basis_test' : rowcount_basis_test,
+      'bulk_seeds_total_train' : bulk_seeds_total_train,
+      'bulk_seeds_total_test' : bulk_seeds_total_test,
+      'bulk_seeds_stochastic_count_train' : bulk_seeds_stochastic_count_train,
+      'bulk_seeds_stochastic_count_test' : bulk_seeds_stochastic_count_test,
+      'sampling_seed_total_train' : sampling_seed_total_train,
+      'sampling_seed_total_test' : sampling_seed_total_test,
+      'transform_seed_total' : transform_seed_total,
+    }
+    
+    #if this automunge(.) call didn't include a df_test, the df_test rowcount basis will be 1
+    #in such case, we'll populate the test values
+    #with the initial test entries populated in __initialize_sampling_report_dict
+    #which were derived using train data excerpts passed to df_test
+    #this segment won't apply in the internal automunge call case since we are passing df_train to df_test
+    if rowcount_basis_test == 1:
+      for entry in ['rowcount_basis_test', 'bulk_seeds_total_test', 
+                    'bulk_seeds_stochastic_count_test', 'sampling_seed_total_test']:
+        if isinstance(sampling_dict['sampling_report_dict'], dict) and entry in sampling_dict['sampling_report_dict']:
+          sampling_report_dict[entry] = sampling_dict['sampling_report_dict'][entry]
+    
+    #now save the final form to postprocess_dict, this will be the form returned from automunge(.)
+    postprocess_dict.update({'sampling_report_dict' : sampling_report_dict})
+    
+    return postprocess_dict
+
+  def __prepare_seeds(self, postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, randomseed, test_plug_marker):
+    """
+    if sampling_type != default
+    we'll want to determine how many seeds are needed prior to entering processfamily
+    and if additional seeds are needed to reach appropriate number
+    they are extracted here
+    this will also be where we shuffle the received seeds with one of the seeds
+
+    entropy_seeds will be received as a flattened np.array of length >= 0 from preparations in __check_entropy_seeds
+    
+    the resulting seeds will then be stored in postprocess_dict['entropy_seeds']
+    and with each access other than the default sampling_type scenario, any used seeds will be struck from the list
+    
+    this will be performed just after process_dict iniitalization in automunge
+    and somewhere near start of postmunge just after saving seeds in ppd
+    
+    this function also serves to populate ppd with entropy_seeds, random_generator, sampling_dict
+    
+    this function is applied seperately targeting train or test data based on the traintest parameter
+    
+    test_plug_marker is True when df_test was not passed to automunge(.)
+    
+    for reference, here is structure of sampling_dict['sampling_report_dict']
+    sampling_report_dict = \
+    {
+      'rowcount_basis_train' : rowcount_basis_train,
+      'rowcount_basis_test' : rowcount_basis_test,
+      'bulk_seeds_total_train' : bulk_seeds_total_train,
+      'bulk_seeds_total_test' : bulk_seeds_total_test,
+      'bulk_seeds_stochastic_count_train' : bulk_seeds_stochastic_count_train,
+      'bulk_seeds_stochastic_count_test' : bulk_seeds_stochastic_count_test,
+      'sampling_seed_total_train' : sampling_seed_total_train,
+      'sampling_seed_total_test' : sampling_seed_total_test,
+      'transform_seed_total' : transform_seed_total,
+    }
+    
+    note that the bulk counts will include a 15% contingency factor derived from the stochastic counts
+    which is configurable by sampling_dict['sampling_seed_custom_generator']
+    
+    the sampling_type scenarios are
+    - default: every sample is from either default or when specified the custom generator, 
+    any received entropy seeds are shuffled and passed to each call (same as prior config)
+    - bulk_seeds: every sampling for every entry receives a unique supplemental seed
+    - sampling_seed: every sampling operation receives one supplemental seed
+    - transform_seed: every noise transform receives one supplemental seed
+
+    note that the generator used to generate additional seeds will be based on sampling_dict['extra_seed_generator']
+    and the generator used to apply those seeds for sampling in application based on sampling_dict['sampling_generator']
+    """
+    
+    #note that sampling_dict will already have been initialized with any missing defaults in __check_sampling_dict
+    sampling_type = sampling_dict['sampling_type']
+    sampling_generator = sampling_dict['sampling_generator']    
+    extra_seed_generator = sampling_dict['extra_seed_generator']
+
+    if sampling_type != 'default':
+      
+      #sampling_report_dict will be in sampling_dict if this function called in automunge
+      #or will be in postprocess_dict if this function called in postmunge
+      #note that postmunge also accepts user specified sampling_dict['sampling_report_dict'] which takes precedence over postprocess_dict
+      sampling_report_dict = False
+      if sampling_dict['sampling_report_dict'] is not False:
+        sampling_report_dict = deepcopy(sampling_dict['sampling_report_dict'])
+      elif 'sampling_report_dict' in postprocess_dict:
+        #this is the postmunge case
+        sampling_report_dict = deepcopy(postprocess_dict['sampling_report_dict'])
+        
+      #note that different trainnoise / testnoise scenarios will be covered by the counts in sampling_report_dict
+
+      if sampling_type in {'bulk_seeds'}:
+        
+        if traintest == 'train':
+          seed_requirement = \
+          sampling_report_dict['bulk_seeds_total_train']
+          
+          #adjust bulk scenario for rowcount basis
+          seed_requirement = \
+          seed_requirement * rowcount_train / sampling_report_dict['rowcount_basis_train']
+        
+        elif traintest == 'test':
+          seed_requirement = \
+          sampling_report_dict['bulk_seeds_total_test']
+
+          #adjust bulk scenario for rowcount basis
+          seed_requirement = \
+          seed_requirement * rowcount_test / sampling_report_dict['rowcount_basis_test']
+          
+        elif traintest == 'traintest':
+          
+          #adjust bulk scenario for rowcount basis
+          seed_requirement = \
+          sampling_report_dict['bulk_seeds_total_train'] * rowcount_train / sampling_report_dict['rowcount_basis_train']
+          
+          if test_plug_marker is False:
+            seed_requirement += sampling_report_dict['bulk_seeds_total_test'] * rowcount_test / sampling_report_dict['rowcount_basis_test']
+          
+      elif sampling_type in {'sampling_seed'}:
+
+        if traintest == 'train':
+          seed_requirement = \
+          sampling_report_dict['sampling_seed_total_train']
+          
+          if rowcount_train == 0:
+            seed_requirement = 0
+        
+        elif traintest == 'test':
+          seed_requirement = \
+          sampling_report_dict['sampling_seed_total_test']
+          
+          if rowcount_test == 0:
+            seed_requirement = 0
+          
+        elif traintest == 'traintest':
+          seed_requirement = \
+          sampling_report_dict['sampling_seed_total_train']
+          
+          if test_plug_marker is False:
+            seed_requirement += sampling_report_dict['sampling_seed_total_test']
+            
+          if rowcount_train + rowcount_test == 0:
+            seed_requirement = 0
+          
+      elif sampling_type in {'transform_seed'}:
+        
+        if traintest in {'train', 'test'}:
+          seed_requirement = \
+          sampling_report_dict['transform_seed_total']
+        elif traintest == 'traintest':
+          seed_requirement = sampling_report_dict['transform_seed_total']
+          if test_plug_marker is False:
+            seed_requirement *= 2
+        
+        #this is case in no noise postmunge traindata scenario
+        if rowcount_train + rowcount_test == 0:
+          seed_requirement = 0
+        
+      #now that we have our seed requirement, let's compare to the available entropy seeds
+      provided_seed_count = len(entropy_seeds)
+        
+      #if fewer seeds were provided, additional seeds are extracted
+      if provided_seed_count < seed_requirement:
+        
+        spawn_seed = [randomseed]
+        if provided_seed_count > 0:
+          spawn_seed = [entropy_seeds[0]]
+          entropy_seeds = np.delete(entropy_seeds, 0)
+          provided_seed_count -= 1
+
+        #this determines whether we extract additional seeds with default or custom generator
+        if extra_seed_generator == 'PCG64' \
+        or extra_seed_generator == 'sampling_generator' \
+        and sampling_generator == 'PCG64':
+          randomgenerator = np.random.PCG64
+        elif extra_seed_generator == 'custom' \
+        or extra_seed_generator == 'sampling_generator' \
+        and sampling_generator == 'custom':
+          #else only use default if random_generator not specified
+          if random_generator is False:
+            randomgenerator = np.random.PCG64
+          else:
+            randomgenerator = random_generator
+
+        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+        
+        extra_seeds_needed = int(seed_requirement - provided_seed_count)
+        
+        #2**32 - 1
+        max_capacity_seed = 4294967295
+
+        extra_seeds = nprandom.integers(0, high=max_capacity_seed, size=extra_seeds_needed).astype(int)
+        
+        entropy_seeds = np.concatenate((entropy_seeds, extra_seeds), axis=0)
+        
+      #now one more shuffle using the shuffle_seed
+      if len(entropy_seeds) > 2:
+        
+        #let's access the first entry as our shuffle seed
+        shuffle_seed = [entropy_seeds[0]]
+        entropy_seeds = np.delete(entropy_seeds, 0)
+        
+        if sampling_generator =='PCG64':
+          randomgenerator = np.random.PCG64
+        elif sampling_generator == 'custom':
+          #else only use default if random_generator not specified
+          if random_generator is False:
+            randomgenerator = np.random.PCG64
+          else:
+            randomgenerator = random_generator
+
+        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+
+        nprandom.shuffle(entropy_seeds)
+        
+    #now let's store the results in ppd
+    postprocess_dict['entropy_seeds'] = entropy_seeds
+    postprocess_dict['sampling_dict'] = sampling_dict
+    postprocess_dict['random_generator'] = random_generator
+    
+    return postprocess_dict
+
+  def __random_parameters_params_append(self, params, postprocess_dict, column, category, traintest, 
+                                        rowcount_trian, rowcount_test, printstatus):
+    """
+    this function takes place in processcousin/postprocesscousin/processparent/postprocessparent
+    immediately after __grab_params
+    
+    if automunge(.) recieved specification in any of parameters 
+    entropy_seeds, random_generator, sampling_dict
+    those specifications are accessed from postprocess_dict
+    and added to params
+    noting that since we are adding to params instead of assignparm
+    we won't need a seperate function to later strike
+    will just need to reset the specifications in postprocess_dict prior to return
+    
+    as recieved, the postprocess_dict contains entries at this point 
+    for entropy_seeds, random_generator, sampling_dict
+    
+    note that as entropy seeds are expended, they will be struck from set
+    
+    the entropy seeds will have already been extracted to meat requirements in __prepare_seeds
+    
+    in automunge traintest will be received as 'traintest', in postmunge as 'test'
+    
+    will burn an entropy_seed in this operation for shuffling seeds prior to populating
+    """
+
+    #access entropy seed parameters from postprocess_dict
+    #note that these entries will be specific to an automunge or postmunge call
+    entropy_seeds = postprocess_dict['entropy_seeds']
+    random_generator = postprocess_dict['random_generator']
+    sampling_dict = postprocess_dict['sampling_dict']
+    
+    #initalize entropy seed parameters to single form between alternate scenarios
+    if len(entropy_seeds) == 0:
+      entropy_seeds = np.array([random.randint(0,4294967295)])
+
+    if random_generator == False:
+      random_generator = np.random.PCG64
+    
+    #note that sampling_dict will already have been initialized with any missing defaults in __check_sampling_dict
+      
+    #the random_generator is saved in params, where the False case will have been converted to PCG64 
+    #at conclusion we will also store a params entry for sampling_resource_dict
+    #which will include transformation / taget column specific seedings based on trasnformation type and parameters
+    #we may later update this entry in the sampling_type == 'default' scenario
+    params.update({'random_generator' : random_generator})
+
+    sampling_generator = sampling_dict['sampling_generator']
+      
+    #a shuffle operation will be performed preceding each access of seeds
+    def _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator):
+      if len(entropy_seeds) > 2:
+        shuffle_seed = [entropy_seeds[0]]
+        #we dont' delete seeds in the default sampling_type scenario
+        if sampling_type != 'default':
+          entropy_seeds = np.delete(entropy_seeds, 0)
+
+        if sampling_generator == 'PCG64':
+          randomgenerator = np.random.PCG64
+        elif sampling_generator == 'custom':
+          #else only use default if random_generator not specified
+          #if random_generator was received as False will have already been converted to PCG64
+          randomgenerator = random_generator
+
+        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+
+        nprandom.shuffle(entropy_seeds)
+      return entropy_seeds
+
+    #this is form of sampling_resource_dict passed to transforms
+    #in the transforms the counts will be evaluated for use to populate the final sampling_resource_dict logged in postprocess_dict
+    populated_sampling_resource_dict = {'binomial_train' : 'custom',
+                                        'binomial_train_seeds' : [],
+                                        'binomial_train_call_count' : 0,
+                                        'binomial_train_sample_count' : 0,
+                                        'binomial_test' : 'custom',
+                                        'binomial_test_seeds' : [],
+                                        'binomial_test_call_count' : 0,
+                                        'binomial_test_sample_count' : 0,
+                                        'distribution_train' : 'custom',
+                                        'distribution_train_seeds' : [],
+                                        'distribution_train_call_count' : 0,
+                                        'distribution_train_sample_count' : 0,
+                                        'distribution_test' : 'custom',
+                                        'distribution_test_seeds' : [],
+                                        'distribution_test_call_count' : 0,
+                                        'distribution_test_sample_count' : 0,
+                                        'choice_train' : 'custom',
+                                        'choice_train_seeds' : [],
+                                        'choice_train_call_count' : 0,
+                                        'choice_train_sample_count' : 0,
+                                        'choice_test' : 'custom',
+                                        'choice_test_seeds' : [],
+                                        'choice_test_call_count' : 0,
+                                        'choice_test_sample_count' : 0,
+                                       }
+
+    #we'll use sampling_resource_dict to log the counts used to generate seeds
+    #and populated_sampling_resource_dict will be passed to the transform with seeds and zero counts
+    sampling_resource_dict = deepcopy(populated_sampling_resource_dict)
+    
+    #stochastic_count_safety_factor expected as float between 0-1
+    stochastic_count_safety_factor = sampling_dict['stochastic_count_safety_factor']
+      
+    #sampling_type expected as one of 
+    #{'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
+    sampling_type = sampling_dict['sampling_type']
+      
+    #in these sampling_type scenarios the transform will apply default PCG64 sampling even if a custom generator specified
+    #{'bulk_seeds', 'sampling_seed', 'transform_seed'}
+    #noting that any custom generator may still be applied for generating entropy seeds 
+    #in __prepare_seeds based on sampling_dict['extra_seed_generator']
+    
+    #note that in the custom generator scenario if custom generator not specified will also defer to PCG64
+    if sampling_type in {'bulk_seeds', 'sampling_seed', 'transform_seed'}:
+      for generator_specification in ['binomial_train', 'binomial_test', 'distribution_train',
+                                      'distribution_test', 'choice_train', 'choice_test']:
+        populated_sampling_resource_dict.update({generator_specification : 'default'})
+    #else defer to the previously populated value 'custom'
+    
+    #the category's process_dict entry is inspected for a noise_transform classification
+    #this results in only transforms with process_dict['noise_transform'] specification being served seeds
+    #so if user wants to turn off seeding for a particular transform they can do so by update to process_dict entry
+    #we'll also exclude for postmunge traindata no_noise specification
+    if 'noise_transform' in postprocess_dict['process_dict'][category] \
+    and postprocess_dict['process_dict'][category]['noise_transform'] is not False \
+    and ( 'traindata' not in postprocess_dict or 'traindata' in postprocess_dict \
+    and postprocess_dict['traindata'] not in {'train_no_noise', 'test_no_noise'}):
+      
+      #noise_transform expected as one of {'numeric', 'categoric', 'binary', False}
+      noise_transform = postprocess_dict['process_dict'][category]['noise_transform']
+      
+      #_____
+      
+      #now let's calculate how many entropy seeds are expected for use in the transform
+      
+      #convert traintest to final form based on any entries for traindata and test_plug_marker
+      #the goal here is to identify if we are populating seeds for train or test or both
+      #which is needed since each may have disfferent distribution samples requiring different bulk seeds
+      
+      #traintest will be received as 'traintest' in automunge
+      if traintest == 'traintest':
+        #if user didn't pass a df_test set then we don't need entropy seeds for test data
+        if postprocess_dict['test_plug_marker'] is True:
+          traintest == 'train'
+      #traintest will be received as 'test' in postmunge so we know postprocess_dict will have 'traindata' entry
+      elif traintest == 'test':
+        #traindata will be present at this point in postmunge, not yet populated for automunge
+        #traindata == True means test data to be treated as train data
+        if postprocess_dict['traindata'] is True:
+          traintest == 'train'
+
+      #___________
+      #now we're determining number of seeds needed for each sampling operation
+      #based on rowcount, distribution parameters, and sampling type
+      #using process_dict['noise_transform'] specification to know which sampling operations will be performed
+      #and using sampling_type to know what kind of seedings are applied (e.g. bulk vs sample)
+      #once we've calculated the count of seeds, we'll populated the returned populated_sampling_resource_dict seeds entries
+      #with seeds extracted from the entropy_seeds bank
+
+      #____
+      #to derive stochastic seed counts, we'll access flip_prob parameters
+      #where stochastic counts refers to number of sampled entries for distribution or choice sampling
+      #which are a function of activations received from the binomial
+
+      #if initializing parameters not material to a noise_transform type they will be ignored
+
+      if 'trainnoise' in params:
+        trainnoise = params['trainnoise']
+      else:
+        #if update these need to update transforms too
+        trainnoise = True
+
+      if 'testnoise' in params:
+        testnoise = params['testnoise']
+      else:
+        #if update these need to update transforms too
+        testnoise = False
+
+      if 'flip_prob' in params:
+        flip_prob = params['flip_prob']
+      else:
+        #if update these need to update transforms too
+        flip_prob = 0.03
+
+      if 'test_flip_prob' in params:
+        test_flip_prob = params['test_flip_prob']
+      else:
+        #if update these need to update transforms too
+        if noise_transform == 'numeric':
+          test_flip_prob = flip_prob
+        elif noise_transform in {'categoric', 'binary'}:
+          test_flip_prob = 0.01
+
+      #for scenarios where parameters passed as a scipy stats distribution
+      #will just sample and apply a safety factor
+      flip_prob_dist = False
+      if isinstance(flip_prob, type(stats.expon(1))):
+        flip_prob_dist = flip_prob
+        flip_prob = flip_prob.rvs()
+        flip_prob = flip_prob * (1 + stochastic_count_safety_factor)
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      test_flip_prob_dist = False
+      if isinstance(test_flip_prob, type(stats.expon(1))):
+        test_flip_prob_dist = test_flip_prob
+        test_flip_prob = test_flip_prob.rvs()
+        test_flip_prob = test_flip_prob * (1 + stochastic_count_safety_factor)
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+
+      #____
+
+      #for 'numeric' noise_transform will be samplings for binomial and distribution sampling
+      #the distribution sampling will be be stochastic count of entries based on binomial result
+      #so will increase stochastic count by the safety factor stochastic_count_safety_factor defaulting to 0.15
+      if noise_transform == 'numeric':
+        
+        binomial_train_sample_count = 0
+        distribution_train_sample_count = 0
+        binomial_test_sample_count = 0
+        distribution_test_sample_count = 0
+            
+        if traintest in {'train', 'traintest'} and trainnoise is True:
+          
+          if sampling_type in {'bulk_seeds'}:
+            #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
+            binomial_train_sample_count = rowcount_trian
+            distribution_train_sample_count = \
+            rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_train_sample_count = 1
+            distribution_train_sample_count = 1
+        
+        if traintest in {'test', 'traintest'} and testnoise is True:
+          
+          if sampling_type in {'bulk_seeds'}:
+            binomial_test_sample_count = rowcount_test
+            distribution_test_sample_count = \
+            rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_test_sample_count = 1
+            distribution_test_sample_count = 1
+          
+        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
+                                       'distribution_train_sample_count' : distribution_train_sample_count,
+                                       'binomial_test_sample_count' : binomial_test_sample_count,
+                                       'distribution_test_sample_count' : distribution_test_sample_count})
+
+      #for 'categoric' noise_transform will be samplings for binomial and choice sampling
+      #the choice sampling will be stochastic count of entries based on binomial result with safety factor stochastic_count_safety_factor
+      if noise_transform == 'categoric':
+        
+        binomial_train_sample_count = 0
+        choice_train_sample_count = 0
+        binomial_test_sample_count = 0
+        choice_test_sample_count = 0
+        
+        if traintest in {'train', 'traintest'} and trainnoise is True:
+
+          if sampling_type in {'bulk_seeds'}:
+            #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
+            binomial_train_sample_count = rowcount_trian
+            choice_train_sample_count = rowcount_trian
+
+            #this update pending
+            # choice_train_sample_count = \
+            # rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_train_sample_count = 1
+            choice_train_sample_count = 1
+        
+        if traintest in {'test', 'traintest'} and testnoise is True:
+
+          if sampling_type in {'bulk_seeds'}:
+            binomial_test_sample_count = rowcount_test
+            choice_test_sample_count = rowcount_test
+
+            #this update pending
+            # choice_test_sample_count = \
+            # rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_test_sample_count = 1
+            choice_test_sample_count = 1
+          
+        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
+                                       'choice_train_sample_count' : choice_train_sample_count,
+                                       'binomial_test_sample_count' : binomial_test_sample_count,
+                                       'choice_test_sample_count' : choice_test_sample_count})
+          
+      #for 'binary' noise_transform will be samplings just for binomial sampling
+      if noise_transform == 'binary':
+          
+        binomial_train_sample_count = 0
+        binomial_test_sample_count = 0
+        
+        if traintest in {'train', 'traintest'} and trainnoise is True:
+
+          if sampling_type in {'bulk_seeds'}:
+            binomial_train_sample_count = rowcount_trian
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_train_sample_count = 1
+
+        if traintest in {'test', 'traintest'} and testnoise is True:
+
+          if sampling_type in {'bulk_seeds'}:
+            binomial_test_sample_count = rowcount_test
+            
+          elif sampling_type in {'sampling_seed'}:
+            binomial_test_sample_count = 1
+          
+        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
+                                       'binomial_test_sample_count' : binomial_test_sample_count})
+        
+      #_____
+      
+      #now that we have the category/column specific counts, can populate seeds from our entropy bank
+      
+      #in the sampling_type == 'deafult' scenario, we pass same seeds to every operation
+      #without striking those seeds from the bank
+      #with a shuffle operation performed here first
+      if sampling_type == 'deafult':
+
+        entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+        
+        for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds', 
+                                  'distribution_train_seeds', 'distribution_test_seeds',
+                                  'choice_train_seeds', 'choice_test_seeds'}:
+          
+          populated_sampling_resource_dict.update({sample_type_seeds : entropy_seeds})
+      
+      #in bulk scenario we have one seed for each sampled entry
+      elif sampling_type in {'bulk_seeds'}:
+        
+        for sample_type_count in {'binomial_train_sample_count', 'binomial_test_sample_count',
+                                  'distribution_train_sample_count', 'distribution_test_sample_count',
+                                  'choice_train_sample_count', 'choice_test_sample_count'}:
+          
+          #relies on string convention [-12:] == 'sample_count'
+          sample_type_seeds = sample_type_count[:-12] + 'seeds'
+          
+          if sampling_resource_dict[sample_type_count] > 0:
+            
+            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+            
+            populated_seeds = entropy_seeds
+            if len(entropy_seeds) > sampling_resource_dict[sample_type_count]:
+                            
+              #grab seeds
+              populated_seeds = entropy_seeds[:int(sampling_resource_dict[sample_type_count])]
+              
+              #now strike the accessed seeds
+              entropy_seeds = entropy_seeds[int(sampling_resource_dict[sample_type_count]):]
+              
+            populated_sampling_resource_dict.update({sample_type_seeds : populated_seeds})
+              
+      #in sampling scenario we have one seed for each sampling operation
+      elif sampling_type in {'sampling_seed'}:
+              
+        for sample_call_count in {'binomial_train_call_count', 'binomial_test_call_count',
+                                  'distribution_train_call_count', 'distribution_test_call_count',
+                                  'choice_train_call_count', 'choice_test_call_count'}:
+          
+          #relies on string convention [-10:] == 'call_count'
+          sample_type_seeds = sample_call_count[:-10] + 'seeds'
+          
+          populated_seeds = entropy_seeds
+          if sampling_resource_dict[sample_call_count] > 0:
+          
+            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+            
+            if len(entropy_seeds) > sampling_resource_dict[sample_call_count]:
+              
+              #grab seeds
+              populated_seeds = entropy_seeds[:int(sampling_resource_dict[sample_call_count])]
+              
+              #now strike the accessed seeds
+              entropy_seeds = entropy_seeds[int(sampling_resource_dict[sample_call_count]):]
+              
+            populated_sampling_resource_dict.update({sample_type_seeds : populated_seeds})
+      
+      #in transform scenario we have one seed for each transformation function
+      elif sampling_type in {'transform_seed'}:
+        
+        for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds',
+                                  'distribution_train_seeds', 'distribution_test_seeds',
+                                  'choice_train_seeds', 'choice_test_seeds'}:
+      
+          entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+        
+          populated_seeds = entropy_seeds
+          if len(entropy_seeds) > 1:
+            
+            #grab seeds
+            populated_seeds = entropy_seeds[:1]
+
+            #now strike the accessed seeds
+            entropy_seeds = entropy_seeds[1:]
+            
+          populated_sampling_resource_dict.update({sample_type_seeds : populated_seeds})
+          
+      #params receives populated sampling_resource_dict passing entropy seeds to the trasnform
+      params.update({'sampling_resource_dict' : populated_sampling_resource_dict})
+      
+      #now update the postprocess_dict['entropy_seeds'] with the revised set
+      #which may have struck some entries and will have been shuffled
+      postprocess_dict['entropy_seeds'] = entropy_seeds
+    
+    return params, postprocess_dict
+
+  def __populate_randomseed(self, randomseed, entropy_seeds, 
+                            random_generator, sampling_dict):
+    """
+    when a specific randomseed wasn't specified
+    a custom randomseed will be sampled
+    if entropy_seeds are available
+    one will be applied for the sampling
+    if a custom random_generator was specified
+    the use between PCG64 or custom 
+    will follow the convention of sampling_dict['extra_seed_generator']
+    """
+
+    #2**32 - 1
+    max_capacity_seed = 4294967295
+    
+    randomrandomseed = False
+    if randomseed is False:
+      randomrandomseed = True
+      
+      #note sampling_dict initialized in __check_sampling_dict
+      sampling_generator = sampling_dict['sampling_generator']  
+      sampling_type = sampling_dict['sampling_type']
+      
+      #this determines whether we extract additional seeds with default or custom generator
+      if sampling_generator == 'PCG64':
+        randomgenerator = np.random.PCG64
+      elif sampling_generator == 'custom':
+        #else only use default if random_generator not specified
+        if random_generator is False:
+          randomgenerator = np.random.PCG64
+        else:
+          randomgenerator = random_generator
+      
+      if len(entropy_seeds) > 2:
+    
+        shuffle_seed = [entropy_seeds[0]]
+        entropy_seeds = np.delete(entropy_seeds, 0)
+
+        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        nprandom.shuffle(entropy_seeds)
+        
+      if len(entropy_seeds) >= 2:
+        
+        spawn_seed = [entropy_seeds[0]]
+        entropy_seeds = np.delete(entropy_seeds, 0)
+        
+      elif len(entropy_seeds) == 1:
+        
+        spawn_seed = [entropy_seeds[0]]
+
+      else:
+        #(2**32 - 1)
+        spawn_seed = [random.randint(0,max_capacity_seed)]
+
+      nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+
+      randomseed = int(nprandom.integers(0, high=max_capacity_seed, size=1))
+          
+    return randomseed, randomrandomseed, entropy_seeds
   
   #__FunctionBlock: functionpointer support
 
@@ -38598,7 +39934,8 @@ class AutoMunge:
     #we'll populate public_dict to replace postprocess_dict
     public_dict = {'encryption' : True}
     
-    public_entries = ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict']
+    public_entries = ['columntype_report', 'label_columntype_report', 'privacy_encode', 
+                      'automungeversion', 'labelsencoding_dict', 'sampling_report_dict']
     #column_map reports origination of features
     #columntype_report report types and groupings of features
     #privacy_encode is value of privacy_encode as passed to automunge(.) for reference
@@ -38863,7 +40200,7 @@ class AutoMunge:
                                 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
-                entropy_seeds = False, random_generator = False, 
+                entropy_seeds = False, random_generator = False, sampling_dict = False,
                 privacy_encode = False, encrypt_key = False, printstatus = True):
     """
     #This function documented in READ ME, available online at:
@@ -38927,6 +40264,8 @@ class AutoMunge:
       transformdict = deepcopy(transformdict)
     if isinstance(processdict, dict):
       processdict = deepcopy(processdict)
+    if isinstance(sampling_dict, dict):
+      sampling_dict = deepcopy(sampling_dict)
 
     #similarly copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
@@ -38971,7 +40310,7 @@ class AutoMunge:
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                                 noise_augment, ppd_append, entropy_seeds, random_generator)
+                                 noise_augment, ppd_append, random_generator)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -39093,15 +40432,23 @@ class AutoMunge:
     #a future extension may allow user to pass custom entries
     autoMLer = self.__assemble_autoMLer()
 
+    #validate sampling_dict and populate with defaults
+    check_sampling_dict_result, sampling_dict = \
+    self.__check_sampling_dict(sampling_dict, printstatus)
+    miscparameters_results.update({'check_sampling_dict_result' : check_sampling_dict_result})
+
+    #validate entropy_seeds and align to common type
+    entropy_seeds, entropy_seeds_result = \
+    self.__check_entropy_seeds(entropy_seeds, printstatus)
+    miscparameters_results.update({'entropy_seeds_result' : entropy_seeds_result})
+
     #initialize randomseed for default configuration of random random seed
-    #this is used in feature selection
-    if randomseed is False:
-      #randomrandomseed  signals cases when randomseed not user defined
-      randomrandomseed = True
-      #pandas sample accepts between 0:2**32-1
-      randomseed = random.randint(0,4294967295)
-    else:
-      randomrandomseed = False
+    #when a sampling performed randomrandomseed returned as True
+    #this is used in row shuffling and other random seeds that don't need to match automunge random seed
+    #note that this may expend two entropy_seeds
+    randomseed, randomrandomseed, entropy_seeds = \
+    self.__populate_randomseed(randomseed, entropy_seeds, 
+                              random_generator, sampling_dict)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge Feature Importance
@@ -39152,7 +40499,7 @@ class AutoMunge:
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurethreshold, featureselection, \
                           ML_cmnd, process_dict, valpercent, printstatus, NArw_marker, \
-                          assignparam, entropy_seeds, random_generator)
+                          assignparam, entropy_seeds, random_generator, sampling_dict)
 
       #the final returned featureimportance report consolidates the sorted results with raw data
       featureimportance = {'FS_sorted'     : FS_sorted, \
@@ -39686,10 +41033,17 @@ class AutoMunge:
     masterNArows_test = pd.DataFrame()
 
     #any preprocessing on assignparam done here
-    #if user specified either of entropy_seeds or random_generator they are added here and then struck before return
-    #note that this renames the variable from assignparam to assign_param which is a legacy convention
-    assign_param = self.__random_parameters_assignparam_append(assignparam, entropy_seeds, random_generator)
-    
+    assign_param = assignparam
+
+    #if sampling_dict['sampling_type'] specification was recieved other than default
+    #if sampling_dict didn't include a 'sampling_resource_dict' entry
+    #one is populated with an internal automunge(.) call on a subset of entries
+    sampling_dict = \
+    self.__initialize_sampling_report_dict(df_train, assigncat, 
+                                             assignparam, transformdict, processdict, 
+                                             sampling_dict, printstatus, numbercategoryheuristic,
+                                             powertransform, evalcat)
+
     #initialize postprocess_dict
     #the dictionary / list values are populated through processing
     #and the passed variables may be accessed in various support functions
@@ -39701,6 +41055,7 @@ class AutoMunge:
     #and temp_miscparameters_results logs results in support functions that have access to postprocess_dict but not miscparameters_results
     #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
     #after this point we only inspect process_dict as postprocess_dict['process_dict']
+    #some entries will be reset before return, including temp_miscparameters_results, entropy_seeds, random_generator, sampling_dict
     postprocess_dict = {'column_dict' : {},
                         'columnkey_dict' : {},
                         'origcolumn' : {},
@@ -39712,8 +41067,16 @@ class AutoMunge:
                         'randomseed' : randomseed,
                         'application_number' : application_number,
                         'autoMLer' : autoMLer,
-                        'assignparam' : assignparam,
-                        'customML_inference_support' : {} }
+                        'assign_param' : assign_param,
+                        'customML_inference_support' : {},
+                        'test_plug_marker' : test_plug_marker,
+                        }
+
+    #perform any preparations on entropy_seeds and populate postprocess_dict with entropy_seed/sampling_dict/random_generator
+    rowcount_train = df_train.shape[0]
+    rowcount_test = df_test.shape[0]
+    postprocess_dict = \
+    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, 'traintest', randomseed, test_plug_marker)
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = deepcopy(assigncat)
@@ -40428,6 +41791,7 @@ class AutoMunge:
 
     #grab rowcount serving as basis of drift stats (here since prior to oversampling or consolidations)
     train_rowcount = df_train.shape[0]
+    test_rowcount = df_test.shape[0]
 
     #this is operation to consolidate duplicate rows based on dupl_rows parameter
     #in other words, if multiple copies of same row present only returns one
@@ -40682,14 +42046,11 @@ class AutoMunge:
     finalcolumns_test = list(df_test)
     finalcolumns_labels = list(df_labels)
 
-    #the random seeding parameters entropy_seeds and random_generator are struck here prior to return
-    assign_param = self.__random_parameters_assignparam_strike(assign_param)
-
     #we'll create some tags specific to the application to support postprocess_dict versioning
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.62'
+    automungeversion = '7.63'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -40745,6 +42106,7 @@ class AutoMunge:
                              'inplace' : inplace,
                              'drift_dict' : drift_dict,
                              'train_rowcount' : train_rowcount,
+                             'test_rowcount' : test_rowcount,
                              'Binary' : Binary,
                              'Binary_orig' : Binary_orig,
                              'Binary_dict' : Binary_dict,
@@ -40829,6 +42191,9 @@ class AutoMunge:
     column_map = \
     self.__populate_column_map_report(postprocess_dict)
     postprocess_dict.update({'column_map' : column_map})
+
+    #populate a noise sampling report for use to determine entropy seed requirements
+    postprocess_dict = self.__populate_sampling_report_dict(postprocess_dict, sampling_dict)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge privacy encoding
@@ -41007,8 +42372,9 @@ class AutoMunge:
                       printstatus = printstatus,
                       dupl_rows = dupl_rows,
                       traindata = traindata,
-                      entropy_seeds = entropy_seeds,
+                      entropy_seeds = postprocess_dict['entropy_seeds'],
                       random_generator = random_generator,
+                      sampling_dict = sampling_dict,
                       randomseed = augrandomseed)
 
         #this adjusts Automunge_index to avoid duplicates
@@ -41071,8 +42437,9 @@ class AutoMunge:
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
                      pandasoutput = True, printstatus = printstatus, \
                      shuffletrain = False, dupl_rows = dupl_rows,
-                     entropy_seeds = entropy_seeds,
+                     entropy_seeds = postprocess_dict['entropy_seeds'],
                      random_generator = random_generator,
+                     sampling_dict = sampling_dict,
                      randomseed = valrandomseed)
 
       df_validation1.index = temp_valindex
@@ -41165,6 +42532,10 @@ class AutoMunge:
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
     postprocess_dict = self.__suffix_overlap_final_aggregation_and_printouts(postprocess_dict)
+
+    #reset any entropy seeding entries which are specific to an automunge(.) or postmunge(.) call
+    for entry in {'entropy_seeds', 'random_generator', 'sampling_dict'}:
+      postprocess_dict[entry] = False
 
     #a cleanup to the validation results in cases of privacy encoding to remove leakage channel
     #note that the aggregated result is still available as suffixoverlap_aggregated_result
@@ -41321,6 +42692,13 @@ class AutoMunge:
       inplacecandidate = True
     
     params = self.__grab_params(assign_param, cousin, column, process_dict[cousin], postprocess_dict)
+
+    #now populate params entries associated with entropy seeding for noise transforms
+    params, postprocess_dict = \
+    self.__random_parameters_params_append(params, postprocess_dict, \
+                                          column, cousin, 'test', \
+                                          df_test.shape[0], df_test.shape[0], \
+                                          False)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[cousin] \
@@ -41399,6 +42777,13 @@ class AutoMunge:
       inplacecandidate = True
 
     params = self.__grab_params(assign_param, parent, column, process_dict[parent], postprocess_dict)
+
+    #now populate params entries associated with entropy seeding for noise transforms
+    params, postprocess_dict = \
+    self.__random_parameters_params_append(params, postprocess_dict, \
+                                          column, parent, 'test', \
+                                          df_test.shape[0], df_test.shape[0], \
+                                          False)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[parent] \
@@ -47131,37 +48516,65 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
+        
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
       
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
       else:
-        
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
-
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+      # def erase_seeds(sampling_resource_dict):
+      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      #   keys = list(sampling_resource_dict)
+      #   for key in keys:
+      #     if key[-5:] == 'seeds':
+      #       del sampling_resource_dict[key]
+      #   return sampling_resource_dict
+      
       #________
-        
-      #___
         
       #scenarios where parameters passed as a scipy stats distribution
       if isinstance(mu_dist, type(stats.expon(1))):
@@ -47226,19 +48639,32 @@ class AutoMunge:
       if ( (trainnoise is True and traindata is True) \
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0 and sigma > 0:
+      
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
 
         #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
         if flip_prob == 1:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
+          sampling_id = 'binomial' + sampling_type
+          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
-        binomial_sample_count = np.sum(binomial_samples)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+        binomial_activation_count = np.sum(binomial_samples)
 
         #now derive our sampled noise for injection
+        sampling_id = 'distribution' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
         elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -47359,33 +48785,63 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
-      
-      else:
         
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+      # def erase_seeds(sampling_resource_dict):
+      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      #   keys = list(sampling_resource_dict)
+      #   for key in keys:
+      #     if key[-5:] == 'seeds':
+      #       del sampling_resource_dict[key]
+      #   return sampling_resource_dict
 
       #________
         
@@ -47454,18 +48910,31 @@ class AutoMunge:
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0 and sigma > 0:
         
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
+        
         #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
         if flip_prob == 1:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
+          sampling_id = 'binomial' + sampling_type
+          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
-        binomial_sample_count = np.sum(binomial_samples)
+        binomial_activation_count = np.sum(binomial_samples)
 
         #now derive our sampled noise for injection
+        sampling_id = 'distribution' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -47646,34 +49115,63 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
-      
-      else:
         
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
-
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+      # def erase_seeds(sampling_resource_dict):
+      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      #   keys = list(sampling_resource_dict)
+      #   for key in keys:
+      #     if key[-5:] == 'seeds':
+      #       del sampling_resource_dict[key]
+      #   return sampling_resource_dict
       #________
         
       #scenarios where parameters passed as a scipy stats distribution
@@ -47777,19 +49275,32 @@ class AutoMunge:
       if ( (trainnoise is True and traindata is True) \
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0 and sigma > 0:
+        
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
       
         #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
         if flip_prob == 1:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
+          sampling_id = 'binomial' + sampling_type
+          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
-        binomial_sample_count = np.sum(binomial_samples)
+        binomial_activation_count = np.sum(binomial_samples)
 
         #now derive our sampled noise for injection
+        sampling_id = 'distribution' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
-          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
-          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_sample_count))
+          normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
 
         if noisedistribution in {'abs_normal', 'abs_laplace'}:
           normal_samples = abs(normal_samples)
@@ -47906,33 +49417,63 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
-      
-      else:
         
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+#       def erase_seeds(sampling_resource_dict):
+#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+#         keys = list(sampling_resource_dict)
+#         for key in keys:
+#           if key[-5:] == 'seeds':
+#             del sampling_resource_dict[key]
+#         return sampling_resource_dict
 
       #________
         
@@ -47979,7 +49520,16 @@ class AutoMunge:
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0:
         
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
+        
         #first we'll derive our sampled noise for injection
+        sampling_id = 'binomial' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       
         #now inject noise
@@ -48079,33 +49629,63 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
-      
-      else:
         
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+#       def erase_seeds(sampling_resource_dict):
+#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+#         keys = list(sampling_resource_dict)
+#         for key in keys:
+#           if key[-5:] == 'seeds':
+#             del sampling_resource_dict[key]
+#         return sampling_resource_dict
 
       #________
         
@@ -48146,9 +49726,22 @@ class AutoMunge:
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0:
         
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
+        
         #now we'll derive our sampled noise for injection
+        sampling_id = 'binomial' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
+        sampling_id = 'choice' + sampling_type
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         if weighted is False:
           mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
         elif weighted is True:
@@ -48264,33 +49857,63 @@ class AutoMunge:
         
       #________
 
-      #note that entropy_seeds accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
-      if 'entropy_seeds' in params:
-        entropy_seeds = params['entropy_seeds']
-      else:
-        entropy_seeds = False
-
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
       if 'random_generator' in params:
         random_generator = params['random_generator']
       else:
         random_generator = np.random.PCG64
-
-      #initialize random number generator
-      #only inlcude entropy seeding when specified
-      #note that entropy seeds passed to spawn_key are a supplement to default seedings from OS
-      if entropy_seeds is False:
-        #initialize generator without seeds
-        nprandom = np.random.Generator(random_generator())
-      
-      else:
         
-        #shuffle entropy seeds
-        if isinstance(entropy_seeds, list):
-          random.shuffle(entropy_seeds)
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
 
-        #initialize generator including supplemental entropy seeds
-        nprandom = np.random.Generator(random_generator(np.random.SeedSequence(spawn_key=entropy_seeds)))
+      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        return nprandom
+      
+#       def erase_seeds(sampling_resource_dict):
+#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+#         keys = list(sampling_resource_dict)
+#         for key in keys:
+#           if key[-5:] == 'seeds':
+#             del sampling_resource_dict[key]
+#         return sampling_resource_dict
 
       #________
         
@@ -48321,7 +49944,7 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights):
+      def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest):
         """
         common support function used to inject noise to either mdf_train or mdf_test when applicable
         """
@@ -48335,8 +49958,16 @@ class AutoMunge:
         df_noise_tempcolumn2 = 2
 
         #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+        sampling_id = 'binomial_' + traintest
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
 
+        sampling_id = 'choice_' + traintest
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         if weighted is False:
           #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
           df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
@@ -48356,7 +49987,7 @@ class AutoMunge:
           df = \
           self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
 
-        return df
+        return df, sampling_resource_dict
       
       if traindata is True:
         flip_prob = flip_prob
@@ -48370,13 +50001,18 @@ class AutoMunge:
       or (testnoise is True and traindata is False) ) \
       and flip_prob > 0:
         
+        if traindata is True:
+          traintest = 'train'
+        if traindata is False:
+          traintest = 'test'
+        
         if swap_noise is False:
           #inject noise to mdf_test
-          mdf_test = \
-          _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights)
+          mdf_test, sampling_resource_dict = \
+          _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
         elif swap_noise is True:
-          mdf_test = \
-          _noise_inject(mdf_test, textcolumns, mdf_test, flip_prob, weighted, weights)
+          mdf_test, sampling_resource_dict = \
+          _noise_inject(mdf_test, textcolumns, mdf_test, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
         
       #now apply data type conversion, this should align with received data types, just applying in case of drift
       #in swap_noise scenario will defer to the upstream data type
@@ -48874,7 +50510,7 @@ class AutoMunge:
   #__FunctionBlock: postmunge feature selection
 
   def __postfeatureselect(self, df_test, testID_column, \
-                        postprocess_dict, printstatus, entropy_seeds, random_generator):
+                        postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -48987,7 +50623,7 @@ class AutoMunge:
       self.postmunge(FSpostprocess_dict, df_test, testID_column = testID_column, \
                      pandasoutput = pandasoutput, printstatus = printstatus, \
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
-                     shuffletrain = True, entropy_seeds = entropy_seeds, random_generator = random_generator)
+                     shuffletrain = True, entropy_seeds = entropy_seeds, random_generator = random_generator, sampling_dict=sampling_dict)
 
       #record validation results from postmunge call
       FS_validations.update({'postfeatureselect_automungecall_validationresults' : FSpostreports_dict['pm_miscparameters_results']})
@@ -49751,7 +51387,7 @@ class AutoMunge:
                 featureeval = False, traindata = False, noise_augment = 0,
                 driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False,
-                entropy_seeds = False, random_generator = False, 
+                entropy_seeds = False, random_generator = False, sampling_dict = False,
                 randomseed = False, encrypt_key = False):
     """
     #This function documented in READ ME, available online at:
@@ -49797,6 +51433,8 @@ class AutoMunge:
     # #- setting traindata setting based on traindata parameter
     # #- logging validation results to temp_miscparameters_results (later consolidated with pm_miscparameters_results)
     # #- passing postmunge specific randomseed parameter through postmunge_randomseed
+    # #- temporary entries based on entropy seeding parameters to entropy_seeds, random_generator, sampling_dict
+    # #- test_plug_marker initialy reset to False and then reverted to original basis prior to return
     # #which are each reset after use
 
     #_________________________________________________________
@@ -49840,24 +51478,52 @@ class AutoMunge:
     #and perform bulk parameter validations via __check_pm_miscparameters
     #and also validate df_test with __check_df_type
 
+    #validate sampling_dict and populate with defaults
+    check_sampling_dict_pm_result, sampling_dict = \
+    self.__check_sampling_dict(sampling_dict, printstatus)
+
+    #validate entropy_seeds and align to common type
+    entropy_seeds, entropy_seeds_pm_result = \
+    self.__check_entropy_seeds(entropy_seeds, printstatus)
+
     #initialize randomseed for default configuration of random random seed
+    #when a sampling performed randomrandomseed returned as True
     #this is used in row shuffling and other random seeds that don't need to match automunge random seed
-    randomrandomseed = False
-    if randomseed is False:
-      randomrandomseed = True
-      #pandas sample accepts between 0:2**32-1
-      randomseed = random.randint(0,4294967295)
+    #note that this may expend two entropy_seeds
+    randomseed, randomrandomseed, entropy_seeds = \
+    self.__populate_randomseed(randomseed, entropy_seeds, 
+                              random_generator, sampling_dict)
 
     #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
     postprocess_dict.update({'postmunge_randomseed' : randomseed})
 
-    #random seeding parameters entropy_seeds, random_generator are added to assign_param and later struck before return
-    postprocess_dict['assign_param'] = \
-    self.__random_parameters_assignparam_append(postprocess_dict['assign_param'], entropy_seeds, random_generator)
-
     #backward compatibility preceding 7.46
     if 'temp_miscparameters_results' not in postprocess_dict:
       postprocess_dict['temp_miscparameters_results'] = {}
+
+    if 'test_plug_marker' in postprocess_dict:
+      test_plug_marker_orig = postprocess_dict['test_plug_marker']
+    else:
+      #backward compatibility preceding 7.63
+      test_plug_marker_orig = False
+    postprocess_dict['test_plug_marker'] = False
+
+    #perform any preparations on entropy_seeds and populate postprocess_dict with entropy_seed/sampling_dict/random_generator
+    rowcount_train = df_test.shape[0]
+    rowcount_test = df_test.shape[0]
+    if traindata is True:
+      traintest = 'train'
+      rowcount_test = 0
+    elif traindata is False:
+      traintest = 'test'
+      rowcount_train = 0
+    else:
+      #this is for the no noise scenarios, we'll set rowcount to zero resulting in no seed requirements
+      traintest = 'test'
+      rowcount_train = 0
+      rowcount_test = 0
+    postprocess_dict = \
+    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, randomseed, postprocess_dict['test_plug_marker'])
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
@@ -49894,13 +51560,16 @@ class AutoMunge:
                                   dupl_rows, featureeval, driftreport, inplace, \
                                   returnedsets, shuffletrain, inversion, traindata, \
                                   testID_column, randomseed, encrypt_key, noise_augment, \
-                                  entropy_seeds, random_generator)
+                                  random_generator)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
     pm_miscparameters_results.update({'check_df_test_type_result' : check_df_test_type_result})
 
     pm_miscparameters_results.update({'decode_valresult' : decode_valresult})
+
+    pm_miscparameters_results.update({'check_sampling_dict_pm_result' : check_sampling_dict_pm_result})
+    pm_miscparameters_results.update({'entropy_seeds_pm_result' : entropy_seeds_pm_result})
     
     #printout display progress
     if printstatus is True:
@@ -49953,7 +51622,7 @@ class AutoMunge:
 
         FSmodel, FScolumn_dict, FS_sorted, FS_validations = \
         self.__postfeatureselect(df_test, testID_column, \
-                               postprocess_dict, printstatus, entropy_seeds, random_generator)
+                               postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict)
 
         madethecut = postprocess_dict['madethecut']
 
@@ -50042,11 +51711,12 @@ class AutoMunge:
       #reset traindata entry in postprocess_dict to avoid overwrite of external
       postprocess_dict['traindata'] = False
       postprocess_dict['temp_miscparameters_results'] = {}
+      postprocess_dict['entropy_seeds'] = False
+      postprocess_dict['random_generator'] = False
+      postprocess_dict['sampling_dict'] = False
+      postprocess_dict['test_plug_marker'] = test_plug_marker_orig
       #strike temporary log from postprocess_dict
       del postprocess_dict['postmunge_randomseed']
-      #strike temporary assign_param entries for random seeding parameters entropy_seeds, random_generator
-      postprocess_dict['assign_param'] = \
-      self.__random_parameters_assignparam_strike(postprocess_dict['assign_param'])
       
       new_feature_ppd_case = False
       
@@ -51019,6 +52689,7 @@ class AutoMunge:
                       shuffletrain = shuffletrain,
                       entropy_seeds = entropy_seeds, 
                       random_generator = random_generator,
+                      sampling_dict = sampling_dict,
                       randomseed = randomseed)
 
         df_test = pd.concat([df_test, new_feature_df], axis=1)
@@ -51091,6 +52762,7 @@ class AutoMunge:
                       traindata = aug_traindata,
                       entropy_seeds = entropy_seeds, 
                       random_generator = random_generator,
+                      sampling_dict = sampling_dict,
                       randomseed = augrandomseed)
 
         #now reset the temporary postmunge postprocess_dict entries
@@ -51208,13 +52880,13 @@ class AutoMunge:
     postprocess_dict['traindata'] = False
     del postprocess_dict['postmunge_randomseed']
 
-    #strike temporary assign_param entries for random seeding parameters entropy_seeds, random_generator
-    postprocess_dict['assign_param'] = \
-    self.__random_parameters_assignparam_strike(postprocess_dict['assign_param'])
-
     #consolide validation results and reset temporary log in postprocess_dict
     postreports_dict['pm_miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
     postprocess_dict['temp_miscparameters_results'] = {}
+    postprocess_dict['entropy_seeds'] = False
+    postprocess_dict['random_generator'] = False
+    postprocess_dict['sampling_dict'] = False
+    postprocess_dict['test_plug_marker'] = test_plug_marker_orig
 
     #a few anonymizations for privacy_encode in returned postreports_dict
     if postprocess_dict['privacy_encode'] is not False:
