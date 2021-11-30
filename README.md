@@ -111,7 +111,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
-             entropy_seeds = False, random_generator = False, 
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -151,6 +151,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              randomseed = False, encrypt_key = False)
 ```
 
@@ -248,7 +249,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
-             entropy_seeds = False, random_generator = False, 
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -288,6 +289,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              randomseed = False, encrypt_key = False
 ```
 
@@ -418,7 +420,7 @@ am.automunge(df_train, df_test = False,
                              'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
-             entropy_seeds = False, random_generator = False, 
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              privacy_encode = False, encrypt_key = False, printstatus = True)
 ```
 
@@ -714,7 +716,7 @@ and stochastic_impute_categoric has potential to interfere with early stopping c
 Each of these can be deactivated in ML_cmnd if desired.) 
 
 * randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, 
-randomseed is based on a uniform randomly sampled integer within that range.
+randomseed is based on a uniform randomly sampled integer within that range using an entropy_seeds when available.
 Can be manually specified such as for repeatable data set shuffling, feature importance, and other algorithms.
 Although ML infill by default samples a new random seed with each model training, to apply this random seed
 to all model training operations can set a ML_cmnd entry as ML_cmnd['stochastic_training_seed']=False.
@@ -1612,7 +1614,7 @@ associated automunge(.) call.
 #___________________________________________________________________________
 #Other optional entries for processdict include:
 #info_retention, inplace_option, defaultparams, labelctgy, 
-#defaultinfill, dtype_convert, and functionpointer.
+#defaultinfill, dtype_convert, functionpointer, and noise_transform.
 
 #___________________________________________________________________________
 #info_retention: boolean marker associated with an inversion operation that helps inversion prioritize
@@ -1670,6 +1672,16 @@ associated automunge(.) call.
 #                 that may be helpful in cases where a new entry is very similar to some existing entry.
 #                 (**As the exception labelctgy not accessed from functionpointer 
 #                 since it is specific to a root category's family tree.)
+
+#___________________________________________________________________________
+#noise_transform: this option serves to specify the noise injection types for noise transforms
+#                 used to support an entropy seeding based on sampling_dict['sampling_type'] specification
+#                 defaults to False when not specified, can also pass as one of
+#                 {'numeric', 'categoric', 'binary', False}
+#                 numeric is for transforms similar to DPnb/DPmm/DPrt which have a binomial and distribution sampling
+#                 categoric is for transforms similar to DPod/DPmc which have a binomial and a choice sampling
+#                 binary is for transforms similar to an alternate DPbn configuration which only have a binomial sampling
+#                 False is for transforms without sampling_dict['sampling_type'] specification support
 
 #___________________________________________________________________________
 #Other clarifications:
@@ -1853,9 +1865,20 @@ new features in the prior features' ML infill basis and visa versa, instead of a
 to automunge(.) and populate a new postprocess_dict - noting this might justify retraining the original model due to 
 a new ML infill basis of original features).
 
-* entropy_seeds: defaults to False, accepts integer or list of integers which may serve as supplemental sources of entropy for noise injections with DP transforms. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict.
+* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if inssuficent seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator.  Note that the sampling_report_dict will report requirements seperately for train and test data and in the bulk_seeds case will have a row count basis. (If not passing test data to automunge(.) the test budget can be omitted.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate.
 
 * random_generator: defaults to False, accepts numpy.random.Generator formatted random samplers which are applied for noise injections with DP transforms. Note that random_generator may optionally be applied in conjunction with entropy_seeds. When not specified applies numpy.random.PCG64. Examples of alternate generators could be np.random.MT19937 for Mersenne Twister. Note that alternate libraries with numpy.random formatted generators can also be accessed for this purpose, such as for example for sampling with support of quantum circuits. Or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit. random_generator is specific to an automunge(.) or postmunge(.) call, in other words it is not returned in the populated postprocess_dict.
+
+* sampling_dict: defaults to False, accepts a dictionary including possible keys of {sampling_type, sampling_report_dict, stochastic_count_safety_factor, extra_seed_generator, sampling_generator}. sampling_dict is specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. 
+  - sampling_type accepts a string as one of {'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
+    - default: every sampling receives a common set of entropy_seeds per user specification which are shuffled and passed to each call
+    - bulk_seeds: every sampling receives a unique supplemental seed for every sampled entry for sampling from sampling_generator
+    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator
+    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator
+  - sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'] from an automunge(.), call if this is not received it will be generated internally. sampling_report_dict is a resource for determining how many entropy_seeds are needed for various sampling_type scnearios.
+  - stochastic_count_safety_factor: defaults to 0.15, accepts float 0-1, is associated with the bulk_seeds sampling_type case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries
+  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator
+  - sampling_generator: used to specify which generator will be used for sampling operations other than generation of additional entropy_seeds. defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64'}
 
 * privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
@@ -1873,7 +1896,7 @@ privacy_encode is activated postmunge options for featureeval and driftreport ar
 It may be beneficial in privacy sensitive applications to inject noise via DP transforms and apply distribution conversions to
 numeric features e.g. via DPqt or DPbx. Further detail on privacy encoding provided in the essay [Private Encodings with Automunge](https://medium.com/automunge/private-encodings-with-automunge-f73dcdb57289).
 
-* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter, the returned postprocess_dict may still contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
+* encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter (for scenarios other than 'private'), the returned postprocess_dict will contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map', 'sampling_report_dict'] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
 * printstatus: user can pass _True/False/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to True for all printouts. When False only error
@@ -1917,6 +1940,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              randomseed = False, encrypt_key = False
 ```
 
@@ -2050,6 +2074,7 @@ am.postmunge(postprocess_dict, df_test,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
+             entropy_seeds = False, random_generator = False, sampling_dict = False,
              randomseed = False, encrypt_key = False
 ```
 
@@ -2256,7 +2281,22 @@ postprocess_dict['finalcolumns_trainID']
 * shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False.
 
-* randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, randomseed is based on a uniform randomly sampled integer within that range.
+* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if inssuficent seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator. Note that the sampling_report_dict will report requirements seperately for train or test data and in the bulk_seeds case will have a row count basis. (The use of train or test budget should align with the postmunge traindata parameter.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate.
+
+* random_generator: defaults to False, accepts numpy.random.Generator formatted random samplers which are applied for noise injections with DP transforms. Note that random_generator may optionally be applied in conjunction with entropy_seeds. When not specified applies numpy.random.PCG64. Examples of alternate generators could be np.random.MT19937 for Mersenne Twister. Note that alternate libraries with numpy.random formatted generators can also be accessed for this purpose, such as for example for sampling with support of quantum circuits. Or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit. random_generator is specific to an automunge(.) or postmunge(.) call, in other words it is not returned in the populated postprocess_dict.
+
+* sampling_dict: defaults to False, accepts a dictionary including possible keys of {sampling_type, sampling_report_dict, stochastic_count_safety_factor, extra_seed_generator, sampling_generator}. sampling_dict is specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. 
+  - sampling_type accepts a string as one of {'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
+    - default: every sampling receives a common set of entropy_seeds per user specification which are shuffled and passed to each call
+    - bulk_seeds: every sampling for every entry receives a unique supplemental seed for sampling from sampling_generator
+    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator
+    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator
+  - sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'] from an automunge(.), call if this is not received it will be generated internally. sampling_report_dict is a resource for determining how many entropy_seeds are needed for various sampling_type scnearios.
+  - stochastic_count_safety_factor: defaults to 0.15, accepts float 0-1, is associated with the bulk_seeds sampling_type case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries
+  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator
+  - sampling_generator: used to specify which generator will be used for sampling operations other than generation of additional entropy_seeds. defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64'}
+
+* randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, randomseed is based on a uniform randomly sampled integer within that range using an entropy_seeds when available.
 This value is used as the postmunge(.) seed of randomness for operations that don't require matched random seeding to automunge(.).
 
 * encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
@@ -3594,6 +3634,7 @@ on flip_prob parameter.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.03
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3616,6 +3657,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.02
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3639,6 +3681,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.02
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3662,6 +3705,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3683,6 +3727,7 @@ on number of activations)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes
@@ -3706,6 +3751,7 @@ can be passed directly to DPoh.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: comparable to onht
   - returned datatype: int8
   - inversion available: yes
@@ -3729,6 +3775,7 @@ can be passed directly to DP10.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: comparable to 1010
   - returned datatype: int8
   - inversion available: yes
@@ -3752,6 +3799,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hs10 metrics
   - returned datatype: int8
   - inversion available: yes
@@ -3773,6 +3821,7 @@ on number of activations).
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
@@ -3794,6 +3843,7 @@ on number of activations).
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
@@ -3812,6 +3862,7 @@ on number of activations).
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: nmbr metrics
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3830,6 +3881,7 @@ on number of activations).
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: 1010 metrics
   - returned datatype: int8
   - inversion available: yes
