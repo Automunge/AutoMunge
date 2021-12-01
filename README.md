@@ -3806,7 +3806,13 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
 * DPhs: applies a multi column hash binarization via hash followed by a multi column categoric noise injection via mlhs, which
 flips the activations in each column individually per parameter flip_prob which defaults to 0.03 to a weighted random draw from the
 set of activations (including the current activation so actual flip percent is < flip_prob based
-on number of activations).
+on number of activations). assign_param for mlhs requires passing parameters to DPod through the mlti assignparam norm_params as noted below, and any noise distribution parameters should be redundantly passed to the mlhs call for purposes of setting entropy seeds. For example:
+```
+assignparam = {'mlhs' : 
+                {'targetinputcolumn' : 
+                  {'testnoise' : True, 
+                   'norm_params' : {'testnoise' : True}}}}
+```
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
   - default NArowtype: justNaN
