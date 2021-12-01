@@ -5282,7 +5282,9 @@ machine learning with the Automunge platform. Feedback is welcome.
 As a citation, please note that the Automunge package makes use of 
 the Pandas, Scikit-learn, SciPy stats, and NumPy libraries. In addition 
 to the default of Scikit-learn's Random Forest predictive models, 
-Automunge also has options for ML infill using the AutoGluon, CatBoost, or FLAML libraries.
+Automunge also has options for ML infill using the AutoGluon, CatBoost, FLAML, 
+or XGboost libraries, and includes a hyperparameter tuning option by
+the Optuna library.
 
 Wes McKinney. Data Structures for Statistical Computing in Python,
 Proceedings of the 9th Python in Science Conference, 51-56 (2010)
