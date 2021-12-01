@@ -36358,7 +36358,7 @@ class AutoMunge:
                               printstatus, 
                               check_sampling_dict_result,
                               default='custom', 
-                              valid_entries={'custom', 'PCG64', 'sampling_generator'},
+                              valid_entries={'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'},
                               valid_type=str)
     
     sampling_dict, check_sampling_dict_result = \
@@ -36367,7 +36367,7 @@ class AutoMunge:
                               printstatus, 
                               check_sampling_dict_result,
                               default='custom', 
-                              valid_entries={'custom', 'PCG64'},
+                              valid_entries={'custom', 'PCG64', 'MersenneTwister'},
                               valid_type=str)
     
     return check_sampling_dict_result, sampling_dict
@@ -37131,8 +37131,8 @@ class AutoMunge:
       #now that we have our seed requirement, let's compare to the available entropy seeds
       provided_seed_count = len(entropy_seeds)
         
-      #if fewer seeds were provided, additional seeds are extracted
-      if provided_seed_count < seed_requirement:
+      #if fewer seeds were provided, additional seeds are extracted except for the extra_seed_generator off case
+      if provided_seed_count < seed_requirement and extra_seed_generator != 'off':
         
         spawn_seed = [randomseed]
         if provided_seed_count > 0:
@@ -37145,6 +37145,10 @@ class AutoMunge:
         or extra_seed_generator == 'sampling_generator' \
         and sampling_generator == 'PCG64':
           randomgenerator = np.random.PCG64
+        elif extra_seed_generator == 'MersenneTwister' \
+        or extra_seed_generator == 'sampling_generator' \
+        and sampling_generator == 'MersenneTwister':
+          randomgenerator = np.random.MT19937
         elif extra_seed_generator == 'custom' \
         or extra_seed_generator == 'sampling_generator' \
         and sampling_generator == 'custom':
@@ -37174,6 +37178,8 @@ class AutoMunge:
         
         if sampling_generator =='PCG64':
           randomgenerator = np.random.PCG64
+        elif sampling_generator =='MersenneTwister':
+          randomgenerator = np.random.MT19937
         elif sampling_generator == 'custom':
           #else only use default if random_generator not specified
           if random_generator is False:
@@ -37251,6 +37257,8 @@ class AutoMunge:
 
         if sampling_generator == 'PCG64':
           randomgenerator = np.random.PCG64
+        elif sampling_generator == 'MersenneTwister':
+          randomgenerator = np.random.MT19937
         elif sampling_generator == 'custom':
           #else only use default if random_generator not specified
           #if random_generator was received as False will have already been converted to PCG64
@@ -37638,6 +37646,8 @@ class AutoMunge:
       #this determines whether we extract additional seeds with default or custom generator
       if sampling_generator == 'PCG64':
         randomgenerator = np.random.PCG64
+      elif sampling_generator == 'MersenneTwister':
+        randomgenerator = np.random.MT19937
       elif sampling_generator == 'custom':
         #else only use default if random_generator not specified
         if random_generator is False:
@@ -42050,7 +42060,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.63'
+    automungeversion = '7.64'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
