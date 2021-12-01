@@ -24850,23 +24850,34 @@ class AutoMunge:
         weight = (mdf_train[mdf_train[column] == entry].shape[0]) / mdf_train.shape[0]
         weights.append(weight)
 
+    binomial_activation_count = 0
+    test_binomial_activation_count = 0
+
     if trainnoise is True and flip_prob > 0:  
-    
-      #derive our sampled noise for injection
-      sampling_id = 'binomial_train'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-      sampling_resource_dict[sampling_id + '_call_count'] += 1
-      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
-      mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      
+      if flip_prob == 1:
+        mdf_train[DPod_tempcolumn1] = np.ones(mdf_train.shape[0]).astype(int)
+      else:
+        #derive our sampled noise for injection
+        sampling_id = 'binomial_train'
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
+        mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      binomial_activation_count = mdf_train[DPod_tempcolumn1].sum()
       
       sampling_id = 'choice_train'
       nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       if weighted is False:
-        mdf_train[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_train.shape[0])), index=mdf_train.index)
+        choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
       elif weighted is True:
-        mdf_train[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_train.shape[0])), index=mdf_train.index)
+        choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
+      
+      #the samples were a shape based on number of binomial activations, now extract to full column
+      mdf_train[DPod_tempcolumn2] = 0
+      mdf_train.loc[mdf_train[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -24881,25 +24892,31 @@ class AutoMunge:
       mdf_train[DPod_column] = mdf_train[column].copy()
     
     #for test data is just pass-through unless testnoise or traindata is activated
-    if testnoise is False:
-      mdf_test[DPod_column] = mdf_test[column].copy()
-    elif testnoise is True and test_flip_prob > 0:
+    if testnoise is True and test_flip_prob > 0:
       
-      #first we'll derive our sampled noise for injection
-      sampling_id = 'binomial_test'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-      sampling_resource_dict[sampling_id + '_call_count'] += 1
-      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
-      mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      if test_flip_prob == 1:
+        mdf_test[DPod_tempcolumn1] = np.ones(mdf_test.shape[0]).astype(int)
+      else:
+        #first we'll derive our sampled noise for injection
+        sampling_id = 'binomial_test'
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+        mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      test_binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
       
       sampling_id = 'choice_test'
       nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       if test_weighted is False:
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+        choice_samples = nprandom.choice(ord_encodings, size=(test_binomial_activation_count))
       elif test_weighted is True:
-        mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
+        choice_samples = nprandom.choice(ord_encodings, p=weights, size=(test_binomial_activation_count))
+      
+      #the samples were a shape based on number of binomial activations, now extract to full column
+      mdf_test[DPod_tempcolumn2] = 0
+      mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
 
       #now inject noise
       #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
@@ -24908,6 +24925,9 @@ class AutoMunge:
 
       del mdf_test[DPod_tempcolumn1]
       del mdf_test[DPod_tempcolumn2]
+
+    else:
+      mdf_test[DPod_column] = mdf_test[column].copy()
 
     #data type is conditional based on encoding space
     max_encoding = len(ord_encodings) - 1
@@ -24938,6 +24958,8 @@ class AutoMunge:
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                             'binomial_activation_count' : binomial_activation_count, \
+                                             'test_binomial_activation_count' : test_binomial_activation_count, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -25249,22 +25271,29 @@ class AutoMunge:
       df_noise_tempcolumn1 = 1
       df_noise_tempcolumn2 = 2
 
-      #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
-      sampling_id = 'binomial_' + traintest
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-      sampling_resource_dict[sampling_id + '_call_count'] += 1
-      sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
-      df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+      if flip_prob == 1:
+        df_noise[df_noise_tempcolumn1] = np.ones(df.shape[0]).astype(int)
+      else:
+        #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+        sampling_id = 'binomial_' + traintest
+        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
+        df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+      binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
 
       sampling_id = 'choice_' + traintest
       nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
       if weighted is False:
-        #df_noise_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-        df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
+        choice_samples = nprandom.choice(unique_range, size=(binomial_activation_count))
       elif weighted is True:
-        df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+        choice_samples = nprandom.choice(unique_range, p=weights, size=(binomial_activation_count))
+        
+      #the samples were a shape based on number of binomial activations, now extract to full column
+      df_noise[df_noise_tempcolumn2] = 0
+      df_noise.loc[df_noise[df_noise_tempcolumn1] == 1, df_noise_tempcolumn2] = choice_samples
 
       #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
       df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
@@ -25279,17 +25308,20 @@ class AutoMunge:
         df = \
         self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
       
-      return df, sampling_resource_dict
+      return df, sampling_resource_dict, binomial_activation_count
     
+    binomial_activation_count = 0
+    test_binomial_activation_count = 0
+
     if trainnoise is True and flip_prob > 0:
       
       if swap_noise is False:
         #inject noise to mdf_train
-        mdf_train, sampling_resource_dict = \
+        mdf_train, sampling_resource_dict, binomial_activation_count = \
         _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
-        mdf_train, sampling_resource_dict = \
+        mdf_train, sampling_resource_dict, binomial_activation_count = \
         _noise_inject(mdf_train, textcolumns, mdf_train, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
     
     #inspect testnoise for determination of whether to inject noise to mdf_test
@@ -25297,11 +25329,11 @@ class AutoMunge:
       
       if swap_noise is False:
         #inject noise to mdf_test
-        mdf_test, sampling_resource_dict = \
+        mdf_test, sampling_resource_dict, test_binomial_activation_count = \
         _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
-        mdf_test, sampling_resource_dict = \
+        mdf_test, sampling_resource_dict, test_binomial_activation_count = \
         _noise_inject(mdf_test, textcolumns, mdf_test, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
     
     #now apply data type conversion, this should align with received data types, just applying in case of drift
@@ -25345,7 +25377,10 @@ class AutoMunge:
                                               'maxencodings' : maxencodings, \
                                               'upstream_hs10' : upstream_hs10, \
                                               'inplace' : inplace, \
-                                              'sampling_resource_dict' : sampling_resource_dict}}
+                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                              'binomial_activation_count' : binomial_activation_count, \
+                                              'test_binomial_activation_count' : test_binomial_activation_count, \
+                                             }}
     
     for textcolumn in textcolumns:
 
@@ -28882,7 +28917,7 @@ class AutoMunge:
       if 'stochastic_impute_numeric_noisedistribution' in ML_cmnd:
         noisedistribution = ML_cmnd['stochastic_impute_numeric_noisedistribution']
       else:
-        noisedistribution = 'normal'
+        noisedistribution = 'laplace'
 
       #store parameters for use with test data
       postprocess_dict['stochastic_imputation_dict'].update({
@@ -36915,14 +36950,12 @@ class AutoMunge:
     #currently only distribution sampling has a stochastic count
     #but choice sampling update is pending so will include choice in the safety factor
     stochastic_count_train = \
-    master_sampling_resource_dict['distribution_train_sample_count']
-    #this update pending
-    # + master_sampling_resource_dict['choice_train_sample_count']
+    master_sampling_resource_dict['distribution_train_sample_count'] \
+    + master_sampling_resource_dict['choice_train_sample_count']
     
     stochastic_count_test = \
-    master_sampling_resource_dict['distribution_test_sample_count']
-    #this update pending
-    # + master_sampling_resource_dict['choice_test_sample_count']
+    master_sampling_resource_dict['distribution_test_sample_count'] \
+    + master_sampling_resource_dict['choice_test_sample_count']
     
     #_____
     
@@ -37470,11 +37503,9 @@ class AutoMunge:
           if sampling_type in {'bulk_seeds'}:
             #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
             binomial_train_sample_count = rowcount_trian
-            choice_train_sample_count = rowcount_trian
 
-            #this update pending
-            # choice_train_sample_count = \
-            # rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+            choice_train_sample_count = \
+            rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
             
           elif sampling_type in {'sampling_seed'}:
             binomial_train_sample_count = 1
@@ -37484,11 +37515,9 @@ class AutoMunge:
 
           if sampling_type in {'bulk_seeds'}:
             binomial_test_sample_count = rowcount_test
-            choice_test_sample_count = rowcount_test
 
-            #this update pending
-            # choice_test_sample_count = \
-            # rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+            choice_test_sample_count = \
+            rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
             
           elif sampling_type in {'sampling_seed'}:
             binomial_test_sample_count = 1
@@ -42060,7 +42089,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.64'
+    automungeversion = '7.65'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -49741,22 +49770,30 @@ class AutoMunge:
         elif traindata is False:
           sampling_type = '_test'
         
-        #now we'll derive our sampled noise for injection
-        sampling_id = 'binomial' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-        sampling_resource_dict[sampling_id + '_call_count'] += 1
-        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
-        mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+        if flip_prob == 1:
+          mdf_test[DPod_tempcolumn1] = np.ones(mdf_test.shape[0]).astype(int)
+        else:
+          #first we'll derive our sampled noise for injection
+          sampling_id = 'binomial' + sampling_type
+          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+          mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+        binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
 
         sampling_id = 'choice' + sampling_type
         nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         if weighted is False:
-          mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, size=(mdf_test.shape[0])), index=mdf_test.index)
+          choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
         elif weighted is True:
-          mdf_test[DPod_tempcolumn2] = pd.DataFrame(nprandom.choice(ord_encodings, p=weights, size=(mdf_test.shape[0])), index=mdf_test.index)
-      
+          choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
+
+        #the samples were a shape based on number of binomial activations, now extract to full column
+        mdf_test[DPod_tempcolumn2] = 0
+        mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
+
         #now inject noise
         #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
         mdf_test[DPod_column] = \
@@ -49967,22 +50004,29 @@ class AutoMunge:
         df_noise_tempcolumn1 = 1
         df_noise_tempcolumn2 = 2
 
-        #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
-        sampling_id = 'binomial_' + traintest
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-        sampling_resource_dict[sampling_id + '_call_count'] += 1
-        sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
-        df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+        if flip_prob == 1:
+          df_noise[df_noise_tempcolumn1] = np.ones(df.shape[0]).astype(int)
+        else:
+          #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
+          sampling_id = 'binomial_' + traintest
+          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
+          df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
+        binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
 
         sampling_id = 'choice_' + traintest
         nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         if weighted is False:
-          #DPod_tempcolumn2 will return a uniform random draw of integer sampled from unique_range for each row
-          df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, size=(df.shape[0])), index=df.index)
+          choice_samples = nprandom.choice(unique_range, size=(binomial_activation_count))
         elif weighted is True:
-          df_noise[df_noise_tempcolumn2] = pd.DataFrame(nprandom.choice(unique_range, p=weights, size=(df.shape[0])), index=df.index)
+          choice_samples = nprandom.choice(unique_range, p=weights, size=(binomial_activation_count))
+
+        #the samples were a shape based on number of binomial activations, now extract to full column
+        df_noise[df_noise_tempcolumn2] = 0
+        df_noise.loc[df_noise[df_noise_tempcolumn1] == 1, df_noise_tempcolumn2] = choice_samples
 
         #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
         df_unique2 = df_unique.iloc[df_noise[df_noise_tempcolumn2]]
@@ -49997,7 +50041,7 @@ class AutoMunge:
           df = \
           self.__autowhere(df, textcolumn, df_noise[df_noise_tempcolumn1] == 1, df_unique2[textcolumn], specified='replacement')
 
-        return df, sampling_resource_dict
+        return df, sampling_resource_dict, binomial_activation_count
       
       if traindata is True:
         flip_prob = flip_prob
@@ -50018,10 +50062,10 @@ class AutoMunge:
         
         if swap_noise is False:
           #inject noise to mdf_test
-          mdf_test, sampling_resource_dict = \
+          mdf_test, sampling_resource_dict, binomial_activation_count = \
           _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
         elif swap_noise is True:
-          mdf_test, sampling_resource_dict = \
+          mdf_test, sampling_resource_dict, binomial_activation_count = \
           _noise_inject(mdf_test, textcolumns, mdf_test, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
         
       #now apply data type conversion, this should align with received data types, just applying in case of drift

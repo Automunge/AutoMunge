@@ -1005,7 +1005,7 @@ Please note that there is a defaulted option to inject stochastic noise into der
 can be deactivated for numeric features by passing ML_cmnd['stochastic_impute_numeric'] = False
 and/or categoric features by passing ML_cmnd['stochastic_impute_categoric'] = False. 
 
-Numeric noise injections sample from either a default normal distribution or optionally a laplace
+Numeric noise injections sample from either a default laplace distribution or optionally a normal
 distribution. Default noise profile is mu=0, sigma=0.03, and flip_prob=0.06 (where flip_prob is ratio 
 of a feature set's imputations receiving injections). Please note that this scale is based on a 
 min/max scaled representation of the imputations. Parameters can be configured by passing 
