@@ -5198,3 +5198,8 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - results in a significant reduction in entropy_seeds required to support bulk_seeds case, for a dataframe of all categoric features, about a 47% reduction in number of sampled entries
 - found and fixed an edge case for DPod
 - also updated ML infill's stochastic_impute_numeric option to default to laplace instead of gaussian noise based on some benchmarking experiments
+
+7.66
+- added entropy seeding support to DPhs which is for multi-column hashing with DPod noise applied to each column
+- applies the same set of seeds to each target shuffled
+- now have entropy seeding support for full range of noise injection options
