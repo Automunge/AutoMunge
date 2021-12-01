@@ -5185,3 +5185,9 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - renamed variable binomial_sample_count to binomial_activation_count for clarity
 - DPhs support for sampling_dict['sampling_type'] specification pending
 - automunge(.) validation data processing support for sampling_dict['sampling_type'] specification pending further consideration
+
+7.64
+- new options supported for sampling_dict['sampling_generator'] and sampling_dict['extra_seed_generator']
+- sampling_dict['sampling_generator'] now supports entry 'MersenneTwister' which applies np.random.MT19937
+- sampling_dict['extra_seed_generator'] now supports entries 'MersenneTwister' to apply np.random.MT19937 and 'off' to turn off sampling of extra seeds
+- (there may be a workflow when applying a custom generator that additional entropy seeds aren't needed)
