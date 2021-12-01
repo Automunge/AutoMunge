@@ -5191,3 +5191,10 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - sampling_dict['sampling_generator'] now supports entry 'MersenneTwister' which applies np.random.MT19937
 - sampling_dict['extra_seed_generator'] now supports entries 'MersenneTwister' to apply np.random.MT19937 and 'off' to turn off sampling of extra seeds
 - (there may be a workflow when applying a custom generator that additional entropy seeds aren't needed)
+
+7.65
+- reduced number of sampled entries associated with choice sampling applied for categoric noise injections DPod and DPmc (which most categoric noise transforms are built on top of)
+- now instead of sampling a choice entry for every row, the choice entries are only sampled based on the number of binomial activations
+- results in a significant reduction in entropy_seeds required to support bulk_seeds case, for a dataframe of all categoric features, about a 47% reduction in number of sampled entries
+- found and fixed an edge case for DPod
+- also updated ML infill's stochastic_impute_numeric option to default to laplace instead of gaussian noise based on some benchmarking experiments
