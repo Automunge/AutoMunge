@@ -36984,22 +36984,22 @@ class AutoMunge:
           print()
 
         _1, _2, _3, _4, _5, _6, _7, _8, _9, temp_ppd = \
-        am.automunge(df_train_temp,
-                     df_test = df_train_temp,
-                     assigncat = assigncat,
-                     assignparam = assignparam,
-                     sampling_dict = {'sampling_type' : 'default'},
-                     entropy_seeds = False,
-                     random_generator = False,
-                     MLinfill = False,
-                     NArw_marker = False,
-                     printstatus = False,
-                     eval_ratio = 1.,
-                     numbercategoryheuristic = numbercategoryheuristic,
-                     transformdict = transformdict,
-                     processdict = processdict,
-                     evalcat=evalcat,
-                    )
+        self.automunge(df_train_temp,
+                      df_test = df_train_temp,
+                      assigncat = assigncat,
+                      assignparam = assignparam,
+                      sampling_dict = {'sampling_type' : 'default'},
+                      entropy_seeds = False,
+                      random_generator = False,
+                      MLinfill = False,
+                      NArw_marker = False,
+                      printstatus = False,
+                      eval_ratio = 1.,
+                      numbercategoryheuristic = numbercategoryheuristic,
+                      transformdict = transformdict,
+                      processdict = processdict,
+                      evalcat=evalcat,
+                      )
         
         sampling_dict['sampling_report_dict'] = temp_ppd['sampling_report_dict']
     
@@ -42257,7 +42257,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.66'
+    automungeversion = '7.67'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
