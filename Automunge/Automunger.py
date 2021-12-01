@@ -7927,7 +7927,10 @@ class AutoMunge:
                                   'inverseprocess' : self._inverseprocess_mlti,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'dtype' : 'mlhs',
+                                                     'flip_prob' : 0.03,
+                                                     'testnoise' : False,
                                                      'norm_params' : {'flip_prob' : 0.03,
                                                                       'testnoise' : False,
                                                                       'weighted' : True},
@@ -12694,6 +12697,99 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+      
+    #________
+
+    #when applying mlti as a noise transform mlhs for DPhs
+    #redundant noise parameters need to be passed both to mlti params and to norm_params
+    #mlti params for purposes of deriving entroy seed requirements
+    #and norm_params for purposes of passing to norm_category
+    #(as alternative to norm_params global_assignparam params or default_assignparam will also work)
+
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
+
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      #default also populated in __random_parameters_params_append
+      flip_prob = 0.03
+      
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      #default also populated in __random_parameters_params_append
+      test_flip_prob = 0.01
+
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+    
+#     #note that in the random_generator == False scenario 
+#     #__random_parameters_params_append will have set to np.random.PCG64
+#     nprandom_dict = {'custom' : random_generator,
+#                      'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
+    else:
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                               }
+        
+#     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+#       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+#       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+#       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+#       nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+#       return nprandom
+    
+    def erase_seeds(sampling_resource_dict):
+      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+      keys = list(sampling_resource_dict)
+      for key in keys:
+        if key[-5:] == 'seeds':
+          del sampling_resource_dict[key]
+      return sampling_resource_dict
+
+    #________
 
     #this is to support accessing defaultparams from process_dict based on norm_category
     mlti_norm_params = self.__grab_params({norm_category : {column : norm_params}}, 
@@ -12723,6 +12819,16 @@ class AutoMunge:
     if 'default_assignparam' in assignparam:
       if norm_category in assignparam['default_assignparam']:
         mlti_norm_params.update(assignparam['default_assignparam'][norm_category])
+        
+    #for now operating on convention that the same entropy seeding parameters are passed to each instance
+    #traindata inspection is applicable to postmunge, in automunge will not be present
+    if 'noise_transform' in postprocess_dict['process_dict'][norm_category] \
+    and postprocess_dict['process_dict'][norm_category]['noise_transform'] is not False \
+    and ( 'traindata' not in postprocess_dict or 'traindata' in postprocess_dict \
+    and postprocess_dict['traindata'] not in {'train_no_noise', 'test_no_noise'}):
+      
+      mlti_norm_params.update({'random_generator' : random_generator,
+                               'sampling_resource_dict' : sampling_resource_dict})
 
     #textcolumns are never returned, they just used to applky the intermediate suffix appender associated with this tree category
     #so we'll always pass inplace as True in norm_params and if not accepted based on inplace_option in process_dict delete textcolumns
@@ -12765,6 +12871,13 @@ class AutoMunge:
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
             mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
+            
+        #for entropy seeding we'll shuffle for each application
+        if 'sampling_resource_dict' in mlti_norm_params_column_dict[inputcolumn]:
+          for entry in mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict']:
+            if entry[-5:] == 'seeds' \
+            and isinstance(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+              np.random.shuffle(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry])
         
         mdf_train, mdf_test, column_dict_list_portion = \
         self.__custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
@@ -12790,6 +12903,13 @@ class AutoMunge:
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
             mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
+            
+        #for entropy seeding we'll shuffle for each application
+        if 'sampling_resource_dict' in mlti_norm_params_column_dict[inputcolumn]:
+          for entry in mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict']:
+            if entry[-5:] == 'seeds' \
+            and isinstance(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+              np.random.shuffle(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry])
 
         mdf_train, mdf_test, column_dict_list_portion = \
         postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
@@ -12815,6 +12935,13 @@ class AutoMunge:
         if norm_category in assignparam:
           if inputcolumn in assignparam[norm_category]:
             mlti_norm_params_column_dict[inputcolumn].update(assignparam[norm_category][inputcolumn])
+            
+        #for entropy seeding we'll shuffle for each application
+        if 'sampling_resource_dict' in mlti_norm_params_column_dict[inputcolumn]:
+          for entry in mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict']:
+            if entry[-5:] == 'seeds' \
+            and isinstance(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+              np.random.shuffle(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'][entry])
 
         mdf_train, column_dict_list_portion =  \
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_train, inputcolumn, category, \
@@ -12870,6 +12997,42 @@ class AutoMunge:
           else:
             mdf_train[final_returned_column] = mdf_train[final_returned_column].astype(np.uint32)
             mdf_test[final_returned_column] = mdf_test[final_returned_column].astype(np.uint32)
+    
+    #_____
+    #entropy seeding support
+      
+    #erase seeds
+    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    
+    if 'noise_transform' in postprocess_dict['process_dict'][norm_category] \
+    and postprocess_dict['process_dict'][norm_category]['noise_transform'] is not False \
+    and ( 'traindata' not in postprocess_dict or 'traindata' in postprocess_dict \
+    and postprocess_dict['traindata'] not in {'train_no_noise', 'test_no_noise'}):
+      
+      #erase seeds that were saved in mlti_norm_params_column_dict
+      for inputcolumn in textcolumns:
+        if 'sampling_resource_dict' in mlti_norm_params_column_dict[inputcolumn]:
+          mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'] = \
+          erase_seeds(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'])
+        
+      #aggregate counts into the returned sampling_resource_dict from norm_category reports
+      for norm_column_dict in norm_column_dict_list:
+        for norm_column_dict_key in norm_column_dict:
+          if 'normalization_dict' in norm_column_dict[norm_column_dict_key] \
+          and norm_column_dict_key in norm_column_dict[norm_column_dict_key]['normalization_dict'] \
+          and 'sampling_resource_dict' in norm_column_dict[norm_column_dict_key]['normalization_dict'][norm_column_dict_key]:
+            sampling_resource_dict_single = norm_column_dict[norm_column_dict_key]['normalization_dict'][norm_column_dict_key]['sampling_resource_dict']
+            
+            #here are the counts we'll aggregate, which will have integer entries (seeds will be empty list or array)
+            aggregated_counts = []
+            for entry in sampling_resource_dict:
+              if isinstance(sampling_resource_dict[entry], (int, float)):
+                aggregated_counts.append(entry)
+                
+            for aggregated_count in aggregated_counts:
+              if aggregated_count in sampling_resource_dict_single:
+                sampling_resource_dict[aggregated_count] += sampling_resource_dict_single[aggregated_count]
+    #_____
 
     textnormalization_dict = {}
     if len(final_returned_columns) > 0:
@@ -12883,6 +13046,11 @@ class AutoMunge:
                                                               'dtype' : dtype, \
                                                               'max_encoding_for_dtype_convert_dict' : max_encoding_for_dtype_convert_dict, \
                                                               'final_returned_columns' : final_returned_columns, \
+                                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                                              'trainnoise' : trainnoise,
+                                                              'testnoise' : testnoise,
+                                                              'flip_prob' : flip_prob,
+                                                              'test_flip_prob' : test_flip_prob,
                                                               'suffix' : suffix, \
                                                               'inplace' : inplace}}
 
@@ -42089,7 +42257,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.65'
+    automungeversion = '7.66'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44093,6 +44261,89 @@ class AutoMunge:
       inplace = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
       
+      #________
+
+      #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+      #postmunge(.) has a corresponding parameter to support
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+
+#       #note that in the random_generator == False scenario 
+#       #__random_parameters_params_append will have set to np.random.PCG64
+#       nprandom_dict = {'custom' : random_generator,
+#                        'default': np.random.PCG64}
+
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                 }
+
+#       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+#         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+#         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+#         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+#         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+#         return nprandom
+
+#       def erase_seeds(sampling_resource_dict):
+#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+#         keys = list(sampling_resource_dict)
+#         for key in keys:
+#           if key[-5:] == 'seeds':
+#             del sampling_resource_dict[key]
+#         return sampling_resource_dict
+
+      #________
+  
+      #for entropy seeding support for mlti postprocess, 
+      #need to add random_generator and sampling_resource_dict to norm_params
+      #which are stored as norm_params = {inputcolumn : params}
+      #for inputcolumn in textcolumns
+      
+      #traindata inspection is applicable to postmunge, in automunge will not be present
+      if 'noise_transform' in postprocess_dict['process_dict'][norm_category] \
+      and postprocess_dict['process_dict'][norm_category]['noise_transform'] is not False \
+      and ( 'traindata' not in postprocess_dict or 'traindata' in postprocess_dict \
+      and postprocess_dict['traindata'] not in {'train_no_noise', 'test_no_noise'}):
+        
+        for inputcolumn in textcolumns:
+
+          norm_params[inputcolumn].update({'random_generator' : random_generator,
+                                           'sampling_resource_dict' : sampling_resource_dict})
+      
+      #________
+      
       if inplace is not True:
         for inputtextcolumn in inputtextcolumns:
           mdf_test[textlabelsdict[inputtextcolumn]] = mdf_test[inputtextcolumn].copy()
@@ -44122,6 +44373,13 @@ class AutoMunge:
           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+              
+          #for entropy seeding we'll shuffle for each application
+          if 'sampling_resource_dict' in norm_params[inputcolumn]:
+            for entry in norm_params[inputcolumn]['sampling_resource_dict']:
+              if entry[-5:] == 'seeds' \
+              and isinstance(norm_params[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+                np.random.shuffle(norm_params[inputcolumn]['sampling_resource_dict'][entry])
 
           mdf_test = \
           self.__custom_postprocess_wrapper(mdf_test, inputcolumn, norm_postprocess_dict, columnkey_list, norm_params[inputcolumn])
@@ -44143,6 +44401,13 @@ class AutoMunge:
           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+              
+          #for entropy seeding we'll shuffle for each application
+          if 'sampling_resource_dict' in norm_params[inputcolumn]:
+            for entry in norm_params[inputcolumn]['sampling_resource_dict']:
+              if entry[-5:] == 'seeds' \
+              and isinstance(norm_params[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+                np.random.shuffle(norm_params[inputcolumn]['sampling_resource_dict'][entry])
 
           mdf_test = \
           postprocess_dict['process_dict'][norm_category]['postprocess'](mdf_test, inputcolumn, norm_postprocess_dict, \
@@ -44165,6 +44430,13 @@ class AutoMunge:
           if inputcolumn in norm_columnkey_dict['columnkey_dict']:
             if norm_category in norm_columnkey_dict['columnkey_dict'][inputcolumn]:
               columnkey_list = norm_columnkey_dict['columnkey_dict'][inputcolumn][norm_category]
+              
+          #for entropy seeding we'll shuffle for each application
+          if 'sampling_resource_dict' in norm_params[inputcolumn]:
+            for entry in norm_params[inputcolumn]['sampling_resource_dict']:
+              if entry[-5:] == 'seeds' \
+              and isinstance(norm_params[inputcolumn]['sampling_resource_dict'][entry], type(np.array([]))):
+                np.random.shuffle(norm_params[inputcolumn]['sampling_resource_dict'][entry])
               
           if inputcolumn in postprocess_dict['origcolumn']:
             origcategory = postprocess_dict['origcolumn'][inputcolumn]['category']
