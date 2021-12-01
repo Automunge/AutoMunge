@@ -5203,3 +5203,6 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - added entropy seeding support to DPhs which is for multi-column hashing with DPod noise applied to each column
 - applies the same set of seeds to each target shuffled
 - now have entropy seeding support for full range of noise injection options
+
+7.67
+- fixed bug originating from 7.63 that was missed in testing due to error channel
