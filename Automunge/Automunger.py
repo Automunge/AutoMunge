@@ -12774,12 +12774,15 @@ class AutoMunge:
                                 'choice_test_sample_count' : 0,
                                }
         
-#     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-#       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-#       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-#       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-#       nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-#       return nprandom
+    # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+    #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+    #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+    #   entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+    #   try:
+    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+    #   except TypeError:
+    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+    #   return nprandom
     
     def erase_seeds(sampling_resource_dict):
       #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
@@ -23298,7 +23301,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -23663,7 +23669,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24174,7 +24183,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24736,7 +24748,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24959,7 +24974,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -25292,7 +25310,10 @@ class AutoMunge:
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      try:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      except TypeError:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -29322,46 +29343,9 @@ class AutoMunge:
   
     MLinfilldefaults = {'RandomForestClassifier':{}, 'RandomForestRegressor':{}}
     
-    MLinfilldefaults['RandomForestClassifier'].update({'n_estimators':100, \
-                                                       'criterion':'gini', \
-                                                       'max_depth':None, \
-                                                       'min_samples_split':2, \
-                                                       'min_samples_leaf':1, \
-                                                       'min_weight_fraction_leaf':0.0, \
-                                                       'max_features':'auto', \
-                                                       'max_leaf_nodes':None, \
-                                                       'min_impurity_decrease':0.0, \
-                                                       'min_impurity_split':None, \
-                                                       'bootstrap':True, \
-                                                       'oob_score':False, \
-                                                       'n_jobs':None, \
-                                                       'random_state':randomseed, \
-                                                       'verbose':0, \
-                                                       'warm_start':False, \
-                                                       'class_weight':None, \
-                                                       'ccp_alpha':0.0, \
-                                                       'max_samples':None, \
-                                                       })
+    MLinfilldefaults['RandomForestClassifier'].update({'random_state':randomseed})
   
-    MLinfilldefaults['RandomForestRegressor'].update({'n_estimators':100, \
-                                                      'criterion':'mse', \
-                                                      'max_depth':None, \
-                                                      'min_samples_split':2, \
-                                                      'min_samples_leaf':1, \
-                                                      'min_weight_fraction_leaf':0.0, \
-                                                      'max_features':'auto', \
-                                                      'max_leaf_nodes':None, \
-                                                      'min_impurity_decrease':0.0, \
-                                                      'min_impurity_split':None, \
-                                                      'bootstrap':True, \
-                                                      'oob_score':False, \
-                                                      'n_jobs':None, \
-                                                      'random_state':randomseed, \
-                                                      'verbose':0, \
-                                                      'warm_start':False, \
-                                                      'ccp_alpha':0.0, \
-                                                      'max_samples':None, \
-                                                      })
+    MLinfilldefaults['RandomForestRegressor'].update({'random_state':randomseed})
 
     return MLinfilldefaults
 
@@ -29376,126 +29360,15 @@ class AutoMunge:
       ML_cmnd.update({'MLinfill_cmnd':{}})
     if 'RandomForestClassifier' not in ML_cmnd['MLinfill_cmnd']:
       ML_cmnd['MLinfill_cmnd'].update({'RandomForestClassifier':{}})
-      
 
-    #MLinfilldefaults['RandomForestClassifier']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_estimators']
-    else:
-      n_estimators = MLinfilldefaults['RandomForestClassifier']['n_estimators']
-
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['criterion']
-    else:
-      criterion = MLinfilldefaults['RandomForestClassifier']['criterion']
-
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_depth']
-    else:
-      max_depth = MLinfilldefaults['RandomForestClassifier']['max_depth']
-
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_split']
-    else:
-      min_samples_split = MLinfilldefaults['RandomForestClassifier']['min_samples_split']
-
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_samples_leaf']
-    else:
-      min_samples_leaf = MLinfilldefaults['RandomForestClassifier']['min_samples_leaf']
-
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_weight_fraction_leaf']
-    else:
-      min_weight_fraction_leaf = MLinfilldefaults['RandomForestClassifier']['min_weight_fraction_leaf']
-
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_features']
-    else:
-      max_features = MLinfilldefaults['RandomForestClassifier']['max_features']
-
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_leaf_nodes']
-    else:
-      max_leaf_nodes = MLinfilldefaults['RandomForestClassifier']['max_leaf_nodes']
-
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_decrease']
-    else:
-      min_impurity_decrease = MLinfilldefaults['RandomForestClassifier']['min_impurity_decrease']
-
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['min_impurity_split']
-    else:
-      min_impurity_split = MLinfilldefaults['RandomForestClassifier']['min_impurity_split']
-
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['bootstrap']
-    else:
-      bootstrap = MLinfilldefaults['RandomForestClassifier']['bootstrap']
-
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['oob_score']
-    else:
-      oob_score = MLinfilldefaults['RandomForestClassifier']['oob_score']
-
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['n_jobs']
-    else:
-      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
-
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['random_state']
-    else:
-      random_state = MLinfilldefaults['RandomForestClassifier']['random_state']
-
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['verbose']
-    else:
-      verbose = MLinfilldefaults['RandomForestClassifier']['verbose']
-
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['warm_start']
-    else:
-      warm_start = MLinfilldefaults['RandomForestClassifier']['warm_start']
-
-    if 'class_weight' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      class_weight = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['class_weight']
-    else:
-      class_weight = MLinfilldefaults['RandomForestClassifier']['class_weight']
-      
-    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['ccp_alpha']
-    else:
-      ccp_alpha = MLinfilldefaults['RandomForestClassifier']['ccp_alpha']
-      
-    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']:
-      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']['max_samples']
-    else:
-      max_samples = MLinfilldefaults['RandomForestClassifier']['max_samples']
+    model_params = ML_cmnd['MLinfill_cmnd']['RandomForestClassifier']
+    model_params.update(MLinfilldefaults['RandomForestClassifier'])
 
     #do other stuff?
 
     #then initialize RandomForestClassifier model
-    model = RandomForestClassifier(n_estimators = n_estimators, \
-                                   criterion = criterion, \
-                                   max_depth = max_depth, \
-                                   min_samples_split = min_samples_split, \
-                                   min_samples_leaf = min_samples_leaf, \
-                                   min_weight_fraction_leaf = min_weight_fraction_leaf, \
-                                   max_features = max_features, \
-                                   max_leaf_nodes = max_leaf_nodes, \
-                                   min_impurity_decrease = min_impurity_decrease, \
-                                   min_impurity_split = min_impurity_split, \
-                                   bootstrap = bootstrap, \
-                                   oob_score = oob_score, \
-                                   n_jobs = n_jobs, \
-                                   random_state = random_state, \
-                                   verbose = verbose, \
-                                   warm_start = warm_start, \
-                                   class_weight = class_weight, \
-                                   ccp_alpha = ccp_alpha, \
-                                   max_samples = max_samples, \
+    model = RandomForestClassifier(
+                                  **model_params
                                   )
 
     return model
@@ -29511,119 +29384,15 @@ class AutoMunge:
       ML_cmnd.update({'MLinfill_cmnd':{}})
     if 'RandomForestRegressor' not in ML_cmnd['MLinfill_cmnd']:
       ML_cmnd['MLinfill_cmnd'].update({'RandomForestRegressor':{}})
-      
-    #MLinfilldefaults['RandomForestRegressor']
-    if 'n_estimators' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      n_estimators = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_estimators']
-    else:
-      n_estimators = MLinfilldefaults['RandomForestRegressor']['n_estimators']
 
-    if 'criterion' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      criterion = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['criterion']
-    else:
-      criterion = MLinfilldefaults['RandomForestRegressor']['criterion']
-
-    if 'max_depth' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_depth = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_depth']
-    else:
-      max_depth = MLinfilldefaults['RandomForestRegressor']['max_depth']
-
-    if 'min_samples_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_samples_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_split']
-    else:
-      min_samples_split = MLinfilldefaults['RandomForestRegressor']['min_samples_split']
-
-    if 'min_samples_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_samples_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_samples_leaf']
-    else:
-      min_samples_leaf = MLinfilldefaults['RandomForestRegressor']['min_samples_leaf']
-
-    if 'min_weight_fraction_leaf' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_weight_fraction_leaf = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_weight_fraction_leaf']
-    else:
-      min_weight_fraction_leaf = MLinfilldefaults['RandomForestRegressor']['min_weight_fraction_leaf']
-
-    if 'max_features' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_features = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_features']
-    else:
-      max_features = MLinfilldefaults['RandomForestRegressor']['max_features']
-
-    if 'max_leaf_nodes' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_leaf_nodes = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_leaf_nodes']
-    else:
-      max_leaf_nodes = MLinfilldefaults['RandomForestRegressor']['max_leaf_nodes']
-
-    if 'min_impurity_decrease' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_impurity_decrease = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_decrease']
-    else:
-      min_impurity_decrease = MLinfilldefaults['RandomForestRegressor']['min_impurity_decrease']
-
-    if 'min_impurity_split' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      min_impurity_split = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['min_impurity_split']
-    else:
-      min_impurity_split = MLinfilldefaults['RandomForestRegressor']['min_impurity_split']
-
-    if 'bootstrap' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      bootstrap = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['bootstrap']
-    else:
-      bootstrap = MLinfilldefaults['RandomForestRegressor']['bootstrap']
-
-    if 'oob_score' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      oob_score = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['oob_score']
-    else:
-      oob_score = MLinfilldefaults['RandomForestRegressor']['oob_score']
-
-    if 'n_jobs' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      n_jobs = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['n_jobs']
-    else:
-      n_jobs = MLinfilldefaults['RandomForestClassifier']['n_jobs']
-
-    if 'random_state' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      random_state = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['random_state']
-    else:
-      random_state = MLinfilldefaults['RandomForestRegressor']['random_state']
-
-    if 'verbose' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      verbose = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['verbose']
-    else:
-      verbose = MLinfilldefaults['RandomForestRegressor']['verbose']
-
-    if 'warm_start' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      warm_start = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['warm_start']
-    else:
-      warm_start = MLinfilldefaults['RandomForestRegressor']['warm_start']
-      
-    if 'ccp_alpha' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      ccp_alpha = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['ccp_alpha']
-    else:
-      ccp_alpha = MLinfilldefaults['RandomForestRegressor']['ccp_alpha']
-      
-    if 'max_samples' in ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']:
-      max_samples = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']['max_samples']
-    else:
-      max_samples = MLinfilldefaults['RandomForestRegressor']['max_samples']
+    model_params = ML_cmnd['MLinfill_cmnd']['RandomForestRegressor']
+    model_params.update(MLinfilldefaults['RandomForestRegressor'])
 
     #do other stuff?
 
     #then initialize RandomForestRegressor model 
-    model = RandomForestRegressor(n_estimators = n_estimators, \
-                                  criterion = criterion, \
-                                  max_depth = max_depth, \
-                                  min_samples_split = min_samples_split, \
-                                  min_samples_leaf = min_samples_leaf, \
-                                  min_weight_fraction_leaf = min_weight_fraction_leaf, \
-                                  max_features = max_features, \
-                                  max_leaf_nodes = max_leaf_nodes, \
-                                  min_impurity_decrease = min_impurity_decrease, \
-                                  min_impurity_split = min_impurity_split, \
-                                  bootstrap = bootstrap, \
-                                  oob_score = oob_score, \
-                                  n_jobs = n_jobs, \
-                                  random_state = random_state, \
-                                  verbose = verbose, \
-                                  warm_start = warm_start, \
-                                  ccp_alpha = ccp_alpha, \
-                                  max_samples = max_samples, \
+    model = RandomForestRegressor(
+                                  **model_params,
                                  )
 
     return model
@@ -35073,11 +34842,14 @@ class AutoMunge:
       try:
         np.random.Generator(random_generator()).standard_normal()
       except TypeError:
-        random_generator_valresult = True
-        if printstatus != 'silent':
-          print("Error: invalid entry passed for random_generator parameter.")
-          print("Acceptable values are False or np.random formatted generator")
-          print()        
+        try:
+          np.random.Generator(random_generator).standard_normal()
+        except TypeError:
+          random_generator_valresult = True
+          if printstatus != 'silent':
+            print("Error: invalid entry passed for random_generator parameter.")
+            print("Acceptable values are False or np.random formatted generator")
+            print()           
     
     miscparameters_results.update({'random_generator_valresult' : random_generator_valresult})
 
@@ -35300,11 +35072,14 @@ class AutoMunge:
       try:
         np.random.Generator(random_generator()).standard_normal()
       except TypeError:
-        random_generator_pm_valresult = True
-        if printstatus != 'silent':
-          print("Error: invalid entry passed for random_generator parameter.")
-          print("Acceptable values are False or np.random formatted generator")
-          print()        
+        try:
+          np.random.Generator(random_generator).standard_normal()
+        except TypeError:
+          random_generator_pm_valresult = True
+          if printstatus != 'silent':
+            print("Error: invalid entry passed for random_generator parameter.")
+            print("Acceptable values are False or np.random formatted generator")
+            print()            
     
     pm_miscparameters_results.update({'random_generator_pm_valresult' : random_generator_pm_valresult})
     
@@ -37248,7 +37023,15 @@ class AutoMunge:
     sampling_generator = sampling_dict['sampling_generator']    
     extra_seed_generator = sampling_dict['extra_seed_generator']
 
-    if sampling_type != 'default':
+    no_seed_support = False
+    if sampling_generator == 'custom':
+      if random_generator is not False:
+        try:
+          random_generator()
+        except TypeError:
+          no_seed_support = True
+
+    if sampling_type != 'default' and no_seed_support is False:
       
       #sampling_report_dict will be in sampling_dict if this function called in automunge
       #or will be in postprocess_dict if this function called in postmunge
@@ -37359,7 +37142,10 @@ class AutoMunge:
           else:
             randomgenerator = random_generator
 
-        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+        try:
+          nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+        except TypeError:
+          nprandom = np.random.Generator(randomgenerator)
         
         extra_seeds_needed = int(seed_requirement - provided_seed_count)
         
@@ -37388,7 +37174,10 @@ class AutoMunge:
           else:
             randomgenerator = random_generator
 
-        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        try:
+          nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        except TypeError:
+          nprandom = np.random.Generator(randomgenerator)
 
         nprandom.shuffle(entropy_seeds)
         
@@ -37465,7 +37254,10 @@ class AutoMunge:
           #if random_generator was received as False will have already been converted to PCG64
           randomgenerator = random_generator
 
-        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        try:
+          nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        except TypeError:
+          nprandom = np.random.Generator(randomgenerator)
 
         nprandom.shuffle(entropy_seeds)
       return entropy_seeds
@@ -37857,7 +37649,11 @@ class AutoMunge:
         shuffle_seed = [entropy_seeds[0]]
         entropy_seeds = np.delete(entropy_seeds, 0)
 
-        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        try:
+          nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
+        except TypeError:
+          nprandom = np.random.Generator(randomgenerator)
+
         nprandom.shuffle(entropy_seeds)
         
       if len(entropy_seeds) >= 2:
@@ -37873,7 +37669,10 @@ class AutoMunge:
         #(2**32 - 1)
         spawn_seed = [random.randint(0,max_capacity_seed)]
 
-      nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+      try:
+        nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
+      except TypeError:
+        nprandom = np.random.Generator(randomgenerator)
 
       randomseed = int(nprandom.integers(0, high=max_capacity_seed, size=1))
           
@@ -42257,7 +42056,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.67'
+    automungeversion = '7.68'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -48874,7 +48673,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -49143,7 +48945,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -49473,7 +49278,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -49775,7 +49583,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
@@ -49987,7 +49798,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
@@ -50223,7 +50037,10 @@ class AutoMunge:
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        try:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+        except TypeError:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
