@@ -5206,3 +5206,8 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 
 7.67
 - fixed bug originating from 7.63 that was missed in testing due to error channel
+
+7.68
+- updated scikit-learn model initialization defaults so that it only passes user specified parameters other than initailized random seed
+- (prior config was a bug channel when scikit changes parameter options which apparently was a case with min_impurity_split)
+- added support for random_generator sourced from the QRAND library
