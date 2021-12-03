@@ -2689,7 +2689,7 @@ family trees below for full set of transformation categories associated with the
   - inversion available: no
 * qttf/qtt2: performs quantile transformation to transform distribution properties of feature set.
 Please note this method makes use of sklearn.preprocessing.QuantileTransformer from Scikit-Learn.
-qttf converts to a normal output distribution, qtt2 converts to a uniform output distribution.
+qttf converts to a normal output distribution, qtt2 converts to a uniform output distribution. When received data is all non-numeric returns as 0.
   - useful for: translates distributions to closer approximate gaussian (may be applied as alternative to bxcx)
   - default infill: mean
   - default NArowtype: numeric
