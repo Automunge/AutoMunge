@@ -3208,7 +3208,7 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
-
+    
     #DPo7 primarily intended for use as a downstream tree category
     transform_dict.update({'DPo7' : {'parents'       : [],
                                      'siblings'      : [],
@@ -7329,7 +7329,10 @@ For simplicity just going to copy the code directly from code base where these d
                                   'inverseprocess' : self._inverseprocess_mlti,
                                   'info_retention' : False,
                                   'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
                                   'defaultparams' : {'dtype' : 'mlhs',
+                                                     'flip_prob' : 0.03,
+                                                     'testnoise' : False,
                                                      'norm_params' : {'flip_prob' : 0.03,
                                                                       'testnoise' : False,
                                                                       'weighted' : True},
