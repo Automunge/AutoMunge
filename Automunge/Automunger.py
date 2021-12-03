@@ -15265,8 +15265,8 @@ class AutoMunge:
     
     #now scrub special characters
     for scrub_punctuation in excluded_characters:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
       
     if hash_alg == 'md5':
       from hashlib import md5
@@ -15575,8 +15575,8 @@ class AutoMunge:
 
     #now scrub special characters
     for scrub_punctuation in excluded_characters:
-      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '')
-      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
     
     if vocab_size is False:
       #calculate the vocab_size based on heuristic_multiplier and heuristic_cap
@@ -41264,6 +41264,11 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
+      if inplace is not True:
+        #this defragments the dataframes
+        df_train = df_train.copy()
+        df_test = df_test.copy()
+
     #_________________________________________________________
     #__WorkflowBlock: automunge label column processing
     #this for loop through the set of input label columns applies transformations to train and test data
@@ -42481,6 +42486,11 @@ class AutoMunge:
     #if ppd_append received a prior populated postprocess_dict the new version is combined
     #and any encryption of the postprocess_dict based on encrypt_key parameter
     #Automunge Complete
+
+    #this defragments the dataframes
+    if inplace is not True:
+      df_train = df_train.copy()
+      df_test = df_test.copy()
 
     #printout display progress
     if printstatus is True:
@@ -45129,7 +45139,7 @@ class AutoMunge:
       
       #now scrub special characters
       for scrub_punctuation in excluded_characters:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
 
       #define some support functions
       def _assemble_wordlist(string, space = ' ', max_column_count = max_column_count):
@@ -45337,7 +45347,7 @@ class AutoMunge:
 
       #now scrub special characters
       for scrub_punctuation in excluded_characters:
-        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '')
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].str.replace(scrub_punctuation, '', regex=False)
       
       def _md5_hash(entry):
         """
@@ -46618,6 +46628,8 @@ class AutoMunge:
       #apply transform to test set
       if qttf is not False:
         mdf_test[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_test[suffixcolumn])), index=mdf_test.index)
+      else:
+        mdf_test[suffixcolumn] = 0
       
     else:
 
@@ -52350,6 +52362,10 @@ class AutoMunge:
         print(postprocess_dict['origcolumn'][column]['columnkeylist'])
         print("")
 
+      #this defragments the dataframe
+      if inplace is not True:
+        df_test = df_test.copy()
+
     #_________________________________________________________
     #__WorkflowBlock: postmunge label column processing
     #this for loop through the set of input feature columns applies transformations to test data
@@ -52950,6 +52966,10 @@ class AutoMunge:
     #striking any temporary postprocess_dict entries used for application
     #and returnedsets option to return all sets concatinated into single dataframe may also be performed when elected
     #Postmunge Complete
+
+    #this defragments the dataframe
+    if inplace is not True:
+      df_test = df_test.copy()
 
     #here's a list of final column names saving here since the translation to \
     #numpy arrays scrubs the column names
@@ -55397,7 +55417,7 @@ class AutoMunge:
         
     df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
     
-    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '')
+    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '', regex=False)
     
     #now let's extract the encoding
     i=0
@@ -55542,7 +55562,7 @@ class AutoMunge:
         
     df[inputcolumn] = df[inputcolumn].replace(inverse_binary_encoding_dict)
     
-    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '')
+    df[inputcolumn] = df[inputcolumn].str.replace('activations_', '', regex=False)
     
     #now let's extract the encoding
     i=0
