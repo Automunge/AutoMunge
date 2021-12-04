@@ -5227,3 +5227,11 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - previosuly we had a try/except for each case which was kind of not ideal practice, now only performing the try/except inspection once in the validation function and using that as basis everywhere else
 - updated sampling budget derivation for passing entropy seeds to transforms associated with edge case for binomial sampling where flip_prob / test_flip_prob parameter set to 1 in which case no seeds are applied (e.g. for cases where noise injected into every entry)
 - in other words, from an entropy seeding budget standpoint, it's actually cheaper to inject noise into every entry in a feature as opposed to just a sampled subset of entries based on a binomial sampling, although only by a ratio corresponding to the alternate value of flip_prob
+
+7.71
+- identified that our autogluon ml infill option was based on a very old version
+- which had applied a different import procedure
+- updated autogluon to the current import procedure
+- apparently our validations were being run on version 0.0.15, they are now up to 0.3.1
+- autogluon should be working now
+- pending formal validation, for convenience intend to validate after rollout
