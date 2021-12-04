@@ -865,7 +865,7 @@ When a user passed ML_cmnd as an empty dictionary, any default values are popula
 The most relevant entries here are 'autoML_type' to choose the autoML framework for predictive
 models, and ML_cmnd to pass parameters to the models. The default option for 'autoML_type' is 'randomforest' which uses a Scikit-learn Random 
 Forest implementation, other options are supported as one of {'randomforest', 'customML',
-'autogluon', 'catboost', 'flaml'}, each discussed further below. The customML scenario is for user defined
+'catboost', 'flaml'}, each discussed further below. The customML scenario is for user defined
 machine learning algorithms, and documented separately later in this document in the section [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions).
 
 (Other ML_cmnd options beside autoML_type, like for early stopping through iterations, stochastic noise injections, hyperparpameter tuning, leakage assessment, etc, are documented a few paragraphs down after discussing the autoML_type scenarios.)
@@ -913,26 +913,7 @@ Other autoML options besides random forest are also supported, each of which req
 the associated library (which aren't listed in the automunge dependencies). Citations associated with each
 of these libraries are provided for reference. 
 
-First we'll highlight AutoGluon. 
-Note that since AutoGluon saves model properties in a local folder, when you process additional data with postmunge it will
-need to be in a notebook saved in same directory as was used for automunge. Further information
-on AutoGluon library available on arxiv as Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
-Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
-for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505).
-```
-#can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
-ML_cmnd = {'autoML_type':'autogluon'}
-```
-Parameters can be passed to the AutoGluon fit operation by ML_cmnd['AutoGluon'], here we demonstrate passing 
-presets=‘best_quality’, which may improve model accuracy but at cost of much larger memory footprint for 
-properties saved to disk originating from using more models in the ensemble. Note that by default AutoGluon will include
-the preset 'optimize_for_deployment' to reduce disk space usage unless user opts for 'best_quality'.
-```
-#can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
-ML_cmnd = {'autoML_type': 'autogluon',
-           'MLinfill_cmnd':{'AutoGluon'  : {'presets' : 'best_quality'}}}
-```
-Another autoML option for ML infill and feature importance is by the CatBoost library.
+One autoML option for ML infill and feature importance is by the CatBoost library.
 Requires externally installing CatBoost library. Uses early stopping by default for regression 
 and no early stopping by default for classifier. Note that the random_seed 
 parameter is already passed based on the automunge(.) randomseed. Further information
@@ -5253,7 +5234,7 @@ Please note that for customML autoML_type, feature importance is performed with 
 Note that the library has an internal suite of inference functions for different ML libraries 
 that can optionally be used in place of a user defined customML inference function. These can
 be activated by passing a string to entries for 'customML_Classifier_predict' or  'customML_Regressor_predict'
-as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}. Use of the
+as one of {'tensorflow', 'xgboost', 'catboost', 'flaml', 'randomforest'}. Use of the
 internally defined inference functions allows a user to upload a postprocess_dict in a separate notebook
 without needing to first reinitialize the customML inference functions. For example, to apply a
 default inference function for the XGBoost library could apply:
@@ -5281,7 +5262,7 @@ machine learning with the Automunge platform. Feedback is welcome.
 As a citation, please note that the Automunge package makes use of 
 the Pandas, Scikit-learn, SciPy stats, and NumPy libraries. In addition 
 to the default of Scikit-learn's Random Forest predictive models, 
-Automunge also has options for ML infill using the AutoGluon, CatBoost, FLAML, 
+Automunge also has options for ML infill using the CatBoost, FLAML, 
 or XGboost libraries, and includes a hyperparameter tuning option by
 the Optuna library.
 
@@ -5313,10 +5294,6 @@ doi: https://doi.org/10.1038/s41592-019-0686-2.
 S. van der Walt, S. Colbert, and G. Varoquaux. The numpy array: A 
 structure for efficient numerical computation. Computing in Science 
 & Engineering, 13:22–30, 2011.
-
-Nick Erickson, Jonas Mueller, Alexander Shirkov, Hang Zhang, Pedro Larroy, 
-Mu Li, and Alexander Smola. AutoGluon-Tabular: Robust and Accurate AutoML 
-for Structured Data [arxiv:2003.06505](https://arxiv.org/abs/2003.06505)
 
 Anna Veronika Dorogush, Vasily Ershov, Andrey Gulin. CatBoost: gradient 
 boosting with categorical features support [arXiv:1810.11363](https://arxiv.org/abs/1810.11363)
@@ -5357,7 +5334,7 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
-Catboost, AutoGluon, or XGBoost libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
+Catboost or XGBoost libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
 
 ...
 
