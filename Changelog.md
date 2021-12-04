@@ -5235,3 +5235,9 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - apparently our validations were being run on version 0.0.15, they are now up to 0.3.1
 - autogluon should be working now
 - pending formal validation, for convenience intend to validate after rollout
+
+7.72
+- after attempting further validations on 7.71 don't feel comfortable putting autogluon option into production
+- there are some subtle aspects of complexity that would need to consider before reintroducing
+- making an executive decision to withdraw autogluon Ml infill option and also default infill option
+- hoping this doesn't inconvenience anyone, based on 7.71 discovery that was running outdated imports expect this hasn't been a widely used feature
