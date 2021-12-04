@@ -5216,3 +5216,14 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - added some operations in column processing loop and conclusion to defragment drataframes
 - added a regex default specification in hashing functions
 - found a scenario mismatch between automunge and postmunge for qttf trasnform, now for both when qttf isn't fit due to all non-numeric the trasnfor returns as all 0
+
+7.70
+- for cases where additional entropy seeds are sampled internally, updated the range of sampled seed size from 0 : 2 ** 32-1 to 0 : 2 ** 63
+- this selection was partly informed by the max capacity for sampled integers from np.random.Generator().integers
+- note that this differs from max randomseed accepted by pandas operations which is 2 ** 32 - 1
+- which is the max capacity used for automunge/postmunge global randomseed's
+- updated the read me to clarify entropy_seed accepted range
+- also revisited the methods used to distinguish on whether to pass entropy seeds to custom generators
+- previosuly we had a try/except for each case which was kind of not ideal practice, now only performing the try/except inspection once in the validation function and using that as basis everywhere else
+- updated sampling budget derivation for passing entropy seeds to transforms associated with edge case for binomial sampling where flip_prob / test_flip_prob parameter set to 1 in which case no seeds are applied (e.g. for cases where noise injected into every entry)
+- in other words, from an entropy seeding budget standpoint, it's actually cheaper to inject noise into every entry in a feature as opposed to just a sampled subset of entries based on a binomial sampling, although only by a ratio corresponding to the alternate value of flip_prob
