@@ -57,7 +57,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
 # import sys
-# from autogluon import TabularPrediction as task
+# from autogluon.tabular import TabularPredictor as task
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
 # from catboost import CatBoostRegressor
@@ -29660,10 +29660,9 @@ class AutoMunge:
   def __train_autogluon(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
     """
     #Trains a model for ML infill using AutoGluon library
-    #assumes that AutoGluon is imported external to the automunge(.) function call as
     
-    import autogluon.core as ag
-    from autogluon.tabular import TabularPrediction as task
+    #applies imports as 
+    from autogluon.tabular import TabularPredictor as task
     
     #currently applies default parameters to training operation, extended parameter support pending
     
@@ -29674,7 +29673,8 @@ class AutoMunge:
     # #user can conduct this import externally to speed up this function
     # module = 'autogluon.utils.tabular'
     # if module not in sys.modules:
-    from autogluon import TabularPrediction as task
+    # from autogluon import TabularPrediction as task
+    from autogluon.tabular import TabularPredictor as task
 
     try:
 
@@ -29725,7 +29725,8 @@ class AutoMunge:
         ag_params.update({'presets' : 'optimize_for_deployment'})
 
       #train the model
-      model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
+      # model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
+      model = task(label=ag_label_column).fit(df_train_filltrain, **ag_params)
       
       return model, postprocess_dict
         
@@ -29757,7 +29758,8 @@ class AutoMunge:
     # #user can conduct this import externally to speed up this function
     # module = 'autogluon.utils.tabular'
     # if module not in sys.modules:
-    from autogluon import TabularPrediction as task
+    # from autogluon import TabularPrediction as task
+    from autogluon.tabular import TabularPredictor as task
     
     if model is not False:
       
@@ -30951,7 +30953,8 @@ class AutoMunge:
     # #user can conduct this import externally to speed up this function
     # module = 'autogluon.utils.tabular'
     # if module not in sys.modules:
-    from autogluon import TabularPrediction as task
+    # from autogluon import TabularPrediction as task
+    from autogluon.tabular import TabularPredictor as task
     
     infill = model.predict(features)
 
@@ -42116,7 +42119,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.70'
+    automungeversion = '7.71'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
