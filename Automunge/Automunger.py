@@ -57,7 +57,6 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
 # import sys
-# from autogluon.tabular import TabularPredictor as task
 # from flaml import AutoML
 # from catboost import CatBoostClassifier
 # from catboost import CatBoostRegressor
@@ -244,10 +243,8 @@ class AutoMunge:
   _predict_randomforest_regressor
   _train_autogluon_classifier
   _train_autogluon_regressor
-  __train_autogluon
   _predict_autogluon_classifier
   _predict_autogluon_regressor
-  __predict_autogluon
   _train_flaml_classifier
   _predict_flaml_classifier
   _train_flaml_regressor
@@ -278,7 +275,6 @@ class AutoMunge:
   __customML_xgboost_defaultpredict
   __customML_catboost_defaultpredict
   __customML_flaml_defaultpredict
-  __customML_autogluon_defaultpredict
   __customML_randomforest_defaultpredict
 
   #__FunctionBlock: data translations support
@@ -29281,14 +29277,6 @@ class AutoMunge:
                                                                    'predict' : self._predict_customML_classifier},
                                        'regression'             : {'train'   : self._train_customML_regressor,
                                                                    'predict' : self._predict_customML_regressor}},
-                     'autogluon'    : {'booleanclassification'  : {'train'   : self._train_autogluon_classifier,
-                                                                   'predict' : self._predict_autogluon_classifier},
-                                       'ordinalclassification'  : {'train'   : self._train_autogluon_classifier,
-                                                                   'predict' : self._predict_autogluon_classifier},
-                                       'onehotclassification'   : {'train'   : self._train_autogluon_classifier,
-                                                                   'predict' : self._predict_autogluon_classifier},
-                                       'regression'             : {'train'   : self._train_autogluon_regressor,
-                                                                   'predict' : self._predict_autogluon_regressor}},
                      'flaml'        : {'booleanclassification'  : {'train'   : self._train_flaml_classifier,
                                                                    'predict' : self._predict_flaml_classifier},
                                        'ordinalclassification'  : {'train'   : self._train_flaml_classifier,
@@ -29528,8 +29516,6 @@ class AutoMunge:
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
-
-    #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
@@ -29641,8 +29627,6 @@ class AutoMunge:
     #on corresponding model trained in train_randomforest_classifier
     #for random forest
     #returns infill predictions
-
-    #the categorylist parameter is used to handle an edge case for when predict_autogluon is called
     """
     
     infill = model.predict(fillfeatures)
@@ -29650,152 +29634,36 @@ class AutoMunge:
     return infill
 
   def _train_autogluon_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    modeltype = 'classification'
-    return self.__train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
+    """
+    this option no longer supported as of 7.72
+    retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
+    """
+    print("Please note autogluon ml infill option no longer supported as of 7.72")
+    return False, postprocess_dict
 
   def _train_autogluon_regressor(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
-    modeltype = 'regression'
-    return self.__train_autogluon(ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype)
-
-  def __train_autogluon(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict, modeltype='regression'):
     """
-    #Trains a model for ML infill using AutoGluon library
-    
-    #applies imports as 
-    from autogluon.tabular import TabularPredictor as task
-    
-    #currently applies default parameters to training operation, extended parameter support pending
-    
-    #same function used for both classification and regression relying on AutoGluon to infer label type
-    #classification differs by string conversion in single column labels case, based on modeltype parameter
+    this option no longer supported as of 7.72
+    retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
     """
-
-    # #user can conduct this import externally to speed up this function
-    # module = 'autogluon.utils.tabular'
-    # if module not in sys.modules:
-    # from autogluon import TabularPrediction as task
-    from autogluon.tabular import TabularPredictor as task
-
-    try:
-
-      df_train_filllabel = df_train_filllabel.copy()
-      
-      #column headers matter for convert_onehot_to_singlecolumn methods, reset as integers
-      df_train_filltrain.columns = list(range(len(list(df_train_filltrain.columns))))
-      df_train_filllabel.columns = list(range(len(list(df_train_filllabel.columns))))
-      df_train_filltrain = df_train_filltrain.reset_index(drop=True)
-      df_train_filllabel = df_train_filllabel.reset_index(drop=True)
-
-      df_train_filltrain.columns = ['train_' + str(x) for x in list(df_train_filltrain.columns)]
-      
-      ag_label_column = list(df_train_filllabel.columns)
-
-      if len(ag_label_column) == 1:
-        ag_label_column = ag_label_column[0]
-        if modeltype == 'classification':
-          df_train_filllabel[ag_label_column] = df_train_filllabel[ag_label_column].astype(str)
-      else:
-        #note this scenario only occurs for classification
-        df_train_filllabel, ML_cmnd = self.__convert_onehot_to_singlecolumn(df_train_filllabel, ML_cmnd, stringtype=True)
-        ag_label_column = list(df_train_filllabel.columns)[0]
-
-      #autogluon accepts labels as part of training set
-      df_train_filltrain = pd.concat([df_train_filltrain, df_train_filllabel], axis=1)
-
-      #apply the autogluon data set loader
-      df_train_filltrain = task.Dataset(df_train_filltrain)
-
-      #user can pass parameters to AutoGluon in ML_cmnd['MLinfill_cmnd']['AutoGluon']
-      ag_params = {}
-      if 'MLinfill_cmnd' in ML_cmnd:
-        if 'AutoGluon' in ML_cmnd['MLinfill_cmnd']:
-          ag_params = ML_cmnd['MLinfill_cmnd']['AutoGluon']
-
-      #we'll apply default for Autogluon of applying a preset of 'optimize_for_deployment' which saves space
-      #appropriate since user doesn't need auxiliary functionality, models are just used for inference
-      #unless user opts for best_quality
-      if 'presets' in ag_params:
-        if isinstance(ag_params['presets'], list):
-          if 'optimize_for_deployment' not in ag_params['presets'] and 'best_quality' not in ag_params['presets']:
-            ag_params['presets'].append('optimize_for_deployment')
-        elif isinstance(ag_params['presets'], str):
-          if ag_params['presets'] != 'optimize_for_deployment' and ag_params['presets'] != 'best_quality':
-            ag_params['presets'] = [ag_params['presets'], 'optimize_for_deployment']
-      else:
-        ag_params.update({'presets' : 'optimize_for_deployment'})
-
-      #train the model
-      # model = task.fit(train_data=df_train_filltrain, label=ag_label_column, **ag_params, random_seed=randomseed)
-      model = task(label=ag_label_column).fit(df_train_filltrain, **ag_params)
-      
-      return model, postprocess_dict
-        
-    except ValueError:
-      return False, postprocess_dict
+    print("Please note autogluon ml infill option no longer supported as of 7.72")
+    return False, postprocess_dict
 
   def _predict_autogluon_classifier(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    modeltype = 'classification'
-    return self.__predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
+    """
+    this option no longer supported as of 7.72
+    retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
+    """
+    print("Please note autogluon ml infill option no longer supported as of 7.72")
+    return np.zeros(shape=(1,len(categorylist)))
 
   def _predict_autogluon_regressor(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[]):
-    modeltype = 'regression'
-    return self.__predict_autogluon(ML_cmnd, model, fillfeatures, printstatus, categorylist, modeltype)
-
-  def __predict_autogluon(self, ML_cmnd, model, fillfeatures, printstatus, categorylist=[], modeltype='regression'):
     """
-    #runs and inference operation
-    #on corresponding model trained in train_AutoGluon_classifier
-    #for AutoGluon
-    #returns infill predictions
-
-    #the categorylist parameter is used to handle an edge case
-    #note that in some cases the passed categorylist may be a proxy list of equivalent length
-    #such as a range of integers
-
-    #classification vs regression is based on modeltype and only differs by a string to integer conversion
+    this option no longer supported as of 7.72
+    retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
     """
-
-    # #user can conduct this import externally to speed up this function
-    # module = 'autogluon.utils.tabular'
-    # if module not in sys.modules:
-    # from autogluon import TabularPrediction as task
-    from autogluon.tabular import TabularPredictor as task
-    
-    if model is not False:
-      
-      #reset headers to integers
-      fillfeatures.columns = list(range(len(list(fillfeatures.columns))))
-      fillfeatures = fillfeatures.reset_index(drop=True)
-
-      fillfeatures.columns = ['train_' + str(x) for x in list(fillfeatures.columns)]
-
-      #load dataset
-      fillfeatures = task.Dataset(fillfeatures)
-      
-      try:
-        infill = model.predict(fillfeatures)
-        
-        if len(categorylist) > 1:
-          
-          infill = self.__convert_singlecolumn_to_onehot(infill, ML_cmnd, categorylist)
-        
-    #     infill = np.array(infill)
-
-        elif modeltype == 'classification':
-
-          infill = infill.astype(int)
-        
-        return infill
-      
-      except ValueError:
-
-        return np.zeros(shape=(fillfeatures.shape[0],len(categorylist)))
-    
-    else:
-
-      infill = np.zeros(shape=(1,len(categorylist)))
-      
-      return infill
+    print("Please note autogluon ml infill option no longer supported as of 7.72")
+    return np.zeros(shape=(1,len(categorylist)))
 
   def _train_flaml_classifier(self, ML_cmnd, df_train_filltrain, df_train_filllabel, randomseed, printstatus, postprocess_dict):
     """
@@ -30685,7 +30553,7 @@ class AutoMunge:
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : '(defaulttype)'}}
     #where the string '(defaulttype)' may be one of
-    #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'autogluon', 'randomforest'}
+    #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'randomforest'}
     """
     
     if model is not False:
@@ -30721,7 +30589,7 @@ class AutoMunge:
         
       #defaulttype is associated with use of internal default inference functions as alternate to user defined
       if defaulttype in {'tensorflow', 'xgboost', 'catboost', 
-                         'flaml', 'autogluon', 'randomforest'}:
+                         'flaml', 'randomforest'}:
         
         infill = self.__call_default_function(defaulttype, modeltype, fillfeatures, model, commands, ML_cmnd)
         
@@ -30818,14 +30686,6 @@ class AutoMunge:
         try:
           infill = \
           self.__customML_flaml_defaultpredict(fillfeatures, model, commands, ML_cmnd)
-        except ValueError:
-          infill = np.zeros(shape=(fillfeatures.shape[0],1))
-
-    if defaulttype == 'autogluon':
-      if modeltype in {'classification', 'regression'}:
-        try:
-          infill = \
-          self.__customML_autogluon_defaultpredict(fillfeatures, model, commands, ML_cmnd)
         except ValueError:
           infill = np.zeros(shape=(fillfeatures.shape[0],1))
 
@@ -30941,21 +30801,6 @@ class AutoMunge:
     # if module not in sys.modules:
     from flaml import AutoML
       
-    infill = model.predict(features)
-
-    return infill
-
-  def __customML_autogluon_defaultpredict(self, features, model, commands, ML_cmnd):
-    """
-    #based on autogluon TabularPrediction
-    """
-    
-    # #user can conduct this import externally to speed up this function
-    # module = 'autogluon.utils.tabular'
-    # if module not in sys.modules:
-    # from autogluon import TabularPrediction as task
-    from autogluon.tabular import TabularPredictor as task
-    
     infill = model.predict(features)
 
     return infill
@@ -35950,7 +35795,7 @@ class AutoMunge:
                               printstatus, 
                               check_ML_cmnd_result,
                               default='randomforest', 
-                              valid_entries={'randomforest', 'customML', 'autogluon', 'flaml', 'catboost', 'xgboost'},
+                              valid_entries={'randomforest', 'customML', 'flaml', 'catboost', 'xgboost'},
                               valid_type=str)
     
     ML_cmnd, check_ML_cmnd_result = \
