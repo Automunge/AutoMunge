@@ -925,8 +925,7 @@ ML_cmnd = {'autoML_type':'autogluon'}
 ```
 Parameters can be passed to the AutoGluon fit operation by ML_cmnd['AutoGluon'], here we demonstrate passing 
 presets=‘best_quality’, which may improve model accuracy but at cost of much larger memory footprint for 
-properties saved to disk originating from using more models in the ensemble. Note that the random_seed 
-parameter is already passed based on the automunge(.) randomseed. Note that by default AutoGluon will include
+properties saved to disk originating from using more models in the ensemble. Note that by default AutoGluon will include
 the preset 'optimize_for_deployment' to reduce disk space usage unless user opts for 'best_quality'.
 ```
 #can activate AutoGluon for ML infill and feature importance by passing ML_cmnd as
