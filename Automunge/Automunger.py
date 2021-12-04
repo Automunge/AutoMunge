@@ -356,6 +356,7 @@ class AutoMunge:
   __check_ML_cmnd
   __check_sampling_dict
   __check_entropy_seeds
+  __check_random_generator
   __check_assignparam
   __check_columnheaders
   __check_processdict
@@ -12778,10 +12779,12 @@ class AutoMunge:
     #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
     #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
     #   entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-    #   try:
-    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-    #   except TypeError:
+    #   if sampling_resource_dict[sampling_id] == 'custom' \
+    #   and sampling_resource_dict['random_generator_accepts_seeds'] is False:
     #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+    #   else:
+    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
     #   return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -23295,16 +23298,20 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'choice_test_sample_count' : 0,
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -23663,16 +23670,19 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24177,16 +24187,19 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24742,16 +24755,19 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -24968,16 +24984,19 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -25304,16 +25323,19 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
-                               }
-        
+                                'random_generator_accepts_seeds' : True,
+                                }
+
     def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
       #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
       #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
       entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      try:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-      except TypeError:
+      if sampling_resource_dict[sampling_id] == 'custom' \
+      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      else:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
       return nprandom
     
     def erase_seeds(sampling_resource_dict):
@@ -34372,7 +34394,7 @@ class AutoMunge:
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                              trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                             noise_augment, ppd_append, random_generator):
+                             noise_augment, ppd_append):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -34836,30 +34858,12 @@ class AutoMunge:
 
     miscparameters_results.update({'ppd_append_valresult' : ppd_append_valresult})
 
-    #check random_generator
-    random_generator_valresult = False
-    if random_generator is not False:
-      try:
-        np.random.Generator(random_generator()).standard_normal()
-      except TypeError:
-        try:
-          np.random.Generator(random_generator).standard_normal()
-        except TypeError:
-          random_generator_valresult = True
-          if printstatus != 'silent':
-            print("Error: invalid entry passed for random_generator parameter.")
-            print("Acceptable values are False or np.random formatted generator")
-            print()           
-    
-    miscparameters_results.update({'random_generator_valresult' : random_generator_valresult})
-
     return miscparameters_results
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, \
-                                testID_column, randomseed, encrypt_key, noise_augment, \
-                                random_generator):
+                                testID_column, randomseed, encrypt_key, noise_augment):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -35065,23 +35069,6 @@ class AutoMunge:
         print()
 
     pm_miscparameters_results.update({'noise_augment_pm_valresult' : noise_augment_pm_valresult})
-
-    #check random_generator
-    random_generator_pm_valresult = False
-    if random_generator is not False:
-      try:
-        np.random.Generator(random_generator()).standard_normal()
-      except TypeError:
-        try:
-          np.random.Generator(random_generator).standard_normal()
-        except TypeError:
-          random_generator_pm_valresult = True
-          if printstatus != 'silent':
-            print("Error: invalid entry passed for random_generator parameter.")
-            print("Acceptable values are False or np.random formatted generator")
-            print()            
-    
-    pm_miscparameters_results.update({'random_generator_pm_valresult' : random_generator_pm_valresult})
     
     return pm_miscparameters_results
 
@@ -36264,7 +36251,7 @@ class AutoMunge:
     
     return check_ML_cmnd_result, ML_cmnd
 
-  def __check_sampling_dict(self, sampling_dict, printstatus):
+  def __check_sampling_dict(self, sampling_dict, printstatus, random_generator_accepts_seeds):
     """
     #Here we'll do a quick check for any entries in the user passed
     #sampling_dict and add any missing entries with default values
@@ -36347,6 +36334,15 @@ class AutoMunge:
                               default='custom', 
                               valid_entries={'custom', 'PCG64', 'MersenneTwister'},
                               valid_type=str)
+
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'random_generator_accepts_seeds', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default=random_generator_accepts_seeds, 
+                              valid_entries={True, False},
+                              valid_type=bool)
     
     return check_sampling_dict_result, sampling_dict
 
@@ -36379,6 +36375,34 @@ class AutoMunge:
     entropy_seeds = entropy_seeds.astype(int)
 
     return entropy_seeds, entropy_seeds_result
+
+  def __check_random_generator(self, random_generator, printstatus):
+    """
+    validates form of random_generator
+    as well as determining if it accepts entropy seeds
+    e.g. random_generator vs random_generator
+    """
+    
+    #check random_generator
+    random_generator_valresult = False
+    random_generator_accepts_seeds = True
+    
+    if random_generator is not False:
+      try:
+        np.random.Generator(random_generator()).standard_normal()
+        random_generator_accepts_seeds = True
+      except TypeError:
+        try:
+          np.random.Generator(random_generator).standard_normal()
+          random_generator_accepts_seeds = False
+        except TypeError:
+          random_generator_valresult = True
+          if printstatus != 'silent':
+            print("Error: invalid entry passed for random_generator parameter.")
+            print("Acceptable values are False or np.random formatted generator")
+            print()
+            
+    return random_generator_valresult, random_generator_accepts_seeds
   
   def __check_assignparam(self, assignparam, process_dict, printstatus):
     """
@@ -37022,16 +37046,11 @@ class AutoMunge:
     sampling_type = sampling_dict['sampling_type']
     sampling_generator = sampling_dict['sampling_generator']    
     extra_seed_generator = sampling_dict['extra_seed_generator']
+    random_generator_accepts_seeds = sampling_dict['random_generator_accepts_seeds']
 
-    no_seed_support = False
-    if sampling_generator == 'custom':
-      if random_generator is not False:
-        try:
-          random_generator()
-        except TypeError:
-          no_seed_support = True
-
-    if sampling_type != 'default' and no_seed_support is False:
+    if sampling_type != 'default' \
+    and sampling_generator == 'custom' \
+    and random_generator_accepts_seeds is True:
       
       #sampling_report_dict will be in sampling_dict if this function called in automunge
       #or will be in postprocess_dict if this function called in postmunge
@@ -37129,30 +37148,37 @@ class AutoMunge:
         or extra_seed_generator == 'sampling_generator' \
         and sampling_generator == 'PCG64':
           randomgenerator = np.random.PCG64
+          extra_seed_generator_accepts_seeds = True
         elif extra_seed_generator == 'MersenneTwister' \
         or extra_seed_generator == 'sampling_generator' \
         and sampling_generator == 'MersenneTwister':
           randomgenerator = np.random.MT19937
+          extra_seed_generator_accepts_seeds = True
         elif extra_seed_generator == 'custom' \
         or extra_seed_generator == 'sampling_generator' \
         and sampling_generator == 'custom':
           #else only use default if random_generator not specified
           if random_generator is False:
             randomgenerator = np.random.PCG64
+            extra_seed_generator_accepts_seeds = True
           else:
             randomgenerator = random_generator
+            extra_seed_generator_accepts_seeds = random_generator_accepts_seeds
 
-        try:
+        if extra_seed_generator_accepts_seeds is True:
           nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
-        except TypeError:
+        else:
           nprandom = np.random.Generator(randomgenerator)
         
         extra_seeds_needed = int(seed_requirement - provided_seed_count)
         
-        #2**32 - 1
-        max_capacity_seed = 4294967295
+        #2**63 max selected to align with max capacity for nprandom.integers
+        max_capacity_integer = int(2**63)
+        min_capacity_integer = 0
 
-        extra_seeds = nprandom.integers(0, high=max_capacity_seed, size=extra_seeds_needed).astype(int)
+        extra_seeds = nprandom.integers(min_capacity_integer, high=max_capacity_integer, size=extra_seeds_needed).astype(int)
+
+        extra_seeds = extra_seeds.astype(int)
         
         entropy_seeds = np.concatenate((entropy_seeds, extra_seeds), axis=0)
         
@@ -37165,18 +37191,22 @@ class AutoMunge:
         
         if sampling_generator =='PCG64':
           randomgenerator = np.random.PCG64
+          sampling_generator_accepts_seeds = True
         elif sampling_generator =='MersenneTwister':
           randomgenerator = np.random.MT19937
+          sampling_generator_accepts_seeds = True
         elif sampling_generator == 'custom':
           #else only use default if random_generator not specified
           if random_generator is False:
             randomgenerator = np.random.PCG64
+            sampling_generator_accepts_seeds = True
           else:
             randomgenerator = random_generator
+            sampling_generator_accepts_seeds = random_generator_accepts_seeds
 
-        try:
+        if sampling_generator_accepts_seeds is True:
           nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
-        except TypeError:
+        else:
           nprandom = np.random.Generator(randomgenerator)
 
         nprandom.shuffle(entropy_seeds)
@@ -37219,6 +37249,8 @@ class AutoMunge:
     entropy_seeds = postprocess_dict['entropy_seeds']
     random_generator = postprocess_dict['random_generator']
     sampling_dict = postprocess_dict['sampling_dict']
+    #note that random_generator_accepts_seeds defaults to True when random_generator passed as False
+    random_generator_accepts_seeds = sampling_dict['random_generator_accepts_seeds']
     
     #initalize entropy seed parameters to single form between alternate scenarios
     if len(entropy_seeds) == 0:
@@ -37238,7 +37270,7 @@ class AutoMunge:
     sampling_generator = sampling_dict['sampling_generator']
       
     #a shuffle operation will be performed preceding each access of seeds
-    def _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator):
+    def _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds):
       if len(entropy_seeds) > 2:
         shuffle_seed = [entropy_seeds[0]]
         #we dont' delete seeds in the default sampling_type scenario
@@ -37247,16 +37279,19 @@ class AutoMunge:
 
         if sampling_generator == 'PCG64':
           randomgenerator = np.random.PCG64
+          shuffling_generator_accepts_seeds = True
         elif sampling_generator == 'MersenneTwister':
           randomgenerator = np.random.MT19937
+          shuffling_generator_accepts_seeds = True
         elif sampling_generator == 'custom':
           #else only use default if random_generator not specified
           #if random_generator was received as False will have already been converted to PCG64
           randomgenerator = random_generator
+          shuffling_generator_accepts_seeds = random_generator_accepts_seeds
 
-        try:
+        if shuffling_generator_accepts_seeds is True:
           nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
-        except TypeError:
+        else:
           nprandom = np.random.Generator(randomgenerator)
 
         nprandom.shuffle(entropy_seeds)
@@ -37288,6 +37323,7 @@ class AutoMunge:
                                         'choice_test_seeds' : [],
                                         'choice_test_call_count' : 0,
                                         'choice_test_sample_count' : 0,
+                                        'random_generator_accepts_seeds' : random_generator_accepts_seeds,
                                        }
 
     #we'll use sampling_resource_dict to log the counts used to generate seeds
@@ -37426,6 +37462,8 @@ class AutoMunge:
           if sampling_type in {'bulk_seeds'}:
             #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
             binomial_train_sample_count = rowcount_trian
+            if flip_prob == 1:
+              binomial_train_sample_count = 0
             distribution_train_sample_count = \
             rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
             
@@ -37437,6 +37475,8 @@ class AutoMunge:
           
           if sampling_type in {'bulk_seeds'}:
             binomial_test_sample_count = rowcount_test
+            if test_flip_prob == 1:
+              binomial_test_sample_count = 0
             distribution_test_sample_count = \
             rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
             
@@ -37463,6 +37503,8 @@ class AutoMunge:
           if sampling_type in {'bulk_seeds'}:
             #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
             binomial_train_sample_count = rowcount_trian
+            if flip_prob == 1:
+              binomial_train_sample_count = 0
 
             choice_train_sample_count = \
             rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
@@ -37475,6 +37517,8 @@ class AutoMunge:
 
           if sampling_type in {'bulk_seeds'}:
             binomial_test_sample_count = rowcount_test
+            if test_flip_prob == 1:
+              binomial_test_sample_count = 0
 
             choice_test_sample_count = \
             rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
@@ -37522,7 +37566,7 @@ class AutoMunge:
       #with a shuffle operation performed here first
       if sampling_type == 'deafult':
 
-        entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+        entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
         
         for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds', 
                                   'distribution_train_seeds', 'distribution_test_seeds',
@@ -37542,7 +37586,7 @@ class AutoMunge:
           
           if sampling_resource_dict[sample_type_count] > 0:
             
-            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
             
             populated_seeds = entropy_seeds
             if len(entropy_seeds) > sampling_resource_dict[sample_type_count]:
@@ -37568,7 +37612,7 @@ class AutoMunge:
           populated_seeds = entropy_seeds
           if sampling_resource_dict[sample_call_count] > 0:
           
-            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+            entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
             
             if len(entropy_seeds) > sampling_resource_dict[sample_call_count]:
               
@@ -37587,7 +37631,7 @@ class AutoMunge:
                                   'distribution_train_seeds', 'distribution_test_seeds',
                                   'choice_train_seeds', 'choice_test_seeds'}:
       
-          entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator)
+          entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
         
           populated_seeds = entropy_seeds
           if len(entropy_seeds) > 1:
@@ -37631,27 +37675,32 @@ class AutoMunge:
       #note sampling_dict initialized in __check_sampling_dict
       sampling_generator = sampling_dict['sampling_generator']  
       sampling_type = sampling_dict['sampling_type']
+      random_generator_accepts_seeds = sampling_dict['random_generator_accepts_seeds']
       
       #this determines whether we extract additional seeds with default or custom generator
       if sampling_generator == 'PCG64':
         randomgenerator = np.random.PCG64
+        sampling_generator_accepts_seeds = True
       elif sampling_generator == 'MersenneTwister':
         randomgenerator = np.random.MT19937
+        sampling_generator_accepts_seeds = True
       elif sampling_generator == 'custom':
         #else only use default if random_generator not specified
         if random_generator is False:
           randomgenerator = np.random.PCG64
+          sampling_generator_accepts_seeds = True
         else:
           randomgenerator = random_generator
+          sampling_generator_accepts_seeds = random_generator_accepts_seeds
       
       if len(entropy_seeds) > 2:
     
         shuffle_seed = [entropy_seeds[0]]
         entropy_seeds = np.delete(entropy_seeds, 0)
 
-        try:
+        if sampling_generator_accepts_seeds is True:
           nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
-        except TypeError:
+        else:
           nprandom = np.random.Generator(randomgenerator)
 
         nprandom.shuffle(entropy_seeds)
@@ -37669,9 +37718,9 @@ class AutoMunge:
         #(2**32 - 1)
         spawn_seed = [random.randint(0,max_capacity_seed)]
 
-      try:
+      if sampling_generator_accepts_seeds is True:
         nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
-      except TypeError:
+      else:
         nprandom = np.random.Generator(randomgenerator)
 
       randomseed = int(nprandom.integers(0, high=max_capacity_seed, size=1))
@@ -40285,6 +40334,8 @@ class AutoMunge:
       Binary = deepcopy(Binary)
     if isinstance(PCAexcl, list):
       PCAexcl = deepcopy(PCAexcl)
+    if isinstance(entropy_seeds, list):
+      entropy_seeds = deepcopy(entropy_seeds)
 
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
     assigncat = self.__assigncat_str_convert(assigncat)
@@ -40316,7 +40367,7 @@ class AutoMunge:
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                                 noise_augment, ppd_append, random_generator)
+                                 noise_augment, ppd_append)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -40438,9 +40489,13 @@ class AutoMunge:
     #a future extension may allow user to pass custom entries
     autoMLer = self.__assemble_autoMLer()
 
+    random_generator_valresult, random_generator_accepts_seeds = \
+    self.__check_random_generator(random_generator, printstatus)
+    miscparameters_results.update({'random_generator_valresult' : random_generator_valresult})
+
     #validate sampling_dict and populate with defaults
     check_sampling_dict_result, sampling_dict = \
-    self.__check_sampling_dict(sampling_dict, printstatus)
+    self.__check_sampling_dict(sampling_dict, printstatus, random_generator_accepts_seeds)
     miscparameters_results.update({'check_sampling_dict_result' : check_sampling_dict_result})
 
     #validate entropy_seeds and align to common type
@@ -42061,7 +42116,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.68'
+    automungeversion = '7.70'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44118,12 +44173,17 @@ class AutoMunge:
                                   'choice_test_sample_count' : 0,
                                  }
 
-#       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-#         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-#         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-#         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-#         nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-#         return nprandom
+      # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
+      #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+      #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+      #   entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      #   if sampling_resource_dict[sampling_id] == 'custom' \
+      #   and sampling_resource_dict['random_generator_accepts_seeds'] is False:
+      #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+      #   else:
+      #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+      #   return nprandom
 
 #       def erase_seeds(sampling_resource_dict):
 #         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
@@ -48679,16 +48739,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -48951,16 +49014,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -49284,16 +49350,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
       # def erase_seeds(sampling_resource_dict):
@@ -49589,16 +49658,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
@@ -49804,16 +49876,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
@@ -50043,16 +50118,19 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
         #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
         #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
         entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        try:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-        except TypeError:
+        if sampling_resource_dict[sampling_id] == 'custom' \
+        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
           nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+        else:
+          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
         return nprandom
       
 #       def erase_seeds(sampling_resource_dict):
@@ -51633,9 +51711,13 @@ class AutoMunge:
     #and perform bulk parameter validations via __check_pm_miscparameters
     #and also validate df_test with __check_df_type
 
+    #validate random_generator
+    random_generator_pm_valresult, random_generator_accepts_seeds = \
+    self.__check_random_generator(random_generator, printstatus)
+
     #validate sampling_dict and populate with defaults
     check_sampling_dict_pm_result, sampling_dict = \
-    self.__check_sampling_dict(sampling_dict, printstatus)
+    self.__check_sampling_dict(sampling_dict, printstatus, random_generator_accepts_seeds)
 
     #validate entropy_seeds and align to common type
     entropy_seeds, entropy_seeds_pm_result = \
@@ -51704,6 +51786,8 @@ class AutoMunge:
       testID_column = deepcopy(testID_column)
     if isinstance(inversion, list):
       inversion = deepcopy(inversion)
+    if isinstance(entropy_seeds, list):
+      entropy_seeds = deepcopy(entropy_seeds)
 
     #quick conversion of any passed column idenitfiers to str
     testID_column = self.__parameter_str_convert(testID_column)
@@ -51714,8 +51798,7 @@ class AutoMunge:
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                   dupl_rows, featureeval, driftreport, inplace, \
                                   returnedsets, shuffletrain, inversion, traindata, \
-                                  testID_column, randomseed, encrypt_key, noise_augment, \
-                                  random_generator)
+                                  testID_column, randomseed, encrypt_key, noise_augment)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
@@ -51725,6 +51808,7 @@ class AutoMunge:
 
     pm_miscparameters_results.update({'check_sampling_dict_pm_result' : check_sampling_dict_pm_result})
     pm_miscparameters_results.update({'entropy_seeds_pm_result' : entropy_seeds_pm_result})
+    pm_miscparameters_results.update({'random_generator_pm_valresult' : random_generator_pm_valresult})
     
     #printout display progress
     if printstatus is True:
