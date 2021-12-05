@@ -7903,6 +7903,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'noise_transform' : 'numeric',
+                                  'defaultparams' : {'rescale_sigmas' : True},
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPne'}})
@@ -23203,6 +23204,11 @@ class AutoMunge:
     else:
       #default also populated in __random_parameters_params_append
       test_sigma = 0.03
+
+    if 'rescale_sigmas' in params:
+      rescale_sigmas = params['rescale_sigmas']
+    else:
+      rescale_sigmas = False
       
     if 'flip_prob' in params:
       flip_prob = params['flip_prob']
@@ -23365,6 +23371,14 @@ class AutoMunge:
         
     #________
 
+    #the sigma defaults are based on z-score data with stdev=1, for unscaled data (like with DPne) can rescale noise sigmas to align
+    #rescale_sigmas defaults to True for DPne
+    train_stdev =  pd.to_numeric(mdf_train[column], errors='coerce').std()
+    if rescale_sigmas is True:
+      if train_stdev == train_stdev and train_stdev > 0:
+        sigma *= train_stdev
+        test_sigma *= train_stdev
+
     DPnm_column = column + '_' + suffix
     
     suffixoverlap_results = \
@@ -23504,6 +23518,8 @@ class AutoMunge:
                                              'test_mu_dist' : test_mu_dist, \
                                              'test_sigma_dist' : test_sigma_dist, \
                                              'test_flip_prob_dist' : test_flip_prob_dist, \
+                                             'rescale_sigmas' : rescale_sigmas, \
+                                             'train_stdev' : train_stdev, \
                                              'binomial_activation_count' : binomial_activation_count, \
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
@@ -41964,7 +41980,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.71'
+    automungeversion = '7.73'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
