@@ -5241,3 +5241,10 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - there are some subtle aspects of complexity that would need to consider before reintroducing
 - making an executive decision to withdraw autogluon Ml infill option and also default infill option
 - hoping this doesn't inconvenience anyone, based on 7.71 discovery that was running outdated imports expect this hasn't been a widely used feature
+
+7.73
+- new assignparam option for numeric noise injection via DPnb as 'rescale_sigmas'
+- rescale_sigmas defaults as False, when True the received sigma specifications are multiplied by standard deviation of feature as found in the training data
+- note that DPnb default noise profiles were set to align with z-score normalized data which by definition have a standard deviaiton of 1
+- the rescale_sigmas option allows user to defer to common default parameters even when injecting to non-normalized data
+- DPne, which is for numeric noise injection to pass-through sets without feature normalization, now defaults to rescale_sigmas=True
