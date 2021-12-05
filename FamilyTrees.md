@@ -7308,6 +7308,7 @@ For simplicity just going to copy the code directly from code base where these d
                                   'info_retention' : True,
                                   'inplace_option' : True,
                                   'noise_transform' : 'numeric',
+                                  'defaultparams' : {'rescale_sigmas' : True},
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPne'}})
