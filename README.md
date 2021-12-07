@@ -65,6 +65,10 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train)
 ```
+Importantly, if the df_train set passed to automunge(.) includes a column
+intended for use as labels, it should be designated with the labels_column
+parameter.
+
 Or for subsequent consistent processing of train or test data, using the
 dictionary returned from original application of automunge(.), run:
 
@@ -73,9 +77,6 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test)
 ```
-Importantly, if the df_train set passed to automunge(.) includes a column
-intended for use as labels, it should be designated with the labels_column
-parameter.
 
 I find it helpful to pass these functions with the full range of arguments
 included for reference, thus a user may simply copy and past this form.
@@ -304,8 +305,8 @@ Note that there is a potential source of error if the returned column header
 title strings, which will include suffix appenders based on transformations applied, 
 match any of the original column header titles passed to automunge. This is an edge 
 case not expected to occur in common practice and will return error message at 
-conclusion of printouts.
-
+conclusion of printouts and a logged validation result as postprocess_dict['miscparameters_results']['suffixoverlap_aggregated_result']. This channel can
+be eliminated by omitting the underscore character in received column headers.
 
 ...
 
