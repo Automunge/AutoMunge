@@ -366,6 +366,9 @@ class AutoMunge:
   __prepare_seeds
   __random_parameters_params_append
   __populate_randomseed
+  __sample_from_parameter_list
+  __get_nprandom
+  __erase_seeds
 
   #__FunctionBlock: functionpointer support
   __grab_functionpointer_entries_support
@@ -12770,6 +12773,15 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
+                                'random_generator_accepts_seeds' : True,
                                }
         
     # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
@@ -23301,28 +23313,44 @@ class AutoMunge:
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    sigma_list = False
+    if isinstance(sigma, list):
+      sigma_list = sigma.copy()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_sigma_list = False
+    if isinstance(test_sigma, list):
+      test_sigma_list = test_sigma.copy()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
     #________
       
@@ -23394,7 +23422,7 @@ class AutoMunge:
         binomial_samples = np.ones(mdf_train.shape[0]).astype(int)
       else:
         sampling_id = 'binomial_train'
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
@@ -23402,7 +23430,7 @@ class AutoMunge:
       
       #now derive our sampled noise for injection
       sampling_id = 'distribution_train'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -23448,7 +23476,7 @@ class AutoMunge:
         binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
       else:
         sampling_id = 'binomial_test'
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         binomial_samples = nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0]))
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
@@ -23456,7 +23484,7 @@ class AutoMunge:
     
       #now derive our sampled noise for injection
       sampling_id = 'distribution_test'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += test_binomial_activation_count
       if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -23498,7 +23526,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [DPnm_column]
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPnm_column : {'mu' : mu, \
                                              'sigma' : sigma, \
@@ -23523,6 +23551,10 @@ class AutoMunge:
                                              'binomial_activation_count' : binomial_activation_count, \
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                             'sigma_list' : sigma_list, \
+                                             'test_sigma_list' : test_sigma_list, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -23682,28 +23714,44 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    sigma_list = False
+    if isinstance(sigma, list):
+      sigma_list = sigma.copy()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_sigma_list = False
+    if isinstance(test_sigma, list):
+      test_sigma_list = test_sigma.copy()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
     #________
       
@@ -23870,7 +23918,7 @@ class AutoMunge:
         binomial_samples = np.ones(df.shape[0]).astype(int)
       else:
         sampling_id = 'binomial_' + traintest
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
@@ -23878,7 +23926,7 @@ class AutoMunge:
       
       #now derive our sampled noise for injection
       sampling_id = 'distribution_' + traintest
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -23973,7 +24021,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [DPmm_column]
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPmm_column : {'mu' : mu, \
                                              'mu_orig' : mu_orig, \
@@ -23998,6 +24046,10 @@ class AutoMunge:
                                              'binomial_activation_count' : binomial_activation_count, \
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                             'sigma_list' : sigma_list, \
+                                             'test_sigma_list' : test_sigma_list, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -24199,28 +24251,44 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    sigma_list = False
+    if isinstance(sigma, list):
+      sigma_list = sigma.copy()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_sigma_list = False
+    if isinstance(test_sigma, list):
+      test_sigma_list = test_sigma.copy()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
     #________
       
@@ -24507,7 +24575,7 @@ class AutoMunge:
         binomial_samples = np.ones(df.shape[0]).astype(int)
       else:
         sampling_id = 'binomial_' + traintest
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0]))
@@ -24515,7 +24583,7 @@ class AutoMunge:
 
       #now derive our sampled noise for injection
       sampling_id = 'distribution_' + traintest
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
       if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -24616,7 +24684,7 @@ class AutoMunge:
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
     
     nmbrnormalization_dict = {DPrt_column : {'mu' : mu, \
                                              'mu_orig' : mu_orig, \
@@ -24653,6 +24721,10 @@ class AutoMunge:
                                              'binomial_activation_count' : binomial_activation_count, \
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                             'sigma_list' : sigma_list, \
+                                             'test_sigma_list' : test_sigma_list, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -24767,28 +24839,32 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
     #________
       
@@ -24822,7 +24898,7 @@ class AutoMunge:
     if trainnoise is True and flip_prob > 0:
       #first we'll derive our sampled noise for injection
       sampling_id = 'binomial_train'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       mdf_train[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
@@ -24837,7 +24913,7 @@ class AutoMunge:
     elif testnoise is True and test_flip_prob > 0:
       #first we'll derive our sampled noise for injection
       sampling_id = 'binomial_test'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -24852,7 +24928,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [DPbn_column]
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
                                              'test_flip_prob' : test_flip_prob, \
@@ -24862,6 +24938,8 @@ class AutoMunge:
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -24996,28 +25074,32 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
     #________
       
@@ -25077,14 +25159,14 @@ class AutoMunge:
       else:
         #derive our sampled noise for injection
         sampling_id = 'binomial_train'
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
         mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
       binomial_activation_count = mdf_train[DPod_tempcolumn1].sum()
       
       sampling_id = 'choice_train'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       if weighted is False:
@@ -25116,14 +25198,14 @@ class AutoMunge:
       else:
         #first we'll derive our sampled noise for injection
         sampling_id = 'binomial_test'
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       test_binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
       
       sampling_id = 'choice_test'
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       if test_weighted is False:
@@ -25161,7 +25243,7 @@ class AutoMunge:
     #create list of columns
     nmbrcolumns = [DPod_column]
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
 
     nmbrnormalization_dict = {DPod_column : {'flip_prob' : flip_prob, \
                                              'test_flip_prob' : test_flip_prob, \
@@ -25177,6 +25259,8 @@ class AutoMunge:
                                              'sampling_resource_dict' : sampling_resource_dict, \
                                              'binomial_activation_count' : binomial_activation_count, \
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -25335,28 +25419,32 @@ class AutoMunge:
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
                                 'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
-    def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      if sampling_resource_dict[sampling_id] == 'custom' \
-      and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      else:
-        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      return nprandom
+    #________
     
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
     #________
       
@@ -25499,14 +25587,14 @@ class AutoMunge:
       else:
         #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
         sampling_id = 'binomial_' + traintest
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
       binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
 
       sampling_id = 'choice_' + traintest
-      nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
       if weighted is False:
@@ -25578,7 +25666,7 @@ class AutoMunge:
       
     column_dict_list = []
     
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
 
     normalization_dict = {}
     if len(textcolumns) > 0:
@@ -25603,6 +25691,8 @@ class AutoMunge:
                                               'sampling_resource_dict' : sampling_resource_dict, \
                                               'binomial_activation_count' : binomial_activation_count, \
                                               'test_binomial_activation_count' : test_binomial_activation_count, \
+                                              'flip_prob_list' : flip_prob_list, \
+                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              }}
     
     for textcolumn in textcolumns:
@@ -36733,6 +36823,10 @@ class AutoMunge:
                                      'choice_train_sample_count' : 0,
                                      'choice_test_call_count' : 0,
                                      'choice_test_sample_count' : 0,
+                                     'parameterlist_train_call_count' : 0,
+                                     'parameterlist_train_sample_count' : 0,
+                                     'parameterlist_test_call_count' : 0,
+                                     'parameterlist_test_sample_count' : 0,
                                     }
     
     noise_transform_count = 0
@@ -36761,22 +36855,26 @@ class AutoMunge:
     total_generator_calls_train = \
     master_sampling_resource_dict['binomial_train_call_count'] \
     + master_sampling_resource_dict['distribution_train_call_count'] \
-    + master_sampling_resource_dict['choice_train_call_count']
+    + master_sampling_resource_dict['choice_train_call_count'] \
+    + master_sampling_resource_dict['parameterlist_train_call_count']
     
     total_generator_calls_test = \
     master_sampling_resource_dict['binomial_test_call_count'] \
     + master_sampling_resource_dict['distribution_test_call_count'] \
-    + master_sampling_resource_dict['choice_test_call_count']
+    + master_sampling_resource_dict['choice_test_call_count'] \
+    + master_sampling_resource_dict['parameterlist_test_call_count']
     
     total_samples_train = \
     master_sampling_resource_dict['binomial_train_sample_count'] \
     + master_sampling_resource_dict['distribution_train_sample_count'] \
-    + master_sampling_resource_dict['choice_train_sample_count']
+    + master_sampling_resource_dict['choice_train_sample_count'] \
+    + master_sampling_resource_dict['parameterlist_train_sample_count']
     
     total_samples_test = \
     master_sampling_resource_dict['binomial_test_sample_count'] \
     + master_sampling_resource_dict['distribution_test_sample_count'] \
-    + master_sampling_resource_dict['choice_test_sample_count']
+    + master_sampling_resource_dict['choice_test_sample_count'] \
+    + master_sampling_resource_dict['parameterlist_test_sample_count']
     
     #currently only distribution sampling has a stochastic count
     #but choice sampling update is pending so will include choice in the safety factor
@@ -37118,7 +37216,8 @@ class AutoMunge:
     
     #initalize entropy seed parameters to single form between alternate scenarios
     if len(entropy_seeds) == 0:
-      entropy_seeds = np.array([random.randint(0,4294967295)])
+      # entropy_seeds = np.array([random.randint(0,4294967295)])
+      entropy_seeds = np.array([])
 
     if random_generator == False:
       random_generator = np.random.PCG64
@@ -37187,6 +37286,14 @@ class AutoMunge:
                                         'choice_test_seeds' : [],
                                         'choice_test_call_count' : 0,
                                         'choice_test_sample_count' : 0,
+                                        'parameterlist_train' : 'custom',
+                                        'parameterlist_train_seeds' : [],
+                                        'parameterlist_train_call_count' : 0,
+                                        'parameterlist_train_sample_count' : 0,
+                                        'parameterlist_test' : 'custom',
+                                        'parameterlist_test_seeds' : [],
+                                        'parameterlist_test_call_count' : 0,
+                                        'parameterlist_test_sample_count' : 0,
                                         'random_generator_accepts_seeds' : random_generator_accepts_seeds,
                                        }
 
@@ -37209,7 +37316,8 @@ class AutoMunge:
     #note that in the custom generator scenario if custom generator not specified will also defer to PCG64
     if sampling_type in {'bulk_seeds', 'sampling_seed', 'transform_seed'}:
       for generator_specification in ['binomial_train', 'binomial_test', 'distribution_train',
-                                      'distribution_test', 'choice_train', 'choice_test']:
+                                      'distribution_test', 'choice_train', 'choice_test',
+                                      'parameterlist_train', 'parameterlist_test']:
         populated_sampling_resource_dict.update({generator_specification : 'default'})
     #else defer to the previously populated value 'custom'
     
@@ -37286,12 +37394,59 @@ class AutoMunge:
           test_flip_prob = flip_prob
         elif noise_transform in {'categoric', 'binary'}:
           test_flip_prob = 0.01
+          
+      if 'sigma' in params:
+        sigma = params['sigma']
+      else:
+        #only inspecting sigma for scenario where passed as a list so the default is immaterial, 
+        sigma = 0.03
+          
+      if 'test_sigma' in params:
+        test_sigma = params['test_sigma']
+      else:
+        #only inspecting test_sigma for scenario where passed as a list so the default is immaterial, 
+        test_sigma = 0
+
+      #__
+          
+      #check for scenarios where parameters passed as a list
+      
+      flip_prob_list_sample_count = 0
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob_list_sample_count += 1
+        #assign flip_prob to max value from list which will serve as basis for bulk_seeds count
+        flip_prob = pd.DataFrame({0:flip_prob_list})[0].max()
+        #if max was 1., get next highest value
+        if flip_prob == 1:
+          flip_prob_list.remove(flip_prob)
+          flip_prob = pd.DataFrame({0:flip_prob_list})[0].max()
+      
+      test_flip_prob_list_sample_count = 0
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob_list_sample_count += 1
+        #assign test_flip_prob to max value from list which will serve as basis for bulk_seeds count
+        test_flip_prob = pd.DataFrame({0:test_flip_prob_list})[0].max()
+        #if max was 1., get next highest value
+        if test_flip_prob == 1:
+          test_flip_prob_list.remove(test_flip_prob)
+          test_flip_prob = pd.DataFrame({0:test_flip_prob_list})[0].max()
+      
+      sigma_list_sample_count = False
+      if isinstance(sigma, list):
+        sigma_list_sample_count += 1
+      
+      test_sigma_list_sample_count = False
+      if isinstance(test_sigma, list):
+        test_sigma_list_sample_count += 1
+      
+      #__
 
       #for scenarios where parameters passed as a scipy stats distribution
       #will just sample and apply a safety factor
-      flip_prob_dist = False
+      
       if isinstance(flip_prob, type(stats.expon(1))):
-        flip_prob_dist = flip_prob
         flip_prob = flip_prob.rvs()
         flip_prob = flip_prob * (1 + stochastic_count_safety_factor)
         if flip_prob < 0:
@@ -37299,9 +37454,7 @@ class AutoMunge:
         if flip_prob > 1:
           flip_prob = 1
 
-      test_flip_prob_dist = False
       if isinstance(test_flip_prob, type(stats.expon(1))):
-        test_flip_prob_dist = test_flip_prob
         test_flip_prob = test_flip_prob.rvs()
         test_flip_prob = test_flip_prob * (1 + stochastic_count_safety_factor)
         if test_flip_prob < 0:
@@ -37311,130 +37464,195 @@ class AutoMunge:
 
       #____
 
+      #now we'll calculate sample count for use with bulk_seeds sampling_type
+      #and call count for use with sampling_seed sampling_type
+      #note that we'll calculate for train and test sets seperately
+      #and the derivations will be specific to the type fo samplings (e.g. binomial, distribution, etc)
+      #and specific to the type of noise_transform (e.g. numeric, categoric, binomial)
+      #and we'll inspect assignparam specificaitons to take into account
+      #once derived we'll save the results in the sampling_resource_dict 
+      #and use to populate seeds in the populated_sampling_resource_dict
+      #noting that the final counts won't be passed to transforms, only the seeds will
+      
+      binomial_train_sample_count = 0
+      distribution_train_sample_count = 0
+      choice_train_sample_count = 0
+      parameterlist_train_sample_count = 0
+      binomial_test_sample_count = 0
+      distribution_test_sample_count = 0
+      choice_test_sample_count = 0
+      parameterlist_test_sample_count = 0
+      
+      binomial_train_call_count = 0
+      distribution_train_call_count = 0
+      choice_train_call_count = 0
+      parameterlist_train_call_count = 0
+      binomial_test_call_count = 0
+      distribution_test_call_count = 0
+      choice_test_call_count = 0
+      parameterlist_test_call_count = 0
+
       #for 'numeric' noise_transform will be samplings for binomial and distribution sampling
       #the distribution sampling will be be stochastic count of entries based on binomial result
       #so will increase stochastic count by the safety factor stochastic_count_safety_factor defaulting to 0.15
+      #and there may be an additional sampling when flip_prob or test_flip_prob / sigma or test_sigma passed as list
       if noise_transform == 'numeric':
         
-        binomial_train_sample_count = 0
-        distribution_train_sample_count = 0
-        binomial_test_sample_count = 0
-        distribution_test_sample_count = 0
-            
         if traintest in {'train', 'traintest'} and trainnoise is True:
           
-          if sampling_type in {'bulk_seeds'}:
-            #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
-            binomial_train_sample_count = rowcount_trian
-            if flip_prob == 1:
-              binomial_train_sample_count = 0
-            distribution_train_sample_count = \
-            rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+          #calculate sample counts for bulk_seeds sampling_type case
+          #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
+          binomial_train_sample_count = rowcount_trian
+          if flip_prob == 1:
+            binomial_train_sample_count = 0
+          distribution_train_sample_count = \
+          rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+          parameterlist_train_sample_count = \
+          flip_prob_list_sample_count + sigma_list_sample_count
             
-          elif sampling_type in {'sampling_seed'}:
-            binomial_train_sample_count = 1
-            distribution_train_sample_count = 1
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_train_call_count = 1
+          if flip_prob == 1:
+            binomial_train_call_count = 0
+          distribution_train_call_count = 1
+          parameterlist_train_call_count = \
+          flip_prob_list_sample_count + sigma_list_sample_count
         
         if traintest in {'test', 'traintest'} and testnoise is True:
           
-          if sampling_type in {'bulk_seeds'}:
-            binomial_test_sample_count = rowcount_test
-            if test_flip_prob == 1:
-              binomial_test_sample_count = 0
-            distribution_test_sample_count = \
-            rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+          #calculate sample counts for bulk_seeds sampling_type case
+          binomial_test_sample_count = rowcount_test
+          if test_flip_prob == 1:
+            binomial_test_sample_count = 0
+          distribution_test_sample_count = \
+          rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+          parameterlist_test_sample_count = \
+          test_flip_prob_list_sample_count + test_sigma_list_sample_count
             
-          elif sampling_type in {'sampling_seed'}:
-            binomial_test_sample_count = 1
-            distribution_test_sample_count = 1
-          
-        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
-                                       'distribution_train_sample_count' : distribution_train_sample_count,
-                                       'binomial_test_sample_count' : binomial_test_sample_count,
-                                       'distribution_test_sample_count' : distribution_test_sample_count})
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_test_call_count = 1
+          if test_flip_prob == 1:
+            binomial_test_call_count = 0
+          distribution_test_call_count = 1
+          parameterlist_test_call_count = \
+          test_flip_prob_list_sample_count + test_sigma_list_sample_count
 
       #for 'categoric' noise_transform will be samplings for binomial and choice sampling
       #the choice sampling will be stochastic count of entries based on binomial result with safety factor stochastic_count_safety_factor
+      #and there may be an additional sampling when flip_prob or test_flip_prob passed as list
       if noise_transform == 'categoric':
-        
-        binomial_train_sample_count = 0
-        choice_train_sample_count = 0
-        binomial_test_sample_count = 0
-        choice_test_sample_count = 0
         
         if traintest in {'train', 'traintest'} and trainnoise is True:
 
-          if sampling_type in {'bulk_seeds'}:
-            #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
-            binomial_train_sample_count = rowcount_trian
-            if flip_prob == 1:
-              binomial_train_sample_count = 0
+          #calculate sample counts for bulk_seeds sampling_type case
+          #bulk samples will be based on rowcount * (1 + flip_prob * (1 + stochastic_count_safety_factor))
+          binomial_train_sample_count = rowcount_trian
+          if flip_prob == 1:
+            binomial_train_sample_count = 0
 
-            choice_train_sample_count = \
-            rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+          choice_train_sample_count = \
+          rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+
+          parameterlist_train_sample_count = \
+          flip_prob_list_sample_count
             
-          elif sampling_type in {'sampling_seed'}:
-            binomial_train_sample_count = 1
-            choice_train_sample_count = 1
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_train_call_count = 1
+          if flip_prob == 1:
+            binomial_train_call_count = 0
+          choice_train_call_count = 1
+
+          parameterlist_train_call_count = \
+          flip_prob_list_sample_count
         
         if traintest in {'test', 'traintest'} and testnoise is True:
 
-          if sampling_type in {'bulk_seeds'}:
-            binomial_test_sample_count = rowcount_test
-            if test_flip_prob == 1:
-              binomial_test_sample_count = 0
+          #calculate sample counts for bulk_seeds sampling_type case
+          binomial_test_sample_count = rowcount_test
+          if test_flip_prob == 1:
+            binomial_test_sample_count = 0
 
-            choice_test_sample_count = \
-            rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+          choice_test_sample_count = \
+          rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+
+          parameterlist_test_sample_count = \
+          test_flip_prob_list_sample_count
             
-          elif sampling_type in {'sampling_seed'}:
-            binomial_test_sample_count = 1
-            choice_test_sample_count = 1
-          
-        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
-                                       'choice_train_sample_count' : choice_train_sample_count,
-                                       'binomial_test_sample_count' : binomial_test_sample_count,
-                                       'choice_test_sample_count' : choice_test_sample_count})
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_test_call_count = 1
+          if test_flip_prob == 1:
+            binomial_test_call_count = 0
+          choice_test_call_count = 1
+
+          parameterlist_test_call_count = \
+          test_flip_prob_list_sample_count
           
       #for 'binary' noise_transform will be samplings just for binomial sampling
       if noise_transform == 'binary':
-          
-        binomial_train_sample_count = 0
-        binomial_test_sample_count = 0
         
         if traintest in {'train', 'traintest'} and trainnoise is True:
 
-          if sampling_type in {'bulk_seeds'}:
-            binomial_train_sample_count = rowcount_trian
+          #calculate sample counts for bulk_seeds sampling_type case
+          binomial_train_sample_count = rowcount_trian
+          
+          parameterlist_train_sample_count = \
+          flip_prob_list_sample_count
             
-          elif sampling_type in {'sampling_seed'}:
-            binomial_train_sample_count = 1
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_train_call_count = 1
+          
+          parameterlist_train_sample_count = \
+          flip_prob_list_sample_count
 
         if traintest in {'test', 'traintest'} and testnoise is True:
 
-          if sampling_type in {'bulk_seeds'}:
-            binomial_test_sample_count = rowcount_test
-            
-          elif sampling_type in {'sampling_seed'}:
-            binomial_test_sample_count = 1
+          #calculate sample counts for bulk_seeds sampling_type case
+          binomial_test_sample_count = rowcount_test
           
-        sampling_resource_dict.update({'binomial_train_sample_count' : binomial_train_sample_count,
-                                       'binomial_test_sample_count' : binomial_test_sample_count})
+          parameterlist_test_sample_count = \
+          test_flip_prob_list_sample_count
+            
+          #calculate call counts for sampling_seed sampling_type case
+          binomial_test_call_count = 1
+          
+          parameterlist_test_sample_count = \
+          test_flip_prob_list_sample_count
         
+      #_____
+        
+      sampling_resource_dict.update({'binomial_train_sample_count' : int(binomial_train_sample_count),
+                                     'distribution_train_sample_count' : int(distribution_train_sample_count),
+                                     'choice_train_sample_count' : int(choice_train_sample_count),
+                                     'parameterlist_train_sample_count' : int(parameterlist_train_sample_count),
+                                     'binomial_test_sample_count' : int(binomial_test_sample_count),
+                                     'distribution_test_sample_count' : int(distribution_test_sample_count),
+                                     'choice_test_sample_count' : int(choice_test_sample_count),
+                                     'parameterlist_test_sample_count' : int(parameterlist_test_sample_count)})
+
+      sampling_resource_dict.update({'binomial_train_call_count' : int(binomial_train_call_count),
+                                     'distribution_train_call_count' : int(distribution_train_call_count),
+                                     'choice_train_call_count' : int(choice_train_call_count),
+                                     'parameterlist_train_call_count' : int(parameterlist_train_call_count),
+                                     'binomial_test_call_count' : int(binomial_test_call_count),
+                                     'distribution_test_call_count' : int(distribution_test_call_count),
+                                     'choice_test_call_count' : int(choice_test_call_count),
+                                     'parameterlist_test_call_count' : int(parameterlist_test_call_count)})
+      
       #_____
       
       #now that we have the category/column specific counts, can populate seeds from our entropy bank
       
-      #in the sampling_type == 'deafult' scenario, we pass same seeds to every operation
+      #in the sampling_type == 'default' scenario, we pass same seeds to every operation
       #without striking those seeds from the bank
       #with a shuffle operation performed here first
-      if sampling_type == 'deafult':
+      if sampling_type == 'default':
 
         entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
         
         for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds', 
                                   'distribution_train_seeds', 'distribution_test_seeds',
-                                  'choice_train_seeds', 'choice_test_seeds'}:
+                                  'choice_train_seeds', 'choice_test_seeds',
+                                  'parameterlist_train_seeds', 'parameterlist_test_seeds'}:
           
           populated_sampling_resource_dict.update({sample_type_seeds : entropy_seeds})
       
@@ -37443,7 +37661,8 @@ class AutoMunge:
         
         for sample_type_count in {'binomial_train_sample_count', 'binomial_test_sample_count',
                                   'distribution_train_sample_count', 'distribution_test_sample_count',
-                                  'choice_train_sample_count', 'choice_test_sample_count'}:
+                                  'choice_train_sample_count', 'choice_test_sample_count',
+                                  'parameterlist_train_sample_count', 'parameterlist_test_sample_count'}:
           
           #relies on string convention [-12:] == 'sample_count'
           sample_type_seeds = sample_type_count[:-12] + 'seeds'
@@ -37468,7 +37687,8 @@ class AutoMunge:
               
         for sample_call_count in {'binomial_train_call_count', 'binomial_test_call_count',
                                   'distribution_train_call_count', 'distribution_test_call_count',
-                                  'choice_train_call_count', 'choice_test_call_count'}:
+                                  'choice_train_call_count', 'choice_test_call_count',
+                                  'parameterlist_train_call_count', 'parameterlist_test_call_count'}:
           
           #relies on string convention [-10:] == 'call_count'
           sample_type_seeds = sample_call_count[:-10] + 'seeds'
@@ -37491,20 +37711,21 @@ class AutoMunge:
       #in transform scenario we have one seed for each transformation function
       elif sampling_type in {'transform_seed'}:
         
+        entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
+
+        populated_seeds = entropy_seeds
+        if len(entropy_seeds) > 1:
+
+          #grab seeds
+          populated_seeds = entropy_seeds[:1]
+
+          #now strike the accessed seeds
+          entropy_seeds = entropy_seeds[1:]
+        
         for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds',
                                   'distribution_train_seeds', 'distribution_test_seeds',
-                                  'choice_train_seeds', 'choice_test_seeds'}:
-      
-          entropy_seeds = _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds)
-        
-          populated_seeds = entropy_seeds
-          if len(entropy_seeds) > 1:
-            
-            #grab seeds
-            populated_seeds = entropy_seeds[:1]
-
-            #now strike the accessed seeds
-            entropy_seeds = entropy_seeds[1:]
+                                  'choice_train_seeds', 'choice_test_seeds',
+                                  'parameterlist_train_seeds', 'parameterlist_test_seeds'}:
             
           populated_sampling_resource_dict.update({sample_type_seeds : populated_seeds})
           
@@ -37590,6 +37811,63 @@ class AutoMunge:
       randomseed = int(nprandom.integers(0, high=max_capacity_seed, size=1))
           
     return randomseed, randomrandomseed, entropy_seeds
+
+  def __sample_from_parameter_list(self, parameter_list, sampling_resource_dict, nprandom_dict, traintest):
+    #traintest accepts {'train', 'test'}
+    #this function specific to sampling_id = 'parameterlist'
+    sampling_id = 'parameterlist_' + traintest
+    
+    if isinstance(parameter_list, list) and len(parameter_list) > 0:
+      
+      #we want a distinct seed for each list sampling operation
+      #if multiple parameters passed as list sampling_resource_dict may have one seed for each based on teh sampling_type
+      #the seeds will be received as a flattened numpy array
+      #so we'll access the full array, pass a single entry to get_nprandom, and then re-enter after striking the used entry
+      #which we'll only do when len > 1         
+      received_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      if len(received_seeds) > 1:
+        curent_seed = np.array([received_seeds[0]])
+        sampling_resource_dict[sampling_id + '_seeds'] = curent_seed
+        returned_seeds = received_seeds[1:]
+      
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += 1
+      
+      max_capacity_integer = len(parameter_list) - 1
+      
+      parameter_index = \
+      nprandom.integers(0, high=max_capacity_integer, size=1).astype(int)
+
+      parameter_index = parameter_index[0]
+      
+      parameter = parameter_list[parameter_index]
+      
+      #now reset the seeds minus the expended entry
+      if len(received_seeds) > 1:
+        sampling_resource_dict[sampling_id + '_seeds'] = returned_seeds
+      
+    return parameter, sampling_resource_dict
+
+  def __get_nprandom(self, sampling_id, sampling_resource_dict, nprandom_dict):
+    #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
+    #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+    entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
+    if sampling_resource_dict[sampling_id] == 'custom' \
+    and sampling_resource_dict['random_generator_accepts_seeds'] is False:
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
+    else:
+      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+
+    return nprandom
+
+  def __erase_seeds(self, sampling_resource_dict):
+    #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+    keys = list(sampling_resource_dict)
+    for key in keys:
+      if key[-5:] == 'seeds':
+        del sampling_resource_dict[key]
+    return sampling_resource_dict
   
   #__FunctionBlock: functionpointer support
 
@@ -41980,7 +42258,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.73'
+    automungeversion = '7.74'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44035,6 +44313,15 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
                                  }
 
       # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
@@ -48603,28 +48890,44 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-      # def erase_seeds(sampling_resource_dict):
-      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      #   keys = list(sampling_resource_dict)
-      #   for key in keys:
-      #     if key[-5:] == 'seeds':
-      #       del sampling_resource_dict[key]
-      #   return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+        
+      sigma_list = False
+      if isinstance(sigma, list):
+        sigma_list = sigma.copy()
+        sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_sigma_list = False
+      if isinstance(test_sigma, list):
+        test_sigma_list = test_sigma.copy()
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+        
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
       #________
         
@@ -48702,7 +49005,7 @@ class AutoMunge:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
           sampling_id = 'binomial' + sampling_type
-          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
           sampling_resource_dict[sampling_id + '_call_count'] += 1
           sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
@@ -48710,7 +49013,7 @@ class AutoMunge:
 
         #now derive our sampled noise for injection
         sampling_id = 'distribution' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -48878,28 +49181,44 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-      # def erase_seeds(sampling_resource_dict):
-      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      #   keys = list(sampling_resource_dict)
-      #   for key in keys:
-      #     if key[-5:] == 'seeds':
-      #       del sampling_resource_dict[key]
-      #   return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+        
+      sigma_list = False
+      if isinstance(sigma, list):
+        sigma_list = sigma.copy()
+        sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_sigma_list = False
+      if isinstance(test_sigma, list):
+        test_sigma_list = test_sigma.copy()
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+        
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
       #________
         
@@ -48978,7 +49297,7 @@ class AutoMunge:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
           sampling_id = 'binomial' + sampling_type
-          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           sampling_resource_dict[sampling_id + '_call_count'] += 1
           sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
@@ -48986,7 +49305,7 @@ class AutoMunge:
 
         #now derive our sampled noise for injection
         sampling_id = 'distribution' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -49214,28 +49533,45 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-      # def erase_seeds(sampling_resource_dict):
-      #   #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      #   keys = list(sampling_resource_dict)
-      #   for key in keys:
-      #     if key[-5:] == 'seeds':
-      #       del sampling_resource_dict[key]
-      #   return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+        
+      sigma_list = False
+      if isinstance(sigma, list):
+        sigma_list = sigma.copy()
+        sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_sigma_list = False
+      if isinstance(test_sigma, list):
+        test_sigma_list = test_sigma.copy()
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
+        
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
+
       #________
         
       #scenarios where parameters passed as a scipy stats distribution
@@ -49350,7 +49686,7 @@ class AutoMunge:
           binomial_samples = np.ones(mdf_test.shape[0]).astype(int)
         else:
           sampling_id = 'binomial' + sampling_type
-          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           sampling_resource_dict[sampling_id + '_call_count'] += 1
           sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
           binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0]))
@@ -49358,7 +49694,7 @@ class AutoMunge:
 
         #now derive our sampled noise for injection
         sampling_id = 'distribution' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
         if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
@@ -49522,28 +49858,32 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-#       def erase_seeds(sampling_resource_dict):
-#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-#         keys = list(sampling_resource_dict)
-#         for key in keys:
-#           if key[-5:] == 'seeds':
-#             del sampling_resource_dict[key]
-#         return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+        
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
       #________
         
@@ -49597,7 +49937,7 @@ class AutoMunge:
         
         #first we'll derive our sampled noise for injection
         sampling_id = 'binomial' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
@@ -49740,28 +50080,32 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-#       def erase_seeds(sampling_resource_dict):
-#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-#         keys = list(sampling_resource_dict)
-#         for key in keys:
-#           if key[-5:] == 'seeds':
-#             del sampling_resource_dict[key]
-#         return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+        
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
       #________
         
@@ -49812,14 +50156,14 @@ class AutoMunge:
         else:
           #first we'll derive our sampled noise for injection
           sampling_id = 'binomial' + sampling_type
-          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           sampling_resource_dict[sampling_id + '_call_count'] += 1
           sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
           mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
         binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
 
         sampling_id = 'choice' + sampling_type
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         if weighted is False:
@@ -49982,28 +50326,32 @@ class AutoMunge:
                                   'choice_test_seeds' : [],
                                   'choice_test_call_count' : 0,
                                   'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
-      def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-        #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-        #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-        entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-        if sampling_resource_dict[sampling_id] == 'custom' \
-        and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-        else:
-          nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-        return nprandom
+      #________
       
-#       def erase_seeds(sampling_resource_dict):
-#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-#         keys = list(sampling_resource_dict)
-#         for key in keys:
-#           if key[-5:] == 'seeds':
-#             del sampling_resource_dict[key]
-#         return sampling_resource_dict
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+
+      flip_prob_list = False
+      if isinstance(flip_prob, list):
+        flip_prob_list = flip_prob.copy()
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      test_flip_prob_list = False
+      if isinstance(test_flip_prob, list):
+        test_flip_prob_list = test_flip_prob.copy()
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
       #________
         
@@ -50052,14 +50400,14 @@ class AutoMunge:
         else:
           #df_noise_tempcolumn1 will return 1 for rows receiving injection and 0 elsewhere
           sampling_id = 'binomial_' + traintest
-          nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
           sampling_resource_dict[sampling_id + '_call_count'] += 1
           sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
           df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
         binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
 
         sampling_id = 'choice_' + traintest
-        nprandom = get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         if weighted is False:
@@ -55912,12 +56260,16 @@ class AutoMunge:
         df_test, inputcolumn = \
         postprocess_dict['process_dict'][category]['inverseprocess'](df_test, categorylist, postprocess_dict)
         #df, categorylist, postprocess_dict
-      
+
+    #this defragments the dataframe
+    df_test = df_test.copy()
+
     #we'll know to halt our inversion path when have successfully recovered the original target input column
     if inputcolumn != origcolumn:
       
       df_test, inputcolumn = \
       self.__df_inversion(inputcolumn, df_test, postprocess_dict, inverse_categorytree, printstatus)
+
     
     return df_test, inputcolumn
     
@@ -56102,6 +56454,9 @@ class AutoMunge:
         columns_before_inversion = set(df_test)
         
         df_test, _1 = self.__df_inversion(best_path, df_test, postprocess_dict, inverse_categorytree, printstatus)
+
+        #this defragments the dataframe
+        df_test = df_test.copy()
         
         columns_after_inversion = set(df_test)
         
@@ -56189,7 +56544,7 @@ class AutoMunge:
     
     #now consider whether Binary dimensionality reduction was performed
     
-    if inversion not in  {'labels', 'denselabels'}:
+    if not isinstance(inversion, (list, set)) and inversion not in  {'labels', 'denselabels'}:
       meta_Binary_dict = postprocess_dict['Binary_dict']
     else:
       meta_Binary_dict = postprocess_dict['labels_Binary_dict']
