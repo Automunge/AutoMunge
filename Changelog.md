@@ -5248,3 +5248,13 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - note that DPnb default noise profiles were set to align with z-score normalized data which by definition have a standard deviaiton of 1
 - the rescale_sigmas option allows user to defer to common default parameters even when injecting to non-normalized data
 - DPne, which is for numeric noise injection to pass-through sets without feature normalization, now defaults to rescale_sigmas=True
+
+7.74
+- fixed a typo that was interfering with seed populating in default sampling_type scenario
+- corrected seed populating for transform_seed sampling_type scenario
+- found and fixed a process flaw when populating seeds for sampling_seed sampling_type
+- (basically identified that our seed populating was only working per specs with the bulk_seeds sampling_type, now all sampling_type scenarios working as intended)
+- consolidated noise transform support functions get_nprandom and erase_seeds, previously were defined in each function, now only defined once (better practice)
+- new option for noise transforms, assignparam specification of noise distribution parameters flip_prob/test_flip_prob/sigma/test_sigma now accepts parameter specification as a list of candidate values for automatic seeded sampling between candidates
+- note that the automunge(.) established basis carries through to postmunge(.)
+- found and fixed a bug with inversion list specification
