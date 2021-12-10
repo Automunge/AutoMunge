@@ -5272,3 +5272,7 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - as previously implemented a noise setting was sampled in automunge and carried through to postmunge
 - in revised convention a unique setting is sampled in both automunge and postmunge
 - this update aligns with the prior convention for passing noise parameters as scipy stats distriutions
+
+7.76
+- resolved an inversion printout associated with fragmented dataframe warning (just needed to move the defragmentation operation to a different spot)
+- options to pass noise injection distribution parameters as scipy stats distributions now supports seeded sampling
