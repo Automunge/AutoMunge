@@ -3275,6 +3275,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : ['DP1s'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPsk' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPsk'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'DPne' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['DPne'],
@@ -7301,6 +7310,16 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP1s'}})
+    process_dict.update({'DPsk' : {'dualprocess' : self._process_DPsk,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPsk,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : False,
+                                  'inplace_option' : False,
+                                  'noise_transform' : 'binary',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPsk'}})
     process_dict.update({'DPne' : {'dualprocess' : self._process_DPnb,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPnb,
