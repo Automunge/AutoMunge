@@ -732,6 +732,7 @@ when training set has > 2,000 rows.
 categorical set has more unique values than this heuristic, it defaults 
 to categorical treatment via hashing processing via 'hsh2', otherwise 
 categorical sets default to binary encoding via '1010'. This defaults to 255.
+Heuristic can be deactivated by passing as False.
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframe. If set to _True_ returns pandas dataframes
@@ -3615,7 +3616,7 @@ on flip_prob parameter.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - 'rescale_sigmas': defaults as False, True rescales sigma specifications based on standard deviation of feature in training set (this option intended for use in conjunction with DPne which injects numeric noise without applying a preceding normalization)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.03
-    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
@@ -3639,7 +3640,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - parameters should be passed to 'DPmm' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.02
-    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values  for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
@@ -3664,7 +3665,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - Parameters should be passed to 'DPrt' transformation category from family tree.
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_noisedistribution, test_flip_prob, test_mu, test_sigma}, which otherwise default to test_noisedistribution, test_mu, and test_flip_prob matching the train data parameters and test_sigma=0.02
-    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {sigma, flip_prob, test_sigma, test_flip_prob} can be passed as list of candidate values  for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
@@ -3689,7 +3690,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - noise injection parameters should be passed to 'DPbn' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values  for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
@@ -3712,7 +3713,7 @@ on number of activations)
     - noise injection parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
@@ -3737,7 +3738,7 @@ can be passed directly to DPoh.
     - noise injection parameters should be passed to 'DPo2' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: comparable to onht
@@ -3762,7 +3763,7 @@ can be passed directly to DP10.
     - noise injection parameters should be passed to 'DPo3' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: comparable to 1010
@@ -3787,7 +3788,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hs10 metrics
@@ -3816,7 +3817,7 @@ assignparam = {'mlhs' :
     - DPod noise injection assignparam parameters can be passed to the mlhs parameter 'norm_params' embedded in a dictionary (e.g. assignparam = {'mlhs' : {inputcolumn : {'norm_params' : {'flip_prob' : 0.05}}}} ) Defaults to weighted sampling. (The norm_params approach is associated with use of the mlti transform which is what mlhs applies)
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hash metrics
@@ -3839,7 +3840,7 @@ on number of activations).
     - noise injection parameters should be passed to 'DPo7' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: hash metrics
@@ -3859,7 +3860,7 @@ on number of activations).
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: nmbr metrics
@@ -3879,11 +3880,30 @@ on number of activations).
     - noise injection parameters should be passed to 'DPmc' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
-    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a sampled selection.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
   - driftreport postmunge metrics: 1010 metrics
   - returned datatype: int8
+  - inversion available: yes
+* DPsk: applies a masking of sampled entries with a mask_value defaulting to the integer 0. As configured in default process_dict specification treats data as full pass-through without NArow aggregation or infill, similar to DPne and DPse noted below.
+  - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
+  - default infill: does notapply infill
+  - default NArowtype: exclude
+  - suffix appender: '_DPsk'
+  - assignparam parameters accepted: 
+    - 'mask_value' the value injected to masked entries, defaults to integer 0
+    - 'flip_prob' for percent of activation flips (defaults to 0.03), 
+    - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
+    - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
+    - noise injection parameters should be passed to 'DPsk' transformation category from family tree
+    - 'suffix': to change suffix appender (leading underscore added internally)
+    - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob}, which otherwise default to test_flip_prob = 0.01
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
+    - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
+    - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+  - driftreport postmunge metrics: mask_value, other noise parameters
+  - returned datatype: consistent with input
   - inversion available: yes
 * DPse: for full pass-through other than swap noise injection (i.e. may be applied to numeric or categoric features with string entries). Comparable parameters supported to DPmc (swap_noise defaults to True). Only other edits are suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPse may be suitable for incorporating noise injections to categoric test features into a prior prepared pipeline. A similar pass-through transform for numeric features with distribution sampled injections is available as DPne as noted above.
 * DPne: for full pass-through other than numeric noise injection (i.e. no normalization applied). Comparable parameters supported to DPnb, samples gaussian by default also has laplace support. Note that for DPne the rescale_sigmas option defaults to True such that specified sigma parameters are rescaled by multiplication with the training set standard deviation, thus allowing common default sigma options independant of feature scale. For user specified sigma parameters they will also be rescaled unless rescale_sigmas has been deactivated. Only other edits to returned feature other than noise injection are conversion to float dtype / non numeric to NaN and suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPne may be suitable for incorporating noise injections to numeric test features into a prior prepared pipeline. A similar pass-through transform for categoric features with swap noise injections is available as DPse as noted below.
@@ -4393,6 +4413,7 @@ avoid unintentional duplication.
 - 'DPqt',
 - 'DPrt',
 - 'DPse',
+- 'DPsk',
 - 'GPS1',
 - 'GPS2',
 - 'GPS3',
