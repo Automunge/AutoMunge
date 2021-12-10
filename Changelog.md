@@ -5258,3 +5258,17 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - new option for noise transforms, assignparam specification of noise distribution parameters flip_prob/test_flip_prob/sigma/test_sigma now accepts parameter specification as a list of candidate values for automatic seeded sampling between candidates
 - note that the automunge(.) established basis carries through to postmunge(.)
 - found and fixed a bug with inversion list specification
+
+7.75
+- added a False scenario for numbercategoryheuristic parameter to deactivate the heuristic
+- (numbercategoryheuristic sets threshold for number of unique entries in a feature beyond which hashing is applied)
+- note that hashing still applied under automation in the all unique case
+- new noise injection option as DPsk
+- DPsk is a masking injection, that masks a sampled ratio of entries with a designated mask_value defaulting to the integer 0
+- have seen mask noise discussed in multiple papers, wouldn't know who to cite, I believe this is fairly common practice
+- note that the DPsk process_dict specification is structured similar to DPne and DPse as direct passthrough without data type conversion, infill, or NArw aggregation
+- can also be integrated into a family tree for application in conjunction with other encoding options.
+- updated convention rolled out in 7.74 for sampling noise parameters from list of candidates
+- as previously implemented a noise setting was sampled in automunge and carried through to postmunge
+- in revised convention a unique setting is sampled in both automunge and postmunge
+- this update aligns with the prior convention for passing noise parameters as scipy stats distriutions
