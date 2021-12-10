@@ -367,6 +367,7 @@ class AutoMunge:
   __random_parameters_params_append
   __populate_randomseed
   __sample_from_parameter_list
+  __sample_from_scipy_stats
   __get_nprandom
   __erase_seeds
 
@@ -23340,6 +23341,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -23377,31 +23386,36 @@ class AutoMunge:
     mu_dist = False
     if isinstance(mu, type(stats.expon(1))):
       mu_dist = mu
-      mu = mu.rvs()
+      mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(mu, sampling_resource_dict, nprandom_dict, 'train')
 
     test_mu_dist = False
     if isinstance(test_mu, type(stats.expon(1))):
       test_mu_dist = test_mu
-      test_mu = test_mu.rvs()
+      test_mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_mu, sampling_resource_dict, nprandom_dict, 'test')
 
     sigma_dist = False
     if isinstance(sigma, type(stats.expon(1))):
       sigma_dist = sigma
-      sigma = sigma.rvs()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(sigma, sampling_resource_dict, nprandom_dict, 'train')
       if sigma < 0:
         sigma = 0
 
     test_sigma_dist = False
     if isinstance(test_sigma, type(stats.expon(1))):
       test_sigma_dist = test_sigma
-      test_sigma = test_sigma.rvs()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_sigma, sampling_resource_dict, nprandom_dict, 'test')
       if test_sigma < 0:
         test_sigma = 0
 
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -23410,7 +23424,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -23741,6 +23756,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -23778,31 +23801,36 @@ class AutoMunge:
     mu_dist = False
     if isinstance(mu, type(stats.expon(1))):
       mu_dist = mu
-      mu = mu.rvs()
+      mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(mu, sampling_resource_dict, nprandom_dict, 'train')
 
     test_mu_dist = False
     if isinstance(test_mu, type(stats.expon(1))):
       test_mu_dist = test_mu
-      test_mu = test_mu.rvs()
+      test_mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_mu, sampling_resource_dict, nprandom_dict, 'test')
 
     sigma_dist = False
     if isinstance(sigma, type(stats.expon(1))):
       sigma_dist = sigma
-      sigma = sigma.rvs()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(sigma, sampling_resource_dict, nprandom_dict, 'train')
       if sigma < 0:
         sigma = 0
 
     test_sigma_dist = False
     if isinstance(test_sigma, type(stats.expon(1))):
       test_sigma_dist = test_sigma
-      test_sigma = test_sigma.rvs()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_sigma, sampling_resource_dict, nprandom_dict, 'test')
       if test_sigma < 0:
         test_sigma = 0
 
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -23811,7 +23839,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -24278,6 +24307,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -24315,31 +24352,36 @@ class AutoMunge:
     mu_dist = False
     if isinstance(mu, type(stats.expon(1))):
       mu_dist = mu
-      mu = mu.rvs()
+      mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(mu, sampling_resource_dict, nprandom_dict, 'train')
 
     test_mu_dist = False
     if isinstance(test_mu, type(stats.expon(1))):
       test_mu_dist = test_mu
-      test_mu = test_mu.rvs()
+      test_mu, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_mu, sampling_resource_dict, nprandom_dict, 'test')
 
     sigma_dist = False
     if isinstance(sigma, type(stats.expon(1))):
       sigma_dist = sigma
-      sigma = sigma.rvs()
+      sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(sigma, sampling_resource_dict, nprandom_dict, 'train')
       if sigma < 0:
         sigma = 0
 
     test_sigma_dist = False
     if isinstance(test_sigma, type(stats.expon(1))):
       test_sigma_dist = test_sigma
-      test_sigma = test_sigma.rvs()
+      test_sigma, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_sigma, sampling_resource_dict, nprandom_dict, 'test')
       if test_sigma < 0:
         test_sigma = 0
 
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -24348,7 +24390,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -24866,6 +24909,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -24891,7 +24942,8 @@ class AutoMunge:
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -24900,7 +24952,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -25101,6 +25154,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -25126,7 +25187,8 @@ class AutoMunge:
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -25135,7 +25197,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -25446,6 +25509,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -25471,7 +25542,8 @@ class AutoMunge:
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -25480,7 +25552,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -25833,6 +25906,14 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                 }
 
@@ -25858,7 +25939,8 @@ class AutoMunge:
     flip_prob_dist = False
     if isinstance(flip_prob, type(stats.expon(1))):
       flip_prob_dist = flip_prob
-      flip_prob = flip_prob.rvs()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(flip_prob, sampling_resource_dict, nprandom_dict, 'train')
       if flip_prob < 0:
         flip_prob = 0
       if flip_prob > 1:
@@ -25867,7 +25949,8 @@ class AutoMunge:
     test_flip_prob_dist = False
     if isinstance(test_flip_prob, type(stats.expon(1))):
       test_flip_prob_dist = test_flip_prob
-      test_flip_prob = test_flip_prob.rvs()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_scipy_stats(test_flip_prob, sampling_resource_dict, nprandom_dict, 'test')
       if test_flip_prob < 0:
         test_flip_prob = 0
       if test_flip_prob > 1:
@@ -37070,6 +37153,10 @@ class AutoMunge:
                                      'parameterlist_train_sample_count' : 0,
                                      'parameterlist_test_call_count' : 0,
                                      'parameterlist_test_sample_count' : 0,
+                                     'statsdistribution_train_call_count' : 0,
+                                     'statsdistribution_train_sample_count' : 0,
+                                     'statsdistribution_test_call_count' : 0,
+                                     'statsdistribution_test_sample_count' : 0,
                                     }
     
     noise_transform_count = 0
@@ -37099,25 +37186,29 @@ class AutoMunge:
     master_sampling_resource_dict['binomial_train_call_count'] \
     + master_sampling_resource_dict['distribution_train_call_count'] \
     + master_sampling_resource_dict['choice_train_call_count'] \
-    + master_sampling_resource_dict['parameterlist_train_call_count']
+    + master_sampling_resource_dict['parameterlist_train_call_count'] \
+    + master_sampling_resource_dict['statsdistribution_train_call_count']
     
     total_generator_calls_test = \
     master_sampling_resource_dict['binomial_test_call_count'] \
     + master_sampling_resource_dict['distribution_test_call_count'] \
     + master_sampling_resource_dict['choice_test_call_count'] \
-    + master_sampling_resource_dict['parameterlist_test_call_count']
+    + master_sampling_resource_dict['parameterlist_test_call_count'] \
+    + master_sampling_resource_dict['statsdistribution_test_call_count']
     
     total_samples_train = \
     master_sampling_resource_dict['binomial_train_sample_count'] \
     + master_sampling_resource_dict['distribution_train_sample_count'] \
     + master_sampling_resource_dict['choice_train_sample_count'] \
-    + master_sampling_resource_dict['parameterlist_train_sample_count']
+    + master_sampling_resource_dict['parameterlist_train_sample_count'] \
+    + master_sampling_resource_dict['statsdistribution_train_sample_count']
     
     total_samples_test = \
     master_sampling_resource_dict['binomial_test_sample_count'] \
     + master_sampling_resource_dict['distribution_test_sample_count'] \
     + master_sampling_resource_dict['choice_test_sample_count'] \
-    + master_sampling_resource_dict['parameterlist_test_sample_count']
+    + master_sampling_resource_dict['parameterlist_test_sample_count'] \
+    + master_sampling_resource_dict['statsdistribution_test_sample_count']
     
     #currently only distribution sampling has a stochastic count
     #but choice sampling update is pending so will include choice in the safety factor
@@ -37537,6 +37628,14 @@ class AutoMunge:
                                         'parameterlist_test_seeds' : [],
                                         'parameterlist_test_call_count' : 0,
                                         'parameterlist_test_sample_count' : 0,
+                                        'statsdistribution_train' : 'custom',
+                                        'statsdistribution_train_seeds' : [],
+                                        'statsdistribution_train_call_count' : 0,
+                                        'statsdistribution_train_sample_count' : 0,
+                                        'statsdistribution_test' : 'custom',
+                                        'statsdistribution_test_seeds' : [],
+                                        'statsdistribution_test_call_count' : 0,
+                                        'statsdistribution_test_sample_count' : 0,
                                         'random_generator_accepts_seeds' : random_generator_accepts_seeds,
                                        }
 
@@ -37560,7 +37659,8 @@ class AutoMunge:
     if sampling_type in {'bulk_seeds', 'sampling_seed', 'transform_seed'}:
       for generator_specification in ['binomial_train', 'binomial_test', 'distribution_train',
                                       'distribution_test', 'choice_train', 'choice_test',
-                                      'parameterlist_train', 'parameterlist_test']:
+                                      'parameterlist_train', 'parameterlist_test',
+                                      'statsdistribution_train', 'statsdistribution_test']:
         populated_sampling_resource_dict.update({generator_specification : 'default'})
     #else defer to the previously populated value 'custom'
     
@@ -37603,6 +37703,38 @@ class AutoMunge:
       #and using sampling_type to know what kind of seedings are applied (e.g. bulk vs sample)
       #once we've calculated the count of seeds, we'll populated the returned populated_sampling_resource_dict seeds entries
       #with seeds extracted from the entropy_seeds bank
+      
+      #now we'll calculate sample count for use with bulk_seeds sampling_type
+      #and call count for use with sampling_seed sampling_type
+      #note that we'll calculate for train and test sets seperately
+      #and the derivations will be specific to the type fo samplings (e.g. binomial, distribution, etc)
+      #and specific to the type of noise_transform (e.g. numeric, categoric, binomial)
+      #and we'll inspect assignparam specificaitons to take into account
+      #once derived we'll save the results in the sampling_resource_dict 
+      #and use to populate seeds in the populated_sampling_resource_dict
+      #noting that the final counts won't be passed to transforms, only the seeds will
+      
+      binomial_train_sample_count = 0
+      distribution_train_sample_count = 0
+      choice_train_sample_count = 0
+      parameterlist_train_sample_count = 0
+      statsdistribution_train_sample_count = 0
+      binomial_test_sample_count = 0
+      distribution_test_sample_count = 0
+      choice_test_sample_count = 0
+      parameterlist_test_sample_count = 0
+      statsdistribution_test_sample_count = 0
+      
+      binomial_train_call_count = 0
+      distribution_train_call_count = 0
+      choice_train_call_count = 0
+      parameterlist_train_call_count = 0
+      statsdistribution_train_call_count = 0
+      binomial_test_call_count = 0
+      distribution_test_call_count = 0
+      choice_test_call_count = 0
+      parameterlist_test_call_count = 0
+      statsdistribution_test_call_count = 0
 
       #____
       #to derive stochastic seed counts, we'll access flip_prob parameters
@@ -37641,14 +37773,26 @@ class AutoMunge:
       if 'sigma' in params:
         sigma = params['sigma']
       else:
-        #only inspecting sigma for scenario where passed as a list so the default is immaterial, 
+        #only inspecting sigma for scenario where passed as a list or stats so the default is immaterial, 
         sigma = 0.03
           
       if 'test_sigma' in params:
         test_sigma = params['test_sigma']
       else:
-        #only inspecting test_sigma for scenario where passed as a list so the default is immaterial, 
+        #only inspecting test_sigma for scenario where passed as a list or stats so the default is immaterial, 
         test_sigma = 0
+        
+      if 'mu' in params:
+        mu = params['mu']
+      else:
+        #only inspecting mu for scenario where passed as a list or stats so the default is immaterial, 
+        mu = 0
+          
+      if 'test_mu' in params:
+        test_mu = params['test_mu']
+      else:
+        #only inspecting test_mu for scenario where passed as a list or stats so the default is immaterial, 
+        test_mu = 0
 
       #__
           
@@ -37689,7 +37833,23 @@ class AutoMunge:
       #for scenarios where parameters passed as a scipy stats distribution
       #will just sample and apply a safety factor
       
+      stats_train_calls = 0
+      stats_test_calls = 0
+      
+      if isinstance(mu, type(stats.expon(1))):
+        stats_train_calls += 1
+
+      if isinstance(test_mu, type(stats.expon(1))):
+        stats_test_calls += 1
+
+      if isinstance(sigma, type(stats.expon(1))):
+        stats_train_calls += 1
+
+      if isinstance(test_sigma, type(stats.expon(1))):
+        stats_test_calls += 1
+      
       if isinstance(flip_prob, type(stats.expon(1))):
+        stats_train_calls += 1
         flip_prob = flip_prob.rvs()
         flip_prob = flip_prob * (1 + stochastic_count_safety_factor)
         if flip_prob < 0:
@@ -37698,6 +37858,7 @@ class AutoMunge:
           flip_prob = 1
 
       if isinstance(test_flip_prob, type(stats.expon(1))):
+        stats_test_calls += 1
         test_flip_prob = test_flip_prob.rvs()
         test_flip_prob = test_flip_prob * (1 + stochastic_count_safety_factor)
         if test_flip_prob < 0:
@@ -37706,34 +37867,6 @@ class AutoMunge:
           test_flip_prob = 1
 
       #____
-
-      #now we'll calculate sample count for use with bulk_seeds sampling_type
-      #and call count for use with sampling_seed sampling_type
-      #note that we'll calculate for train and test sets seperately
-      #and the derivations will be specific to the type fo samplings (e.g. binomial, distribution, etc)
-      #and specific to the type of noise_transform (e.g. numeric, categoric, binomial)
-      #and we'll inspect assignparam specificaitons to take into account
-      #once derived we'll save the results in the sampling_resource_dict 
-      #and use to populate seeds in the populated_sampling_resource_dict
-      #noting that the final counts won't be passed to transforms, only the seeds will
-      
-      binomial_train_sample_count = 0
-      distribution_train_sample_count = 0
-      choice_train_sample_count = 0
-      parameterlist_train_sample_count = 0
-      binomial_test_sample_count = 0
-      distribution_test_sample_count = 0
-      choice_test_sample_count = 0
-      parameterlist_test_sample_count = 0
-      
-      binomial_train_call_count = 0
-      distribution_train_call_count = 0
-      choice_train_call_count = 0
-      parameterlist_train_call_count = 0
-      binomial_test_call_count = 0
-      distribution_test_call_count = 0
-      choice_test_call_count = 0
-      parameterlist_test_call_count = 0
 
       #for 'numeric' noise_transform will be samplings for binomial and distribution sampling
       #the distribution sampling will be be stochastic count of entries based on binomial result
@@ -37748,18 +37881,26 @@ class AutoMunge:
           binomial_train_sample_count = rowcount_trian
           if flip_prob == 1:
             binomial_train_sample_count = 0
+          
           distribution_train_sample_count = \
           rowcount_trian * flip_prob * (1 + stochastic_count_safety_factor)
+          
           parameterlist_train_sample_count = \
           flip_prob_list_sample_count + sigma_list_sample_count
+          
+          statsdistribution_train_sample_count = stats_train_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_train_call_count = 1
           if flip_prob == 1:
             binomial_train_call_count = 0
+          
           distribution_train_call_count = 1
+          
           parameterlist_train_call_count = \
           flip_prob_list_sample_count + sigma_list_sample_count
+          
+          statsdistribution_train_call_count = stats_train_calls
         
         if traintest in {'test', 'traintest'} and testnoise is True:
           
@@ -37767,18 +37908,26 @@ class AutoMunge:
           binomial_test_sample_count = rowcount_test
           if test_flip_prob == 1:
             binomial_test_sample_count = 0
+          
           distribution_test_sample_count = \
           rowcount_test * test_flip_prob * (1 + stochastic_count_safety_factor)
+          
           parameterlist_test_sample_count = \
           test_flip_prob_list_sample_count + test_sigma_list_sample_count
+          
+          statsdistribution_test_sample_count = stats_test_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_test_call_count = 1
           if test_flip_prob == 1:
             binomial_test_call_count = 0
+          
           distribution_test_call_count = 1
+          
           parameterlist_test_call_count = \
           test_flip_prob_list_sample_count + test_sigma_list_sample_count
+          
+          statsdistribution_test_call_count = stats_test_calls
 
       #for 'categoric' noise_transform will be samplings for binomial and choice sampling
       #the choice sampling will be stochastic count of entries based on binomial result with safety factor stochastic_count_safety_factor
@@ -37798,15 +37947,20 @@ class AutoMunge:
 
           parameterlist_train_sample_count = \
           flip_prob_list_sample_count
+          
+          statsdistribution_train_sample_count = stats_train_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_train_call_count = 1
           if flip_prob == 1:
             binomial_train_call_count = 0
+          
           choice_train_call_count = 1
 
           parameterlist_train_call_count = \
           flip_prob_list_sample_count
+          
+          statsdistribution_train_call_count = stats_train_calls
         
         if traintest in {'test', 'traintest'} and testnoise is True:
 
@@ -37820,6 +37974,8 @@ class AutoMunge:
 
           parameterlist_test_sample_count = \
           test_flip_prob_list_sample_count
+          
+          statsdistribution_test_sample_count = stats_test_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_test_call_count = 1
@@ -37829,6 +37985,8 @@ class AutoMunge:
 
           parameterlist_test_call_count = \
           test_flip_prob_list_sample_count
+          
+          statsdistribution_test_call_count = stats_test_calls
           
       #for 'binary' noise_transform will be samplings just for binomial sampling
       if noise_transform == 'binary':
@@ -37840,12 +37998,16 @@ class AutoMunge:
           
           parameterlist_train_sample_count = \
           flip_prob_list_sample_count
+          
+          statsdistribution_train_sample_count = stats_train_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_train_call_count = 1
           
-          parameterlist_train_sample_count = \
+          parameterlist_train_call_count = \
           flip_prob_list_sample_count
+          
+          statsdistribution_train_call_count = stats_train_calls
 
         if traintest in {'test', 'traintest'} and testnoise is True:
 
@@ -37854,12 +38016,16 @@ class AutoMunge:
           
           parameterlist_test_sample_count = \
           test_flip_prob_list_sample_count
+          
+          statsdistribution_test_sample_count = stats_test_calls
             
           #calculate call counts for sampling_seed sampling_type case
           binomial_test_call_count = 1
           
-          parameterlist_test_sample_count = \
+          parameterlist_test_call_count = \
           test_flip_prob_list_sample_count
+          
+          statsdistribution_test_call_count = stats_test_calls
         
       #_____
         
@@ -37867,19 +38033,25 @@ class AutoMunge:
                                      'distribution_train_sample_count' : int(distribution_train_sample_count),
                                      'choice_train_sample_count' : int(choice_train_sample_count),
                                      'parameterlist_train_sample_count' : int(parameterlist_train_sample_count),
+                                     'statsdistribution_train_sample_count' : int(statsdistribution_train_sample_count),
                                      'binomial_test_sample_count' : int(binomial_test_sample_count),
                                      'distribution_test_sample_count' : int(distribution_test_sample_count),
                                      'choice_test_sample_count' : int(choice_test_sample_count),
-                                     'parameterlist_test_sample_count' : int(parameterlist_test_sample_count)})
+                                     'parameterlist_test_sample_count' : int(parameterlist_test_sample_count),
+                                     'statsdistribution_test_sample_count' : int(statsdistribution_test_sample_count),
+                                    })
 
       sampling_resource_dict.update({'binomial_train_call_count' : int(binomial_train_call_count),
                                      'distribution_train_call_count' : int(distribution_train_call_count),
                                      'choice_train_call_count' : int(choice_train_call_count),
                                      'parameterlist_train_call_count' : int(parameterlist_train_call_count),
+                                     'statsdistribution_train_call_count' : int(statsdistribution_train_call_count),
                                      'binomial_test_call_count' : int(binomial_test_call_count),
                                      'distribution_test_call_count' : int(distribution_test_call_count),
                                      'choice_test_call_count' : int(choice_test_call_count),
-                                     'parameterlist_test_call_count' : int(parameterlist_test_call_count)})
+                                     'parameterlist_test_call_count' : int(parameterlist_test_call_count),
+                                     'statsdistribution_test_call_count' : int(statsdistribution_test_call_count),
+                                    })
       
       #_____
       
@@ -37895,7 +38067,8 @@ class AutoMunge:
         for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds', 
                                   'distribution_train_seeds', 'distribution_test_seeds',
                                   'choice_train_seeds', 'choice_test_seeds',
-                                  'parameterlist_train_seeds', 'parameterlist_test_seeds'}:
+                                  'parameterlist_train_seeds', 'parameterlist_test_seeds',
+                                  'statsdistribution_train_seeds', 'statsdistribution_test_seeds'}:
           
           populated_sampling_resource_dict.update({sample_type_seeds : entropy_seeds})
       
@@ -37905,7 +38078,8 @@ class AutoMunge:
         for sample_type_count in {'binomial_train_sample_count', 'binomial_test_sample_count',
                                   'distribution_train_sample_count', 'distribution_test_sample_count',
                                   'choice_train_sample_count', 'choice_test_sample_count',
-                                  'parameterlist_train_sample_count', 'parameterlist_test_sample_count'}:
+                                  'parameterlist_train_sample_count', 'parameterlist_test_sample_count',
+                                  'statsdistribution_train_sample_count', 'statsdistribution_test_sample_count'}:
           
           #relies on string convention [-12:] == 'sample_count'
           sample_type_seeds = sample_type_count[:-12] + 'seeds'
@@ -37931,7 +38105,8 @@ class AutoMunge:
         for sample_call_count in {'binomial_train_call_count', 'binomial_test_call_count',
                                   'distribution_train_call_count', 'distribution_test_call_count',
                                   'choice_train_call_count', 'choice_test_call_count',
-                                  'parameterlist_train_call_count', 'parameterlist_test_call_count'}:
+                                  'parameterlist_train_call_count', 'parameterlist_test_call_count',
+                                  'statsdistribution_train_call_count', 'statsdistribution_test_call_count'}:
           
           #relies on string convention [-10:] == 'call_count'
           sample_type_seeds = sample_call_count[:-10] + 'seeds'
@@ -37968,7 +38143,8 @@ class AutoMunge:
         for sample_type_seeds in {'binomial_train_seeds', 'binomial_test_seeds',
                                   'distribution_train_seeds', 'distribution_test_seeds',
                                   'choice_train_seeds', 'choice_test_seeds',
-                                  'parameterlist_train_seeds', 'parameterlist_test_seeds'}:
+                                  'parameterlist_train_seeds', 'parameterlist_test_seeds',
+                                  'statsdistribution_train_seeds', 'statsdistribution_test_seeds'}:
             
           populated_sampling_resource_dict.update({sample_type_seeds : populated_seeds})
           
@@ -38091,6 +38267,40 @@ class AutoMunge:
         sampling_resource_dict[sampling_id + '_seeds'] = returned_seeds
       
     return parameter, sampling_resource_dict
+
+  def __sample_from_scipy_stats(self, stats_distribution, sampling_resource_dict, nprandom_dict, traintest):
+    #traintest accepts {'train', 'test'}
+    #this function specific to sampling_id = 'statsdistribution'
+    sampling_id = 'statsdistribution_' + traintest
+    
+    if isinstance(stats_distribution, type(stats.expon(1))):
+      
+      #we want a distinct seed for each stats sampling operation
+      #if multiple parameters passed as list sampling_resource_dict may have one seed for each based on teh sampling_type
+      #the seeds will be received as a flattened numpy array
+      #so we'll access the full array, pass a single entry to get_nprandom, and then re-enter after striking the used entry
+      #which we'll only do when len > 1         
+      received_seeds = sampling_resource_dict[sampling_id + '_seeds']
+      if len(received_seeds) > 1:
+        curent_seed = np.array([received_seeds[0]])
+        sampling_resource_dict[sampling_id + '_seeds'] = curent_seed
+        returned_seeds = received_seeds[1:]
+      
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += 1
+      
+      #this is a scipy stats option to set a np.random generator for basis of sampling
+      stats_distribution.random_state=nprandom
+      
+      #now sample the value from the distribution
+      sample = stats_distribution.rvs()
+      
+      #now reset the seeds minus the expended entry
+      if len(received_seeds) > 1:
+        sampling_resource_dict[sampling_id + '_seeds'] = returned_seeds
+      
+    return sample, sampling_resource_dict
 
   def __get_nprandom(self, sampling_id, sampling_resource_dict, nprandom_dict):
     #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
@@ -42501,7 +42711,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.75'
+    automungeversion = '7.76'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -49141,6 +49351,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -49187,31 +49405,37 @@ class AutoMunge:
       #________
         
       #scenarios where parameters passed as a scipy stats distribution
-      if isinstance(mu_dist, type(stats.expon(1))):
-        mu = mu_dist.rvs()
+      if isinstance(mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(mu_dist, sampling_resource_dict, nprandom_dict, 'train')
 
-      if isinstance(test_mu_dist, type(stats.expon(1))):
-        test_mu = test_mu_dist.rvs()
+      if isinstance(test_mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_mu_dist, sampling_resource_dict, nprandom_dict, 'test')
 
-      if isinstance(sigma_dist, type(stats.expon(1))):
-        sigma = sigma_dist.rvs()
+      if isinstance(sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(sigma_dist, sampling_resource_dict, nprandom_dict, 'train')
         if sigma < 0:
           sigma = 0
 
-      if isinstance(test_sigma_dist, type(stats.expon(1))):
-        test_sigma = test_sigma_dist.rvs()
+      if isinstance(test_sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_sigma_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_sigma < 0:
           test_sigma = 0
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -49444,6 +49668,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -49490,31 +49722,37 @@ class AutoMunge:
       #________
         
       #scenarios where parameters passed as a scipy stats distribution
-      if isinstance(mu_dist, type(stats.expon(1))):
-        mu = mu_dist.rvs()
+      if isinstance(mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(mu_dist, sampling_resource_dict, nprandom_dict, 'train')
 
-      if isinstance(test_mu_dist, type(stats.expon(1))):
-        test_mu = test_mu_dist.rvs()
+      if isinstance(test_mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_mu_dist, sampling_resource_dict, nprandom_dict, 'test')
 
-      if isinstance(sigma_dist, type(stats.expon(1))):
-        sigma = sigma_dist.rvs()
+      if isinstance(sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(sigma_dist, sampling_resource_dict, nprandom_dict, 'train')
         if sigma < 0:
           sigma = 0
 
-      if isinstance(test_sigma_dist, type(stats.expon(1))):
-        test_sigma = test_sigma_dist.rvs()
+      if isinstance(test_sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_sigma_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_sigma < 0:
           test_sigma = 0
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -49808,6 +50046,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -49854,31 +50100,37 @@ class AutoMunge:
       #________
         
       #scenarios where parameters passed as a scipy stats distribution
-      if isinstance(mu_dist, type(stats.expon(1))):
-        mu = mu_dist.rvs()
+      if isinstance(mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(mu_dist, sampling_resource_dict, nprandom_dict, 'train')
 
-      if isinstance(test_mu_dist, type(stats.expon(1))):
-        test_mu = test_mu_dist.rvs()
+      if isinstance(test_mu_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_mu, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_mu_dist, sampling_resource_dict, nprandom_dict, 'test')
 
-      if isinstance(sigma_dist, type(stats.expon(1))):
-        sigma = sigma_dist.rvs()
+      if isinstance(sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(sigma_dist, sampling_resource_dict, nprandom_dict, 'train')
         if sigma < 0:
           sigma = 0
 
-      if isinstance(test_sigma_dist, type(stats.expon(1))):
-        test_sigma = test_sigma_dist.rvs()
+      if isinstance(test_sigma_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_sigma, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_sigma_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_sigma < 0:
           test_sigma = 0
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -50145,6 +50397,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -50174,15 +50434,17 @@ class AutoMunge:
         
       #scenarios where parameters passed as a scipy stats distribution
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -50373,6 +50635,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -50402,15 +50672,17 @@ class AutoMunge:
         
       #scenarios where parameters passed as a scipy stats distribution
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -50625,6 +50897,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -50654,15 +50934,17 @@ class AutoMunge:
         
       #scenarios where parameters passed as a scipy stats distribution
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -50873,6 +51155,14 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
 
@@ -50902,15 +51192,17 @@ class AutoMunge:
         
       #scenarios where parameters passed as a scipy stats distribution
 
-      if isinstance(flip_prob_dist, type(stats.expon(1))):
-        flip_prob = flip_prob_dist.rvs()
+      if isinstance(flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is True:
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(flip_prob_dist, sampling_resource_dict, nprandom_dict, 'train')
         if flip_prob < 0:
           flip_prob = 0
         if flip_prob > 1:
           flip_prob = 1
 
-      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
-        test_flip_prob = test_flip_prob_dist.rvs()
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))) and postprocess_dict['traindata'] is False:
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_scipy_stats(test_flip_prob_dist, sampling_resource_dict, nprandom_dict, 'test')
         if test_flip_prob < 0:
           test_flip_prob = 0
         if test_flip_prob > 1:
@@ -56729,6 +57021,9 @@ class AutoMunge:
     origcolumn = postprocess_dict['column_dict'][categorylist_entry]['origcolumn']
     category = postprocess_dict['column_dict'][categorylist_entry]['category']
     categorylist = postprocess_dict['column_dict'][categorylist_entry]['categorylist']
+
+    #this defragments the dataframe
+    df_test = df_test.copy()
     
     if 'custom_inversion' in postprocess_dict['process_dict'][category]:
       
@@ -56744,9 +57039,6 @@ class AutoMunge:
         df_test, inputcolumn = \
         postprocess_dict['process_dict'][category]['inverseprocess'](df_test, categorylist, postprocess_dict)
         #df, categorylist, postprocess_dict
-
-    #this defragments the dataframe
-    df_test = df_test.copy()
 
     #we'll know to halt our inversion path when have successfully recovered the original target input column
     if inputcolumn != origcolumn:
