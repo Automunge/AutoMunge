@@ -3875,6 +3875,15 @@ class AutoMunge:
                                      'coworkers'     : ['DP1s'],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPsk' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPsk'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'DPne' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['DPne'],
@@ -7899,6 +7908,16 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : 'DP1s'}})
+    process_dict.update({'DPsk' : {'dualprocess' : self._process_DPsk,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPsk,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : False,
+                                  'inplace_option' : False,
+                                  'noise_transform' : 'binary',
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPsk'}})
     process_dict.update({'DPne' : {'dualprocess' : self._process_DPnb,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPnb,
@@ -25088,13 +25107,13 @@ class AutoMunge:
     #________
     
     #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
-      
+
     flip_prob_list = False
     if isinstance(flip_prob, list):
       flip_prob_list = flip_prob.copy()
       flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
-      
+
     test_flip_prob_list = False
     if isinstance(test_flip_prob, list):
       test_flip_prob_list = test_flip_prob.copy()
@@ -25714,6 +25733,222 @@ class AutoMunge:
 
       column_dict_list.append(column_dict)
     
+    return mdf_train, mdf_test, column_dict_list
+
+  def _process_DPsk(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    '''
+    #process_DPsk(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #makes no assumption about input data
+    #injects a mask into sampled rows based on a binomial sampling
+    #mask defaults to integer 0, can be specified by mask_value parameter
+    #accepts flip_prob and test_flip_prob to set injection rate
+    #flip_prob/test_flip_prob can also be passed as list of condidate values or as scipy stats distribution
+    '''
+    
+    suffixoverlap_results = {}
+    
+    #initialize parameters
+    if 'flip_prob' in params:
+      flip_prob = params['flip_prob']
+    else:
+      #default also populated in __random_parameters_params_append
+      flip_prob = 0.03
+      
+    if 'test_flip_prob' in params:
+      test_flip_prob = params['test_flip_prob']
+    else:
+      #default also populated in __random_parameters_params_append
+      test_flip_prob = 0.01
+      
+    if 'testnoise' in params:
+      testnoise = params['testnoise']
+    else:
+      testnoise = False
+
+    if 'trainnoise' in params:
+      trainnoise = params['trainnoise']
+    else:
+      trainnoise = True
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+      
+    if 'mask_value' in params:
+      mask_value = params['mask_value']
+    else:
+      mask_value = 0
+      
+    #________
+      
+    #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
+    #postmunge(.) has a corresponding parameter to support
+    if 'random_generator' in params:
+      random_generator = params['random_generator']
+    else:
+      random_generator = np.random.PCG64
+      
+    nprandom_dict = {'custom' : random_generator,
+                     'default': np.random.PCG64}
+      
+    #note that sampling_resource_dict populated externally 
+    #based on automunge(.) sampling_dict and entropy_seeds parameters 
+    #and not passed to postmunge
+    #postmunge(.) has corresponding parameters to support
+    if 'sampling_resource_dict' in params:
+      sampling_resource_dict = params['sampling_resource_dict']
+    else:
+      #'custom' as used here means deferring to random_generator parameter
+      sampling_resource_dict = {'binomial_train' : 'custom',
+                                'binomial_train_seeds' : [],
+                                'binomial_train_call_count' : 0,
+                                'binomial_train_sample_count' : 0,
+                                'binomial_test' : 'custom',
+                                'binomial_test_seeds' : [],
+                                'binomial_test_call_count' : 0,
+                                'binomial_test_sample_count' : 0,
+                                'distribution_train' : 'custom',
+                                'distribution_train_seeds' : [],
+                                'distribution_train_call_count' : 0,
+                                'distribution_train_sample_count' : 0,
+                                'distribution_test' : 'custom',
+                                'distribution_test_seeds' : [],
+                                'distribution_test_call_count' : 0,
+                                'distribution_test_sample_count' : 0,
+                                'choice_train' : 'custom',
+                                'choice_train_seeds' : [],
+                                'choice_train_call_count' : 0,
+                                'choice_train_sample_count' : 0,
+                                'choice_test' : 'custom',
+                                'choice_test_seeds' : [],
+                                'choice_test_call_count' : 0,
+                                'choice_test_sample_count' : 0,
+                                'parameterlist_train' : 'custom',
+                                'parameterlist_train_seeds' : [],
+                                'parameterlist_train_call_count' : 0,
+                                'parameterlist_train_sample_count' : 0,
+                                'parameterlist_test' : 'custom',
+                                'parameterlist_test_seeds' : [],
+                                'parameterlist_test_call_count' : 0,
+                                'parameterlist_test_sample_count' : 0,
+                                'random_generator_accepts_seeds' : True,
+                                }
+
+    #________
+    
+    #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+    flip_prob_list = False
+    if isinstance(flip_prob, list):
+      flip_prob_list = flip_prob.copy()
+      flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+      
+    test_flip_prob_list = False
+    if isinstance(test_flip_prob, list):
+      test_flip_prob_list = test_flip_prob.copy()
+      test_flip_prob, sampling_resource_dict = \
+      self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
+      
+    #________
+      
+    #scenarios where parameters passed as a scipy stats distribution
+    flip_prob_dist = False
+    if isinstance(flip_prob, type(stats.expon(1))):
+      flip_prob_dist = flip_prob
+      flip_prob = flip_prob.rvs()
+      if flip_prob < 0:
+        flip_prob = 0
+      if flip_prob > 1:
+        flip_prob = 1
+
+    test_flip_prob_dist = False
+    if isinstance(test_flip_prob, type(stats.expon(1))):
+      test_flip_prob_dist = test_flip_prob
+      test_flip_prob = test_flip_prob.rvs()
+      if test_flip_prob < 0:
+        test_flip_prob = 0
+      if test_flip_prob > 1:
+        test_flip_prob = 1
+      
+    #___
+      
+    DPbn_column = column + '_' + suffix
+    
+    suffixoverlap_results = \
+    self.__df_check_suffixoverlap(mdf_train, DPbn_column, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+    #now inject noise
+    if trainnoise is True and flip_prob > 0:
+      #first we'll derive our sampled noise for injection
+      sampling_id = 'binomial_train'
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
+      mdf_train[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
+      #now inject
+      mdf_train = \
+      self.__autowhere(mdf_train, DPbn_column, mdf_train[DPbn_column]==1, mask_value, mdf_train[column], specified='replacementalternative')
+    elif trainnoise is False:
+      mdf_train[DPbn_column] = mdf_train[column].copy()
+    
+    #for test data is just pass-through unless testnoise or traindata is activated
+    if testnoise is False:
+      mdf_test[DPbn_column] = mdf_test[column].copy()
+    elif testnoise is True and test_flip_prob > 0:
+      #first we'll derive our sampled noise for injection
+      sampling_id = 'binomial_test'
+      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      sampling_resource_dict[sampling_id + '_call_count'] += 1
+      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+      mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+
+      #now inject noise
+      mdf_test = \
+      self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
+    
+    #create list of columns
+    nmbrcolumns = [DPbn_column]
+    
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
+
+    nmbrnormalization_dict = {DPbn_column : {'flip_prob' : flip_prob, \
+                                             'test_flip_prob' : test_flip_prob, \
+                                             'flip_prob_dist' : flip_prob_dist, \
+                                             'test_flip_prob_dist' : test_flip_prob_dist, \
+                                             'suffix' : suffix, \
+                                             'testnoise' : testnoise, \
+                                             'trainnoise' : trainnoise, \
+                                             'sampling_resource_dict' : sampling_resource_dict, \
+                                             'flip_prob_list' : flip_prob_list, \
+                                             'test_flip_prob_list' : test_flip_prob_list, \
+                                             'mask_value' : mask_value, \
+                                            }}
+
+    #store some values in the nmbr_dict{} for use later in ML infill methods
+    column_dict_list = []
+
+    for nc in nmbrcolumns:
+
+      if nc != nmbrcolumns[0]:
+        nmbrnormalization_dict = {}
+
+      column_dict = { nc : {'category' : treecategory, \
+                           'origcategory' : category, \
+                           'normalization_dict' : nmbrnormalization_dict, \
+                           'origcolumn' : column, \
+                           'inputcolumn' : column, \
+                           'columnslist' : nmbrcolumns, \
+                           'categorylist' : nmbrcolumns, \
+                           'infillmodel' : False, \
+                           'infillcomplete' : False, \
+                           'suffixoverlap_results' : suffixoverlap_results, \
+                           'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict)
+        
     return mdf_train, mdf_test, column_dict_list
 
   def _process_qbt1(self, df, column, category, treecategory, postprocess_dict, params = {}):
@@ -26747,7 +26982,7 @@ class AutoMunge:
           
         #hashing is applied when nunique exceeds the automunge parameter numbercategoryheuristic
         #which is an integer defaulting to 255
-        if nunique > numbercategoryheuristic:
+        if numbercategoryheuristic is not False and nunique > numbercategoryheuristic:
           category = defaultordinal
           
         #multi-column hasing is reserved for unstructured text as evidenced by nearly all unique
@@ -34551,17 +34786,25 @@ class AutoMunge:
     
     #check numbercategoryheuristic
     numbercategoryheuristic_valresult = False
-    if not isinstance(numbercategoryheuristic, int):
+    if not isinstance(numbercategoryheuristic, (int,bool)):
       numbercategoryheuristic_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for numbercategoryheuristic parameter.")
-        print("Acceptable values are integers >= 1")
+        print("Acceptable values are integers >= 1 or False")
         print()
-    elif numbercategoryheuristic < 1:
+    elif isinstance(numbercategoryheuristic, bool) and numbercategoryheuristic is not False:
       numbercategoryheuristic_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for numbercategoryheuristic parameter.")
-        print("Acceptable values are integers >= 1")
+        print("Acceptable values are integers >= 1 or False")
+        print()
+    elif isinstance(numbercategoryheuristic, (int)) \
+    and numbercategoryheuristic is not False \
+    and numbercategoryheuristic < 1:
+      numbercategoryheuristic_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for numbercategoryheuristic parameter.")
+        print("Acceptable values are integers >= 1 or False")
         print()
 
     miscparameters_results.update({'numbercategoryheuristic_valresult' : numbercategoryheuristic_valresult})
@@ -42258,7 +42501,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.74'
+    automungeversion = '7.75'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -48905,27 +49148,39 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
         
-      sigma_list = False
+      if 'sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_list']
+        if isinstance(sigma_list, list) and len(sigma_list) > 0:
+          sigma = sigma_list
+          
+      if 'test_sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_list']
+        if isinstance(test_sigma_list, list) and len(test_sigma_list) > 0:
+          test_sigma = test_sigma_list
+      
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(sigma, list):
-        sigma_list = sigma.copy()
         sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_sigma_list = False
       if isinstance(test_sigma, list):
-        test_sigma_list = test_sigma.copy()
         test_sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
         
-      flip_prob_list = False
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_flip_prob_list = False
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
@@ -49196,27 +49451,39 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
         
-      sigma_list = False
+      if 'sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_list']
+        if isinstance(sigma_list, list) and len(sigma_list) > 0:
+          sigma = sigma_list
+          
+      if 'test_sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_list']
+        if isinstance(test_sigma_list, list) and len(test_sigma_list) > 0:
+          test_sigma = test_sigma_list
+      
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(sigma, list):
-        sigma_list = sigma.copy()
         sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_sigma_list = False
       if isinstance(test_sigma, list):
-        test_sigma_list = test_sigma.copy()
         test_sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
         
-      flip_prob_list = False
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_flip_prob_list = False
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
@@ -49548,27 +49815,39 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
         
-      sigma_list = False
+      if 'sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['sigma_list']
+        if isinstance(sigma_list, list) and len(sigma_list) > 0:
+          sigma = sigma_list
+          
+      if 'test_sigma_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_sigma_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_sigma_list']
+        if isinstance(test_sigma_list, list) and len(test_sigma_list) > 0:
+          test_sigma = test_sigma_list
+      
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(sigma, list):
-        sigma_list = sigma.copy()
         sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(sigma_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_sigma_list = False
       if isinstance(test_sigma, list):
-        test_sigma_list = test_sigma.copy()
         test_sigma, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_sigma_list, sampling_resource_dict, nprandom_dict, 'test')
         
-      flip_prob_list = False
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_flip_prob_list = False
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
@@ -49873,15 +50152,21 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
         
-      flip_prob_list = False
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_flip_prob_list = False
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
@@ -50095,15 +50380,21 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
         
-      flip_prob_list = False
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
-        
-      test_flip_prob_list = False
+
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
@@ -50341,15 +50632,21 @@ class AutoMunge:
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
 
-      flip_prob_list = False
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
       if isinstance(flip_prob, list):
-        flip_prob_list = flip_prob.copy()
         flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
         
-      test_flip_prob_list = False
       if isinstance(test_flip_prob, list):
-        test_flip_prob_list = test_flip_prob.copy()
         test_flip_prob, sampling_resource_dict = \
         self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
 
@@ -50490,6 +50787,193 @@ class AutoMunge:
         for inputtextcolumn in inputtextcolumns:
           del mdf_test[inputtextcolumn]
     
+    return mdf_test
+
+  def _postprocess_DPsk(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #process_DPsk(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to inject noise to training data, such as for differential privacy purposes
+    #makes no assumption about input data
+    #injects a mask into sampled rows based on a binomial sampling
+    #mask defaults to integer 0, can be specified by mask_value parameter
+    #accepts flip_prob and test_flip_prob to set injection rate
+    #flip_prob/test_flip_prob can also be passed as list of condidate values or as scipy stats distribution
+    '''
+    
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+
+      mask_value = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mask_value']
+      
+      flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
+      
+      test_flip_prob = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob']
+        
+      flip_prob_dist = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_dist']
+      test_flip_prob_dist = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_dist']
+        
+      #________
+
+      #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
+      if 'random_generator' in params:
+        random_generator = params['random_generator']
+      else:
+        random_generator = np.random.PCG64
+        
+      nprandom_dict = {'custom' : random_generator,
+                       'default': np.random.PCG64}
+      
+      #note that sampling_resource_dict populated externally 
+      #based on automunge(.) sampling_dict and entropy_seeds parameters 
+      #and not passed to postmunge
+      #postmunge(.) has corresponding parameters to support
+      if 'sampling_resource_dict' in params:
+        sampling_resource_dict = params['sampling_resource_dict']
+      else:
+        #'custom' as used here means deferring to random_generator parameter
+        sampling_resource_dict = {'binomial_train' : 'custom',
+                                  'binomial_train_seeds' : [],
+                                  'binomial_train_call_count' : 0,
+                                  'binomial_train_sample_count' : 0,
+                                  'binomial_test' : 'custom',
+                                  'binomial_test_seeds' : [],
+                                  'binomial_test_call_count' : 0,
+                                  'binomial_test_sample_count' : 0,
+                                  'distribution_train' : 'custom',
+                                  'distribution_train_seeds' : [],
+                                  'distribution_train_call_count' : 0,
+                                  'distribution_train_sample_count' : 0,
+                                  'distribution_test' : 'custom',
+                                  'distribution_test_seeds' : [],
+                                  'distribution_test_call_count' : 0,
+                                  'distribution_test_sample_count' : 0,
+                                  'choice_train' : 'custom',
+                                  'choice_train_seeds' : [],
+                                  'choice_train_call_count' : 0,
+                                  'choice_train_sample_count' : 0,
+                                  'choice_test' : 'custom',
+                                  'choice_test_seeds' : [],
+                                  'choice_test_call_count' : 0,
+                                  'choice_test_sample_count' : 0,
+                                  'parameterlist_train' : 'custom',
+                                  'parameterlist_train_seeds' : [],
+                                  'parameterlist_train_call_count' : 0,
+                                  'parameterlist_train_sample_count' : 0,
+                                  'parameterlist_test' : 'custom',
+                                  'parameterlist_test_seeds' : [],
+                                  'parameterlist_test_call_count' : 0,
+                                  'parameterlist_test_sample_count' : 0,
+                                  'random_generator_accepts_seeds' : True,
+                                 }
+
+      #________
+      
+      #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
+      
+      if 'flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob_list']
+        if isinstance(flip_prob_list, list) and len(flip_prob_list) > 0:
+          flip_prob = flip_prob_list
+          
+      if 'test_flip_prob_list' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        test_flip_prob_list = postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['test_flip_prob_list']
+        if isinstance(test_flip_prob_list, list) and len(test_flip_prob_list) > 0:
+          test_flip_prob = test_flip_prob_list
+      
+      if isinstance(flip_prob, list):
+        flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(flip_prob_list, sampling_resource_dict, nprandom_dict, 'train')
+        
+      if isinstance(test_flip_prob, list):
+        test_flip_prob, sampling_resource_dict = \
+        self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
+
+      #________
+        
+      #scenarios where parameters passed as a scipy stats distribution
+
+      if isinstance(flip_prob_dist, type(stats.expon(1))):
+        flip_prob = flip_prob_dist.rvs()
+        if flip_prob < 0:
+          flip_prob = 0
+        if flip_prob > 1:
+          flip_prob = 1
+
+      if isinstance(test_flip_prob_dist, type(stats.expon(1))):
+        test_flip_prob = test_flip_prob_dist.rvs()
+        if test_flip_prob < 0:
+          test_flip_prob = 0
+        if test_flip_prob > 1:
+          test_flip_prob = 1
+        
+      #___
+      
+      testnoise = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['testnoise']
+      trainnoise = True
+      #backward compatibility - trainnoise added in 7.30
+      if 'trainnoise' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        trainnoise = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['trainnoise']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+
+      DPbn_column = column + '_' + suffix
+      
+      #check if df_test is to be treated as train or test data
+      traindata = postprocess_dict['traindata']
+      
+      if traindata is True:
+        flip_prob = flip_prob
+      elif traindata is False:
+        flip_prob = test_flip_prob
+      
+      #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
+      if ( (trainnoise is True and traindata is True) \
+      or (testnoise is True and traindata is False) ) \
+      and flip_prob > 0:
+        
+        if traindata is True:
+          sampling_type = '_train'
+        elif traindata is False:
+          sampling_type = '_test'
+        
+        #first we'll derive our sampled noise for injection
+        sampling_id = 'binomial' + sampling_type
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+        mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
+      
+        #now inject noise
+        mdf_test = \
+        self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
+        
+      else:
+        
+        #for test data is just pass-through
+        mdf_test[DPbn_column] = mdf_test[column].copy()
+
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        del mdf_test[column]
+
     return mdf_test
 
   def _postprocess_exc2(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
