@@ -5276,3 +5276,12 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 7.76
 - resolved an inversion printout associated with fragmented dataframe warning (just needed to move the defragmentation operation to a different spot)
 - options to pass noise injection distribution parameters as scipy stats distributions now supports seeded sampling
+
+7.77
+- noise injection transforms now have assignparam option as retain_basis
+- retain_basis is associated with passing other noise distribution parameters as lists of candidates or as scipy stats distributions
+- in the default retain_basis = False case a unique sampling is applied in both automunge(.) and postmunge(.)
+- in the retain_basis = True case the sampling from automunge(.) is retained as basis for postmunge(.)
+- also postmunge(.) new accepts df_test as a set of labels without features
+- (requires df_test as dataframe with label column headers populated)
+- we expect the case of features without labels will be more common, this just provided to be thorough
