@@ -185,6 +185,7 @@ class AutoMunge:
   _process_DPbn
   _process_DPod
   _process_DPmc
+  _process_DPsk
   _process_qbt1
   _process_null
   _process_copy
@@ -501,6 +502,7 @@ class AutoMunge:
   _postprocess_DPbn
   _postprocess_DPod
   _postprocess_DPmc
+  _postprocess_DPsk
   _postprocess_exc2
   _postprocess_exc5
 
@@ -23286,6 +23288,14 @@ class AutoMunge:
     else:
       inplace = False
     
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
+    
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -23379,6 +23389,12 @@ class AutoMunge:
       test_flip_prob_list = test_flip_prob.copy()
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
+      
+    if retain_basis is True:
+      sigma_list = False
+      test_sigma_list = False
+      flip_prob_list = False
+      test_flip_prob_list = False
 
     #________
       
@@ -23430,6 +23446,14 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      mu_dist = False
+      test_mu_dist = False
+      sigma_dist = False
+      test_sigma_dist = False
+      flip_prob_dist = False
+      test_flip_prob_dist = False
         
     #________
 
@@ -23589,6 +23613,7 @@ class AutoMunge:
                                              'test_sigma_list' : test_sigma_list, \
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
+                                             'retain_basis' : retain_basis, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -23704,6 +23729,14 @@ class AutoMunge:
     else:
       suffix = treecategory
       
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
+      
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -23795,6 +23828,12 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      sigma_list = False
+      test_sigma_list = False
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -23845,6 +23884,14 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      mu_dist = False
+      test_mu_dist = False
+      sigma_dist = False
+      test_sigma_dist = False
+      flip_prob_dist = False
+      test_flip_prob_dist = False
         
     #________
       
@@ -24098,6 +24145,7 @@ class AutoMunge:
                                              'test_sigma_list' : test_sigma_list, \
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
+                                             'retain_basis' : retain_basis, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -24255,6 +24303,14 @@ class AutoMunge:
     else:
       suffix = treecategory
       
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
+      
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -24346,6 +24402,12 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      sigma_list = False
+      test_sigma_list = False
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -24396,6 +24458,14 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      mu_dist = False
+      test_mu_dist = False
+      sigma_dist = False
+      test_sigma_dist = False
+      flip_prob_dist = False
+      test_flip_prob_dist = False
         
     #________
       
@@ -24787,6 +24857,7 @@ class AutoMunge:
                                              'test_sigma_list' : test_sigma_list, \
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
+                                             'retain_basis' : retain_basis, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -24856,6 +24927,14 @@ class AutoMunge:
       suffix = params['suffix']
     else:
       suffix = treecategory
+      
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
       
     #________
       
@@ -24936,6 +25015,10 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -24958,6 +25041,10 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      flip_prob_dist = False
+      test_flip_prob_dist = False
       
     #___
       
@@ -25012,6 +25099,7 @@ class AutoMunge:
                                              'sampling_resource_dict' : sampling_resource_dict, \
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
+                                             'retain_basis' : retain_basis, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -25102,6 +25190,14 @@ class AutoMunge:
     else:
       upstream_hsh2 = False
       
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
+      
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -25181,6 +25277,10 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -25203,6 +25303,10 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      flip_prob_dist = False
+      test_flip_prob_dist = False
       
     #___
       
@@ -25343,6 +25447,7 @@ class AutoMunge:
                                              'test_binomial_activation_count' : test_binomial_activation_count, \
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
+                                             'retain_basis' : retain_basis, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -25457,6 +25562,14 @@ class AutoMunge:
     else:
       inplace = False
       
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
+      
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -25536,6 +25649,10 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -25558,6 +25675,10 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      flip_prob_dist = False
+      test_flip_prob_dist = False
       
     #___
       
@@ -25785,6 +25906,7 @@ class AutoMunge:
                                               'test_binomial_activation_count' : test_binomial_activation_count, \
                                               'flip_prob_list' : flip_prob_list, \
                                               'test_flip_prob_list' : test_flip_prob_list, \
+                                              'retain_basis' : retain_basis, \
                                              }}
     
     for textcolumn in textcolumns:
@@ -25853,6 +25975,14 @@ class AutoMunge:
       mask_value = params['mask_value']
     else:
       mask_value = 0
+      
+    #for cases where distribution parameters passed as list or distribution, 
+    #activating retain_basis means the basis sampled in automunge is carried through to postmunge
+    #or the default of False means a unique basis is sampled in automunge and postmunge
+    if 'retain_basis' in params:
+      retain_basis = params['retain_basis']
+    else:
+      retain_basis = False
       
     #________
       
@@ -25933,6 +26063,10 @@ class AutoMunge:
       test_flip_prob, sampling_resource_dict = \
       self.__sample_from_parameter_list(test_flip_prob_list, sampling_resource_dict, nprandom_dict, 'test')
       
+    if retain_basis is True:
+      flip_prob_list = False
+      test_flip_prob_list = False
+      
     #________
       
     #scenarios where parameters passed as a scipy stats distribution
@@ -25955,6 +26089,10 @@ class AutoMunge:
         test_flip_prob = 0
       if test_flip_prob > 1:
         test_flip_prob = 1
+        
+    if retain_basis is True:
+      flip_prob_dist = False
+      test_flip_prob_dist = False
       
     #___
       
@@ -26008,6 +26146,7 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'mask_value' : mask_value, \
+                                             'retain_basis' : retain_basis, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -29907,7 +30046,7 @@ class AutoMunge:
                                      n_iter = randomCV_n_iter)
       else:
         if printstatus != 'silent':
-          print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+          print("error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
           print()
       
       #now we'll run a fit on the grid search
@@ -30018,7 +30157,7 @@ class AutoMunge:
                                      n_iter = randomCV_n_iter)
       else:
         if printstatus != 'silent':
-          print("error: hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+          print("error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
           print()
       
       #now we'll run a fit on the grid search
@@ -37538,6 +37677,25 @@ class AutoMunge:
     in automunge traintest will be received as 'traintest', in postmunge as 'test'
     
     will burn an entropy_seed in this operation for shuffling seeds prior to populating
+
+    Please note that the string configurations of the keys in the sampling_resource_dict are used in methods
+    and follow convention samplingid_traintest_suffix, 
+    where traintest is one of {'train', 'test'}
+    and suffix may be omitted or include one of {'_seeds', '_call_count', '_sample_count'}
+    and examples of samplingid include {'binomial', 'distribution', etc.}
+    samplingid_traintest is used to designate whether to apply custom or default generator
+    samplingid_traintest_seeds is used to pass specific seeds to trasnforms
+    samplingid_traintest_call_count is used to count number of generator calls associated with the samplingid
+    samplingid_traintest_sample_count is used to count number of sampled entries associated with the samplingid
+
+    the same sampling_resource_dict object is used to pass seeds to transforms
+    as well as to log counts from the transforms and returned for use to identify how many seeds are needed
+    basically the meta counts are initially populated by running automunge on a subset of data without seeding in __initialize_sampling_report_dict
+    the results from sampling_resource_dict's are aggregated in __populate_sampling_report_dict and returned in postprocess_dict['sampling_report_dict']
+    or alternately by user specification in sampling_dict['sampling_report_dict'] from a prior automunge call
+    and then the counts specific to a transform are derived in this function based on assignparam specifications
+    which are then used in this function to populate seeds to pass to the transform from the seed bank initialized in __prepare_seeds
+    where __prepare_seeds is conducted based on meta counts to prepare the full seed bank when entropy_seeds didn't receive sufficient number of seeds for meta counts
     """
 
     #access entropy seed parameters from postprocess_dict
@@ -42711,7 +42869,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.76'
+    automungeversion = '7.77'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -52901,13 +53059,23 @@ class AutoMunge:
       if inversion is False and len(df_test.columns) == len(postprocess_dict['origcolumns_all']):
         df_test.columns = postprocess_dict['origcolumns_all']
 
-      #this is one spot where having a labelscolumn parameter would be nice, but not worth added complexity
-      if inversion is False and postprocess_dict['labels_column'] is not False:
+      #this is one spot where having a labelscolumn postmunge(.) parameter would be nice, but not worth added complexity
+      #this conversion from numpy has edge cases, best used in conjunction with exact match in order and composistion of columns between automunge and postmunge
+      elif inversion is False and postprocess_dict['labels_column'] is not False:
+        #this is scenario of matching length of features and ID columns without labels
+        #(we'll assume if number of ID columns and number of label columns match that the included columns are ID columns just to pick a convention)
+        #this makes sense since in most cases postmunge is applied without labels
         if len(df_test.columns) == len(postprocess_dict['origcolumns_all']) - len(postprocess_dict['labels_column_listofcolumns']):
           origcolumns_all_excluding_label = postprocess_dict['origcolumns_all'].copy()
           for labels_column_listofcolumns_entry in postprocess_dict['labels_column_listofcolumns']:
             origcolumns_all_excluding_label.remove(labels_column_listofcolumns_entry)
           df_test.columns = origcolumns_all_excluding_label
+        #this is scenario of matching length of features without ID columns or labels
+        elif len(df_test.columns) == len(postprocess_dict['origtraincolumns']):
+          df_test.columns = postprocess_dict['origtraincolumns']
+
+      #for postmunge processing of label columns without features, column headers required 
+      #(numpy conversion not provided to avoid edge case when len(labels) == len(features))
 
     #if series convert to dataframe
     checkseries = pd.Series([1])
@@ -52920,6 +53088,13 @@ class AutoMunge:
     for column in df_test.columns:
       testlabels.append(str(column))
     df_test.columns = testlabels
+
+    #this checks for case where df_test was received as labels without features, in which case a dummy feature set populated as all 0's
+    #this scenario handled seperately for inversion case
+    if inversion is False and set(df_test) == set(postprocess_dict['labels_column_listofcolumns']):
+      df_test_temp = pd.DataFrame(np.zeros((df_test.shape[0],len(postprocess_dict['origtraincolumns']))), columns=postprocess_dict['origtraincolumns'])
+      #this results in the dataframe df_test as labels and features with plug values of 0
+      df_test = pd.concat([df_test_temp, df_test], axis=1)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge inversion
@@ -57284,12 +57459,15 @@ class AutoMunge:
     elif isinstance(inversion, list):
       inversion_orig = deepcopy(inversion)
 
+    inversion_PCA_valresult = False
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None and postprocess_dict['PCA_retain'] is not True:
+      inversion_PCA_valresult = True
       if printstatus != 'silent':
         print("error: full test set inversion not currently supported with PCA.")
         print("user can pass partial list of columns to inversion parameter instead")
         print()
       inversion = False
+    pm_miscparameters_results.update({'inversion_PCA_valresult' : inversion_PCA_valresult})
 
     inversion_setlist_privacyencode_valresult = False
     if postprocess_dict['privacy_encode'] is True and isinstance(inversion, (list, set)):
