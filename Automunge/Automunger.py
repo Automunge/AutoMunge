@@ -37388,6 +37388,7 @@ class AutoMunge:
     
     #transform_seed scenario is a single seed for every noise transform, (*2 due to a shuffling in __random_parameters_params_append)
     #the plus 3 is one for __prepare_seeds shuffle seed and 2 for setting the default randomseed
+    #transform_seed_total by convention is same independent of train/test/both configuration
     transform_seed_total = (2 * noise_transform_count) + 3
 
     #please note that the "+ 3" seeds used for a shuffle and setting the default randomseed 
@@ -39874,9 +39875,13 @@ class AutoMunge:
   
   def __convert_to_nan(self, df, column, category, postprocess_dict, convert_to_nan_list):
     """
-    #converts all np.inf values in a dataframe to np.nan
-    #similar to pandas pd.options.mode.use_inf_as_na = True
+    #converts all values from convert_to_nan_list in a dataframe to np.nan
+    #the np.inf conversion is similar to pandas pd.options.mode.use_inf_as_na = True
     #except that it works
+    
+    #note that if the column is received with bytes entries 
+    #the conversion to nan returns as a bytes representation i.e. b'np.nan'
+    #this has something to do with the pandas '|S9' dtype
     """
     
     #don't apply to totalexclude MLinfilltype
@@ -39892,7 +39897,11 @@ class AutoMunge:
           isna_already_performed = True
 
         else:
-          df.loc[df[column] == entry, column] = np.nan
+          if entry in {np.inf, -np.inf}:
+            #the to_numeric resolves a printout associated with elementwise comparison when comapring to bytes dtype
+            df.loc[pd.to_numeric(df[column], errors='coerce') == entry, column] = np.nan
+          else:
+            df.loc[df[column] == entry, column] = np.nan
 
     return df
 
@@ -42869,7 +42878,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.77'
+    automungeversion = '7.78'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
