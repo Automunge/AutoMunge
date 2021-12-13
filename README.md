@@ -1858,9 +1858,9 @@ a new ML infill basis of original features). (Note that when applied in conjunct
 * sampling_dict: defaults to False, accepts a dictionary including possible keys of {sampling_type, sampling_report_dict, stochastic_count_safety_factor, extra_seed_generator, sampling_generator}. sampling_dict is specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. 
   - sampling_type accepts a string as one of {'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
     - default: every sampling receives a common set of entropy_seeds per user specification which are shuffled and passed to each call
-    - bulk_seeds: every sampling receives a unique supplemental seed for every sampled entry for sampling from sampling_generator
-    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator
-    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator
+    - bulk_seeds: every sampling receives a unique supplemental seed for every sampled entry for sampling from sampling_generator (expended seed counts dependent on train/test/both configuration and numbers of rows)
+    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator (expended seed counts dependent on train/test/both configuration)
+    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator (expended seed counts are the same independant of train/test/both configuration)
   - sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'] from an automunge(.), call if this is not received it will be generated internally. sampling_report_dict is a resource for determining how many entropy_seeds are needed for various sampling_type scnearios.
   - stochastic_count_safety_factor: defaults to 0.15, accepts float 0-1, is associated with the bulk_seeds sampling_type case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries
   - sampling_generator: used to specify which generator will be used for sampling operations other than generation of additional entropy_seeds. defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister'}
