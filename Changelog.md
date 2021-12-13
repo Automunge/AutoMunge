@@ -5285,3 +5285,7 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - also postmunge(.) new accepts df_test as a set of labels without features
 - (requires df_test as dataframe with label column headers populated)
 - we expect the case of features without labels will be more common, this just provided to be thorough
+
+7.78
+- resolved a printout associated with receiving bytes dtype entries
+- originating from an inspection of entries for NaN conversion from np.inf
