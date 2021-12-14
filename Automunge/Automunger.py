@@ -5232,7 +5232,8 @@ class AutoMunge:
                                   'info_retention' : False,
                                   'inplace_option' : True,
                                   'defaultparams' : {'dtype' : 'conditionalinteger',
-                                                     'norm_category' : 'ord3'},
+                                                     'norm_category' : 'ord3',
+                                                     'norm_params' : {'str_convert' : False}},
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_ordl',
@@ -9693,7 +9694,12 @@ class AutoMunge:
         if tempstring in df:
           while tempstring in df:
             tempstring += 'z'
-        mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
+        #defaultinfill of lcinfill inserts infill as dtype str when bytes entries are present 
+        #to avoid edge case for bytes type entries with value_counts sorting
+        if (df[suffixcolumn] == df[suffixcolumn].astype(bytes)).sum() > 0:
+          mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].astype(str).value_counts())
+        else:
+          mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
         mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
         mode_valuecounts_list = list(mode_valuecounts_list.index)
 
@@ -11738,10 +11744,11 @@ class AutoMunge:
       inplace = False
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    #str convert defaults to True to avoid edge case associated with bytes type entries
     if 'str_convert' in params:
       str_convert = params['str_convert']
     else:
-      str_convert = False
+      str_convert = True
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -11782,6 +11789,7 @@ class AutoMunge:
       while tempstring in mdf_train:
         tempstring += 'z'
     #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
+    #note this sorting has an edge case for bytes type entries when str_convert passed as False
     valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
     valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
     valuecounts = list(valuecounts.index)
@@ -12022,10 +12030,11 @@ class AutoMunge:
       normalization_dict.update({'null_activation' : False})
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    #str_convert defaults to True to avoid edge case assocaited with bytes type entries
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
-      str_convert = False
+      str_convert = True
       normalization_dict.update({'str_convert' : str_convert})
     
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
@@ -12120,7 +12129,11 @@ class AutoMunge:
         while tempstring in df:
           tempstring += 'z'
       
-      labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      if str_convert is True:
+        labels_train_ordered = pd.DataFrame(df[column].astype(str).value_counts())
+      else:
+        labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      #note this sorting has an edge case for bytes type entries when str_convert passed as False
       labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
@@ -17456,10 +17469,11 @@ class AutoMunge:
       normalization_dict.update({'consolidated_activations' : consolidated_activations})
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    #str_convert defaults to True to avoid edge case with bytes type entries
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
-      str_convert = False
+      str_convert = True
       normalization_dict.update({'str_convert' : str_convert})
 
     #null_activation is to have a distinct activation for missing data
@@ -17507,7 +17521,11 @@ class AutoMunge:
         while tempstring in df:
           tempstring += 'z'
       
-      labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      if str_convert is True:
+        labels_train_ordered = pd.DataFrame(df[column].astype(str).value_counts())
+      else:
+        labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      #note this sorting has an edge case for bytes type entries when str_convert passed as False
       labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
@@ -18059,10 +18077,12 @@ class AutoMunge:
       normalization_dict.update({'consolidated_activations' : consolidated_activations})
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
+    #str_convert defaults to True to align with other categoric encodings
+    #even though 1010 does not have the edge case for bytes entries
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
-      str_convert = False
+      str_convert = True
       normalization_dict.update({'str_convert' : str_convert})
       
     #null_activation is to have a distinct activation for missing data
@@ -26989,7 +27009,8 @@ class AutoMunge:
       numericset = pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce')
       numericcount = numericset.sum()
       stringset = df[column].astype(str) == df[column]
-      stringcount = stringset.sum()
+      bytesset = df[column].astype(bytes) == df[column]
+      stringcount = stringset.sum() + bytesset.sum()
       numericstringcount = ((stringset == True) & (numericset == True)).sum()
       nancount = (df[column] != df[column]).sum()
       integercount = (pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce').round()).sum()
@@ -27155,6 +27176,9 @@ class AutoMunge:
       
       stringcount = df.loc[df[column].astype(str) == df[column]].shape[0]
       type_tuple_list.append(('string', stringcount / rowcount))
+
+      bytescount = df.loc[df[column].astype(bytes) == df[column]].shape[0]
+      type_tuple_list.append(('bytes', bytescount / rowcount))
       
       datetimecount = \
       df.loc[pd.to_datetime(df[column].astype(str), errors='coerce') == \
@@ -27193,7 +27217,7 @@ class AutoMunge:
 
       #now for categoric sets (where most common is string or we received column with pandas dtype of 'category')
       #we have four scenarios
-      if mostcommon_type == 'string' or mostcommon_type == 'number' and nunique == 2:
+      if mostcommon_type in {'string', 'bytes'} or mostcommon_type == 'number' and nunique == 2:
         
         #base configuration is defaultcategorical (binarization)
         category = defaultcategorical
@@ -27380,7 +27404,7 @@ class AutoMunge:
         while tempstring in df2:
           tempstring += 'z'
       #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
-      valuecounts = pd.DataFrame(df2[column].value_counts())
+      valuecounts = pd.DataFrame(df2[column].astype(str).value_counts())
       valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       valuecounts = list(valuecounts.index)
 
@@ -34200,6 +34224,7 @@ class AutoMunge:
         while tempstring2 in tempdf:
           tempstring2 += 'z'
       #binary_mode = tempdf['onehot'].mode()
+      #note lcinfill applied after encodings so don't need to worry about edge case for bytes entries for value_counts sorting
       mode_valuecounts_list = pd.DataFrame(tempdf[tempstring1].value_counts())
       mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring2).sort_values(by = [tempstring1, tempstring2], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
@@ -34243,6 +34268,7 @@ class AutoMunge:
       if tempstring in tempdf:
         while tempstring in tempdf:
           tempstring += 'z'
+      #note lcinfill applied after encodings so don't need to worry about edge case for bytes type entries
       mode_valuecounts_list = pd.DataFrame(tempdf[column].value_counts())
       mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
@@ -42878,7 +42904,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.78'
+    automungeversion = '7.79'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -56283,7 +56309,7 @@ class AutoMunge:
     if supportcolumn2 in list(df):
       while supportcolumn2 in list(df):
         supportcolumn2 = supportcolumn2 + 'z'
-    
+
     #so we'll convert supportcolumn1 to latt minutes, 
     df[supportcolumn1] = df[latt_column].abs() % 60
     
