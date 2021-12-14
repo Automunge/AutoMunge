@@ -2302,7 +2302,7 @@ numeric data received in a column with pandas 'categoric' data type, which are i
 consistent to categoric sets (as 1010 or bnry). Note that numerical sets with 2 unique values in train
 set default to bnry.
 - 1010: for categorical data excluding special cases described following, columns are 
-subject to binarization encoding via '1010'. If the 
+subject to binarization encoding via '1010' (e.g. for majority str or bytes type entries). If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
 (which defaults to 255), the encoding will instead be by hashing. Note that for default 
 infill missing data has a distinct representation in the encoding space.
@@ -3210,8 +3210,8 @@ Note that text and onht are implemented with the same functions by updates to th
   - suffix appender: '_onht\_#' where # integer corresponds to the target entry of a column
   - assignparam parameters accepted:
     - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text' (onht process_dict specification overwrites this to 'onht'). Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
+      e.g. 2 != '2', when passed as True e.g. 2 == '2' (the False scenario does not support bytes type entries)
     - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set.  (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3229,8 +3229,8 @@ Note that text and onht are implemented with the same functions by updates to th
   - default NArowtype: justNaN
   - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
+      e.g. 2 == '2' (the False scenario does not support bytes type entries)
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3250,8 +3250,8 @@ occurrence, second basis for common count entries is alphabetical
   - assignparam parameters accepted:
     - 'ordered_overide', boolean defaults True, when True inspects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
+      e.g. 2 == '2' (the False scenario does not support bytes type entries)
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3274,8 +3274,8 @@ efficient than one-hot encoding)
   - default NArowtype: justNaN
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted:
-    - 'str_convert', boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2'
+    - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
+      e.g. 2 == '2'
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set), note NaN missing data representation will be added
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
