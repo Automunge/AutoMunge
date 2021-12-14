@@ -5289,3 +5289,13 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 7.78
 - resolved a printout associated with receiving bytes dtype entries
 - originating from an inspection of entries for NaN conversion from np.inf
+
+7.79
+- found a data type scenario missing from our validation tests associated with bytes type entries
+- categoric encodings (e.g. 1010, onht, ordl, bnry, etc) have updated default configuration for str_convert from False to True to accomodate edge case for bytes type entries
+- str_convert means that strings and integer equivalents have common encodings (e.g. '2' == 2)
+- note that this results in inversion returning str(int) entries corresponding to int input
+- for unique encodings between str(int) and int can still deactivate the str_convert parameter, noting that this results in an edge case for bytes type entries
+- also updated the evaluations under automation to treat majority bytes entries as targets for caetgoric encodings
+- also small bit of minutia, defaultinfill for lcinifill now converts to str if any bytes are present
+- the result of this update is that library now has global support for bytes type entries
