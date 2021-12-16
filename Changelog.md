@@ -5299,3 +5299,17 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - also updated the evaluations under automation to treat majority bytes entries as targets for caetgoric encodings
 - also small bit of minutia, defaultinfill for lcinifill now converts to str if any bytes are present
 - the result of this update is that library now has global support for bytes type entries
+
+7.80
+- revisited the ID column extraction scenarios via trainID_column and testID_column paraemters
+- ID columns were based on identifying training/test set columns to extract from the feature sets and return in ID sets consistently shuffled and partitioned
+- thus if the df_train/df_test had features not intended for passing to a downstream ML model, they could be extracted and returned with retained coordination to the other features
+- note that the ID sets are also used to return the "Automunge_index" and any other non-range integer index columns that were included in df_train/df_test dataframes
+- the new convention adds an option to redundantly include columns both in the feature sets for encoding, and the ID sets for retention of original form
+- the thought was that there might be scenarios where original form would be desired for comparison to encodings while retaining order and partionings from any shuffling or validation data splits
+- this option available by passing trainID_column or testID_column as a list of two lists, e.g. [list1, list2]
+- where the first list may include ID columns to be struck from the features and the second list may include ID columns to be retained in the features
+- also improved the convention that if testID_column not specified and trainID columns present in df_test they are automatically extracted for ID sets
+- previously this ony worked when the full ID set was present in df_test, now even if ID sets are partially populated in df_test, they will be automatically extracted based on their inclusion in the trainID sets
+- so basically we only suggest using the testID_column specification for cases where df_test includes ID columns not present in df_train
+- also added some code comments clarifying interpretation of various postprocess_dict entries
