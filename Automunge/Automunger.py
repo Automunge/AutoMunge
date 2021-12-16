@@ -43008,7 +43008,6 @@ class AutoMunge:
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
     #note that some of the data structures will have been populated earlier such as column_dict etc
-                             'noise_augment' : noise_augment,
     postprocess_dict.update({'origtraincolumns' : columns_train, #list of origcolumns excluding any carved out as label or ID columns
                              'origcolumns_all' : origcolumns_all, #list of origcolumns including any carved out as label or ID columns
                              'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, #list of returned columns preceding any dimensionality reduction (as may be conducted by PCA or Binary), if no dimensionality reduction performed this will be same as finalcolumns_train
