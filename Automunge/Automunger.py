@@ -35215,24 +35215,26 @@ class AutoMunge:
     #check trainID_column
     trainID_column_valresult = False
     if trainID_column is not False \
+    and not isinstance(trainID_column, int) \
     and not isinstance(trainID_column, str) \
     and not isinstance(trainID_column, list):
       trainID_column_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for trainID_column parameter.")
-        print("trainID_column allowable values are False, string, or list.")
+        print("trainID_column allowable values are False, int, str, or list.")
 
     miscparameters_results.update({'trainID_column_valresult' : trainID_column_valresult})
 
     #check testID_column
     testID_column_valresult = False
     if testID_column is not False \
+    and not isinstance(testID_column, int) \
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for testID_column parameter.")
-        print("testID_column allowable values are boolean False, string, or list.")
+        print("testID_column allowable values are False, int, str, or list.")
 
     miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
 
@@ -35464,12 +35466,13 @@ class AutoMunge:
     #check testID_column
     testID_column_valresult = False
     if testID_column is not False \
+    and not isinstance(testID_column, int) \
     and not isinstance(testID_column, str) \
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for testID_column parameter.")
-        print("testID_column allowable values are boolean False, string, or list.")
+        print("testID_column allowable values are boolean False, int, string, or list.")
 
     pm_miscparameters_results.update({'testID_column_valresult' : testID_column_valresult})
 
@@ -38785,19 +38788,42 @@ class AutoMunge:
     #Converts parameter, such as one that might be either list or int or str, to a str or list of str
     #where True or False left unchanged
     #if parameter is a list and first entry encosed in set brackets it is retained as set
+    #if parameter is a list and any entries are a list then entries of sublists are also converted
+    #(the purpose of this operation is to align with convention that column headers are str type,
+    #and so parameters specifying column headers, as may include integers, are converted to str to align)
+
+    #note that float(int) are converted to str(float(int)) instead of str(int) to avoid edge case
     """
 
     if isinstance(parameter, int) and str(parameter) != 'False' and str(parameter) != 'True':
-      parameter = str(parameter)
-    if isinstance(parameter, float):
-      parameter = str(parameter)
-    if isinstance(parameter, list):
-      if not isinstance(parameter[0], set):
-        parameter = [str(i) for i in parameter]
-      else:
-        parameter = [parameter[0]] + [str(i) for i in parameter[1:]]
+      parameter_copy = str(parameter)
+    elif isinstance(parameter, float):
+      parameter_copy = str(parameter)
+    elif isinstance(parameter, bytes):
+      parameter_copy = bytes.decode(parameter, 'utf-8')
+    elif isinstance(parameter, list):
+      first_target = 0
+      #if first entry is set it may be a binary specificaiton so will leave intact
+      if isinstance(parameter[0], set):
+        first_target = 1
+      
+      parameter_copy = parameter.copy()
+      for entry in parameter[first_target:]:
+        
+        if isinstance(entry, list):
+          entry_str = self.__parameter_str_convert(entry)
+        else:
+          if isinstance(entry, bytes):
+            entry_str = bytes.decode(entry, 'utf-8')
+          else:
+            entry_str = str(entry)
+        
+        parameter_copy[parameter.index(entry)] = entry_str
 
-    return parameter
+    else:
+      parameter_copy = parameter
+
+    return parameter_copy
   
   def __assignparam_str_convert(self, assignparam):
     """
@@ -41544,16 +41570,64 @@ class AutoMunge:
 
     #worth a disclaimer:
     #the trainID_column and testID_column column parameters are somewhat overloaded
-    #can be passed as string, list, boolean, integer (integers are converted to strings above)
+    #can be passed as string, list, list of lists, boolean, integer 
+    #(integers are converted to strings in __parameter_str_convert above)
     #and the next 120 lines or so are kind of inelegant
     #what is being accomplished here is ID columns can be passed as string column headers or list of column headers
     #and carved out from the train and test sets for inclusion in ID sets
-    #along with addition of new indexcolumn added to ID sets 'Automunge_index'
-    #and if there are existing non-range index column(s) carry that over to ID sets
+    #in cases where passed as list of lists, the first list is deleted from features, the second list is retained in features
+    #the ID columns are returned with the addition of new indexcolumn added to ID sets as 'Automunge_index'
+    #and if there are existing non-range index column(s) those are carried over to ID sets as well
     #this code works, has been tested
     #there is a similar section in postmunge
     #this is probably the ugliest portion of codebase
+    
+    #the convention for ID columns is that they are struck from features 
+    #and returned consistently partitioned and shuffled in ID sets
+    #when the ID parameters are passed as list of list
+    #the first list has ID columns that are struck from features
+    #and the second list has ID columns that are retained in features
+    #which may be useful to inspect before and after configurations for encodings since are consistently shuffled and etc
+    trainID_struckfeatures = []
+    trainID_retainedfeatures = []
 
+    testID_struckfeatures = []
+    testID_retainedfeatures = []
+    
+    if isinstance(trainID_column, list):
+      #if first entry is list specifies features to be struck
+      if len(trainID_column) > 0 and isinstance(trainID_column[0], list):
+        trainID_struckfeatures = trainID_column[0]
+      #if second entry is list specifies features to be retained
+      if len(trainID_column) > 1 and isinstance(trainID_column[1], list):
+        trainID_retainedfeatures = trainID_column[1]
+      #now consolidate trainID_column to include both struck and retained
+      if len(trainID_struckfeatures) > 0 or len(trainID_retainedfeatures) > 0:
+        trainID_column = trainID_struckfeatures + trainID_retainedfeatures
+      else:
+        #if first or second entries weren't a list then all entries are struck
+        trainID_struckfeatures = trainID_column
+    elif trainID_column is not False:
+      #in cases where trainID_column is a single entry it is added to trainID_struckfeatures
+      trainID_struckfeatures = [trainID_column]
+        
+    if isinstance(testID_column, list):
+      #if first entry is list specifies features to be struck
+      if len(testID_column) > 0 and isinstance(testID_column[0], list):
+        testID_struckfeatures = testID_column[0]
+      #if second entry is list specifies features to be retained
+      if len(testID_column) > 1 and isinstance(testID_column[1], list):
+        testID_retainedfeatures = testID_column[1]
+      #now consolidate trainID_column to include both struck and retained
+      if len(testID_struckfeatures) > 0 or len(testID_retainedfeatures) > 0:
+        testID_column = testID_struckfeatures.copy() + testID_retainedfeatures.copy()
+      else:
+        #if first or second entries weren't a list then all entries are struck
+        testID_struckfeatures = testID_column.copy()
+    elif testID_column is not False:
+      #in cases where trainID_column is a single entry it is added to testID_struckfeatures
+      testID_struckfeatures = [testID_column]
+      
     #this either sets indexcolumn for returned ID sets as 'Automunge_index' 
     #or 'Automunge_index_' + str(application_number) if 'Automunge_index' is already in ID sets
     indexcolumn, indexcolumn_valresult = self.__set_indexcolumn(trainID_column, testID_column, application_number, indexcolumn_base = 'Automunge_index')
@@ -41561,23 +41635,6 @@ class AutoMunge:
     #this is not logged with other suffix overlaps because not an error channel, just results in different index column header
     miscparameters_results.update({'indexcolumn_valresult' : indexcolumn_valresult,
                                    'origindexcolumn_valresult' : origindexcolumn_valresult})
-    
-    #we'll have convention that if testID_column=False, if trainID_column in df_test
-    #then apply trainID_column to test set as well
-    trainID_columns_in_df_test = False
-    if testID_column is False:
-      if trainID_column is not False:
-        trainID_columns_in_df_test = True
-        if isinstance(trainID_column, list):
-          for trainIDcolumn in trainID_column:
-            if trainIDcolumn not in df_test.columns:
-              trainID_columns_in_df_test = False
-              break
-        elif isinstance(trainID_column, str):
-          if trainID_column not in df_test.columns:
-            trainID_columns_in_df_test = False
-    if trainID_columns_in_df_test is True:
-      testID_column = trainID_column
 
     #this just casts trainID_column as list
     if trainID_column is False:
@@ -41587,6 +41644,41 @@ class AutoMunge:
     elif not isinstance(trainID_column, list):
       #validated in _check_am_miscparameters
       pass
+
+    #this just casts testID_column as list
+    if testID_column is False:
+      testID_column = []
+    elif isinstance(testID_column, str):
+      testID_column = [testID_column]
+    elif not isinstance(testID_column, list):
+      #validated in _check_am_miscparameters
+      pass
+
+    #we'll have convention that if any of trainID_column in df_test
+    #then apply those trainID_column to test set even if weren't specified
+    #using a comparable retain / erase convention consistent with train specification when applicable
+    trainID_columns_in_df_test = False
+    if trainID_column != []:
+      for trainIDcolumn in trainID_column:
+        if trainIDcolumn in df_test.columns:
+          trainID_columns_in_df_test = True
+          if trainIDcolumn not in testID_column:
+            testID_column.append(trainIDcolumn)
+            if trainIDcolumn in trainID_struckfeatures:
+              testID_struckfeatures.append(trainIDcolumn)
+            elif trainIDcolumn in trainID_retainedfeatures:
+              testID_retainedfeatures.append(trainIDcolumn)
+
+    testID_struck_includes_trainID_retained = False
+    if len(set(testID_struckfeatures) & set(trainID_retainedfeatures)) > 0:
+      testID_struck_includes_trainID_retained = True
+      if printstatus != 'silent':
+        print('error: testID_column specification resulted in struck ID columns')
+        print('that were retained ID columns in the automunge train set')
+        print('for ID columns:')
+        print(set(testID_struckfeatures) & set(trainID_retainedfeatures))
+        print('to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
+        print()
 
     #now run a quick validation that each entry in trainID_column list present in df_train
     trainID_column_subset_of_df_train_valresult = False
@@ -41599,8 +41691,13 @@ class AutoMunge:
         print("")
     
     miscparameters_results.update({'trainID_column_subset_of_df_train_valresult' : trainID_column_subset_of_df_train_valresult,
-                                   'trainID_columns_in_df_test' : trainID_columns_in_df_test})
-
+                                   'trainID_columns_in_df_test' : trainID_columns_in_df_test,
+                                   'testID_struck_includes_trainID_retained' : testID_struck_includes_trainID_retained,
+                                   })
+    
+    #this is trainID_column before adding index columns
+    trainID_column_features = trainID_column.copy()
+    
     #non-range indexes we'll move into the ID sets for consistent shuffling and validation splits
     nonrange_extract_marker = False
     if type(df_train.index) != pd.RangeIndex:
@@ -41621,15 +41718,6 @@ class AutoMunge:
       trainID_column = trainID_column + list(df_train.index.names)
 
       df_train = df_train.reset_index(drop=False)
-
-    #this just casts testID_column as list
-    if testID_column is False:
-      testID_column = []
-    elif isinstance(testID_column, str):
-      testID_column = [testID_column]
-    elif not isinstance(testID_column, list):
-      #validated in _check_am_miscparameters
-      pass
 
     #now run a quick validation that each entry in testID_column list present in df_test
     testID_column_subset_of_df_test_valresult = False
@@ -41675,7 +41763,7 @@ class AutoMunge:
       
     df_trainID = pd.concat([df_trainID, df_train_tempID], axis=1)
   
-    for IDcolumn in trainID_column:
+    for IDcolumn in trainID_struckfeatures:
       del df_train[IDcolumn]
     
     #then append the indexcolumn to trainID_column list for use in later methods
@@ -41696,7 +41784,7 @@ class AutoMunge:
     
     df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
 
-    for IDcolumn in testID_column:
+    for IDcolumn in testID_struckfeatures:
       del df_test[IDcolumn]
     
     #then append the indexcolumn to testID_column list for use in later methods
@@ -41905,20 +41993,20 @@ class AutoMunge:
     #this is the same postprocess_dict returned from automunge(.) and used as a key for postmunge(.)
     #after this point we only inspect process_dict as postprocess_dict['process_dict']
     #some entries will be reset before return, including temp_miscparameters_results, entropy_seeds, random_generator, sampling_dict
-    postprocess_dict = {'column_dict' : {},
-                        'columnkey_dict' : {},
-                        'origcolumn' : {},
-                        'orig_noinplace' : set(),
-                        'temp_miscparameters_results' : {},
-                        'process_dict' : process_dict,
-                        'mlti_categories' : set(),
-                        'printstatus' : printstatus,
-                        'randomseed' : randomseed,
-                        'application_number' : application_number,
-                        'autoMLer' : autoMLer,
-                        'assign_param' : assign_param,
-                        'customML_inference_support' : {},
-                        'test_plug_marker' : test_plug_marker,
+    postprocess_dict = {'column_dict' : {}, #data structures populated during automunge processing functions with an entry for each intermediate and returned column.
+                        'columnkey_dict' : {}, #data structure  that maps each input column with transformtion applied to any applied transforms and the associated returned columns
+                        'origcolumn' : {}, #data structure that maps each origcolumn to the applied root category, lists of derived columns, and a single arbitrary column key. 
+                        'orig_noinplace' : set(), #set of origcolumns where no inplace trasnform was applied so subject to a deletion operation in circle of life
+                        'temp_miscparameters_results' : {}, #for storing validaiton results recieved in various support functions that might not have access to miscparameters_results
+                        'process_dict' : process_dict, #the full procss_dict including user passed processdict, later returned to just include inspected entries
+                        'mlti_categories' : set(), #categories applied as part of the mlti trasnform. Since they are routed differently than other transforms we log them seperately for use to populate the mirror_dict for the returned transform_dict and process_dict
+                        'printstatus' : printstatus, #printstatus parameter as passed to automunge(.). activates printouts. (note that error message printouts are active for False case and muted for 'silent'
+                        'randomseed' : randomseed, #If user passed a randomseed to automunge(.) this is value as passed, otherwise if user did not specify this is a random seed based on a random draw.
+                        'application_number' : application_number, #selected based on a random draw independant of randomseed as random.randint(100000000000,999999999999), meant for use to distinguish between multiple automunge(.) applications to the same data
+                        'autoMLer' : autoMLer, #data structure supporting ML infill that is initialized internally (not currenlty custom configurable) that designates which parent training / inference function is to be applied for different data type scenarios (e.g. continuous, ordinal, onehot, etc) as based on which autoML_type selected in ML_cmnd
+                        'assign_param' : assign_param, #value of the assignparam parameter as passed to automunge(.)
+                        'customML_inference_support' : {}, #comparable to the final form returned in ML_cmnd, used to support populating ML_cmnd, not returned in the final postprocess_dict to reduce memory overhead since is redundant with ML_cmnd
+                        'test_plug_marker' : test_plug_marker, #marker for cases where df_test passed as False
                         }
 
     #perform any preparations on entropy_seeds and populate postprocess_dict with entropy_seed/sampling_dict/random_generator
@@ -42904,7 +42992,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.79'
+    automungeversion = '7.80'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -42920,89 +43008,95 @@ class AutoMunge:
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
     #note that some of the data structures will have been populated earlier such as column_dict etc
-    postprocess_dict.update({'origtraincolumns' : columns_train,
-                             'origcolumns_all' : origcolumns_all,
-                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train,
-                             'finalcolumns_train' : finalcolumns_train,
-                             'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list,
-                             'labels_column' : labels_column,
-                             'labels_column_listofcolumns' : labels_column_listofcolumns,
-                             'pre_dimred_finalcolumns_labels' : pre_dimred_finalcolumns_labels,
-                             'finalcolumns_labels' : finalcolumns_labels,
-                             'single_train_column_labels_case' : single_train_column_labels_case,
-                             'trainID_column_orig' : trainID_column_orig,
-                             'trainID_column' : trainID_column,
-                             'finalcolumns_trainID' : list(df_trainID),
-                             'testID_column_orig' : testID_column_orig,
-                             'testID_column' : testID_column,
-                             'indexcolumn' : indexcolumn,
-                             'origindexcolumn' : origindexcolumn, 
-                             'nonrange_extract_marker' : nonrange_extract_marker,
-                             'valpercent' : valpercent,
-                             'floatprecision' : floatprecision,
-                             'shuffletrain' : shuffletrain,
-                             'TrainLabelFreqLevel' : TrainLabelFreqLevel,
-                             'MLinfill' : MLinfill,
-                             'infilliterate' : infilliterate,
-                             'stop_count' : stop_count, 
-                             'eval_ratio' : eval_ratio,
-                             'powertransform' : powertransform,
-                             'binstransform' : binstransform,
-                             'numbercategoryheuristic' : numbercategoryheuristic,
                              'noise_augment' : noise_augment,
-                             'pandasoutput' : pandasoutput,
-                             'NArw_marker' : NArw_marker,
-                             'featureselection' : featureselection,
-                             'featurethreshold' : featurethreshold,
-                             'FSmodel' : FSmodel,
-                             'FScolumn_dict' : FScolumn_dict,
-                             'FS_sorted' : FS_sorted,
-                             'inplace' : inplace,
-                             'drift_dict' : drift_dict,
-                             'train_rowcount' : train_rowcount,
-                             'test_rowcount' : test_rowcount,
-                             'Binary' : Binary,
-                             'Binary_orig' : Binary_orig,
-                             'Binary_dict' : Binary_dict,
-                             'returned_Binary_columns' : final_returned_Binary_columns,
-                             'returned_Binary_sets' : final_returned_Binary_sets,
-                             'labelBinary' : labelBinary,
-                             'labelBinary_orig' : labelBinary_orig,
-                             'final_returned_labelBinary_columns' : final_returned_labelBinary_columns,
-                             'final_returned_labelBinary_sets' : final_returned_labelBinary_sets,
-                             'PCA_applied' : PCA_applied,
-                             'PCA_retain' : PCA_retain,
-                             'PCAn_components' : PCAn_components,
-                             'PCAn_components_orig' : PCAn_components_orig,
-                             'PCAexcl' : PCAexcl,
-                             'prePCAcolumns' : prePCAcolumns,
-                             'PCA_transformed_columns' : PCA_transformed_columns,
-                             'returned_PCA_columns' : returned_PCA_columns,
-                             'madethecut' : madethecut,
-                             'excl_suffix' : excl_suffix,
-                             'traindata' : False,
-                             'assigncat' : assigncat,
-                             'inverse_assigncat' : inverse_assigncat,
-                             'final_assigncat' : final_assigncat,
-                             'assigninfill' : assigninfill,
-                             'transform_dict' : mirror_dict['transform_dict'],
-                             'process_dict' : mirror_dict['process_dict'],
-                             'postprocess_assigninfill_dict' : postprocess_assigninfill_dict,
-                             'assign_param' : assign_param,
-                             'assignnan' : assignnan,
-                             'ML_cmnd' : ML_cmnd,
-                             'ML_cmnd_orig' : ML_cmnd_orig,
-                             'miscparameters_results' : miscparameters_results,
-                             'randomrandomseed' : randomrandomseed,
-                             'printstatus' : printstatus,
-                             'new_feature_ppd' : {},
-                             'automungeversion' : automungeversion,
-                             'application_number' : application_number,
-                             'application_timestamp' : application_timestamp,
-                             'version_combined' : version_combined})
+    postprocess_dict.update({'origtraincolumns' : columns_train, #list of origcolumns excluding any carved out as label or ID columns
+                             'origcolumns_all' : origcolumns_all, #list of origcolumns including any carved out as label or ID columns
+                             'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, #list of returned columns preceding any dimensionality reduction (as may be conducted by PCA or Binary), if no dimensionality reduction performed this will be same as finalcolumns_train
+                             'finalcolumns_train' : finalcolumns_train, #list of returned columns. Note that excl columns matches convention of returned set (as may vary based on excl_suffix parameter). Excludes columns returned in label or ID sets.
+                             'sorted_columns_by_NaN_list' : sorted_columns_by_NaN_list, #list of returned columns sorted by prevelance of missing data (from most to least). Used to determine order of ML infill application.
+                             'labels_column' : labels_column, #labels_column automunge(.) parameter but with updates associated with string conversion and extraction of appropriate column for cases where labels_column passed as True (which extracts final column in set), otherwise returns as False. When labels_column was passed as a list it is returned here as a list.
+                             'labels_column_listofcolumns' : labels_column_listofcolumns, #a list of label columns, for the single label column case this list has one entry. When labels_column was passed as a list this will be same except for omission of any set bracket specifications. This list is in the input header basis (without suffix appenders, preceding derivations).
+                             'pre_dimred_finalcolumns_labels' : pre_dimred_finalcolumns_labels, #list of returned label columns preceding any dimensionality reduction (as may be conducted by categoric consolidations), if no dimensionality reduction performed this will be same as finalcolumns_labels. This list differs from labels_column_listofcolumns as it is in returned column basis (with suffix appenders, as returned after derivations).
+                             'finalcolumns_labels' : finalcolumns_labels, #columns returned in the labels set
+                             'single_train_column_labels_case' : single_train_column_labels_case, #boolean marker for cases where df_train was passed as a single column which was designqted as a label, otherwise returns False
+                             'trainID_column_orig' : trainID_column_orig, #value of trainID_column as passed to automunge (as may be False, string, int, or list)
+                             'trainID_column' : trainID_column, #column headers of the returned train ID sets (which in addition to specified ID columns includes the Automunge_index and any extracted index columns from feature sets)
+                             'trainID_struckfeatures' : trainID_struckfeatures, #list of features included in train ID sets struck from features
+                             'trainID_retainedfeatures' : trainID_retainedfeatures, #list of features included in train ID sets retained in features
+                             'trainID_column_features' : trainID_column_features, #list of features included in ID sets (excluding index columns)
+                             'finalcolumns_trainID' : list(df_trainID), #column headers of the returned ID sets (which in addition to specified ID columns includes the Automunge_index). This is redundant with trainID_column entry
+                             'testID_column_orig' : testID_column_orig, #value of testID_column as passed to automunge (as may be string or list)
+                             'testID_column' : testID_column, #value of testID_column as passed to automunge (as may be string or list)
+                             'testID_struckfeatures' : testID_struckfeatures, #list of features included in test ID sets struck from features
+                             'testID_retainedfeatures' : testID_retainedfeatures, #list of features included in test ID sets retained in features
+                             'indexcolumn' : indexcolumn, #the new column created to serve as index column in the ID sets. Usually this is the string 'Automunge_index' except for cases where that string was already included in the ID sets
+                             'origindexcolumn' : origindexcolumn, #when df_train had an unnamed non ranged integer index this is header in the returned ID sets
+                             'nonrange_extract_marker' : nonrange_extract_marker, #for cases where automunge carried index columns over to ID set this marker tells postmunge to attempt as well
+                             'valpercent' : valpercent, #value of the valpercent parameter as passed to automunge(.)
+                             'floatprecision' : floatprecision, #value of the floatprecision parameter as passed to automunge(.)
+                             'shuffletrain' : shuffletrain, #value of the shuffletrain parameter as passed to automunge(.)
+                             'TrainLabelFreqLevel' : TrainLabelFreqLevel, #value of the TrainLabelFreqLevel parameter as passed to automunge(.)
+                             'MLinfill' : MLinfill, #value of the MLinfill parameter as passed to automunge(.)
+                             'infilliterate' : infilliterate, #value of the infilliterate parameter as passed to automunge(.)
+                             'stop_count' : stop_count, #the final number of infilliterate iterations performed, may be different than infilliterate in cases where early stopping was evlauated based on ML_cmnd['halt_iterate'] (will always be <= infilliterate). This is the count of iterations for infilliterate performed in postmunge.
+                             'eval_ratio' : eval_ratio, #value of the eval_ratio parameter as passed to automunge(.)
+                             'powertransform' : powertransform, #value of the powertransform parameter as passed to automunge(.)
+                             'binstransform' : binstransform, #value of the binstransform parameter as passed to automunge(.)
+                             'numbercategoryheuristic' : numbercategoryheuristic, #value of the numbercategoryheuristic heuristic as passed to automunge(.)
+                             'noise_augment' : noise_augment, #value of the noise_augment parameter as passed to automunge(.)
+                             'pandasoutput' : pandasoutput, #value of the pandasoutput parameter as passed to automugne(.)
+                             'NArw_marker' : NArw_marker, #value of the NArw_marker parameter as passed to automunge(.)
+                             'featureselection' : featureselection, #value of the featureselection parameter as passed to automunge(.)
+                             'featurethreshold' : featurethreshold, #value of the featurethreshold parameter as passed to automunge(.)
+                             'FSmodel' : FSmodel, #When a feature selection model is trained, it is stored here, else False
+                             'FScolumn_dict' : FScolumn_dict, #data structure that may serve as alternative to FS_sorted for returned feature selection results (when feature selection activated), as contains additional detail beyond the metric values reported in FS_sorted
+                             'FS_sorted' : FS_sorted, #data structure for reporting feature selection results, including sorted results for metric by origcolumn and mewtric2 by returned column
+                             'inplace' : inplace, #value of the inplace parameter as passed to automunge(.)
+                             'drift_dict' : drift_dict, #data structure that supports the driftreport option in postmunge, which contains recorded drift metrics for both origcolumns and returned columns based on properties of the train set
+                             'train_rowcount' : train_rowcount, #row count of df_train set (if dupl_rows option selected this is the row count before consolidation of rows)
+                             'test_rowcount' : test_rowcount, #row count of df_test set (if dupl_rows option selected this is the row count before consolidation of rows)
+                             'Binary' : Binary, #a Binary support data structure from converting all Binary scenarios to a common form of lists of lists (excluding the fist entry specification)
+                             'Binary_orig' : Binary_orig, #value of the Binary parameter as passed to automunge(.)
+                             'Binary_dict' : Binary_dict, #data structure supporting the consistent application of Binary dimnensionality reduction in postmunge. Contains first tier key of incremented integer and second tier a Binary_dict corresponding to each specified set of consolidation targets.
+                             'returned_Binary_columns' : final_returned_Binary_columns, #list of columns returned from Binary dimensionality reduction, inclusive of all consolidation sets
+                             'returned_Binary_sets' : final_returned_Binary_sets, #a dictionary that supports classificaiton of Binary returned columns in teh columntype_report
+                             'labelBinary' : labelBinary, #comparable to Binary but for label consolidations, if labels_column did not include a set bracket specificaiton this will return as False
+                             'labelBinary_orig' : labelBinary_orig, #when labels_column included a set bracket specificaiton this will match labels_column, otherwise returned as False
+                             'final_returned_labelBinary_columns' : final_returned_labelBinary_columns, #comparable to returned_Binary_columns but for label consolidations
+                             'final_returned_labelBinary_sets' : final_returned_labelBinary_sets, #comparable to returned_Binary_sets but for label consolidations
+                             'PCA_applied' : PCA_applied, #boolean marker indicating if PCA dimensionality reduction was performed
+                             'PCA_retain' : PCA_retain, #value initialized as False unless accessed from ML_cmnd['PCA_retain'], associated with specification for PCA with source column retention
+                             'PCAn_components' : PCAn_components, #value of the PCAn_components parameter after taking account for any heuristic inspection applied when PCAn_components = None
+                             'PCAn_components_orig' : PCAn_components_orig, #value of the PCAn_components parameter as originally passed to automunge(.)
+                             'PCAexcl' : PCAexcl, #a list of columns excluded from PCA when applied based on PCAn_components. Note that list is automatically initialized with returned boolean integer and ordinal columns, and user can also pass additional columns to PCAexl parameter to include in this list
+                             'prePCAcolumns' : prePCAcolumns, #a list of columns in returned train set preceding any applicaiton of PCA dimensionality reduction
+                             'PCA_transformed_columns' : PCA_transformed_columns, #a list of columns fed to the PCA transform
+                             'returned_PCA_columns' : returned_PCA_columns, #a list of columns returned as a part of PCA dimensionality reudction. (Basically, final returned columns = prePCAcolumns - PCAexcl + returned_PCA_columns), or for the PCA_retain scenario (final returned columns = prePCAcolumns + returned_PCA_columns)
+                             'madethecut' : madethecut, #for cases when feature importance dimensionality reduction performed based on featureselection and featurethreshold parameters, this is the list of columns that made the cut and thus returned in the returned set
+                             'excl_suffix' : excl_suffix, #value of the excl_suffix parameter as passed to automunge(.)
+                             'traindata' : False, #This is a slot for use in postmunge. (traindata is a temporary entry in postmunge reverted to False upon return)
+                             'assigncat' : assigncat, #value of the assigncat parameter as passed to automunge(.). (Note that if any formatting updates are made as part of validations (such as incorporation of list brackets for column assignments) they are included in this version.)
+                             'inverse_assigncat' : inverse_assigncat, #inversion of the assigncat data structure provided for informational purposes (where column is key and category is value)
+                             'final_assigncat' : final_assigncat, #value of assigncat after incorporating the category assignments performed under automation for those columns not otherwise assigned in initial assigncat
+                             'assigninfill' : assigninfill, #value of the assigninfill parameter as passed to automunge(.)
+                             'transform_dict' : mirror_dict['transform_dict'], #resulting from transform_dict after consolidating the internally intialized transform_dict with the user passed transformdict. Only returns entries that are inspected to apply transforms in the automunge(.) application.
+                             'process_dict' : mirror_dict['process_dict'], #resulting from process_dict after consolidating the internally intialized process_dict with the user passed processdict. Only returns entries that are inspected to apply transforms in the automunge(.) application.
+                             'postprocess_assigninfill_dict' : postprocess_assigninfill_dict, #final assigninfill after consolidating user passed assigninfill as well as addressing any unspecified infill sets to by applied with standardinfill or MLinfill basewd on MLinfill parameter. Note that includes an extra value in comparison to assigninfill as 'unspecified' which is list of columns that weren't otherwise assigned in user passed assigncat
+                             'assign_param' : assign_param, #value of the assignparam parameter as passed to automunge(.)
+                             'assignnan' : assignnan, #value of the assignnan parameter as passed to automunge(.)
+                             'ML_cmnd' : ML_cmnd, #value of the ML_cmnd parameter after any initializations and conversions (such as based on _check_ML_cmnd or leakage_tolerance operations). This is recorded after ML infill.
+                             'ML_cmnd_orig' : ML_cmnd_orig, #value of the ML_cmnd parameter as originally passed to automunge(.)
+                             'miscparameters_results' : miscparameters_results, #data structure reporting results of all validation checks performed during automunge, such as to validate legal parameter entries or properties of passed data. For details see "validation results" tab in this same spreadsheet
+                             'randomrandomseed' : randomrandomseed, #boolean marker indicating if a random initialization of random seed was performed (True when user does not designate a randomseed)
+                             'printstatus' : printstatus, #printstatus parameter as passed to automunge(.). activates printouts. (note that error message printouts are active even when this is off.)
+                             'new_feature_ppd' : {}, #may be returned with one or more additional postprocess_dict's populated for new features added to a prior populated postprocess_dict based on the ppd_append parameter
+                             'automungeversion' : automungeversion, #version number of Automunge library used to generate this postprocess_dict. Aligns with version numbers captured on github such as in rollout notes etc
+                             'application_number' : application_number, #selected based on a random draw independant of randomseed as random.randint(100000000000,999999999999), meant for use to distinguish between multiple automunge(.) applications to the same data
+                             'application_timestamp' : application_timestamp, #a string representation of the data and time of the automunge(.) application that generated this postprocess_dict. Useful to distinguish between cases when by fluke application_number is redundant between applications.
+                             'version_combined' : version_combined}) #a single string concatinating the automungeversion, application_number, and application_timestamp
 
     #note that encrypt_key value is not stored, when encryption performed final returned postprocess_dict records encryption as True
-    postprocess_dict.update({'encryption' : False})
+    postprocess_dict.update({'encryption' : False}) #marker for whether encryption took place in automunge based on the encrypt_key parameter
     
     #consolidate miscparameters_results and temp_miscparameters_results
     postprocess_dict['miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
@@ -43012,7 +43106,7 @@ class AutoMunge:
     excluded_from_postmunge_getNArows = \
     self.__assemble_excluded_from_postmunge_getNArows(postprocess_dict)
 
-    postprocess_dict.update({'excluded_from_postmunge_getNArows' : excluded_from_postmunge_getNArows})
+    postprocess_dict.update({'excluded_from_postmunge_getNArows' : excluded_from_postmunge_getNArows}) #a list of inputcolumns where postmunge does not need to apply getNArows for infill applicaiton. (included to speed up postmunge for cases when this support function not needed for infill)
 
     #mirror tree assembly functions go here, these mirror the progression of transformation functions
     #where categorytree is forward pass and inverse_categorytree is backward pass
@@ -43028,9 +43122,9 @@ class AutoMunge:
     inputcolumn_dict = self.__populate_inputcolumn_dict(postprocess_dict)
     
     #the trees are returned in postprocess_dict
-    postprocess_dict.update({'categorytree' : categorytree, \
-                             'inverse_categorytree' : inverse_categorytree, \
-                             'inputcolumn_dict' : inputcolumn_dict})
+    postprocess_dict.update({'categorytree' : categorytree, #an data structure that follows the generations of transformation categories and their associated columns realized through a forward pass of transformation applications. Currently this is just included as an informational resource.
+                             'inverse_categorytree' : inverse_categorytree, #a data structure similar to an inversion of the categorytree, which follows in reverse the generations of transformation categories and associated columns realized thorugh a backward pass (inversion) to translate returned data back to the original form of data passed to automunge(.). Used in the postmunge inversion operation.
+                             'inputcolumn_dict' : inputcolumn_dict}) #somewhat similar to columnkey_dict, currently this is just included as an informational resource, not used in workflow anywhere
 
     #populate a report for column types of returned set
     columntype_report = \
@@ -53270,28 +53364,74 @@ class AutoMunge:
     #and initialization of index column (same 'Automunge_index' as used in automunge)
     #ID columns extracted from df_test and populated in ID set
 
-    #we'll have convention that if testID_column=False, if trainID_column in df_test
-    #then apply trainID_column to test set
-    trainID_columns_in_df_test = False
-    if testID_column is False:
-      if postprocess_dict['trainID_column_orig'] is not False:
-        trainID_columns_in_df_test = True
-        if isinstance(postprocess_dict['trainID_column_orig'], list):
-          for trainIDcolumn in postprocess_dict['trainID_column_orig']:
-            if trainIDcolumn not in df_test.columns:
-              trainID_columns_in_df_test = False
-              break
-        elif isinstance(postprocess_dict['trainID_column_orig'], str):
-          if postprocess_dict['trainID_column_orig'] not in df_test.columns:
-            trainID_columns_in_df_test = False
-    if trainID_columns_in_df_test is True:
-      testID_column = postprocess_dict['trainID_column_orig']
+    #the convention for ID columns is that they are struck from features 
+    #and returned consistently partitioned and shuffled in ID sets
+    #when the ID parameters are passed as list of list
+    #the first list has ID columns that are struck from features
+    #and the second list has ID columns that are retained in features
+    #which may be useful to inspect before and after configurations for encodings since are consistently shuffled and etc
 
+    testID_struckfeatures = []
+    testID_retainedfeatures = []
+        
+    if isinstance(testID_column, list):
+      #if first entry is list specifies features to be struck
+      if len(testID_column) > 0 and isinstance(testID_column[0], list):
+        testID_struckfeatures = testID_column[0]
+      #if second entry is list specifies features to be retained
+      if len(testID_column) > 1 and isinstance(testID_column[1], list):
+        testID_retainedfeatures = testID_column[1]
+      #now consolidate trainID_column to include both struck and retained
+      if len(testID_struckfeatures) > 0 or len(testID_retainedfeatures) > 0:
+        testID_column = testID_struckfeatures.copy() + testID_retainedfeatures.copy()
+      else:
+        #if first or second entries weren't a list then all entries are struck
+        testID_struckfeatures = testID_column.copy()
+    elif testID_column is not False:
+      #in cases where trainID_column is a single entry it is added to testID_struckfeatures
+      testID_struckfeatures = [testID_column]
+    
     #cast testID_column as a list
     if testID_column is False:
       testID_column = []
     elif isinstance(testID_column, str):
       testID_column = [testID_column]
+
+    if 'trainID_column_features' in postprocess_dict:
+      trainID_column_features = postprocess_dict['trainID_column_features']
+      trainID_struckfeatures = postprocess_dict['trainID_struckfeatures']
+      trainID_retainedfeatures = postprocess_dict['trainID_retainedfeatures']
+    else:
+      #backward compatibility preceding 7.80
+      trainID_column_features = postprocess_dict['trainID_column_orig']
+      trainID_struckfeatures = postprocess_dict['trainID_column_orig']
+      trainID_retainedfeatures = []
+
+    #we'll have convention that if testID_column=False, if any of trainID_column in df_test
+    #then apply those trainID_column to test set
+    #using a comparable retain / erase convention consistent with automunge specification when applicable
+    trainID_columns_in_df_test_pm = False
+    if trainID_column_features != [] and trainID_column_features is not False:
+      for trainIDcolumn in trainID_column_features:
+        if trainIDcolumn in df_test.columns:
+          trainID_columns_in_df_test_pm = True
+          if trainIDcolumn not in testID_column:
+            testID_column.append(trainIDcolumn)
+            if trainIDcolumn in trainID_struckfeatures:
+              testID_struckfeatures.append(trainIDcolumn)
+            elif trainIDcolumn in trainID_retainedfeatures:
+              testID_retainedfeatures.append(trainIDcolumn)
+
+    pm_testID_struck_includes_trainID_retained = False
+    if len(set(testID_struckfeatures) & set(trainID_retainedfeatures)) > 0:
+      pm_testID_struck_includes_trainID_retained = True
+      if printstatus != 'silent':
+        print('error: testID_column specification resulted in struck ID columns')
+        print('that were retained ID columns in the automunge train set')
+        print('for ID columns:')
+        print(set(testID_struckfeatures) & set(trainID_retainedfeatures))
+        print('to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
+        print()
 
     #now run a quick validation that each entry in testID_column list present in df_test
     pm_testID_column_subset_of_df_test_valresult = False
@@ -53305,7 +53445,10 @@ class AutoMunge:
         print("are different than those ID columns from trainID_column.")
         print("")
     
-    postreports_dict['pm_miscparameters_results'].update({'pm_testID_column_subset_of_df_test_valresult' : pm_testID_column_subset_of_df_test_valresult})
+    postreports_dict['pm_miscparameters_results'].update({'pm_testID_column_subset_of_df_test_valresult' : pm_testID_column_subset_of_df_test_valresult,
+                                                          'trainID_columns_in_df_test_pm' : trainID_columns_in_df_test_pm,
+                                                          'pm_testID_struck_includes_trainID_retained' : pm_testID_struck_includes_trainID_retained,
+                                                          })
 
     #if df_test has a non-range index we'll include that in ID sets as 'Orig_index_###'
     if type(df_test.index) != pd.RangeIndex or \
@@ -53347,7 +53490,7 @@ class AutoMunge:
     
     df_testID = pd.concat([df_testID, df_test_tempID], axis=1)
 
-    for IDcolumn in testID_column:
+    for IDcolumn in testID_struckfeatures:
       del df_test[IDcolumn]
 
     #then append the indexcolumn to testID_column list for use in later methods
