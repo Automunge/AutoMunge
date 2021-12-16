@@ -486,6 +486,10 @@ was a numpy array. Note that the returned ID sets (such as train_ID, val_ID, and
 populated with an additional column with header 'Automunge_index' which may serve as an
 index column in cases of shuffling, validation partitioning, or oversampling. In cases of unnamed
 non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+If a user would like to include a column both in the features for encoding and the ID sets for original form
+retention, they can pass trainID_column as a list of two lists, e.g. [list1, list2], where the first
+list may include ID columns to be struck from the features and the second list may include ID columns
+to be retained in the features.
 
 * testID_column: defaults to False, user can pass a string of the column header or list of string column headers
 for columns that are to be segregated from the df_test set for return in the test_ID
@@ -500,6 +504,11 @@ different from those passed with df_train. Note that an integer column index
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
 (When passing data as numpy arrays one should match ID partitioning between df_test and df_train.) In cases of unnamed
 non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+If a user would like to include a column both in the features for encoding and the ID sets for original form
+retention, they can pass testID_column as a list of two lists, e.g. [list1, list2], where the first
+list may include ID columns to be struck from the features and the second list may include ID columns
+to be retained in the features. (We recommend only using testID_column specification for cases where df_test
+includes columns that aren't present in df_train, otehrwise it is automatic.)
 
 * valpercent: a float value between 0 and 1 which designates the percent
 of the training data which will be set aside for the validation
@@ -2099,6 +2108,11 @@ different from those passed with df_train in automunge(.). Note that an integer 
 or list of integer column indexes may also be passed such as if the source dataset was a numpy array. 
 (In general though when passing data as numpy arrays we recommend matching ID columns to df_train.) In cases of unnamed
 non-range integer indexes, they are automatically extracted and returned in the ID sets as 'Orig_index'.
+If a user would like to include a column both in the features for encoding and the ID sets for original form
+retention, they can pass testID_column as a list of two lists, e.g. [list1, list2], where the first
+list may include ID columns to be struck from the features and the second list may include ID columns
+to be retained in the features. (We recommend only using testID_column specification for cases where df_test
+includes columns that weren't present in the original df_train, otehrwise it is automatic.)
 
 * pandasoutput: a selector for format of returned sets. Defaults to _True_
 for returned pandas dataframes. If set to _True_ returns pandas dataframes
