@@ -5313,3 +5313,18 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - previously this ony worked when the full ID set was present in df_test, now even if ID sets are partially populated in df_test, they will be automatically extracted based on their inclusion in the trainID sets
 - so basically we only suggest using the testID_column specification for cases where df_test includes ID columns not present in df_train
 - also added some code comments clarifying interpretation of various postprocess_dict entries
+
+7.81
+- numeric noise trasnforms (DPnb, DPmm, DPrt) now have options for sampling from uniform distirbution
+- available by noisedistribution or test_noisedistribution parameters
+- uniform sampling activated by passing as one of {'uniform', 'abs_uniform', 'negabs_uniform'}
+- where the abs and negabs scenarios are for all positive noise or all negative noise
+- note that the high and low of uniform range are derived as high=(sigma-mu) and low=(mu-sigma)
+- found and fixed a variable naming snafu with abs/negabs test_noisedistribution scenarios in DPnb
+- found and fixed a variable naming snafu with noisedistribution for traindata=True scenario in DPnb postprocess
+- also new option for str_convert parameter in categoric encodings (bnry, onht, ordl/ord3, 1010)
+- previously str_convert was available as boolean, in 7.79 changed default to True to accomodate edge case for some of these categoric variants when bytes type entries are present
+- where str_convert=True results in common encodings between e.g. int and str(int) (2=='2')
+- new scenario is str_convert='conditional_on_bytes'
+- which resets to str_convert=True when bytes entries are present in train set (to avoid the edge case), otherwise defaults to resetting to str_convert=False (which has benefit of distinct encodings between int and str(int) )
+- leaving str_convert=True as the default since it is easier to describe
