@@ -11745,6 +11745,8 @@ class AutoMunge:
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     #str convert defaults to True to avoid edge case associated with bytes type entries
+    #accepts one of {True, False, 'conditional_on_bytes'}
+    #where conditional_on_bytes sets as False unless bytes entries are present in train data then sets to True
     if 'str_convert' in params:
       str_convert = params['str_convert']
     else:
@@ -11780,6 +11782,13 @@ class AutoMunge:
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
     
+    #conditional_on_bytes str_convert scenario resets to True if train set bytes entries present, otherwise resets to False
+    if str_convert == 'conditional_on_bytes' \
+    and (mdf_train[suffixcolumn] == mdf_train[suffixcolumn].astype(bytes)).sum() > 0:
+      str_convert = True
+    elif str_convert == 'conditional_on_bytes':
+      str_convert = False
+
     if str_convert is True:
       mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype(str)
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype(str)
@@ -12031,6 +12040,8 @@ class AutoMunge:
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     #str_convert defaults to True to avoid edge case assocaited with bytes type entries
+    #accepts one of {True, False, 'conditional_on_bytes'}
+    #where conditional_on_bytes sets as False unless bytes entries are present in train data then sets to True
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
@@ -12104,6 +12115,15 @@ class AutoMunge:
       missing_marker = '0' * len(str(df[column].iat[0]))
 
     normalization_dict.update({'missing_marker' : missing_marker})
+
+    #conditional_on_bytes str_convert scenario resets to True if train set bytes entries present, otherwise resets to False
+    if str_convert == 'conditional_on_bytes' \
+    and (df[column] == df[column].astype(bytes)).sum() > 0:
+      str_convert = True
+      normalization_dict.update({'str_convert' : str_convert})
+    elif str_convert == 'conditional_on_bytes':
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -17470,6 +17490,8 @@ class AutoMunge:
       
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     #str_convert defaults to True to avoid edge case with bytes type entries
+    #accepts one of {True, False, 'conditional_on_bytes'}
+    #where conditional_on_bytes sets as False unless bytes entries are present in train data then sets to True
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
@@ -17496,6 +17518,15 @@ class AutoMunge:
     if null_activation == 'Binary':
       missing_marker = '0' * len(str(df[column].iat[0]))
     normalization_dict.update({'missing_marker' : missing_marker})
+
+    #conditional_on_bytes str_convert scenario resets to True if train set bytes entries present, otherwise resets to False
+    if str_convert == 'conditional_on_bytes' \
+    and (df[column] == df[column].astype(bytes)).sum() > 0:
+      str_convert = True
+      normalization_dict.update({'str_convert' : str_convert})
+    elif str_convert == 'conditional_on_bytes':
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -18079,6 +18110,8 @@ class AutoMunge:
     #str_convert provides consistent encodings between numbers and string equivalent, eg 2 == '2'
     #str_convert defaults to True to align with other categoric encodings
     #even though 1010 does not have the edge case for bytes entries
+    #accepts one of {True, False, 'conditional_on_bytes'}
+    #where conditional_on_bytes sets as False unless bytes entries are present in train data then sets to True
     if 'str_convert' in normalization_dict:
       str_convert = normalization_dict['str_convert']
     else:
@@ -18106,6 +18139,15 @@ class AutoMunge:
       missing_marker = '0' * len(str(df[column].iat[0]))
 
     normalization_dict.update({'missing_marker' : missing_marker})
+
+    #conditional_on_bytes str_convert scenario resets to True if train set bytes entries present, otherwise resets to False
+    if str_convert == 'conditional_on_bytes' \
+    and (df[column] == df[column].astype(bytes)).sum() > 0:
+      str_convert = True
+      normalization_dict.update({'str_convert' : str_convert})
+    elif str_convert == 'conditional_on_bytes':
+      str_convert = False
+      normalization_dict.update({'str_convert' : str_convert})
     
     #labels_train will be adjusted through derivation and serves as basis for binarization encoding
     labels_train = set()
@@ -23279,13 +23321,17 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       noisedistribution = 'normal'
       
     if 'test_noisedistribution' in params:
       test_noisedistribution = params['test_noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       test_noisedistribution = noisedistribution
 
     if 'trainnoise' in params:
@@ -23515,10 +23561,12 @@ class AutoMunge:
         normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+      elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+        normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
         normal_samples = abs(normal_samples)
-      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
         normal_samples = (-1) * abs(normal_samples)
         
       #pass binomial samples to column in dataframe
@@ -23569,10 +23617,12 @@ class AutoMunge:
         normal_samples = nprandom.normal(loc=test_mu, scale=test_sigma, size=(test_binomial_activation_count))
       elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = nprandom.laplace(loc=test_mu, scale=test_sigma, size=(test_binomial_activation_count))
+      elif test_noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+        normal_samples = nprandom.uniform(low=(test_mu-test_sigma), high=(test_sigma-test_mu), size=(test_binomial_activation_count))
 
-      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      if test_noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
         normal_samples = abs(normal_samples)
-      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      elif test_noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
         normal_samples = (-1) * abs(normal_samples)
       
       #pass binomial samples to column in dataframe
@@ -23720,13 +23770,17 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       noisedistribution = 'normal'
       
     if 'test_noisedistribution' in params:
       test_noisedistribution = params['test_noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       test_noisedistribution = noisedistribution
       
     if 'testnoise' in params:
@@ -23935,10 +23989,12 @@ class AutoMunge:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+        elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+          normal_samples = np.random.uniform(low=(mu-sigma), high=(sigma-mu), size=(df.shape[0]))
 
-        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
           normal_samples = abs(normal_samples)
-        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
           normal_samples = (-1) * abs(normal_samples)
 
         df[DPmm_column] = pd.DataFrame(normal_samples, index=df.index)
@@ -24048,10 +24104,12 @@ class AutoMunge:
         normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+      elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+        normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
         normal_samples = abs(normal_samples)
-      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
         normal_samples = (-1) * abs(normal_samples)
       
       #pass binomial samples to column in dataframe
@@ -24294,13 +24352,17 @@ class AutoMunge:
     if 'noisedistribution' in params:
       noisedistribution = params['noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       noisedistribution = 'normal'
       
     if 'test_noisedistribution' in params:
       test_noisedistribution = params['test_noisedistribution']
     else:
-      #can pass as 'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace'
+      #can pass as: 
+      #'normal', 'abs_normal', 'negabs_normal', 'laplace', 'abs_laplace', 'negabs_laplace', 
+      #'uniform', 'abs_uniform', 'netabs_uniform'
       test_noisedistribution = noisedistribution
       
     if 'testnoise' in params:
@@ -24629,10 +24691,12 @@ class AutoMunge:
           normal_samples = np.random.normal(loc=mu, scale=sigma, size=(df.shape[0]))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = np.random.laplace(loc=mu, scale=sigma, size=(df.shape[0]))
+        elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+          normal_samples = np.random.uniform(low=(mu-sigma), high=(sigma-mu), size=(df.shape[0]))
 
-        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
           normal_samples = abs(normal_samples)
-        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
           normal_samples = (-1) * abs(normal_samples)
 
         df[DPrt_column_temp2] = pd.DataFrame(normal_samples, index=df.index)
@@ -24742,10 +24806,12 @@ class AutoMunge:
         normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
       elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
         normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+      elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+        normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-      if noisedistribution in {'abs_normal', 'abs_laplace'}:
+      if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
         normal_samples = abs(normal_samples)
-      if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+      elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
         normal_samples = (-1) * abs(normal_samples)
 
       #pass binomial samples to column in dataframe
@@ -42992,7 +43058,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.80'
+    automungeversion = '7.81'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -49781,14 +49847,16 @@ class AutoMunge:
         nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += binomial_activation_count
-        if test_noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
+        if noisedistribution in {'normal', 'abs_normal', 'negabs_normal'}:
           normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
-        elif test_noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
+        elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+        elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+          normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
           normal_samples = abs(normal_samples)
-        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
           normal_samples = (-1) * abs(normal_samples)
 
         #convert binolial sampels to column in dataframe
@@ -50103,10 +50171,12 @@ class AutoMunge:
           normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+        elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+          normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
           normal_samples = abs(normal_samples)
-        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
           normal_samples = (-1) * abs(normal_samples)
 
         #pass binomial samples to column in dataframe
@@ -50518,10 +50588,12 @@ class AutoMunge:
           normal_samples = nprandom.normal(loc=mu, scale=sigma, size=(binomial_activation_count))
         elif noisedistribution in {'laplace', 'abs_laplace', 'negabs_laplace'}:
           normal_samples = nprandom.laplace(loc=mu, scale=sigma, size=(binomial_activation_count))
+        elif noisedistribution in {'uniform', 'abs_uniform', 'negabs_uniform'}:
+          normal_samples = nprandom.uniform(low=(mu-sigma), high=(sigma-mu), size=(binomial_activation_count))
 
-        if noisedistribution in {'abs_normal', 'abs_laplace'}:
+        if noisedistribution in {'abs_normal', 'abs_laplace', 'abs_uniform'}:
           normal_samples = abs(normal_samples)
-        if noisedistribution in {'negabs_normal', 'negabs_laplace'}:
+        elif noisedistribution in {'negabs_normal', 'negabs_laplace', 'negabs_uniform'}:
           normal_samples = (-1) * abs(normal_samples)
 
         #pass binomial samples to column in dataframe
