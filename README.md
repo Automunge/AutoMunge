@@ -3181,7 +3181,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnry' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', or when passed as True e.g. 2 == '2'
+      e.g. 2 != '2', or when passed as True e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
@@ -3193,7 +3193,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
   - suffix appender: '_bnr2' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
-      e.g. 2 != '2', or when passed as True e.g. 2 == '2'
+      e.g. 2 != '2', or when passed as True e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
@@ -3208,7 +3208,7 @@ Note that text and onht are implemented with the same functions by updates to th
     - '_text\_(entry)' where entry is the categoric entry target of column activations (one of the unique values found in received column)
   - assignparam parameters accepted:
     - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text'. Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
-    - 'str_convert', applied as True in text suffix_convention for common encodings between numbers and string equivalents e.g. 2 == '2'
+    - 'str_convert', applied as True in text suffix_convention for common encodings between numbers and string equivalents e.g. 2 == '2'. (text does not support other str_convert scenarios due to column header conventions)
     - 'null_activation': applied as False in text suffix_convention for no activations for missing data
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3225,7 +3225,7 @@ Note that text and onht are implemented with the same functions by updates to th
   - assignparam parameters accepted:
     - 'suffix_convention', accepts one of {'text', 'onht'} for suffix convention, defaults to 'text' (onht process_dict specification overwrites this to 'onht'). Note that 'str_convert' and 'null_activation' parameters only accepted in 'onht' configuration.
     - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
-      e.g. 2 != '2', when passed as True e.g. 2 == '2' (the False scenario does not support bytes type entries)
+      e.g. 2 != '2', when passed as True e.g. 2 == '2' (the False scenario does not support bytes type entries). Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'null_activation': defaults to False, when True missing data is returned with distinct activation in final column in set.  (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3244,7 +3244,7 @@ Note that text and onht are implemented with the same functions by updates to th
   - suffix appender: '_ordl' in base configuration or based on the family tree category
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
-      e.g. 2 == '2' (the False scenario does not support bytes type entries)
+      e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3265,7 +3265,7 @@ occurrence, second basis for common count entries is alphabetical
     - 'ordered_overide', boolean defaults True, when True inspects for Pandas ordered categorical and 
       if found integer encoding order defers to that basis
     - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
-      e.g. 2 == '2' (the False scenario does not support bytes type entries)
+      e.g. 2 == '2' (the False scenario does not support bytes type entries). Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the 0 integer encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set)
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3289,7 +3289,7 @@ efficient than one-hot encoding)
   - suffix appender: '\_1010\_#' where # is integer indicating order of 1010 columns
   - assignparam parameters accepted:
     - 'str_convert', boolean defaults as True for common encodings between numbers and string equivalents
-      e.g. 2 == '2'
+      e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'null_activation': defaults to True for a distinct missing data encoding, when False missing data is grouped with another entry in the all 0 encoding. (Also accepts as 'Binary' which is for internal use.)
     - 'all_activations': defaults to False, can pass as a list of all entries that will be targets for activations (which may have fewer or more entries than the set of unique values found in the train set, including entries not found in the train set), note NaN missing data representation will be added
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
@@ -3625,10 +3625,10 @@ on flip_prob parameter.
   - default NArowtype: numeric
   - suffix appender: '_DPn3_DPnb'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
+    - 'noisedistribution' as {'normal', 'laplace', 'uniform'}, defaults to normal, used to select between gaussian (normal), laplace, and uniform distributed noise, also accepts one of {'abs_normal', 'abs_laplace', 'abs_uniform', 'negabs_normal', 'negabs_laplace', 'negabs_uniform'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
-    - 'sigma' for noise scale, defaults to 0.06
+    - 'sigma' for noise scale, defaults to 0.06 - note that for uniform sampling high is (sigma-mu) and  low is (mu-sigma) 
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - parameters should be passed to 'DPnb' transformation category from family tree
@@ -3650,10 +3650,10 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
   - default NArowtype: numeric
   - suffix appender: '_DPm2_DPmm'
   - assignparam parameters accepted: 
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
+    - 'noisedistribution' as {'normal', 'laplace', 'uniform'}, defaults to normal, used to select between gaussian (normal), laplace, and uniform distributed noise, also accepts one of {'abs_normal', 'abs_laplace', 'abs_uniform', 'negabs_normal', 'negabs_laplace', 'negabs_uniform'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'mu' for noise mean, defaults to 0
-    - 'sigma' for noise scale, defaults to 0.03
+    - 'sigma' for noise scale, defaults to 0.03 - note that for uniform sampling high is (sigma-mu) and  low is (mu-sigma) 
     - 'noise_scaling_bias_offset', boolean defaulting to True, activates an evaluation of scaled noise to offset the sampled noise mean to closer approximate a resulting zero mean for the scaled noise (helps to mitigate potential for bias from noise scaling in cases of imbalanced feature distribution).
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
@@ -3676,9 +3676,9 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - assignparam parameters accepted: 
     - parameters comparable to retn divisor / offset / multiplier / 
     - cap / floor defaulting to 'minmax'/0/1/False/False, also
-    - 'noisedistribution' as {'normal', 'laplace'}, defaults to normal, used to select between gaussian (normal) and laplace distributed noise, also accepts one of {'abs_normal', 'negabs_normal', 'abs_laplace', 'negabs_laplace'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
+    - 'noisedistribution' as {'normal', 'laplace', 'uniform'}, defaults to normal, used to select between gaussian (normal), laplace, and uniform distributed noise, also accepts one of {'abs_normal', 'abs_laplace', 'abs_uniform', 'negabs_normal', 'negabs_laplace', 'negabs_uniform'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
     - 'mu' for noise mean, defaults to 0, 
-    - 'sigma' for noise scale, defaults to 0.03
+    - 'sigma' for noise scale, defaults to 0.03 - note that for uniform sampling high is (sigma-mu) and  low is (mu-sigma) 
     - 'flip_prob' for percent of entries receiving noise injection, defaults to 0.03
     - 'noise_scaling_bias_offset', boolean defaulting to True, activates an evaluation of scaled noise to offset the sampled noise mean to closer approximate a resulting zero mean for the scaled noise (helps to mitigate potential for bias from noise scaling in cases of imbalanced feature distribution)
     - 'trainnoise' defaults to True, when False noise is not injected to training data in automunge or postmunge
