@@ -5328,3 +5328,7 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - new scenario is str_convert='conditional_on_bytes'
 - which resets to str_convert=True when bytes entries are present in train set (to avoid the edge case), otherwise defaults to resetting to str_convert=False (which has benefit of distinct encodings between int and str(int) )
 - leaving str_convert=True as the default since it is easier to describe
+
+7.82
+- each of the DP root categories (e.g. DPnb, DPmm, DP**, etc), which default to injecting noise to train data and not to test data (i.e. trainnoise=True, testnoise=False) now have otherwise equivalent variations as DT root categories (e.g. DTnb, DTmm, DT**, etc) which default to injecting to test data and not to train data (i.e. trainnoise=False, testnoise=True), or as DB root categories (e.g. DBnb, DBmm, DB**, etc) which default to injecting to both train and test data (i.e. trainnoise=True, testnoise=True).
+- added a clarifying code comment to np.inf -> nan conversion regarding reason for not using internal pandas method (use_inf_as_na), which is not used in order to preserve property of NaN != NaN
