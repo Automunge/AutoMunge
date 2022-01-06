@@ -4415,7 +4415,7 @@ For simplicity just going to copy the code directly from code base where these d
     #           This option primarily included to support special cases.
 
     #___________________________________________________________________________
-    #functionpointer: Only supported in user passed processdict, a functionpointer entry 
+    #functionpointer: A functionpointer entry 
     #                 may be entered in lieu of any or all of these other entries **.
     #                 The functionpointer should be populated with a category that has its own processdict entry 
     #                 (or a category that has its own process_dict entry internal to the library)
@@ -4446,11 +4446,6 @@ For simplicity just going to copy the code directly from code base where these d
     
     process_dict = {}
     
-    #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
-    #note a future extension will allow the definition of new categories 
-    #to automunge
-
-    #dual column functions
     process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
