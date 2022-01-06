@@ -94,7 +94,7 @@ am.automunge(df_train, df_test = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
-             featureselection = False, featurethreshold = 0., inplace = False,
+             featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
@@ -243,7 +243,7 @@ am.automunge(df_train, df_test = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
-             featureselection = False, featurethreshold = 0., inplace = False,
+             featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
@@ -407,7 +407,7 @@ am.automunge(df_train, df_test = False,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
-             featureselection = False, featurethreshold = 0., inplace = False,
+             featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
                         'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
@@ -626,7 +626,7 @@ based on order of columns.) For more on the class imbalance problem see "A
 systematic study of the class imbalance problem in convolutional neural 
 networks" - Buda, Maki, Mazurowski.
 
-* powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2'/'DP1'/'DP2')_, defaults to False.
+* powertransform: _(False/True/'excl'/'exc2'/'infill'/'infill2'/'DP1'/'DP2'/'DT1'/'DT2'/'DB1'/'DB2')_, defaults to False.
 The powertransform parameter is used to select between options for derived
 category assignments under automation based on received feature set properties.
   - Under the default scenario, category assignments under automation are consistent with section
@@ -654,6 +654,8 @@ category assignments under automation based on received feature set properties.
 DP1 and DP2 are used for defaulting to noise injection for numeric and (non-hashed) categoric
   - 'DP1' is similar to the defaults but default numerical replaced with DPnb, categoric with DP10, binary with DPbn, hash with DPhs, hsh2 with DPh2 (labels do not receive noise in this configuration)
   - 'DP2' is similar to the defaults but default numerical replaced with DPrt, categoric with DPod, binary with DPbn, hash with DPhs, hsh2 with DPh2 (labels do not receive noise in this configuration)
+  - 'DT1'/'DT2' are comparable to 'DP1'/'DP2' but inject noise to just test data instead of just train data
+  - 'DB1'/'DB2' are comparable to 'DP1'/'DP2' but inject noise to both train and test data instead of just train data
 
 * binstransform: a boolean identifier _(True/False)_ which indicates if all
 default numerical sets will receive bin processing such as to generate child
@@ -858,6 +860,8 @@ be excluded from PCA. Note that column headers can be passed as consistent with 
 to exclude from PCA all columns derived from a particular input column or alternatively can be 
 passed with the returned column headers which include the suffix appenders to exclude just those
 specific columns from PCA.
+
+* orig_headers: accepts boolean defaults to False, when activated the returned columns have suffix appenders stripped to return consistent column headers as input. Note that this may result in redundent column headers in the returned dataframe and privacy_encode when activated takes precedence. Was created for use in workflows supporting integration of noise injection into existing data pipelines. Consistent basis applied in postmunge.
 
 * excl_suffix: boolean selector _{True, False}_ for whether columns headers from 'excl' 
 transform are returned with suffix appender '\_excl' included. Defaults to False for
@@ -1657,7 +1661,7 @@ associated automunge(.) call.
 #           This option primarily included to support special cases.
 
 #___________________________________________________________________________
-#functionpointer: Only supported in user passed processdict, a functionpointer entry 
+#functionpointer: A functionpointer entry 
 #                 may be entered in lieu of any or all of these other entries **.
 #                 The functionpointer should be populated with a category that has its own processdict entry 
 #                 (or a category that has its own process_dict entry internal to the library)
@@ -1860,7 +1864,7 @@ new features in the prior features' ML infill basis and visa versa, instead of a
 to automunge(.) and populate a new postprocess_dict - noting this might justify retraining the original model due to 
 a new ML infill basis of original features). (Note that when applied in conjunction with entropy_seeding for noise injection the same seeds will be applied with each set, for sampling_type's other than default we recommend sampling internally with a custom generator as opposed to passing externally sampled seeds.)
 
-* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms, we suggest integers in range {0:(2 ** 63)} to align with internally sampled seeds. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if inssuficent seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator.  Note that the sampling_report_dict will report requirements seperately for train and test data and in the bulk_seeds case will have a row count basis. (If not passing test data to automunge(.) the test budget can be omitted.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
+* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms, we suggest integers in range {0:(2 ** 63)} to align with internally sampled seeds. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if insufficient seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator.  Note that the sampling_report_dict will report requirements separately for train and test data and in the bulk_seeds case will have a row count basis. (If not passing test data to automunge(.) the test budget can be omitted.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
 
 * random_generator: defaults to False, accepts numpy.random.Generator formatted random samplers which are applied for noise injections with DP transforms. Note that random_generator may optionally be applied in conjunction with entropy_seeds. When not specified applies numpy.random.PCG64. Examples of alternate generators could be a generator initialized with the [QRAND](https://github.com/pedrorrivero/qrand) library to sample from a quantum circuit. Or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit. random_generator is specific to an automunge(.) or postmunge(.) call, in other words it is not returned in the populated postprocess_dict. Please note that numpy formatted generators of both forms e.g. np.random.PCG64 or np.random.PCG64() may be passed, in the latter case any entropy seeding to this generator will be turned off automatically.
 
@@ -1873,7 +1877,7 @@ a new ML infill basis of original features). (Note that when applied in conjunct
   - sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'] from an automunge(.), call if this is not received it will be generated internally. sampling_report_dict is a resource for determining how many entropy_seeds are needed for various sampling_type scnearios.
   - stochastic_count_safety_factor: defaults to 0.15, accepts float 0-1, is associated with the bulk_seeds sampling_type case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries
   - sampling_generator: used to specify which generator will be used for sampling operations other than generation of additional entropy_seeds. defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister'}
-  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator, and 'off' turns off sampliung off additional entropy seeds.
+  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator, and 'off' turns off sampling of additional entropy seeds.
 
 * privacy_encode: a boolean marker _{True, False, 'private'}_ defaults to False. For cases where sets 
 are returned as pandas dataframe, a user may desire privacy preserving encodings in which
@@ -2282,20 +2286,20 @@ postprocess_dict['finalcolumns_trainID']
 * shuffletrain: can be passed as one of _{True, False}_ which indicates if the rows in 
 the returned sets will be (consistently) shuffled. This value defaults to False.
 
-* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms, we suggest integers in range {0:(2 ** 63)} to align with internally sampled seeds. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if inssuficent seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator. Note that the sampling_report_dict will report requirements seperately for train or test data and in the bulk_seeds case will have a row count basis. (The use of train or test budget should align with the postmunge traindata parameter.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
+* entropy_seeds: defaults to False, accepts integer or list / flattened array of integers which may serve as supplemental sources of entropy for noise injections with DP transforms, we suggest integers in range {0:(2 ** 63)} to align with internally sampled seeds. entropy_seeds are specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. Please note that for determinatino of how many entropy seeds are needed for various sampling_dict['sampling_type'] scenarios, can inspect postprocess_dict['sampling_report_dict'], where if insufficient seeds are available for these scenarios additional seeds will be derived with the extra_seed_generator.  Note that the sampling_report_dict will report requirements separately for train and test data and in the bulk_seeds case will have a row count basis. (If not passing test data to automunge(.) the test budget can be omitted.) Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option we recommend passing a custom generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
 
 * random_generator: defaults to False, accepts numpy.random.Generator formatted random samplers which are applied for noise injections with DP transforms. Note that random_generator may optionally be applied in conjunction with entropy_seeds. When not specified applies numpy.random.PCG64. Examples of alternate generators could be a generator initialized with the [QRAND](https://github.com/pedrorrivero/qrand) library to sample from a quantum circuit. Or if the alternate library does not have numpy.random support, their output can be channeled as entropy_seeds for a similar benefit. random_generator is specific to an automunge(.) or postmunge(.) call, in other words it is not returned in the populated postprocess_dict. Please note that numpy formatted generators of both forms e.g. np.random.PCG64 or np.random.PCG64() may be passed, in the latter case any entropy seeding to this generator will be turned off automatically.
 
 * sampling_dict: defaults to False, accepts a dictionary including possible keys of {sampling_type, sampling_report_dict, stochastic_count_safety_factor, extra_seed_generator, sampling_generator}. sampling_dict is specific to an automunge(.) or postmunge(.) call, in other words they are not returned in the populated postprocess_dict. 
   - sampling_type accepts a string as one of {'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
     - default: every sampling receives a common set of entropy_seeds per user specification which are shuffled and passed to each call
-    - bulk_seeds: every sampling for every entry receives a unique supplemental seed for sampling from sampling_generator
-    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator
-    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator
+    - bulk_seeds: every sampling receives a unique supplemental seed for every sampled entry for sampling from sampling_generator (expended seed counts dependent on train/test/both configuration and numbers of rows)
+    - sampling_seed: every sampling operation receives one supplemental seed for sampling from sampling_generator (expended seed counts dependent on train/test/both configuration)
+    - transform_seed: every noise transform receives one supplemental seed for sampling from sampling_generator (expended seed counts are the same independant of train/test/both configuration)
   - sampling_report_dict defaults as False, accepts a prior populated postprocess_dict['sampling_report_dict'] from an automunge(.), call if this is not received it will be generated internally. sampling_report_dict is a resource for determining how many entropy_seeds are needed for various sampling_type scnearios.
   - stochastic_count_safety_factor: defaults to 0.15, accepts float 0-1, is associated with the bulk_seeds sampling_type case and is used as a multiplier for number of seeds populated for sampling operations with a stochastic number of entries
   - sampling_generator: used to specify which generator will be used for sampling operations other than generation of additional entropy_seeds. defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister'}
-  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator, and 'off' turns off sampliung off additional entropy seeds.
+  - extra_seed_generator: used to specify which generator will be used to sample additional entropy_seeds when more are needed to meet requirements of sampling_report_dict, defaults to 'custom' (meaning the passed random_generator or when unspecified the default PCG64), and accepts one of {'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'}, where sampling_generator matches specification for sampling_generator, and 'off' turns off sampling of additional entropy seeds.
 
 * randomseed: defaults as False, also accepts integers within 0:2\*\*32-1. When not specified, randomseed is based on a uniform randomly sampled integer within that range using an entropy_seeds when available.
 This value is used as the postmunge(.) seed of randomness for operations that don't require matched random seeding to automunge(.).
@@ -2374,7 +2378,7 @@ will be left untouched, or for 'exc2' columns not explicitly assigned to a root 
 assigncat will be forced to numeric and subject to default modeinfill. (These two excl 
 arguments may be useful if a user wants to experiment with specific transforms on a subset of 
 the columns without incurring processing time of an entire set for instance.) To default to
-noise injection to numeric and (non-hashed) categoric, can apply 'DP1' or 'DP2'.
+noise injection to numeric and (non-hashed) categoric, can apply 'DP1' or 'DP2', (or 'DT1','DT2', 'DB1', 'DB2').
 
 - floatprecision: parameter indicates the precision of floats in returned sets (16/32/64)
 such as for memory considerations.
@@ -3613,9 +3617,9 @@ holiday
 ### Differential Privacy Noise Injections
 The DP family of transformations are for purposes of stochastic noise injection to train and/or test features. Noise is sampled by default with support of numpy.random (which as of version 1.17.0 defaults to the PCG pseudo random number generator). Supplemental entropy seedings or alternate random samplers can be applied with the automunge(.)/postmunge(.) parameters entropy_seeds and random_generator. The transforms default to injecting noise to training data and not test data, although trainnoise/testnoise parameters can be activated for any combination of the two. For cases where test data injections are not defaulted with the testnoise parameter, test data can be treated as train data for purposes of noise with the postmunge(.) traindata parameter. Please refer to the essay [Noise Injections with Automunge](https://medium.com/automunge/noise-injections-with-automunge-7ebb672216e2) for further detail. 
 
-Each of the DP root categories (e.g. DPnb, DPmm, DP**, etc) defaults to injecting noise to train data and not to test data (i.e. trainnoise=True, testnoise=False), however each have otherwise equivalent variations as DT root categories (e.g. DTnb, DTmm, DT**, etc) which default to injecting to test data and not to train data (i.e. trainnoise=False, testnoise=True), or as DB root categories (e.g. DBnb, DBmm, DB**, etc) which default to injecting to both train and test data (i.e. trainnoise=True, testnoise=True).
+Each of the DP root categories (e.g. DPnb, DPmm, DP**, etc) defaults to injecting noise to train data and not to test data (i.e. trainnoise=True, testnoise=False), however each have otherwise equivalent variations as DT root categories (e.g. DTnb, DTmm, DT**, etc) which default to injecting to test data and not to train data (i.e. trainnoise=False, testnoise=True), or as DB root categories (e.g. DBnb, DBmm, DB**, etc) which default to injecting to both train and test data (i.e. trainnoise=True, testnoise=True). In each case these defaults can be updated by parameter assigment.
 
-Note that when passing parameters to a few of these functions (specifically the hashing varients), the transformation
+Note that when passing parameters to a few of these functions (specifically the hashing variants), the transformation
 category associated with the transformation function may be different than the root category, as noted below DPh1/DPh2/DPhs.
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
 parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
@@ -3754,7 +3758,7 @@ can be passed directly to DPoh.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo5) cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo5\_#\_DPoh' where # is integer for each categoric entry
+  - suffix appender: 'DPo5\_#\_DPoh' where # is integer for each categoric entry
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
@@ -3780,7 +3784,7 @@ can be passed directly to DP10.
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream ord3 (as DPo6) cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo6\_#\_DP10' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: 'DPo6\_#\_DP10' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
@@ -3837,7 +3841,7 @@ assignparam = {'mlhs' :
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPhs\_mlhs\_DPod' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\DPhs\_#\_mlhs\_DPod' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
@@ -3861,7 +3865,7 @@ on number of activations).
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream hs10 cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPh2\_DPo7' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: '\DPh2\_DPo7'
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'weighted' boolean defaults to True for weighted noise sampling from set of unique entries in train data. When False 
@@ -3903,7 +3907,7 @@ on number of activations).
   - useful for: noise injection for data augmentation, model perturbation for ensembles, differential privacy
   - default infill: the DP function does not apply a default infill assume upstream transform cleans data
   - default NArowtype: justNaN
-  - suffix appender: '\DPo8\_#\_DP1s' where # is integer for each column which collectively encode categoric entries
+  - suffix appender: 'DPo8\_#\_DP1s' where # is integer for each column which collectively encode categoric entries
   - assignparam parameters accepted: 
     - 'flip_prob' for percent of activation flips (defaults to 0.03), 
     - 'swap_noise' boolean defaults True, randomly samples from rows (the False scenario results in an encoding comparable to DP10)
