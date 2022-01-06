@@ -5332,3 +5332,14 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 7.82
 - each of the DP root categories (e.g. DPnb, DPmm, DP**, etc), which default to injecting noise to train data and not to test data (i.e. trainnoise=True, testnoise=False) now have otherwise equivalent variations as DT root categories (e.g. DTnb, DTmm, DT**, etc) which default to injecting to test data and not to train data (i.e. trainnoise=False, testnoise=True), or as DB root categories (e.g. DBnb, DBmm, DB**, etc) which default to injecting to both train and test data (i.e. trainnoise=True, testnoise=True).
 - added a clarifying code comment to np.inf -> nan conversion regarding reason for not using internal pandas method (use_inf_as_na), which is not used in order to preserve property of NaN != NaN
+
+7.83
+- new automunge(.) parameter orig_headers, accepts boolean defaults to False
+- activating orig_headers results in returned dataframes matching input column headers without suffix appenders
+- consistent basis applied in postmunge
+- this may result in redundent column headers in the returned dataframe 
+- privacy_encode when activated takes precedence
+- created for use in workflows supporting integration of noise injection into existing data pipelines
+- also, added additional powertransform scenarios DT1/DT2/DB1/DB2, each consistent with DP1 or DP2 but using the DT convention that noise injected to only test data or the DB convention that noise is injected to both train and test data
+- also, added functionpointer support for internally defined process_dict entries
+- found a small memory management issue with DPhs that was interfering with custom generators, now resolved
