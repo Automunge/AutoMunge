@@ -419,6 +419,7 @@ class AutoMunge:
   __list_sorting
   __autowhere
   __column_convert_support
+  __orig_headers_support
 
   #__FunctionBlock: encryption utility functions
   __encrypt_postprocess_dict
@@ -5016,7 +5017,7 @@ class AutoMunge:
     #           This option primarily included to support special cases.
 
     #___________________________________________________________________________
-    #functionpointer: Only supported in user passed processdict, a functionpointer entry 
+    #functionpointer: A functionpointer entry 
     #                 may be entered in lieu of any or all of these other entries **.
     #                 The functionpointer should be populated with a category that has its own processdict entry 
     #                 (or a category that has its own process_dict entry internal to the library)
@@ -5047,11 +5048,6 @@ class AutoMunge:
     
     process_dict = {}
     
-    #categories are nmbr, bnry, text, date, bxcx, bins, bint, NArw, null
-    #note a future extension will allow the definition of new categories 
-    #to automunge
-
-    #dual column functions
     process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_numerical,
@@ -13928,7 +13924,7 @@ class AutoMunge:
                                 'parameterlist_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
                                }
-        
+
     # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
     #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
     #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
@@ -14015,7 +14011,15 @@ class AutoMunge:
       
     mlti_norm_params_column_dict = {}
     for inputcolumn in textcolumns:
-      mlti_norm_params_column_dict.update({inputcolumn : deepcopy(mlti_norm_params)})
+      #some cases can't deepcopy a random_generator entry so here is workaround
+      #the deepcopy is used to circumvent in memory durability since some entries edited in norm_category trasnforms
+      mlti_norm_params_copy = {}
+      for entry in mlti_norm_params:
+        if isinstance(mlti_norm_params[entry], dict):
+          mlti_norm_params_copy.update({entry : deepcopy(mlti_norm_params[entry])})
+        else:
+          mlti_norm_params_copy.update({entry : mlti_norm_params[entry]})
+      mlti_norm_params_column_dict.update({inputcolumn : mlti_norm_params_copy})
     
     #now apply one of custom_train / custom_test or dualprocess based on norm_category processdict entry
     
@@ -28111,8 +28115,12 @@ class AutoMunge:
     when powertransform = 'infill' If the data is already numerically encoded with NaN entries for missing data, ML infill can be applied without further preprocessing transformations by passing
     when powertransform = 'infill2' data is treated comparable to infill scenario with allowance for passthrough of nonnumeric data
     when powertransform = True a statistical evaluation will be performed on numerical sets to distinguish between columns to be subject to bxcx, MAD3, nmbr, mnmx.
-    when powertrasnform = 'DP1', default numerical replaced with DPnb, categoric with DP10 and binary with DPbn
-    when powertrasnform = 'DP2', default numerical replaced with DPrt, categoric with DPod and binary with DPbn
+    when powertrasnform = 'DP1', default numerical replaced with DPnb, categoric with DP10 and binary with DPbn, etc
+    when powertrasnform = 'DP2', default numerical replaced with DPrt, categoric with DPod and binary with DPbn, etc
+    when powertrasnform = 'DT1', default numerical replaced with DTnb, categoric with DT10 and binary with DTbn, etc
+    when powertrasnform = 'DT2', default numerical replaced with DTrt, categoric with DTod and binary with DTbn, etc
+    when powertrasnform = 'DB1', default numerical replaced with DBnb, categoric with DB10 and binary with DBbn, etc
+    when powertrasnform = 'DB2', default numerical replaced with DBrt, categoric with DBod and binary with DBbn, etc
     
     note that labels = True also changes the defaults to align with conventions for label sets
     which replaces the default transformations from powertransform=False to following
@@ -28254,6 +28262,46 @@ class AutoMunge:
         defaultordinal = 'DPh2'
         defaultordinal_allunique = 'DPhs'
         defaultnumerical = 'DPrt'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      elif powertransform == 'DT1':
+
+        defaultcategorical = 'DT10'
+        defaultbnry = 'DTbn'
+        defaultordinal = 'DTh2'
+        defaultordinal_allunique = 'DThs'
+        defaultnumerical = 'DTnb'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      elif powertransform == 'DT2':
+
+        defaultcategorical = 'DTod'
+        defaultbnry = 'DTbn'
+        defaultordinal = 'DTh2'
+        defaultordinal_allunique = 'DThs'
+        defaultnumerical = 'DTrt'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      elif powertransform == 'DB1':
+
+        defaultcategorical = 'DB10'
+        defaultbnry = 'DBbn'
+        defaultordinal = 'DBh2'
+        defaultordinal_allunique = 'DBhs'
+        defaultnumerical = 'DBnb'
+        defaultdatetime = 'dat6'
+        defaultnull = 'null'
+
+      elif powertransform == 'DB2':
+
+        defaultcategorical = 'DBod'
+        defaultbnry = 'DBbn'
+        defaultordinal = 'DBh2'
+        defaultordinal_allunique = 'DBhs'
+        defaultnumerical = 'DBrt'
         defaultdatetime = 'dat6'
         defaultnull = 'null'
 
@@ -35987,7 +36035,7 @@ class AutoMunge:
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                              trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                             noise_augment, ppd_append):
+                             noise_augment, ppd_append, orig_headers):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -36097,18 +36145,18 @@ class AutoMunge:
     
     #check powertransform
     powertransform_valresult = False
-    if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}:
+    if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}:
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
         print()
-    elif powertransform not in {'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'} \
+    elif powertransform not in {'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for powertransform parameter.")
-        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2'}")
+        print("Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
         print()
       
     miscparameters_results.update({'powertransform_valresult' : powertransform_valresult})
@@ -36460,6 +36508,17 @@ class AutoMunge:
         print()
 
     miscparameters_results.update({'ppd_append_valresult' : ppd_append_valresult})
+
+    #check orig_headers
+    orig_headers_valresult = False
+    if orig_headers not in {True, False} or not isinstance(orig_headers, bool):
+      orig_headers_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for orig_headers parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
+      
+    miscparameters_results.update({'orig_headers_valresult' : orig_headers_valresult})
 
     return miscparameters_results
     
@@ -39649,6 +39708,7 @@ class AutoMunge:
   def __get_nprandom(self, sampling_id, sampling_resource_dict, nprandom_dict):
     #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
     #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+    
     entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
     if sampling_resource_dict[sampling_id] == 'custom' \
     and sampling_resource_dict['random_generator_accepts_seeds'] is False:
@@ -39867,6 +39927,8 @@ class AutoMunge:
     #which points to anotehr category with differnt defaultparam entries for suffix
     #the entry in the set with the pointer takes precedence as opposed to the target set
     #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
+
+    #note that also supports passing processdict as process_dict for use of functionpointer towards process_dict
     """
     
     check_functionpointer_result = False
@@ -41929,6 +41991,38 @@ class AutoMunge:
             
     return translatedcolumns_list
 
+  def __orig_headers_support(self, df, postprocess_dict):
+    """
+    when automunge parameter orig_headers passed as True
+    the suffix appenders are stripped from returned column headers
+    note that this may result in redundant column headers
+    which pandas is ok with (but automunge doesn't accept as input)
+    intended for use with integrating noise into existing data pipelines
+    """
+    
+    orig_headers = postprocess_dict['orig_headers']
+    privacy_encode = postprocess_dict['privacy_encode']
+    excl_suffix = postprocess_dict['excl_suffix']
+    
+    #note that single column dataframes aren't converted to Series until near return
+    if privacy_encode is False and isinstance(df, type(pd.DataFrame())) and len(list(df)) > 0:
+      
+      returned_headers = list(df)
+      
+      if excl_suffix is False:
+        for excl_entry in postprocess_dict['excl_suffix_conversion_dict']:
+          if excl_entry in returned_headers:
+            returned_headers[returned_headers.index(excl_entry)] = \
+            postprocess_dict['excl_suffix_conversion_dict'][excl_entry]
+            
+      orig_headers = [postprocess_dict['column_dict'][x]['origcolumn'] for x in returned_headers]
+      
+      rename_dict = dict(zip(returned_headers, orig_headers))
+      
+      df.rename(columns = rename_dict, inplace = True)
+      
+    return df
+
   #__FunctionBlock: encryption utility functions
 
   def __encrypt_postprocess_dict(self, postprocess_dict, encrypt_key, privacy_encode, printstatus):
@@ -42207,7 +42301,7 @@ class AutoMunge:
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
-                featureselection = False, featurethreshold = 0., inplace = False,
+                featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
                 ML_cmnd = {'autoML_type':'randomforest',
                            'MLinfill_cmnd':{'RandomForestClassifier':{}, 'RandomForestRegressor':{}},
@@ -42337,7 +42431,7 @@ class AutoMunge:
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                                 noise_augment, ppd_append)
+                                 noise_augment, ppd_append, orig_headers)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -42405,6 +42499,13 @@ class AutoMunge:
 
     #initialize process_dict which is the internal library of transformation category properties
     process_dict = self.__assembleprocessdict()
+
+    #this enables functionpointer support for internally defined process_dict
+    #we do not currently use this functionality because __assembleprocessdict also serves as documentation 
+    #it is being provided for future generations
+    process_dict, check_process_dict_functionpointer_result = \
+    self.__grab_functionpointer_entries(process_dict, process_dict, printstatus)
+    miscparameters_results.update({'check_process_dict_functionpointer_result' : check_process_dict_functionpointer_result})
 
     #processdict is user passed data strucure to add entries to process_dict
     if bool(processdict) is not False:
@@ -44148,7 +44249,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.82'
+    automungeversion = '7.83'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44200,6 +44301,8 @@ class AutoMunge:
                              'numbercategoryheuristic' : numbercategoryheuristic, #value of the numbercategoryheuristic heuristic as passed to automunge(.)
                              'noise_augment' : noise_augment, #value of the noise_augment parameter as passed to automunge(.)
                              'pandasoutput' : pandasoutput, #value of the pandasoutput parameter as passed to automugne(.)
+                             'orig_headers' : orig_headers, #value of orig_headers paraemter passed to automunge(.), True results in returned dataframes with input column headers (and may include redundent headers)
+                             'privacy_encode' : privacy_encode, #value of the privacy_encode parameter passed to automunge(.), True or 'private' results in feature anonymizing steps (e.g. shuffling, masked column headers)
                              'NArw_marker' : NArw_marker, #value of the NArw_marker parameter as passed to automunge(.)
                              'featureselection' : featureselection, #value of the featureselection parameter as passed to automunge(.)
                              'featurethreshold' : featurethreshold, #value of the featurethreshold parameter as passed to automunge(.)
@@ -44314,6 +44417,19 @@ class AutoMunge:
     #and shuffle order of features in returned dataframe
     #alternate columntype_report available as private_columntype_report
 
+    #if orig_headers was selected it is also performed here
+    #note that privacy_encode takes precendence over orig_headers
+
+    #if orig_headers parameter activated strip suffix appenders (privacy_encode takes precedence)
+    #this primarily intended to support use case of integration into existing data pipeline
+    if orig_headers is True and privacy_encode is False:
+      
+      df_train = self.__orig_headers_support(df_train, postprocess_dict)
+      df_labels = self.__orig_headers_support(df_labels, postprocess_dict)
+      
+      df_test = self.__orig_headers_support(df_test, postprocess_dict)
+      df_testlabels = self.__orig_headers_support(df_testlabels, postprocess_dict)
+
     if privacy_encode is not False:
       df_train = self.__df_shuffle(df_train, randomseed, axis=1)
       df_test = self.__df_shuffle(df_test, randomseed, axis=1)
@@ -44359,13 +44475,13 @@ class AutoMunge:
       df_testlabels = df_testlabels.rename(columns = privacy_headers_labels_dict)
       
     #now record privacy encoding conventions in postprocess_dict
-    postprocess_dict.update({'privacy_encode' : privacy_encode})
-    postprocess_dict.update({'privacy_headers_train' : privacy_headers_train})
-    postprocess_dict.update({'privacy_headers_train_dict' : privacy_headers_train_dict})
-    postprocess_dict.update({'inverse_privacy_headers_train_dict' : inverse_privacy_headers_train_dict})
-    postprocess_dict.update({'privacy_headers_labels' : privacy_headers_labels})
-    postprocess_dict.update({'privacy_headers_labels_dict' : privacy_headers_labels_dict})
-    postprocess_dict.update({'inverse_privacy_headers_labels_dict' : inverse_privacy_headers_labels_dict})
+    # postprocess_dict.update({'privacy_encode' : privacy_encode}) #value of the privacy_encode parameter passed to automunge(.), True or 'private' results in feature anonymizing steps (e.g. shuffling, masked column headers)
+    postprocess_dict.update({'privacy_headers_train' : privacy_headers_train}) #a list of columns that would be returned in train set if privacy encoding is elected based on privacy_encode parameter (where these are basically just sequential integers)
+    postprocess_dict.update({'privacy_headers_train_dict' : privacy_headers_train_dict}) #a dictionary mapping returned columns without privacy_encode to returned columns with privacy_encode
+    postprocess_dict.update({'inverse_privacy_headers_train_dict' : inverse_privacy_headers_train_dict}) #a dictionary mapping returned columns with privacy encode to returned columns without privacy encode (the inverse of privacy_headers_train_dict)
+    postprocess_dict.update({'privacy_headers_labels' : privacy_headers_labels}) #comparable to privacy_headers_train but for columns in labels set
+    postprocess_dict.update({'privacy_headers_labels_dict' : privacy_headers_labels_dict}) #comparable to privacy_headers_train_dict but for columns in labels set
+    postprocess_dict.update({'inverse_privacy_headers_labels_dict' : inverse_privacy_headers_labels_dict}) #comparable to inverse_privacy_headers_train_dict but for columns in labels set
 
     #now generate a privacy_encoded verison of columntype_report
     private_columntype_report = deepcopy(postprocess_dict['columntype_report'])
@@ -55383,6 +55499,19 @@ class AutoMunge:
     #using conversion dictionaries populated in automunge
     #the encoding includes column shuffling (row shuffling may have been performed in the shuffling block)
     #and in 'private' scenario the indexes are reset (index even reset for ID sets, the original index can be recovered in ID set columns)
+
+    #if orig_headers was selected in automunge it is also performed here
+    #note that privacy_encode takes precendence over orig_headers
+
+    #if automunge orig_headers parameter activated strip suffix appenders (privacy_encode takes precedence)
+    #this primarily intended to support use case of integration into existing data pipeline
+    #first if statement for backward compatibility preceding 7.83
+    if 'orig_headers' in postprocess_dict:
+
+      if postprocess_dict['orig_headers'] is True and postprocess_dict['privacy_encode'] is False:
+      
+        df_test = self.__orig_headers_support(df_test, postprocess_dict)
+        df_testlabels = self.__orig_headers_support(df_testlabels, postprocess_dict)
 
     #now rename columns and shuffle order of columns for privacy encoding when activated
     #column shuffling uses automunge random seed
