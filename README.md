@@ -474,7 +474,7 @@ which form may then be recovered in a postmunge inversion='labels' operation, su
 consolidated form after an inference operation back to the form of separate inferred labels.
 When passing data as numpy arrays the label column needs to be the final column (on far right of dataframe).
 
-* trainID_column:  defaults to False, user can pass a string of the column header or list of string column headers
+* trainID_column:  defaults to False, user can pass a column header or list of column headers
 for columns that are to be segregated from the df_train set for return in the train_ID
 set (consistently shuffled and partitioned when applicable). For example this may 
 be desired for an index column or any other column that the user wishes to exclude from
@@ -491,7 +491,7 @@ retention, they can pass trainID_column as a list of two lists, e.g. [list1, lis
 list may include ID columns to be struck from the features and the second list may include ID columns
 to be retained in the features.
 
-* testID_column: defaults to False, user can pass a string of the column header or list of string column headers
+* testID_column: defaults to False, user can pass a column header or list of column headers
 for columns that are to be segregated from the df_test set for return in the test_ID
 set (consistently shuffled and partitioned when applicable). For example this may 
 be desired for an index column or any other column that the user wishes to exclude from
@@ -2099,7 +2099,7 @@ be included. Note that if a label column is included consistent with label colum
 automunge(.) call it will be automatically applied as label and similarly for ID columns.
 If desired can also be passed as a dataframe with only the label columns and features ommitted.
 
-* testID_column: defaults to False, user can pass a string of the column header or list of string column headers
+* testID_column: defaults to False, user can pass a column header or list of column headers
 for columns that are to be segregated from the df_test set for return in the test_ID
 set (consistently shuffled and partitioned when applicable). For example this may 
 be desired for an index column or any other column that the user wishes to exclude from
