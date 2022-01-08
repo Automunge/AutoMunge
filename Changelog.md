@@ -5351,3 +5351,8 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - a cleanup to support function __assignparam_str_convert
 - added a clarification to read me on custom transformation functions that recieved parameter types require support with python deepcopy operation
 - ran some additional validations on process_dict functionpointer support from 7.83, looks good
+
+7.85
+- quick fix, realized the bug fixed in 7.84 was also present in automunge
+- now aligned as resolved in both channels
+- also adjusted rollout validations to include scenario going forward
