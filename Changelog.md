@@ -5343,3 +5343,11 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - also, added additional powertransform scenarios DT1/DT2/DB1/DB2, each consistent with DP1 or DP2 but using the DT convention that noise injected to only test data or the DB convention that noise is injected to both train and test data
 - also, added functionpointer support for internally defined process_dict entries
 - found a small memory management issue with DPhs that was interfering with custom generators, now resolved
+
+7.84
+- found and fixed a bug associated with ID extraction in postmunge
+- which also was impacting validation split in automunge
+- originating from non-range index in postmunge when not found in automunge not getting extracted to ID set
+- a cleanup to support function __assignparam_str_convert
+- added a clarification to read me on custom transformation functions that recieved parameter types require support with python deepcopy operation
+- ran some additional validations on process_dict functionpointer support from 7.83, looks good
