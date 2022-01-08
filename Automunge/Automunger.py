@@ -14015,7 +14015,7 @@ class AutoMunge:
       #the deepcopy is used to circumvent in memory durability since some entries edited in norm_category trasnforms
       mlti_norm_params_copy = {}
       for entry in mlti_norm_params:
-        if isinstance(mlti_norm_params[entry], dict):
+        if isinstance(mlti_norm_params[entry], (dict, list)):
           mlti_norm_params_copy.update({entry : deepcopy(mlti_norm_params[entry])})
         else:
           mlti_norm_params_copy.update({entry : mlti_norm_params[entry]})
@@ -40052,18 +40052,17 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
     """
 
-    assignparam_copy = deepcopy(assignparam)
-  
-    #ignore edge case where user passes empty dictionary
-    if assignparam_copy != {}:
+    categorykeys = list(assignparam).copy()
+    
+    for categorykey in categorykeys:
       
-      for categorykey in assignparam_copy:
+      if categorykey not in {'global_assignparam', 'default_assignparam'}:
         
-        for columnkey in assignparam_copy[categorykey]:
+        columnkeys = list(assignparam[categorykey]).copy()
+        
+        for columnkey in columnkeys:
           
           assignparam[categorykey][str(columnkey)] = assignparam[categorykey].pop(columnkey)
-
-    del assignparam_copy
           
     return assignparam
 
@@ -44249,7 +44248,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.83'
+    automungeversion = '7.84'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -54667,7 +54666,7 @@ class AutoMunge:
     elif testID_column is not False:
       #in cases where trainID_column is a single entry it is added to testID_struckfeatures
       testID_struckfeatures = [testID_column]
-    
+
     #cast testID_column as a list
     if testID_column is False:
       testID_column = []
@@ -54739,6 +54738,7 @@ class AutoMunge:
         if 'origindexcolumn' in postprocess_dict:
           origindexcolumn = postprocess_dict['origindexcolumn']
         else:
+          #backward compatibility preceding ()
           origindexcolumn = 'Orig_index'
         if origindexcolumn in orig_index_names:
           while origindexcolumn in orig_index_names:
@@ -54751,6 +54751,7 @@ class AutoMunge:
         df_test = df_test.rename_axis(revised_index_names)
         
       testID_column = testID_column + list(df_test.index.names)
+      testID_struckfeatures = testID_struckfeatures + list(df_test.index.names)
 
       df_test = df_test.reset_index(drop=False)
 
