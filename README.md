@@ -5210,7 +5210,9 @@ def custom_inversion_template(df, returnedcolumn_list, inputcolumn, normalizatio
 Please note that if you included externally initialized functions in an automunge(.) call, 
 like for custom_train transformation functions, they will need 
 to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
-in a new notebook. (This was a design decision for security considerations.)
+in a new notebook. (This was a design decision for security considerations.) Please note that 
+parameters passed to the custom transform through assignparam require compatibility 
+with a python deepcopy operation.
 
 Further details on custom transformations provided in the essay [Custom Transformations with Automunge](https://medium.com/automunge/custom-transformations-with-automunge-ae694c635a7e).
 
