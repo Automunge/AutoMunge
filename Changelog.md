@@ -5356,3 +5356,46 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - quick fix, realized the bug fixed in 7.84 was also present in automunge
 - now aligned as resolved in both channels
 - also adjusted rollout validations to include scenario going forward
+
+7.86
+- new parameter accepted for mask noise via DPsk as 'additive'
+- additive accepts boolean defaulting to False
+- when True mask noise is added to the input instead of replacing
+- intended for use to inject discrete noise into continuous numeric sets
+- also was considering adding functionality to introduce arbitrary noise profiles of multiple perturbation vectors to common feature
+- and then realized we already have that functionality available by th8e family tree primitives
+- as one example, could inject one profile of small noise sigma with regular flip_prob, and then a second profile of large noise sigma with very small flip_prob as a downstream transform to the first noise profile
+- doing that with family tree primitives for DPnb which is nosie with z-score normalziation would look something like this, where were are overwriting fmaily trees for DPnb and DPn3 in transformdict and adding new processdict entry for the DPn4 which will be the downstream second perturbation vector
+- this is kind of like probabilistic programming although not turing complete
+```
+tramnsformdict = {}
+
+transformdict.update({'DPnb' : {'parents'       : ['DPn3'],
+                                 'siblings'      : [],
+                                 'auntsuncles'   : [],
+                                 'cousins'       : ['NArw'],
+                                 'children'      : [],
+                                 'niecesnephews' : [],
+                                 'coworkers'     : ['DPn4'],
+                                 'friends'       : []}})
+
+#DPn3 primarily intended for use as a tree category
+transformdict.update({'DPn3' : {'parents'       : ['DPn3'],
+                                 'siblings'      : [],
+                                 'auntsuncles'   : [],
+                                 'cousins'       : [],
+                                 'children'      : ['DPnb'],
+                                 'niecesnephews' : [],
+                                 'coworkers'     : [],
+                                 'friends'       : []}})
+
+processdict = {}
+
+processdict.update({'DPnb' : {'functionpointer' : 'DPnb',
+                              'defaultparams' : {'sigma':0.5,
+                                                 'flip_prob':0.0001}}})
+                                                 
+processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
+                              'defaultparams' : {'sigma':0.05,
+                                                 'flip_prob':0.03}}})
+```
