@@ -27156,6 +27156,12 @@ class AutoMunge:
     else:
       mask_value = 0
       
+    #additive noise means the mask value is added instead of replaced
+    if 'additive' in params:
+      additive = params['additive']
+    else:
+      additive = False
+      
     #for cases where distribution parameters passed as list or distribution, 
     #activating retain_basis means the basis sampled in automunge is carried through to postmunge
     #or the default of False means a unique basis is sampled in automunge and postmunge
@@ -27163,7 +27169,7 @@ class AutoMunge:
       retain_basis = params['retain_basis']
     else:
       retain_basis = False
-      
+
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -27289,9 +27295,20 @@ class AutoMunge:
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
       mdf_train[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
-      #now inject
-      mdf_train = \
-      self.__autowhere(mdf_train, DPbn_column, mdf_train[DPbn_column]==1, mask_value, mdf_train[column], specified='replacementalternative')
+      
+      if additive is False:
+        #now inject
+        mdf_train = \
+        self.__autowhere(mdf_train, DPbn_column, mdf_train[DPbn_column]==1, mask_value, mdf_train[column], specified='replacementalternative')
+      elif additive is True:
+        #this adds the additive value only onto numeric entries to avoid bug for adding number to string
+        mdf_train.loc[mdf_train[column]==pd.to_numeric(mdf_train[column], errors='coerce'), DPbn_column] = \
+        mdf_train.loc[mdf_train[column]==pd.to_numeric(mdf_train[column], errors='coerce'), DPbn_column] * mask_value \
+        + mdf_train.loc[mdf_train[column]==pd.to_numeric(mdf_train[column], errors='coerce'), column]
+        #and this carries over non-numeric entries from column to the returned column DPbn_column
+        mdf_train.loc[mdf_train[column]!=pd.to_numeric(mdf_train[column], errors='coerce'), DPbn_column] = \
+        mdf_train.loc[mdf_train[column]!=pd.to_numeric(mdf_train[column], errors='coerce'), column]
+        
     elif trainnoise is False:
       mdf_train[DPbn_column] = mdf_train[column].copy()
     
@@ -27306,10 +27323,19 @@ class AutoMunge:
       sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
 
-      #now inject noise
-      mdf_test = \
-      self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
-    
+      if additive is False:
+        #now inject noise
+        mdf_test = \
+        self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
+      elif additive is True:
+        #this adds the additive value only onto numeric entries to avoid bug for adding number to string
+        mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] = \
+        mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] * mask_value \
+        + mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), column]
+        #and this carries over non-numeric entries from column to the returned column DPbn_column
+        mdf_test.loc[mdf_test[column]!=pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] = \
+        mdf_test.loc[mdf_test[column]!=pd.to_numeric(mdf_test[column], errors='coerce'), column]
+        
     #create list of columns
     nmbrcolumns = [DPbn_column]
     
@@ -27326,6 +27352,7 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'mask_value' : mask_value, \
+                                             'additive' : additive, \
                                              'retain_basis' : retain_basis, \
                                             }}
 
@@ -44250,7 +44277,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.85'
+    automungeversion = '7.86'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -52658,6 +52685,13 @@ class AutoMunge:
       mask_value = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['mask_value']
       
+      if 'additive' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        additive = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['additive']
+      else:
+        #backward compatibility preceding 7.86
+        additive = False
+      
       flip_prob = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['flip_prob']
       
@@ -52811,10 +52845,19 @@ class AutoMunge:
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPbn_column] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
-      
-        #now inject noise
-        mdf_test = \
-        self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
+        
+        if additive is False:
+          #now inject noise
+          mdf_test = \
+          self.__autowhere(mdf_test, DPbn_column, mdf_test[DPbn_column]==1, mask_value, mdf_test[column], specified='replacementalternative')
+        elif additive is True:
+          #this adds the additive value only onto numeric entries to avoid bug for adding number to string
+          mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] = \
+          mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] * mask_value \
+          + mdf_test.loc[mdf_test[column]==pd.to_numeric(mdf_test[column], errors='coerce'), column]
+          #and this carries over non-numeric entries from column to the returned column DPbn_column
+          mdf_test.loc[mdf_test[column]!=pd.to_numeric(mdf_test[column], errors='coerce'), DPbn_column] = \
+          mdf_test.loc[mdf_test[column]!=pd.to_numeric(mdf_test[column], errors='coerce'), column]
         
       else:
         
@@ -56995,7 +57038,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = df[normkey]
+    df[inputcolumn] = df[normkey].copy()
     
     return df, inputcolumn
   
