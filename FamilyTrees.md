@@ -6,7 +6,7 @@
 
 ## Introduction
 
-This document is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as category properties associated with each category in the section "Category processdict Entries". 
+This document is intended as a resource to inspect transform_dict defined family trees associated with each root category in the section "Root Category Family Tree Definitions" as well as process_dict defined category properties associated with each tree category in the section "Tree Category processdict Entries". 
 
 Note that any of the family tree definitions can be overwritten in an automunge(.) call with the transformdict parameter and any of the category properties can be overwritten in an automunge(.) call with the processdict parameter.
 
@@ -14,7 +14,7 @@ For simplicity just going to copy the code directly from code base where these d
 
 ## Table of Contents
 * [Root Category Family Tree Definitions](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#root-category-family-tree-definitions)
-* [Category processdict Entries](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#category-processdict-entries)
+* [Tree Category processdict Entries](https://github.com/Automunge/AutoMunge/blob/master/FamilyTrees.md#tree-category-processdict-entries)
 
  ___ 
 ## Root Category Family Tree Definitions
@@ -4251,7 +4251,7 @@ For simplicity just going to copy the code directly from code base where these d
     return transform_dict
 ```
 
-## Category processdict Entries
+## Tree Category processdict Entries
 
 ```
   def __assembleprocessdict(self):
