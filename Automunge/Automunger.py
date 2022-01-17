@@ -96,6 +96,9 @@ class AutoMunge:
   __processparent
   __grab_params
   __custom_process_wrapper
+  __check_for_protected_features
+  __apply_processfamily
+  __prepare_labelsencoding_dict
 
   #__FunctionBlock: suffix overlap and defaultinfill support functions
   __apply_defaultinfill
@@ -383,6 +386,7 @@ class AutoMunge:
   __assignparam_str_convert
   __assignnan_str_convert
   __assignnan_list_convert
+  __convert_floatnan_to_npnan
 
   #__FunctionBlock: label smoothing support
   __apply_LabelSmoothing
@@ -441,6 +445,7 @@ class AutoMunge:
   __postprocesscousin
   __postprocessparent
   __custom_postprocess_wrapper
+  __apply_postprocessfamily
 
   #__FunctionBlock: postmunge postprocess and custom_test functions
   _postprocess_numerical
@@ -8197,7 +8202,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'trainnoise' : False,
                                                      'testnoise' : True},
                                   'noise_transform' : 'categoric',
@@ -8218,7 +8223,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'trainnoise' : False,
                                                      'testnoise' : True},
                                   'noise_transform' : 'categoric',
@@ -8295,7 +8300,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'upstream_hsh2' : True,
                                                      'trainnoise' : False,
                                                      'testnoise' : True},
@@ -8496,7 +8501,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'trainnoise' : True,
                                                      'testnoise' : True},
                                   'noise_transform' : 'categoric',
@@ -8517,7 +8522,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'trainnoise' : True,
                                                      'testnoise' : True},
                                   'noise_transform' : 'categoric',
@@ -8594,7 +8599,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'defaultparams' : {'upstream_hsh2' : True,
                                                      'trainnoise' : True,
                                                      'testnoise' : True},
@@ -8845,7 +8850,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'noise_transform' : 'categoric',
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
@@ -8864,7 +8869,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'noise_transform' : 'categoric',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'singlct',
@@ -8933,7 +8938,7 @@ class AutoMunge:
                                   'postprocess' : self._postprocess_DPod,
                                   'inverseprocess' : self._inverseprocess_UPCS,
                                   'info_retention' : True,
-                                  'inplace_option' : False,
+                                  'inplace_option' : True,
                                   'noise_transform' : 'categoric',
                                   'defaultparams' : {'upstream_hsh2' : True},
                                   'NArowtype' : 'justNaN',
@@ -9704,11 +9709,11 @@ class AutoMunge:
   def __dictupdate(self, column, column_dict, postprocess_dict):
     '''
     #dictupdate function takes as input column_dict, postprocess_dict, then for cases
-    #where origcolmn is the same fo rhte two combines the columnslist and the 
+    #where origcolumn is the same for the two combines the columnslist and the 
     #normalization_dict, then appends the column_dict onto the postprocess_dict
     #returns the column_dict and postprocess_dict. Note that the passed column name
     #"column" is the column name prior to the applicaiton of processing, and the
-    #name of the column after the. last processing funciton is saved as a key
+    #name of the column after the last processing function is saved as a key
     #in the column_dict
     '''
 
@@ -9813,7 +9818,7 @@ class AutoMunge:
     self.__random_parameters_params_append(params, postprocess_dict, \
                                       column, cousin, 'traintest', \
                                       df_train.shape[0], df_test.shape[0], \
-                                      postprocess_dict['printstatus'])
+                                      postprocess_dict['printstatus'], df_train, df_test)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[cousin] \
@@ -9966,7 +9971,7 @@ class AutoMunge:
     self.__random_parameters_params_append(params, postprocess_dict, \
                                           column, parent, 'traintest', \
                                           df_train.shape[0], df_test.shape[0], \
-                                          postprocess_dict['printstatus'])
+                                          postprocess_dict['printstatus'], df_train, df_test)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[parent] \
@@ -10559,6 +10564,319 @@ class AutoMunge:
       column_dict_list.append(column_dict)
 
     return mdf_train, mdf_test, column_dict_list
+
+  def __check_for_protected_features(self, assign_param, processdict):
+    """
+    for cases where any protected_feature have specification
+    either in assign_param or processdict
+    those features are prepared in a seperate for loop through columns
+    to ensure available in original form when noise trasnforms are applied
+    """
+    
+    protected_features = []
+    
+    for entry_1 in assignparam:
+      #global specification {global_assignparam : {param : value}}
+      if entry_1 == 'global_assignparam':
+        if 'protected_feature' in assignparam[entry_1]:
+          if assignparam[entry_1]['protected_feature'] is not False:
+            protected_features.append(assignparam[entry_1]['protected_feature'])
+            
+      #default category specification {default_assignparam : {category : {param : value}}}
+      elif entry_1 == 'default_assignparam':
+        for entry_2 in assignparam[entry_1]:
+          if 'protected_feature' in assignparam[entry_1][entry_2] \
+          and assignparam[entry_1][entry_2]['protected_feature'] is not False:
+            protected_features.append(assignparam[entry_1][entry_2]['protected_feature'])
+
+      #target specification {category : {column : {param : value}}}
+      else:
+        for entry_2 in assignparam[entry_1]:
+          if 'protected_feature' in assignparam[entry_1][entry_2] \
+          and assignparam[entry_1][entry_2]['protected_feature'] is not False:
+            protected_features.append(assignparam[entry_1][entry_2]['protected_feature'])
+
+    #user specified processdict may have protected_feature specifciation in defaultparams
+    for root in processdict:
+      if 'defaultparams' in processdict[root]:
+        if 'protected_feature' in processdict[root]['defaultparams']:
+          if processdict[root]['defaultparams']['protected_feature'] is not False:
+            protected_features.append(processdict[root]['defaultparams']['protected_feature'])
+
+    #consolidate redundancies
+    protected_features = list(set(protected_features))
+
+    return protected_features
+
+  def __apply_processfamily(self,
+                            df_train,
+                            df_test,
+                            columns_train,
+                            postprocess_dict,
+                            transform_dict,
+                            mirror_dict,
+                            assigncat,
+                            inverse_assigncat,
+                            final_assigncat,
+                            assignnan,
+                            masterNArows_train,
+                            masterNArows_test,
+                            randomseed,
+                            eval_ratio,
+                            numbercategoryheuristic,
+                            powertransform,
+                            evalcat,
+                            drift_dict,
+                            assign_param,
+                            printstatus,
+                            inplace,
+                            labels = False,
+                           ):
+    """
+    Aggregates the processfamily functions and surrouding actions
+    Including evalcategory, getNArows, populating mirror_dict, etc
+    the labels case is to distinguish between applying function to features or labels
+    """
+    
+    #For each column, perform processing 
+    #based on either category assignments in assigncat 
+    #or under automation based on train set feature evaluation in _evalcategory
+    for column in columns_train:
+      #
+      categorycomplete = False
+
+      if bool(assigncat) is True:
+    
+        if column in inverse_assigncat:
+        
+          category = inverse_assigncat[column]
+          categorycomplete = True
+
+          #printout display progress
+          if printstatus is True:
+            if labels is False:
+              print("evaluating column: ", column)
+            else:
+              print("evaluating label column: ", column)
+
+          #assigncat has special case, can assign distinct columns to automated evaluation
+          #if user assigned column to 'eval' or 'ptfm'
+          #such as to perform eval when default is powertransform or visa versa
+          #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
+          if category in {'eval', 'ptfm'}:
+
+            if category == 'eval':
+              temp_powertransform_for_evalcategory_call = False
+            if category == 'ptfm':
+              temp_powertransform_for_evalcategory_call = True
+
+            if evalcat is False:
+              category = self.__evalcategory(df_train, column, randomseed, eval_ratio, \
+                                           numbercategoryheuristic, temp_powertransform_for_evalcategory_call, labels)
+            elif callable(evalcat):
+              category = evalcat(df_train, column, randomseed, eval_ratio, \
+                                 numbercategoryheuristic, temp_powertransform_for_evalcategory_call, labels)
+      #
+      if categorycomplete is False:
+
+        #printout display progress
+        if printstatus is True:
+          if labels is False:
+            print("evaluating column: ", column)
+          else:
+            print("evaluating labels column: ", column)
+
+        if evalcat is False:
+          category = self.__evalcategory(df_train, column, randomseed, eval_ratio, \
+                                       numbercategoryheuristic, powertransform, labels)
+        elif callable(evalcat):
+          category = evalcat(df_train, column, randomseed, eval_ratio, \
+                             numbercategoryheuristic, powertransform, labels)
+          
+        #populate the result in the final_assigncat as informational resource
+        if category in final_assigncat:
+          final_assigncat[category].append(column)
+        else:
+          final_assigncat.update({category:[column]})
+
+      #Previously had a few methods here to validate consistensy of data between train
+      #and test sets. Found it was introducing too much complexity and was having trouble
+      #keeping track of all the edge cases. So let's just make outright assumption that
+      #test data if passed is consistently formatted as train data (for now)
+      #added benefit that this reduces running time
+
+      ##
+      #to support the postprocess_dict entry below, let's first create a temp
+      #list of columns
+      #using a list instead of set here to maintain order, even though set would be a little quicker
+      templist1 = list(df_train)
+      #tempset1 is similar to templist1, but is based on column_dict so includes derivations that were subject to replacement
+      tempset1 = set(postprocess_dict['column_dict'])
+
+      #Before calling getNArows, we'll allow user to designate either by category or column 
+      #designated source column values that will be converted to nan for treatment as infill
+      #where in case of specification redundancy column designation takes precedence
+      #and where category is referring to the root category associated with a column
+      #and global just means this value treated universally as nan
+      #where values are passed in automunge(.) parameter assignnan e.g.
+      #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
+
+      df_train = self.__assignnan_convert(df_train, column, category, assignnan, postprocess_dict)
+      df_test = self.__assignnan_convert(df_test, column, category, assignnan, postprocess_dict)
+
+      #we also have convention that infinity values are by default subjected to infill
+      #based on understanding that ML libraries in general do not accept thesae kind of values
+      #as well as the python None value
+
+      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
+      df_train = self.__convert_to_nan(df_train, column, category, postprocess_dict, convert_to_nan_list)
+      df_test = self.__convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
+      
+      if labels is False:
+
+        #create NArows (column of True/False where True coresponds to missing data)
+        trainNArows, drift_dict = self.__getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
+        testNArows = self.__getNArows(df_test, column, category, postprocess_dict)
+
+        #now append that NArows onto a master NA rows df
+        #these df's are used to support application of infill 
+        #such as for partitioning data sets for ML infill and identifying infill targets
+        masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
+        masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
+
+      #printout display progress
+      if printstatus is True:
+        if labels is False:
+          print("processing column: ", column)
+        else:
+          print("processing labels column: ", column)
+        print("    root category: ", category)
+
+      ##
+      #now process family
+      df_train, df_test, postprocess_dict = \
+      self.__processfamily(df_train, df_test, column, category, \
+                        transform_dict, postprocess_dict, assign_param)
+
+      ##
+      #now delete columns that were subject to replacement when inplace transform wasn't available
+      df_train, df_test, postprocess_dict = \
+      self.__circleoflife(df_train, df_test, column, category, \
+                        transform_dict, postprocess_dict, templist1)
+      ##
+      #here's another templist to support the postprocess_dict entry below
+      templist2 = list(df_train)
+      tempset2 = set(postprocess_dict['column_dict'])
+
+      #ok now we're going to pick one of the new entries in templist2 to serve 
+      #as a "columnkey" for pulling datas from the postprocess_dict down the road
+      #similar to but retains order: columnkeylist = list(set(templist2) - set(templist1))
+      columnkeylist = []
+      for templist2_entry in templist2:
+        if templist2_entry not in templist1:
+          columnkeylist.append(templist2_entry)
+
+      #allderivedlist is similar to columnkeylist but includes headers of derivations that were subject to replacement
+      allderivedlist = tempset2 - tempset1
+      allderivedlist = \
+      self.__list_sorting(columnkeylist, allderivedlist)
+
+      #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
+      if len(columnkeylist) == 0:
+        columnkey = column
+      else:
+        columnkey = columnkeylist[0]
+
+      ##
+      if labels is False:
+        origcolumn_type = 'train'
+      else:
+        origcolumn_type = 'labels'
+        
+      postprocess_dict['origcolumn'].update({column : {'type' : origcolumn_type, \
+                                                       'category' : category, \
+                                                       'columnkeylist' : columnkeylist, \
+                                                       'allderivedlist' : allderivedlist, \
+                                                       'columnkey' : columnkey}})
+
+      #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
+      #mirror_dict is used so that user preserves privacy of custom entries that were not inspected
+      mirror_dict, _1 = \
+      self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, category, 0)
+
+      ##
+      #printout display progress
+      if printstatus is True:
+        print(" returned columns:")
+        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
+        print("")
+
+      if inplace is not True:
+        #this defragments the dataframes
+        df_train = df_train.copy()
+        df_test = df_test.copy()
+        
+    #one more populate mirror_dict for mlti categories which are categories inspected outside of a root category tree such as for mlti transform
+    for mlti_entry in postprocess_dict['mlti_categories']:
+      mirror_dict, _1 = \
+      self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, mlti_entry, 0)
+
+    return df_train, \
+           df_test, \
+           postprocess_dict, \
+           mirror_dict, \
+           final_assigncat, \
+           masterNArows_train, \
+           masterNArows_test
+
+  def __prepare_labelsencoding_dict(self, postprocess_dict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus):
+    """
+    labelsencoding_dict is used to support public label inversion with enncryption
+    in the privacy_encode = False or True case
+    note that we use the term labelsencoding_dict in a few support funcitons
+    that also serve other purposes for populating the "mirror_dict"
+    the purpose of labelsencoding_dict is to extract portions of the column_dict
+    relavant to the label features
+    including also relevant entries for transform_dict and process_dict
+    and any other postprocess_dict entries needed to support label inversion
+    """
+
+    labelsencoding_dict = {'transforms' : {}}
+    
+    for column in labels_column_listofcolumns:
+      
+      category = postprocess_dict['origcolumn'][column]['category']
+      columnkeylist = postprocess_dict['origcolumn'][column]['columnkeylist']
+
+      #labelsencoding_dict is returned in postprocess_dict
+      #this is redundant with information stored in postprocess_dict['column_dict']
+      #labelsencoding_dict is used for public label inversion without encryption key
+      #first we'll populate some entries and then final aggregations performed after fully populating postprocess_dict
+      labelsencoding_dict['transforms'].update({column : {category:{}}})
+      for finalcolumn_label in columnkeylist:
+
+        #this populates a labelsnormalization_dict as {returnedcolumn : {}}
+        #which later in the workflow are translated to column_dict entries in __populate_labelsencoding_dict_support3
+        labelsencoding_dict['transforms'][column][category].update({finalcolumn_label : {}})
+
+        #this access any upstream normalization_dict's for columns that were subject to replacement
+        inputcolumn = postprocess_dict['column_dict'][finalcolumn_label]['inputcolumn']
+        labelsencoding_dict = self.__populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, column, inputcolumn)
+
+      #now populate any transform_dict or process_dict entries that were inspected for label transforms
+      labelsencoding_dict, _0 = \
+      self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, 0)
+
+      #now that we know the root label category, we'll verify that if this was a custom processdict entry
+      #it either includes a labelctgy entry or we'll otherwise populate one based on family tree
+      #returning any update in postprocess_dict['process_dict']
+      postprocess_dict, mirror_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
+      self.__check_processdict3(category, processdict, postprocess_dict, transform_dict, mirror_dict, printstatus)
+
+      postprocess_dict['temp_miscparameters_results'].update({'check_processdict3_valresult' : check_processdict3_valresult,
+                                                              'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
+      
+    return labelsencoding_dict, mirror_dict, postprocess_dict
 
   #__FunctionBlock: suffix overlap and defaultinfill support functions
 
@@ -24368,6 +24686,15 @@ class AutoMunge:
     #note that for postprocess function in postmunge, determination of whether to treat
     #df_test as train or test data is based on the traindata entry in postprocess_dict
     #in automunge df_test is treated as test data by default
+
+    #the 'protected_feature' parameter allows for specification of a protected categoric feature
+    #in which the noise scaling will be adjustd based on scale of this feature's segments
+    #corresponding to unique entries in the protected feature
+    #protected features are prepared after other features to accomodate parallelization
+    #the conversion for each segment is merely a matter of multiplying by the ratio of standard deviations
+    #between the segment and the full feature
+    #e.g. adjusted_normal_samples = normal_samples * stdev_segment / stdev_feature
+    #this will average out to the feature stdev accross segments
     '''
     
     suffixoverlap_results = {}
@@ -24437,6 +24764,18 @@ class AutoMunge:
       testnoise = params['testnoise']
     else:
       testnoise = False
+      
+    if 'protected_feature' in params:
+      protected_feature = params['protected_feature']
+
+      if protected_feature == column \
+      or column in postprocess_dict['column_dict'] \
+      and protected_feature == postprocess_dict['column_dict'][column]['origcolumn'] \
+      or protected_feature not in mdf_train:
+        protected_feature = False
+
+    else:
+      protected_feature = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -24633,7 +24972,46 @@ class AutoMunge:
     binomial_activation_count = 0
     test_binomial_activation_count = 0
     
+    #___
+    #the protected_feature option when elected populates 
+    #a dicitonary of segment standard deviations as attribute_stdev_dict
+    #which is used for scaling basis to both train and test data
+    
+    attribute_stdev_dict = {}
+    attributes = []
+    feature_stdev = pd.to_numeric(mdf_train[column], errors='coerce').std()
+    if protected_feature is not False:
+
+      #if we are scaling noise based on segments from a protected feature
+      #we will first populated a dictionary mapping unique entries of protectted feature to ratio of entries
+
+      attributes = list(mdf_train[protected_feature].unique())
+
+      #we'll evaluate and scale noise for each segment in this for loop
+      for attribute in attributes:
+
+        #this is for noise scaling
+        if attribute == attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature]==attribute, column], errors='coerce').std()
+
+        elif attribute != attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature].isna(), column], errors='coerce').std()
+
+        if attribute_stdev != attribute_stdev:
+          #if a segment did not have any variation, will set noise profile to zero
+          #could also set to 1, but that wouldn't align with segment with small stdev
+          attribute_stdev = 0
+
+        #now record that value with key of attribute
+        attribute_stdev_dict.update({attribute : attribute_stdev})
+        
+    #___
+    
     if trainnoise is True and flip_prob > 0 and sigma > 0:
+      
+      #___
       
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
       if flip_prob == 1:
@@ -24646,7 +25024,9 @@ class AutoMunge:
         binomial_samples = nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0]))
       binomial_activation_count = np.sum(binomial_samples)
       
-      #now derive our sampled noise for injection
+      #___
+      
+      #now derive our distribution sampled noise for injection
       sampling_id = 'distribution_train'
       nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
       sampling_resource_dict[sampling_id + '_call_count'] += 1
@@ -24667,7 +25047,28 @@ class AutoMunge:
       mdf_train[DPnm_column] = pd.DataFrame(binomial_samples, index=mdf_train.index)
       
       #now multiply activations by the normal samples
+      #combining Bernoulli and distribution samples
+      #this is equivalent to multiplying the Bernoulli and Distribution samples since Bernoulli had 0's and 1's
       mdf_train.loc[mdf_train[DPnm_column] == 1, DPnm_column] = normal_samples
+      
+      #___
+          
+      if protected_feature is not False:
+        
+        if feature_stdev == feature_stdev and feature_stdev > 0:
+
+          for attribute in attributes:
+
+            if attribute == attribute:
+              #this applies the noise scaling
+              #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+              mdf_train.loc[mdf_test[protected_feature] == attribute, DPnm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+            elif attribute != attribute:
+              mdf_train.loc[mdf_test[protected_feature].isna(), DPnm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+
+      #___
 
       #now inject noise
       if inplace is True:
@@ -24690,6 +25091,8 @@ class AutoMunge:
         mdf_train[DPnm_column] = pd.to_numeric(mdf_train[column], errors='coerce').copy()
     
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
+      
+      #___
     
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
       if test_flip_prob == 1:
@@ -24701,6 +25104,8 @@ class AutoMunge:
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
       test_binomial_activation_count = np.sum(binomial_samples)
+      
+      #___
     
       #now derive our sampled noise for injection
       sampling_id = 'distribution_test'
@@ -24723,7 +25128,30 @@ class AutoMunge:
       mdf_test[DPnm_column] = pd.DataFrame(binomial_samples, index=mdf_test.index)
     
       #now multiply activations by the normal samples
+      #this combines the Bernoulli and distribution samples to single set
+      #this is equivalent to multiplying the Bernoulli and Distribution samples since Bernoulli had 0's and 1's
       mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
+      
+      #___
+      
+      if protected_feature is not False:
+
+        if feature_stdev == feature_stdev and feature_stdev > 0:
+
+          for attribute in attributes:
+            
+            if attribute == attribute:
+              #this applies the noise scaling
+              #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+              mdf_test.loc[mdf_test[protected_feature] == attribute, DPnm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+            elif attribute != attribute:
+              mdf_test.loc[mdf_test[protected_feature].isna(), DPnm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+            
+          #for test attributes in protected feature that weren't found in train, no need to scale          
+      
+      #___
 
       #now inject noise
       if inplace is True:
@@ -24778,6 +25206,10 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'retain_basis' : retain_basis, \
+                                             'protected_feature' : protected_feature, \
+                                             'attribute_stdev_dict' : attribute_stdev_dict, \
+                                             'attributes' : attributes, \
+                                             'feature_stdev' : feature_stdev, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -24891,6 +25323,18 @@ class AutoMunge:
       noise_scaling_bias_offset = params['noise_scaling_bias_offset']
     else:
       noise_scaling_bias_offset = True
+      
+    if 'protected_feature' in params:
+      protected_feature = params['protected_feature']
+
+      if protected_feature == column \
+      or column in postprocess_dict['column_dict'] \
+      and protected_feature == postprocess_dict['column_dict'][column]['origcolumn'] \
+      or protected_feature not in mdf_train:
+        protected_feature = False
+
+    else:
+      protected_feature = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -25175,7 +25619,9 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectmmnoise(df, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, traintest):
+    def _injectmmnoise(df, column, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, \
+                       noisedistribution, sampling_resource_dict, nprandom_dict, traintest, \
+                       protected_feature, attributes, attribute_stdev_dict, feature_stdev):
       #support function for noise injection
       
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
@@ -25211,6 +25657,25 @@ class AutoMunge:
       
       #now multiply activations by the normal samples
       df.loc[df[DPmm_column] == 1, DPmm_column] = normal_samples
+      
+      #___
+          
+      if protected_feature is not False:
+        
+        if feature_stdev == feature_stdev and feature_stdev > 0:
+
+          for attribute in attributes:
+            
+            if attribute == attribute:
+              #this applies the noise scaling
+              #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+              df.loc[df[protected_feature] == attribute, DPmm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+            elif attribute != attribute:
+              df.loc[df[protected_feature].isna(), DPmm_column] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+
+      #___
 
       #cap outliers
       df = \
@@ -25268,19 +25733,61 @@ class AutoMunge:
           if mdf_test.shape[0] > 1:
             test_mu = debiasmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_noisedistribution)
     
+    #___
+    #the protected_feature option when elected populates 
+    #a dicitonary of segment standard deviations as attribute_stdev_dict
+    #which is used for scaling basis to both train and test data
+    
+    attribute_stdev_dict = {}
+    attributes = set()
+    feature_stdev = pd.to_numeric(mdf_train[column], errors='coerce').std()
+
+    if protected_feature is not False:
+
+      #if we are scaling noise based on segments from a protected feature
+      #we will first populated a dictionary mapping unique entries of protectted feature to ratio of entries
+
+      attributes = set(mdf_train[protected_feature].unique())
+
+      #we'll evaluate and scale noise for each segment in this for loop
+      for attribute in attributes:
+
+        #this is for noise scaling
+        if attribute == attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature]==attribute, column], errors='coerce').std()
+
+        elif attribute != attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature].isna(), column], errors='coerce').std()      
+
+        if attribute_stdev != attribute_stdev:
+          #if a segment did not have any variation, will set noise profile to zero
+          #could also set to 1, but that wouldn't align with segment with small stdev
+          attribute_stdev = 0
+
+        #now record that value with key of attribute
+        attribute_stdev_dict.update({attribute : attribute_stdev})
+        
+    #___
+    
     binomial_activation_count = 0
     test_binomial_activation_count = 0
     
     if trainnoise is True and flip_prob > 0 and sigma > 0:
       mdf_train, binomial_activation_count, sampling_resource_dict = \
-      _injectmmnoise(mdf_train, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, 'train')
+      _injectmmnoise(mdf_train, column, DPmm_column, DPmm_column_temp1, mu, sigma, flip_prob, \
+                     noisedistribution, sampling_resource_dict, nprandom_dict, 'train', \
+                     protected_feature, attributes, attribute_stdev_dict, feature_stdev)
     else:
       #else train data is pass-through
       mdf_train[DPmm_column] = mdf_train[column].copy()
     
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
       mdf_test, test_binomial_activation_count, sampling_resource_dict = \
-      _injectmmnoise(mdf_test, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_flip_prob, test_noisedistribution, sampling_resource_dict, nprandom_dict, 'test')
+      _injectmmnoise(mdf_test, column, DPmm_column, DPmm_column_temp1, test_mu, test_sigma, test_flip_prob, \
+                     test_noisedistribution, sampling_resource_dict, nprandom_dict, 'test', \
+                     protected_feature, attributes, attribute_stdev_dict, feature_stdev)
     else:
       #else test data is pass-through
       mdf_test[DPmm_column] = mdf_test[column].copy()
@@ -25318,6 +25825,10 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'retain_basis' : retain_basis, \
+                                             'protected_feature' : protected_feature, \
+                                             'attribute_stdev_dict' : attribute_stdev_dict, \
+                                             'attributes' : attributes, \
+                                             'feature_stdev' : feature_stdev, \
                                             }}
 
     #store some values in the nmbr_dict{} for use later in ML infill methods
@@ -25473,6 +25984,18 @@ class AutoMunge:
       noise_scaling_bias_offset = params['noise_scaling_bias_offset']
     else:
       noise_scaling_bias_offset = True
+      
+    if 'protected_feature' in params:
+      protected_feature = params['protected_feature']
+
+      if protected_feature == column \
+      or column in postprocess_dict['column_dict'] \
+      and protected_feature == postprocess_dict['column_dict'][column]['origcolumn'] \
+      or protected_feature not in mdf_train:
+        protected_feature = False
+
+    else:
+      protected_feature = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -25877,7 +26400,9 @@ class AutoMunge:
       
       return target_mu
     
-    def _injectrtnoise(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, traintest):
+    def _injectrtnoise(df, column, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, \
+                       mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, \
+                       nprandom_dict, traintest, protected_feature, attributes, attribute_stdev_dict, feature_stdev):
       #support function for DPrt noise injection
       
       #first we'll derive our Bernoulli samples which will tell us how many samples we need from normal
@@ -25913,6 +26438,25 @@ class AutoMunge:
       
       #now multiply activations by the normal samples
       df.loc[df[DPrt_column_temp2] == 1, DPrt_column_temp2] = normal_samples
+      
+      #___
+      
+      if protected_feature is not False:
+
+        if feature_stdev == feature_stdev and feature_stdev > 0:
+
+          for attribute in attributes:
+            
+            if attribute == attribute:
+              #this applies the noise scaling
+              #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+              df.loc[df[protected_feature] == attribute, DPrt_column_temp2] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+            elif attribute != attribute:
+              df.loc[df[protected_feature].isna(), DPrt_column_temp2] *= \
+              attribute_stdev_dict[attribute] / feature_stdev
+      
+      #___
 
       #cap outliers
       df = \
@@ -25969,15 +26513,57 @@ class AutoMunge:
 
     binomial_activation_count = 0
     test_binomial_activation_count = 0
+    
+    #___
+    #the protected_feature option when elected populates 
+    #a dicitonary of segment standard deviations as attribute_stdev_dict
+    #which is used for scaling basis to both train and test data
+    
+    attribute_stdev_dict = {}
+    attributes = set()
+    feature_stdev = pd.to_numeric(mdf_train[column], errors='coerce').std()
+    
+    if protected_feature is not False:
+
+      #if we are scaling noise based on segments from a protected feature
+      #we will first populated a dictionary mapping unique entries of protectted feature to ratio of entries
+
+      attributes = set(mdf_train[protected_feature].unique())
+
+      #we'll evaluate and scale noise for each segment in this for loop
+      for attribute in attributes:
+
+        #this is for noise scaling
+        if attribute == attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature]==attribute, column], errors='coerce').std()
+
+        elif attribute != attribute:
+          attribute_stdev = \
+          pd.to_numeric(mdf_train.loc[mdf_train[protected_feature].isna(), column], errors='coerce').std()
+        
+        if attribute_stdev != attribute_stdev:
+          #if a segment did not have any variation, will set noise profile to zero
+          #could also set to 1, but that wouldn't align with segment with small stdev
+          attribute_stdev = 0
+
+        #now record that value with key of attribute
+        attribute_stdev_dict.update({attribute : attribute_stdev})
+        
+    #___
             
     if trainnoise is True and flip_prob > 0 and sigma > 0:
       mdf_train, binomial_activation_count, sampling_resource_dict = \
-      _injectrtnoise(mdf_train, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, nprandom_dict, 'train')
+      _injectrtnoise(mdf_train, column, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, \
+                     mu, sigma, flip_prob, noisedistribution, sampling_resource_dict, \
+                     nprandom_dict, 'train', protected_feature, attributes, attribute_stdev_dict, feature_stdev)
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True and test_flip_prob > 0 and test_sigma > 0:
       mdf_test, test_binomial_activation_count, sampling_resource_dict = \
-      _injectrtnoise(mdf_test, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, test_mu, test_sigma, test_flip_prob, test_noisedistribution, sampling_resource_dict, nprandom_dict, 'test')
+      _injectrtnoise(mdf_test, column, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, \
+                     test_mu, test_sigma, test_flip_prob, test_noisedistribution, sampling_resource_dict, \
+                     nprandom_dict, 'test', protected_feature, attributes, attribute_stdev_dict, feature_stdev)
       
     #now that we've injected noise, will convert the minmax representation to 'retain' normalization
     if scalingapproach == 'retn':
@@ -26038,6 +26624,10 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'retain_basis' : retain_basis, \
+                                             'protected_feature' : protected_feature, \
+                                             'attribute_stdev_dict' : attribute_stdev_dict, \
+                                             'attributes' : attributes, \
+                                             'feature_stdev' : feature_stdev, \
                                             }}
     
     for nc in nmbrcolumns:
@@ -26378,6 +26968,23 @@ class AutoMunge:
     else:
       retain_basis = False
       
+    if 'protected_feature' in params:
+      protected_feature = params['protected_feature']
+
+      if protected_feature == column \
+      or column in postprocess_dict['column_dict'] \
+      and protected_feature == postprocess_dict['column_dict'][column]['origcolumn'] \
+      or protected_feature not in mdf_train:
+        protected_feature = False
+
+    else:
+      protected_feature = False
+      
+    if 'inplace' in params:
+      inplace = params['inplace']
+    else:
+      inplace = False
+      
     #________
       
     #note that random_generator accessed from automunge(.) parameter and not passed to postmunge
@@ -26494,13 +27101,31 @@ class AutoMunge:
     DPod_tempcolumn1 = 1
     DPod_tempcolumn2 = 2
     
-    newcolumns = [DPod_column, DPod_tempcolumn1, DPod_tempcolumn2]
+    newcolumns = [DPod_tempcolumn1, DPod_tempcolumn2]
     
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
     
+    if inplace is not True:
+      
+      #copy source column into new column
+      mdf_train, suffixoverlap_results = \
+      self.__df_copy_train(mdf_train, column, DPod_column, suffixoverlap_results, postprocess_dict['printstatus'])
+
+      mdf_test[DPod_column] = mdf_test[column].copy()
+    
+    else:
+      
+      suffixoverlap_results = \
+      self.__df_check_suffixoverlap(mdf_train, DPod_column, suffixoverlap_results, postprocess_dict['printstatus'])
+      
+      mdf_train.rename(columns = {column : DPod_column}, inplace = True)
+      mdf_test.rename(columns = {column : DPod_column}, inplace = True)
+      
+    #___
+    
     #we'll want to know the set of activations present in column, for automunge this is unique values
-    ord_encodings = mdf_train[column].unique()
+    ord_encodings = mdf_train[DPod_column].unique()
 
     if upstream_hsh2 is True:
       if column in postprocess_dict['column_dict'] \
@@ -26512,8 +27137,39 @@ class AutoMunge:
     weights = []
     if weighted is True:
       for entry in ord_encodings:
-        weight = (mdf_train[mdf_train[column] == entry].shape[0]) / mdf_train.shape[0]
+        weight = (mdf_train[mdf_train[DPod_column] == entry].shape[0]) / mdf_train.shape[0]
         weights.append(weight)
+        
+    #___
+    #the protected_feature option when elected populates 
+    #a dictionary of segment weightings as attribute_weightings_dict
+    #which is used for scaling basis to both train and test data
+    
+    attribute_weightings_dict = {}
+    attributes = []
+    if protected_feature is not False and weighted is True:
+
+      #if we are scaling noise based on segments from a protected feature
+      #we will first populated a dictionary mapping unique entries of protectted feature to ratio of entries
+
+      attributes = list(mdf_train[protected_feature].unique())
+      
+      for attribute in attributes:
+        attribute_weights = []
+        for entry in ord_encodings:
+
+          if attribute == attribute:
+            attribute_weight = (mdf_train.loc[(mdf_train[protected_feature] == attribute) & (mdf_train[DPod_column] == entry)].shape[0]) \
+            / mdf_train.loc[(mdf_train[protected_feature] == attribute)].shape[0]
+          else:
+            attribute_weight = (mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_column] == entry)].shape[0]) \
+            / mdf_train.loc[mdf_train[protected_feature].isna()].shape[0]
+          
+          attribute_weights.append(attribute_weight)
+          
+        attribute_weightings_dict.update({attribute : attribute_weights})
+
+    #___
 
     binomial_activation_count = 0
     test_binomial_activation_count = 0
@@ -26530,31 +27186,85 @@ class AutoMunge:
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
         mdf_train[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(mdf_train.shape[0])), index=mdf_train.index)
       binomial_activation_count = mdf_train[DPod_tempcolumn1].sum()
-      
+  
       sampling_id = 'choice_train'
-      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-      sampling_resource_dict[sampling_id + '_call_count'] += 1
-      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
-      if weighted is False:
-        choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
-      elif weighted is True:
-        choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
       
-      #the samples were a shape based on number of binomial activations, now extract to full column
-      mdf_train[DPod_tempcolumn2] = 0
-      mdf_train.loc[mdf_train[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
-
-      #now inject noise
-      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-      mdf_train[DPod_column] = \
-      mdf_train[column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
+      if protected_feature is False or weighted is False:
         
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_train.shape[0]
+        
+        if weighted is False:
+          choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
+        elif weighted is True:
+          choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
+
+        #the samples were a shape based on number of binomial activations, now extract to full column
+        mdf_train[DPod_tempcolumn2] = 0
+        mdf_train.loc[mdf_train[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
+
+        #now inject noise
+        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+        mdf_train[DPod_column] = \
+        mdf_train[DPod_column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
+        
+      elif protected_feature is not False:
+        
+        seeds_available = sampling_resource_dict[sampling_id + '_seeds']
+        
+        mdf_train[DPod_tempcolumn2] = 0
+        
+        for attribute in attributes:
+          
+          temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+          
+          if attribute == attribute:
+            attribute_count = mdf_train.loc[(mdf_train[protected_feature]==attribute) & (mdf_train[DPod_tempcolumn1] == 1)].shape[0]
+          elif attribute != attribute:
+            attribute_count = mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_tempcolumn1] == 1)].shape[0]
+          
+          attribute_seeds = seeds_available
+          
+          if attribute_count < len(seeds_available):
+            
+            attribute_seeds = seeds_available[:attribute_count]
+            
+          temp_sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
+          
+          nprandom = self.__get_nprandom(sampling_id, temp_sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += attribute_count
+          
+          choice_samples = nprandom.choice(ord_encodings, 
+                                           p=attribute_weightings_dict[attribute], 
+                                           size=(attribute_count))
+
+          if attribute == attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_train.loc[(mdf_train[protected_feature]==attribute) & (mdf_train[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_train.loc[(mdf_train[protected_feature]==attribute), DPod_column] = \
+            mdf_train.loc[(mdf_train[protected_feature]==attribute), DPod_tempcolumn2]
+          elif attribute != attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_train.loc[(mdf_train[protected_feature].isna()), DPod_column] = \
+            mdf_train.loc[(mdf_train[protected_feature].isna()), DPod_tempcolumn2]
+
+          #if we have enough seeds left for the next attribute we'll expend the current used
+          if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+            next_attribute = attributes[(1+attributes.index(attribute))]
+            next_attribute_count = mdf_train.loc[mdf_train[protected_feature]==next_attribute].shape[0]
+
+            if len(seeds_available[attribute_count:]) < next_attribute_count:
+              seeds_available = seeds_available[attribute_count:]
+
       del mdf_train[DPod_tempcolumn1]
       del mdf_train[DPod_tempcolumn2]
-    
-    else:
-     #elif trainnoise is False:
-      mdf_train[DPod_column] = mdf_train[column].copy()
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True and test_flip_prob > 0:
@@ -26562,37 +27272,108 @@ class AutoMunge:
       if test_flip_prob == 1:
         mdf_test[DPod_tempcolumn1] = np.ones(mdf_test.shape[0]).astype(int)
       else:
-        #first we'll derive our sampled noise for injection
+        #derive our sampled noise for injection
         sampling_id = 'binomial_test'
         nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
         mdf_test[DPod_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=test_flip_prob, size=(mdf_test.shape[0])), index=mdf_test.index)
       test_binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
-      
+  
       sampling_id = 'choice_test'
-      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-      sampling_resource_dict[sampling_id + '_call_count'] += 1
-      sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
-      if test_weighted is False:
-        choice_samples = nprandom.choice(ord_encodings, size=(test_binomial_activation_count))
-      elif test_weighted is True:
-        choice_samples = nprandom.choice(ord_encodings, p=weights, size=(test_binomial_activation_count))
       
-      #the samples were a shape based on number of binomial activations, now extract to full column
-      mdf_test[DPod_tempcolumn2] = 0
-      mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
+      if protected_feature is False or test_weighted is False:
+        
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        sampling_resource_dict[sampling_id + '_call_count'] += 1
+        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+        
+        if test_weighted is False:
+          choice_samples = nprandom.choice(ord_encodings, size=(test_binomial_activation_count))
+        elif test_weighted is True:
+          choice_samples = nprandom.choice(ord_encodings, p=weights, size=(test_binomial_activation_count))
 
-      #now inject noise
-      #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-      mdf_test[DPod_column] = \
-      mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+        #the samples were a shape based on number of binomial activations, now extract to full column
+        mdf_test[DPod_tempcolumn2] = 0
+        mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
+
+        #now inject noise
+        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+        mdf_test[DPod_column] = \
+        mdf_test[DPod_column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+        
+      elif protected_feature is not False:
+        
+        seeds_available = sampling_resource_dict[sampling_id + '_seeds']
+        
+        mdf_test[DPod_tempcolumn2] = 0
+        
+        #for test data we'll also consider test attributes that weren't found in the train data
+        #and apply aggregate feature weighting
+        #since attribute_weightings_dict is inspected as part of sampling we'll need to add temporary entries
+        temp_attribute_weightings_dict = deepcopy(attribute_weightings_dict)
+        
+        test_attributes = list(mdf_test[protected_feature].unique())
+        extra_test_attributes = set(test_attributes) - set(attributes)
+        
+        for extra_test_attribute in extra_test_attributes:
+          temp_attribute_weightings_dict.update({extra_test_attribute : weights})
+        
+        for attribute in (attributes + list(extra_test_attributes)):
+          
+          temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+          
+          if attribute == attribute:
+            attribute_count = mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
+          elif attribute != attribute:
+            attribute_count = mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
+          
+          attribute_seeds = seeds_available
+          
+          if attribute_count < len(seeds_available):
+            
+            attribute_seeds = seeds_available[:attribute_count]
+            
+          temp_sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
+          
+          nprandom = self.__get_nprandom(sampling_id, temp_sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += attribute_count
+          
+          choice_samples = nprandom.choice(ord_encodings, 
+                                           p=temp_attribute_weightings_dict[attribute], 
+                                           size=(attribute_count))
+          
+          if attribute == attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_column] = \
+            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_tempcolumn2]
+          elif attribute != attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_column] = \
+            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_tempcolumn2]
+
+          #if we have enough seeds left for the next attribute we'll expend the current used
+          if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+            next_attribute = attributes[(1+attributes.index(attribute))]
+            if next_attribute == next_attribute:
+              next_attribute_count = mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0]
+            elif next_attribute != next_attribute:
+              next_attribute_count = mdf_test.loc[mdf_test[protected_feature].isna()].shape[0]
+
+            if len(seeds_available[attribute_count:]) < next_attribute_count:
+              seeds_available = seeds_available[attribute_count:]
 
       del mdf_test[DPod_tempcolumn1]
       del mdf_test[DPod_tempcolumn2]
-
-    else:
-      mdf_test[DPod_column] = mdf_test[column].copy()
+      
+    #___
 
     #data type is conditional based on encoding space
     max_encoding = len(ord_encodings) - 1
@@ -26620,6 +27401,7 @@ class AutoMunge:
                                              'test_weighted' : test_weighted, \
                                              'weights' : weights, \
                                              'suffix' : suffix, \
+                                             'inplace' : inplace, \
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
@@ -26628,8 +27410,11 @@ class AutoMunge:
                                              'flip_prob_list' : flip_prob_list, \
                                              'test_flip_prob_list' : test_flip_prob_list, \
                                              'retain_basis' : retain_basis, \
+                                             'protected_feature' : protected_feature, \
+                                             'attribute_weightings_dict' : attribute_weightings_dict, \
+                                             'attributes' : attributes, \
                                             }}
-
+    
     #store some values in the nmbr_dict{} for use later in ML infill methods
     column_dict_list = []
 
@@ -26741,6 +27526,18 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+      
+    if 'protected_feature' in params:
+      protected_feature = params['protected_feature']
+
+      if protected_feature == column \
+      or column in postprocess_dict['column_dict'] \
+      and protected_feature == postprocess_dict['column_dict'][column]['origcolumn'] \
+      or protected_feature not in mdf_train:
+        protected_feature = False
+
+    else:
+      protected_feature = False
       
     #for cases where distribution parameters passed as list or distribution, 
     #activating retain_basis means the basis sampled in automunge is carried through to postmunge
@@ -26921,8 +27718,10 @@ class AutoMunge:
         
         for textcolumn in textcolumns:
           maxencodings.update({textcolumn : maxencoding})
-    
+
     if swap_noise is False:
+    
+#       if protected_features is False or weighted is False and test_weighted is False:
 
       #now we'll create a support dataframe df_unique from df_train
       #which we'll consolidate redundant rows in df_unique before saving to normalization_dict
@@ -26940,7 +27739,7 @@ class AutoMunge:
 
       #reset index in df_unique to a range index
       df_unique = df_unique.reset_index(drop=True)
-    
+
       weights = []
       if weighted is True:
         #for each unique row in the consolidated df_unique calculate a weight
@@ -26953,7 +27752,94 @@ class AutoMunge:
           count = ((mdf_train[textcolumns] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
           weight = count / mdf_train.shape[0]
           weights.append(weight)
-          
+
+      #attribute_weightings_dict = {attribute : {'weights' : weights, 'df_unique' : df_unique}}
+      attribute_weightings_dict = {}
+      attributes = []          
+      if protected_feature is not False:
+        #the protected_feature option when elected populates 
+        #a dictionary of segment weightings as attribute_weightings_dict
+        #which is used for scaling basis to both train and test data
+
+        if protected_feature is not False and weighted is True:
+
+          #if we are scaling noise based on segments from a protected feature
+          #we will first populated a dictionary mapping unique entries of protectted feature to ratio of entries
+
+          attributes = list(mdf_train[protected_feature].unique())
+
+          for attribute in attributes:
+
+            #now we'll create a support dataframe df_unique from df_train
+            #which we'll consolidate redundant rows in df_unique before saving to normalization_dict
+            attribute_df_unique = mdf_train[textcolumns].copy()
+            
+            if attribute == attribute:
+              #this results in reducing the rows to only contain entries correponding to the target attribute in protected feature
+              attribute_df_unique = attribute_df_unique.loc[(mdf_train[protected_feature] == attribute)].copy()
+            else:
+              attribute_df_unique = attribute_df_unique.loc[(mdf_train[protected_feature].isna())].copy()
+            
+            #first we derive a mask based on presence of duplicate rows
+            mask = pd.DataFrame(attribute_df_unique.duplicated())
+            
+            #this operation inverts True and False in the mask for next operation
+            mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
+            
+            #now apply the mask to consolidate duplicate rows, this returns a dataframe with all unique rows
+            #which may be much fewer rows than received df_unique 
+            attribute_df_unique = attribute_df_unique.iloc[mask.to_numpy()]
+
+            #reset index in df_unique to a range index
+            attribute_df_unique = attribute_df_unique.reset_index(drop=True)
+            
+            attribute_weights = []
+            if weighted is True:
+              #for each unique row in the consolidated df_unique calculate a weight
+              #by count of that row in mdf_train[textcolumns]
+              #note this is applied in same order as unique_range fed to np.random.choice
+              for i in range(df_unique.shape[0]):
+                #to derive, we'll create a comparably shaped dataframe 
+                #with all same row for comparison to mdf_train[textcolumns]
+
+                if attribute == attribute:
+                  df_allonerow = pd.concat([df_unique[i:i+1]]*mdf_train.loc[(mdf_train[protected_feature] == attribute)].shape[0], axis=0)
+                  df_allonerow.index = mdf_train.loc[(mdf_train[protected_feature] == attribute)].index
+                
+                  #this is not pretty, but .loc only allows selecting one column, so have to populate an additional copy
+                  #I believe only used for this protected feature setup
+                  mdf_train_textcolumns = mdf_train[textcolumns].copy()
+                  
+                  count = ((mdf_train_textcolumns.loc[(mdf_train[protected_feature] == attribute)] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
+                  attribute_weight = count / mdf_train.loc[(mdf_train[protected_feature] == attribute)].shape[0]
+
+                  if attribute_weight != 0:
+                    attribute_weights.append(attribute_weight)
+
+                else:
+                  df_allonerow = pd.concat([df_unique[i:i+1]]*mdf_train.loc[(mdf_train[protected_feature].isna())].shape[0], axis=0)
+                  df_allonerow.index = mdf_train.loc[(mdf_train[protected_feature].isna())].index
+
+                  #this is not pretty, but .loc only allows selecting one column, so have to populate an additional copy
+                  #I believe only used for this protected feature setup
+                  mdf_train_textcolumns = mdf_train[textcolumns].copy()
+                  
+                  count = ((mdf_train_textcolumns.loc[(mdf_train[protected_feature].isna())] == df_allonerow).sum(axis=1) == len(textcolumns)).sum()
+                  attribute_weight = count / mdf_train.loc[(mdf_train[protected_feature].isna())].shape[0]
+
+                  if attribute_weight != 0:
+                    attribute_weights.append(attribute_weight)
+            
+            #attribute_weightings_dict = {attribute : {'weights' : weights, 'df_unique' : df_unique}}
+            #attribute_df_unique is used in a similar fashion to ord_encodings in DPod
+            #the difference is it encompasses multiple columns
+            attribute_weightings_dict.update({attribute : {
+              'weights' : attribute_weights,
+              'df_unique' : attribute_df_unique
+            }})
+
+      #___
+
     elif swap_noise is True:
       #df_unique not used in swap_noise scenario
       df_unique = False
@@ -26961,11 +27847,15 @@ class AutoMunge:
       weighted = False
       test_weighted = False
       weights = []
-    
-    def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest):
+      attribute_weightings_dict = {}
+      attributes = []
+
+    def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest, protected_feature=False):
       """
       common support function used to inject noise to either mdf_train or mdf_test when applicable
       """
+      
+      sampling_resource_dict = deepcopy(sampling_resource_dict)
       
       unique_count = df_unique.shape[0]
       unique_range = list(range(unique_count))
@@ -26985,9 +27875,26 @@ class AutoMunge:
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
       binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
+      
+      #_____
+      if protected_feature is not False:
+        
+        seeds_available = sampling_resource_dict['choice_' + traintest + '_seeds']
 
-      sampling_id = 'choice_' + traintest
-      nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        if binomial_activation_count < len(seeds_available):
+          
+          attribute_seeds = seeds_available[:attribute_count]
+          
+          sampling_id = 'choice_' + traintest
+          sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
+          
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          
+      elif protected_feature is False:
+        
+        sampling_id = 'choice_' + traintest
+        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+      
       sampling_resource_dict[sampling_id + '_call_count'] += 1
       sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
       if weighted is False:
@@ -27020,9 +27927,68 @@ class AutoMunge:
     if trainnoise is True and flip_prob > 0:
       
       if swap_noise is False:
-        #inject noise to mdf_train
-        mdf_train, sampling_resource_dict, binomial_activation_count = \
-        _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
+        if protected_feature is False: 
+          #inject noise to mdf_train
+          mdf_train, sampling_resource_dict, binomial_activation_count = \
+          _noise_inject(mdf_train, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, 'train')
+        elif protected_feature is not False:
+          
+          binomial_activation_count = 0
+          for attribute in attributes:
+            
+            if attribute == attribute:
+              returned_noise_inject_df, temp_sampling_resource_dict, binomial_activation_count_attribute = \
+              _noise_inject(mdf_train.loc[mdf_train[protected_feature] == attribute].copy(), 
+                            textcolumns, 
+                            attribute_weightings_dict[attribute]['df_unique'], 
+                            flip_prob, 
+                            weighted, 
+                            attribute_weightings_dict[attribute]['weights'], 
+                            sampling_resource_dict, 
+                            nprandom_dict, 
+                            'train',
+                            protected_feature)
+            
+              for textcolumn in textcolumns:
+                mdf_train.loc[mdf_train[protected_feature] == attribute, textcolumn] = returned_noise_inject_df[textcolumn]
+              del returned_noise_inject_df
+
+            elif attribute != attribute:
+              returned_noise_inject_df, temp_sampling_resource_dict, binomial_activation_count_attribute = \
+              _noise_inject(mdf_train.loc[mdf_train[protected_feature].isna()].copy(), 
+                            textcolumns, 
+                            attribute_weightings_dict[attribute]['df_unique'], 
+                            flip_prob, 
+                            weighted, 
+                            attribute_weightings_dict[attribute]['weights'], 
+                            sampling_resource_dict, 
+                            nprandom_dict, 
+                            'train',
+                            protected_feature)
+
+              for textcolumn in textcolumns:
+                mdf_train.loc[mdf_train[protected_feature].isna(), textcolumn] = returned_noise_inject_df[textcolumn]
+              del returned_noise_inject_df
+
+            binomial_activation_count += binomial_activation_count_attribute
+            
+            #if we have enough seeds left for the next attribute we'll expend the current used
+            if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+              next_attribute = attributes[(1+attributes.index(attribute))]
+              
+              if next_attribute == next_attribute:
+                next_attribute_count = int(mdf_train.loc[mdf_train[protected_feature]==next_attribute].shape[0] * flip_prob * 0.15)
+              else:
+                next_attribute_count = int(mdf_train.loc[mdf_train[protected_feature].isna()].shape[0] * flip_prob * 0.15)
+              
+              if len(sampling_resource_dict['choice_train_seeds'][binomial_activation_count_attribute:]) < next_attribute_count:                
+                #this expends the used seeds
+                sampling_resource_dict['choice_train_seeds'] = sampling_resource_dict['choice_train_seeds'][binomial_activation_count_attribute:]
+               
+            #for protected_feature case we updated seeds for choice, now revert to orig but keep other logged entries
+            temp_sampling_resource_dict.update({'choice_train_seeds' : sampling_resource_dict['choice_train_seeds']})
+            sampling_resource_dict = temp_sampling_resource_dict
+
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
         mdf_train, sampling_resource_dict, binomial_activation_count = \
@@ -27032,14 +27998,124 @@ class AutoMunge:
     if testnoise is True and test_flip_prob > 0:
       
       if swap_noise is False:
-        #inject noise to mdf_test
-        mdf_test, sampling_resource_dict, test_binomial_activation_count = \
-        _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
+        
+        if protected_feature is False: 
+          #inject noise to mdf_test
+          mdf_test, sampling_resource_dict, test_binomial_activation_count = \
+          _noise_inject(mdf_test, textcolumns, df_unique, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
+      
+        elif protected_feature is not False:
+          
+          test_binomial_activation_count = 0
+          
+          #first we'll apply noise without scaling for test qattributes that weren't found in train set
+          #this is neccesary because wse're inspecting protected_feature in the input state
+          test_attributes = list(mdf_test[protected_feature].unique())
+          extra_test_attributes = set(test_attributes) - set(attributes)
+          
+          if len(extra_test_attributes) > 0:
+
+            returned_noise_inject_df, temp_sampling_resource_dict, test_binomial_activation_count_attribute = \
+            _noise_inject(mdf_test.loc[mdf_test[protected_feature].isin(extra_test_attributes)].copy(), 
+                          textcolumns, 
+                          df_unique, 
+                          test_flip_prob, 
+                          test_weighted, 
+                          weights, 
+                          sampling_resource_dict, 
+                          nprandom_dict, 
+                          'test',
+                          protected_feature)
+
+            for textcolumn in textcolumns:
+              if attribute == attribute:
+                mdf_test.loc[mdf_test[protected_feature] == attribute, textcolumn] = returned_noise_inject_df[textcolumn]
+              else:
+                mdf_test.loc[mdf_test[protected_feature].isna(), textcolumn] = returned_noise_inject_df[textcolumn]
+            del returned_noise_inject_df
+
+            test_binomial_activation_count += test_binomial_activation_count_attribute
+
+            #if we have enough seeds left for the next attribute we'll expend the current used
+            if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+              next_attribute = attributes[0]
+
+              if next_attribute == next_attribute:
+                next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0] * test_flip_prob * 0.15)
+              else:
+                next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature].isna()].shape[0] * test_flip_prob * 0.15)
+
+              if len(sampling_resource_dict['choice_test_seeds'][test_binomial_activation_count_attribute:]) < next_attribute_count:                
+                #this expends the used seeds
+                sampling_resource_dict['choice_test_seeds'] = sampling_resource_dict['choice_test_seeds'][test_binomial_activation_count_attribute:]
+
+            #for protected_feature case we updated seeds for choice, now revert to orig but keep other logged entries
+            temp_sampling_resource_dict.update({'choice_test_seeds' : sampling_resource_dict['choice_test_seeds']})
+            sampling_resource_dict = temp_sampling_resource_dict
+          
+          #now cycle through the attributes
+          for attribute in attributes:
+            
+            if attribute == attribute:
+              returned_noise_inject_df, temp_sampling_resource_dict, test_binomial_activation_count_attribute = \
+              _noise_inject(mdf_test.loc[mdf_test[protected_feature] == attribute].copy(), 
+                            textcolumns, 
+                            attribute_weightings_dict[attribute]['df_unique'], 
+                            test_flip_prob, 
+                            test_weighted, 
+                            attribute_weightings_dict[attribute]['weights'], 
+                            sampling_resource_dict, 
+                            nprandom_dict, 
+                            'test',
+                            protected_feature)
+
+              for textcolumn in textcolumns:
+                mdf_test.loc[mdf_test[protected_feature] == attribute, textcolumn] = returned_noise_inject_df[textcolumn]
+              del returned_noise_inject_df
+
+            elif attribute != attribute:
+              returned_noise_inject_df, temp_sampling_resource_dict, test_binomial_activation_count_attribute = \
+              _noise_inject(mdf_test.loc[mdf_test[protected_feature].isna()].copy(), 
+                            textcolumns, 
+                            attribute_weightings_dict[attribute]['df_unique'], 
+                            test_flip_prob, 
+                            test_weighted, 
+                            attribute_weightings_dict[attribute]['weights'], 
+                            sampling_resource_dict, 
+                            nprandom_dict, 
+                            'test',
+                            protected_feature)
+
+              for textcolumn in textcolumns:
+                mdf_test.loc[mdf_test[protected_feature].isna(), textcolumn] = returned_noise_inject_df[textcolumn]
+              del returned_noise_inject_df
+
+            test_binomial_activation_count += test_binomial_activation_count_attribute
+            
+            #if we have enough seeds left for the next attribute we'll expend the current used
+            if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+              next_attribute = attributes[(1+attributes.index(attribute))]
+              
+              if next_attribute == next_attribute:
+                next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0] * flip_prob * 0.15)
+              else:
+                next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature].isna()].shape[0] * flip_prob * 0.15)
+              
+              if len(sampling_resource_dict['choice_test_seeds'][test_binomial_activation_count_attribute:]) < next_attribute_count:                
+                #this expends the used seeds
+                sampling_resource_dict['choice_test_seeds'] = sampling_resource_dict['choice_test_seeds'][test_binomial_activation_count_attribute:]
+               
+            #for protected_feature case we updated seeds for choice, now revert to orig but keep other logged entries
+            temp_sampling_resource_dict.update({'choice_test_seeds' : sampling_resource_dict['choice_test_seeds']})
+            sampling_resource_dict = temp_sampling_resource_dict
+          
       #in swap_noise scenario we replace df_unique with the full dataframe
       elif swap_noise is True:
         mdf_test, sampling_resource_dict, test_binomial_activation_count = \
         _noise_inject(mdf_test, textcolumns, mdf_test, test_flip_prob, test_weighted, weights, sampling_resource_dict, nprandom_dict, 'test')
-    
+        
+    #___
+  
     #now apply data type conversion, this should align with received data types, just applying in case of drift
     #in swap_noise scenario we'll default to the input data type since this might be applied downstream of floats
     if swap_noise is False:
@@ -27087,6 +28163,9 @@ class AutoMunge:
                                               'flip_prob_list' : flip_prob_list, \
                                               'test_flip_prob_list' : test_flip_prob_list, \
                                               'retain_basis' : retain_basis, \
+                                              'protected_feature' : protected_feature, \
+                                              'attribute_weightings_dict' : attribute_weightings_dict, \
+                                              'attributes' : attributes, \
                                              }}
     
     for textcolumn in textcolumns:
@@ -34240,6 +35319,8 @@ class AutoMunge:
                       masterNArows_train, masterNArows_test, randomseed, ML_cmnd):
     """
     #Modularizes the application of infill to train and test sets
+    #note that this works in both sequential and parallel conventions of for loops
+    #although may return slightly different values between the two cases
     """
 
     sorted_columns_by_NaN_list = \
@@ -37609,6 +38690,7 @@ class AutoMunge:
     check_ML_cmnd_result = False
     
     def _populate_ML_cmnd_default(ML_cmnd, parameter, printstatus, check_ML_cmnd_result, default = False, valid_entries=False, valid_type = False):
+
       if parameter in ML_cmnd:
         if valid_entries is not False:
           if ML_cmnd[parameter] not in valid_entries:
@@ -38926,7 +40008,7 @@ class AutoMunge:
     return postprocess_dict
 
   def __random_parameters_params_append(self, params, postprocess_dict, column, category, traintest, 
-                                        rowcount_trian, rowcount_test, printstatus):
+                                        rowcount_trian, rowcount_test, printstatus, df_train, df_test):
     """
     this function takes place in processcousin/postprocesscousin/processparent/postprocessparent
     immediately after __grab_params
@@ -38968,6 +40050,11 @@ class AutoMunge:
     and then the counts specific to a transform are derived in this function based on assignparam specifications
     which are then used in this function to populate seeds to pass to the transform from the seed bank initialized in __prepare_seeds
     where __prepare_seeds is conducted based on meta counts to prepare the full seed bank when entropy_seeds didn't receive sufficient number of seeds for meta counts
+
+    df_train and df_test are passed to this funciton for use to determine generator call counts
+    in cases of protected_feature specificaiton
+    which increases generator calls
+    when accessed in postmunge df_train should be received as False
     """
 
     #access entropy seed parameters from postprocess_dict
@@ -39224,6 +40311,26 @@ class AutoMunge:
         #only inspecting test_mu for scenario where passed as a list or stats so the default is immaterial, 
         test_mu = 0
 
+      if 'protected_feature' in params:
+        protected_feature = params['protected_feature']
+
+        if protected_feature == column \
+        or protected_feature not in df_test:
+          protected_feature = False
+
+      else:
+        protected_feature = False
+
+      if 'weighted' in params:
+        weighted = params['weighted']
+      else:
+        weighted = True
+
+      if 'test_weighted' in params:
+        test_weighted = params['test_weighted']
+      else:
+        test_weighted = True
+
       #__
           
       #check for scenarios where parameters passed as a list
@@ -39326,6 +40433,14 @@ class AutoMunge:
             binomial_train_call_count = 0
           
           distribution_train_call_count = 1
+
+          if protected_feature is not False:
+            if not isinstance(df_train, bool):
+              if protected_feature in list(df_train):
+                distribution_train_call_count = df_train[protected_feature].nunique()
+            else:
+              if protected_feature in list(df_test):
+                distribution_train_call_count = df_test[protected_feature].nunique()
           
           parameterlist_train_call_count = \
           flip_prob_list_sample_count + sigma_list_sample_count
@@ -39353,6 +40468,10 @@ class AutoMunge:
             binomial_test_call_count = 0
           
           distribution_test_call_count = 1
+
+          if protected_feature is not False:
+            if protected_feature in list(df_test):
+              distribution_test_call_count = df_test[protected_feature].nunique()
           
           parameterlist_test_call_count = \
           test_flip_prob_list_sample_count + test_sigma_list_sample_count
@@ -39387,6 +40506,14 @@ class AutoMunge:
           
           choice_train_call_count = 1
 
+          if protected_feature is not False and weighted is True:
+            if not isinstance(df_train, bool):
+              if protected_feature in list(df_train):
+                choice_train_call_count = df_train[protected_feature].nunique()
+            else:
+              if protected_feature in list(df_test):
+                choice_train_call_count = df_test[protected_feature].nunique()
+
           parameterlist_train_call_count = \
           flip_prob_list_sample_count
           
@@ -39411,7 +40538,12 @@ class AutoMunge:
           binomial_test_call_count = 1
           if test_flip_prob == 1:
             binomial_test_call_count = 0
+
           choice_test_call_count = 1
+
+          if protected_feature is not False and test_weighted is True:
+            if protected_feature in list(df_test):
+              choice_test_call_count = df_test[protected_feature].nunique()
 
           parameterlist_test_call_count = \
           test_flip_prob_list_sample_count
@@ -40143,6 +41275,27 @@ class AutoMunge:
         assignnan['global'] = [assignnan['global']]
           
     return assignnan
+
+  def __convert_floatnan_to_npnan(self, data_):
+    """
+    pickling and encryption may have possibility to convert np.nan objects to float("NaN")
+    which has potential to interfere with their use as dictionary address keys
+    as is used for protected_feature option in DP family of transforms
+    this support function accecpts lists or dictionaries that may have been exposed to conversion
+    and reverts to np.nan format
+    currently only applied for first layer keys in a dicitonary
+    """
+    
+    if isinstance(data_, list):
+      data_ = [np.nan if x != x else x for x in data_]
+      
+    if isinstance(data_, dict):
+      for key, value in deepcopy(data_).items():
+        if key != key:
+          del data_[key]
+          data_[np.nan] = value
+
+    return data_
 
   #__FunctionBlock: label smoothing support
 
@@ -42364,6 +43517,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge column validations and variable initializations
     #__WorkflowBlock: automunge column processing
     #__WorkflowBlock: automunge label column processing
+    #__WorkflowBlock: automunge protected feature processing
     #__WorkflowBlock: automunge infill derivation and insertion
     #__WorkflowBlock: automunge feature importance dimensionality reduction
     #__WorkflowBlock: automunge PCA dimensionality reduction
@@ -43323,167 +44477,53 @@ class AutoMunge:
     #the postprocess_dict['origcolumn'] entry is populated based on input column, derived columns, and category
     #the mirror_dict is populated for use to populate the returned form of transform_dict and process_dict in postprocess_dict
     
-    #For each column, perform processing 
-    #based on either category assignments in assigncat 
-    #or under automation based on train set feature evaluation in _evalcategory
-    for column in columns_train:
-      #
-      categorycomplete = False
+    #First we'll check if there are any protected features and process those columns in a seperate for loop
+    #To ensure the features needing their basis have access in the input form
+    #(in an alternate configuration the protected features could just be placed on far right of dataframe
+    #this way works better when parallelizing the for loops)
 
-      if bool(assigncat) is True:
-    
-        if column in inverse_assigncat:
-        
-          category = inverse_assigncat[column]
-          categorycomplete = True
+    protected_features = self.__check_for_protected_features(assign_param, processdict)
 
-          #printout display progress
-          if printstatus is True:
-            print("evaluating column: ", column)
+    #columns_train_copy will strike protected features
+    columns_train_copy = deepcopy(columns_train)
+    if len(protected_features) > 0:
+      for protected_feature in protected_features:
+        columns_train_copy.remove(protected_feature)
 
-          #assigncat has special case, can assign distinct columns to automated evaluation
-          #if user assigned column to 'eval' or 'ptfm'
-          #such as to perform eval when default is powertransform or visa versa
-          #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
-          if category in {'eval', 'ptfm'}:
+    #__apply_processfamily aggregates the loop through column specific processing trees
+    #including processfamily, evalcategory, getNArows, etc
+    df_train, \
+    df_test, \
+    postprocess_dict, \
+    mirror_dict, \
+    final_assigncat, \
+    masterNArows_train, \
+    masterNArows_test = \
+    self.__apply_processfamily(df_train,
+                                df_test,
+                                columns_train_copy,
+                                postprocess_dict,
+                                transform_dict,
+                                mirror_dict,
+                                assigncat,
+                                inverse_assigncat,
+                                final_assigncat,
+                                assignnan,
+                                masterNArows_train,
+                                masterNArows_test,
+                                randomseed,
+                                eval_ratio,
+                                numbercategoryheuristic,
+                                powertransform,
+                                evalcat,
+                                drift_dict,
+                                assign_param,
+                                printstatus,
+                                inplace,
+                                labels = False,
+                              )
 
-            if category == 'eval':
-              temp_powertransform_for_evalcategory_call = False
-            if category == 'ptfm':
-              temp_powertransform_for_evalcategory_call = True
-
-            if evalcat is False:
-              category = self.__evalcategory(df_train, column, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
-            elif callable(evalcat):
-              category = evalcat(df_train, column, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, temp_powertransform_for_evalcategory_call, False)
-      #
-      if categorycomplete is False:
-
-        #printout display progress
-        if printstatus is True:
-          print("evaluating column: ", column)
-
-        if evalcat is False:
-          category = self.__evalcategory(df_train, column, randomseed, eval_ratio, \
-                                       numbercategoryheuristic, powertransform, False)
-        elif callable(evalcat):
-          category = evalcat(df_train, column, randomseed, eval_ratio, \
-                             numbercategoryheuristic, powertransform, False)
-          
-        #populate the result in the final_assigncat as informational resource
-        if category in final_assigncat:
-          final_assigncat[category].append(column)
-        else:
-          final_assigncat.update({category:[column]})
-
-      #Previously had a few methods here to validate consistensy of data between train
-      #and test sets. Found it was introducing too much complexity and was having trouble
-      #keeping track of all the edge cases. So let's just make outright assumption that
-      #test data if passed is consistently formatted as train data (for now)
-      #added benefit that this reduces running time
-
-      ##
-      #to support the postprocess_dict entry below, let's first create a temp
-      #list of columns
-      #using a list instead of set here to maintain order, even though set would be a little quicker
-      templist1 = list(df_train)
-      #tempset1 is similar to templist1, but is based on column_dict so includes derivations that were subject to replacement
-      tempset1 = set(postprocess_dict['column_dict'])
-
-      #Before calling getNArows, we'll allow user to designate either by category or column 
-      #designated source column values that will be converted to nan for treatment as infill
-      #where in case of specification redundancy column designation takes precedence
-      #and where category is referring to the root category associated with a column
-      #and global just means this value treated universally as nan
-      #where values are passed in automunge(.) parameter assignnan e.g.
-      #assignnan = {'categories':{'cat1':[], 'cat2':[]}, 'columns':{'col1':[], 'col2':[]}, 'global':[]}
-
-      df_train = self.__assignnan_convert(df_train, column, category, assignnan, postprocess_dict)
-      df_test = self.__assignnan_convert(df_test, column, category, assignnan, postprocess_dict)
-
-      #we also have convention that infinity values are by default subjected to infill
-      #based on understanding that ML libraries in general do not accept thesae kind of values
-      #as well as the python None value
-
-      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
-      df_train = self.__convert_to_nan(df_train, column, category, postprocess_dict, convert_to_nan_list)
-      df_test = self.__convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
-
-      #create NArows (column of True/False where True coresponds to missing data)
-      trainNArows, drift_dict = self.__getNArows(df_train, column, category, postprocess_dict, drift_dict=drift_dict, driftassess=True)
-      testNArows = self.__getNArows(df_test, column, category, postprocess_dict)
-
-      #now append that NArows onto a master NA rows df
-      #these df's are used to support application of infill 
-      #such as for partitioning data sets for ML infill and identifying infill targets
-      masterNArows_train = pd.concat([masterNArows_train, trainNArows], axis=1)
-      masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
-
-      #printout display progress
-      if printstatus is True:
-        print("processing column: ", column)
-        print("    root category: ", category)
-
-      ##
-      #now process family
-      df_train, df_test, postprocess_dict = \
-      self.__processfamily(df_train, df_test, column, category, \
-                        transform_dict, postprocess_dict, assign_param)
-
-      ##
-      #now delete columns that were subject to replacement
-      df_train, df_test, postprocess_dict = \
-      self.__circleoflife(df_train, df_test, column, category, \
-                        transform_dict, postprocess_dict, templist1)
-      ##
-      #here's another templist to support the postprocess_dict entry below
-      templist2 = list(df_train)
-      tempset2 = set(postprocess_dict['column_dict'])
-
-      #ok now we're going to pick one of the new entries in templist2 to serve 
-      #as a "columnkey" for pulling datas from the postprocess_dict down the road
-      #similar to but retains order: columnkeylist = list(set(templist2) - set(templist1))
-      columnkeylist = []
-      for templist2_entry in templist2:
-        if templist2_entry not in templist1:
-          columnkeylist.append(templist2_entry)
-
-      #allderivedlist is similar to columnkeylist but includes headers of derivations that were subject to replacement
-      allderivedlist = tempset2 - tempset1
-      allderivedlist = \
-      self.__list_sorting(columnkeylist, allderivedlist)
-
-      #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
-      if len(columnkeylist) == 0:
-        columnkey = column
-      else:
-        columnkey = columnkeylist[0]
-
-      ##
-      postprocess_dict['origcolumn'].update({column : {'type' : 'train', \
-                                                       'category' : category, \
-                                                       'columnkeylist' : columnkeylist, \
-                                                       'allderivedlist' : allderivedlist, \
-                                                       'columnkey' : columnkey}})
-
-      #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
-      #mirror_dict is used so that user preserves privacy of custom entries that were not inspected
-      mirror_dict, _1 = \
-      self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, category, 0)
-
-      ##
-      #printout display progress
-      if printstatus is True:
-        print(" returned columns:")
-        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
-        print("")
-
-      if inplace is not True:
-        #this defragments the dataframes
-        df_train = df_train.copy()
-        df_test = df_test.copy()
+    del columns_train_copy
 
     #_________________________________________________________
     #__WorkflowBlock: automunge label column processing
@@ -43496,175 +44536,82 @@ class AutoMunge:
     #populates a mirror_dict
     #also populates a labelsencoding_dict for potential use for public label inversion with encryption
 
-    labelsencoding_dict = {'transforms' : {}}
+    df_labels, \
+    df_testlabels, \
+    postprocess_dict, \
+    mirror_dict, \
+    final_assigncat, \
+    masterNArows_train, \
+    masterNArows_test = \
+    self.__apply_processfamily(df_labels,
+                                df_testlabels,
+                                labels_column_listofcolumns, #when labels_column = False, labels_column_listofcolumns will be empty list []
+                                postprocess_dict,
+                                transform_dict,
+                                mirror_dict,
+                                assigncat,
+                                inverse_assigncat,
+                                final_assigncat,
+                                assignnan,
+                                masterNArows_train,
+                                masterNArows_test,
+                                randomseed,
+                                eval_ratio,
+                                numbercategoryheuristic,
+                                powertransform,
+                                evalcat,
+                                drift_dict,
+                                assign_param,
+                                printstatus,
+                                inplace,
+                                labels = True,
+                              )
 
-    #when labels_column = False, labels_column_listofcolumns will be empty list []
-    for labels_column_entry in labels_column_listofcolumns:    
+    #prepare labelsencoding_dict for public label inversion with encryption in privacy_encode = True case
+    #this also updates mirror_dict to include labelctgy
+    labelsencoding_dict, mirror_dict, postprocess_dict  = \
+    self.__prepare_labelsencoding_dict(postprocess_dict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus)
 
-      #note that under automation _evalcategory distinguishes between label and training features
-      #or user can assign category to labels via assigncat consistent to assignments for train features
-      #we currently have convention of identical process_dict entry inspection between train data and labels processing
-      #a potential extension could be to introduce some label specific entries to process_dict
+    #_________________________________________________________
+    #__WorkflowBlock: automunge protected feature processing
+    #If any protected features were specified they are prepared here (after features and labels)
+    #which serves purposes of ensuring they have a known configuration 
+    #when other features that might inspect them are applied
 
-      categorycomplete = False
+    #by preparing protected_features in a seperate loop
+    #it ensures they have a known configuration when being accessed in associated noise transforms
+    if len(protected_features) > 0:
 
-      if bool(assigncat) is True:
-    
-        if labels_column_entry in inverse_assigncat:
-        
-          labelscategory = inverse_assigncat[labels_column_entry]
-          categorycomplete = True
-
-          #printout display progress
-          if printstatus is True:
-            print("______")
-            print("")
-            print("evaluating label column: ", labels_column_entry)
-
-          #assigncat has special case, can assign distinct columns to automated evaluation
-          #if user assigned column to 'eval' or 'ptfm'
-          #such as to perform eval when default is powertransform or visa versa
-          #with _evalcategory distinction based on temp_powertransform_for_evalcategory_call
-          if labelscategory in {'eval', 'ptfm'}:
-
-            if labelscategory == 'eval':
-              temp_powertransform_for_evalcategory_call = False
-            if labelscategory == 'ptfm':
-              temp_powertransform_for_evalcategory_call = True
-
-            if evalcat is False:
-              labelscategory = self.__evalcategory(df_labels, labels_column_entry, randomseed, eval_ratio, \
-                                           numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
-            elif callable(evalcat):
-              labelscategory = evalcat(df_labels, labels_column_entry, randomseed, eval_ratio, \
-                                 numbercategoryheuristic, temp_powertransform_for_evalcategory_call, True)
-
-      if categorycomplete is False:
-
-        #printout display progress
-        if printstatus is True:
-          print("______")
-          print("")
-          print("evaluating label column: ", labels_column_entry)
-
-        #determine labels category under automation
-        if evalcat is False:
-          labelscategory = self.__evalcategory(df_labels, labels_column_entry, randomseed, eval_ratio, \
-                                             numbercategoryheuristic, powertransform, True)
-        elif callable(evalcat):
-          labelscategory = evalcat(df_labels, labels_column_entry, randomseed, eval_ratio, \
-                                   numbercategoryheuristic, powertransform, True)
-          
-        #populate the result in the final_assigncat as informational resource
-        if labelscategory in final_assigncat:
-          final_assigncat[labelscategory].append(labels_column_entry)
-        else:
-          final_assigncat.update({labelscategory:[labels_column_entry]})
-
-      #apply assignnan_convert
-      df_labels = self.__assignnan_convert(df_labels, labels_column_entry, labelscategory, assignnan, postprocess_dict)
-      df_testlabels = self.__assignnan_convert(df_testlabels, labels_column_entry, labelscategory, assignnan, postprocess_dict)
-      
-      #apply convert_inf_to_nan
-      df_labels = self.__convert_to_nan(df_labels, labels_column_entry, labelscategory, postprocess_dict, convert_to_nan_list)
-      df_testlabels = self.__convert_to_nan(df_testlabels, labels_column_entry, labelscategory, postprocess_dict, convert_to_nan_list)
-
-      #printout display progress
-      if printstatus is True:
-
-        print("processing label column: ", labels_column_entry)
-        print("    root label category: ", labelscategory)
-        print("")
-
-      #to support the postprocess_dict entry below, let's first create a temp
-      #list of columns
-      templist1 = list(df_labels)
-      #tempset1 is similar to templist1, but is based on column_dict so includes derivations that were subject to replacement
-      tempset1 = set(postprocess_dict['column_dict'])
-
-      #now process family
-      df_labels, df_testlabels, postprocess_dict = \
-      self.__processfamily(df_labels, df_testlabels, labels_column_entry, labelscategory, \
-                        transform_dict, postprocess_dict, assign_param)
-      
-      #now delete columns subject to replacement
-      df_labels, df_testlabels, postprocess_dict = \
-      self.__circleoflife(df_labels, df_testlabels, labels_column_entry, labelscategory, \
-                        transform_dict, postprocess_dict, templist1)
-
-      #here's another templist to support the postprocess_dict entry below
-      templist2 = list(df_labels)
-      tempset2 = set(postprocess_dict['column_dict'])
-
-      #ok now we're going to pick one of the new entries in templist2 to serve 
-      #as a "columnkey" for pulling datas from the postprocess_dict down the road
-      #similar to but retains order: columnkeylist = list(set(templist2) - set(templist1))
-      columnkeylist = []
-      for templist2_entry in templist2:
-        if templist2_entry not in templist1:
-          columnkeylist.append(templist2_entry)
-
-      #allderivedlist is similar to columnkeylist but includes headers of derivations that were subject to replacement
-      allderivedlist = tempset2 - tempset1
-      allderivedlist = \
-      self.__list_sorting(columnkeylist, allderivedlist)
-
-      #an arbitrary columnkey is populated in postprocess_dict['origcolumn'] with columnkeylist
-      if len(columnkeylist) == 0:
-        columnkey = labels_column_entry
-      else:
-        columnkey = columnkeylist[0]
-
-      postprocess_dict['origcolumn'].update({labels_column_entry : {'type' : 'label', \
-                                                                    'category' : labelscategory, \
-                                                                    'columnkeylist' : columnkeylist, \
-                                                                    'allderivedlist' : allderivedlist, \
-                                                                    'columnkey' : columnkey}})
-
-      #populate mirror_dict, which will serve as the returned form of transform_dict and process_dict returned in postprocess_dict
-      #mirror_dict is used so that user preserves privacy of custom entries that were not inspected
-      mirror_dict, _1 = \
-      self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, labelscategory, 0)
-
-      #labelsencoding_dict is returned in postprocess_dict
-      #this is redundant with information stored in postprocess_dict['column_dict']
-      #labelsencoding_dict is used for public label inversion without encryption key
-      #first we'll populate some entries and then final aggregations performed after fully populating postprocess_dict
-      labelsencoding_dict['transforms'].update({labels_column_entry : {labelscategory:{}}})
-      for finalcolumn_label in columnkeylist:
-
-        #this populates a labelsnormalization_dict as {returnedcolumn : {}}
-        #which later in the workflow are translated to column_dict entries in __populate_labelsencoding_dict_support3
-        labelsencoding_dict['transforms'][labels_column_entry][labelscategory].update({finalcolumn_label : {}})
-
-        #this access any upstream normalization_dict's for columns that were subject to replacement
-        inputcolumn = postprocess_dict['column_dict'][finalcolumn_label]['inputcolumn']
-        labelsencoding_dict = self.__populate_labelsencoding_dict_support(labelsencoding_dict, postprocess_dict, labels_column_entry, inputcolumn)
-
-      #now populate any transform_dict or process_dict entries that were inspected for label transforms
-      labelsencoding_dict, _0 = \
-      self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, labelscategory, 0)
-        
-      #printout display progress
-      if printstatus is True:
-        print(" returned columns:")
-        print(postprocess_dict['origcolumn'][labels_column_entry]['columnkeylist'])
-        print("")
-
-      #now that we know the root label category, we'll verify that if this was a custom processdict entry
-      #it either includes a labelctgy entry or we'll otherwise populate one based on family tree
-      #returning any update in postprocess_dict['process_dict']
-      postprocess_dict, mirror_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult = \
-      self.__check_processdict3(labelscategory, processdict, postprocess_dict, transform_dict, mirror_dict, printstatus)
-      
-      miscparameters_results.update({'check_processdict3_valresult' : check_processdict3_valresult,
-                                     'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
-
-    
-    #one more populate mirror_dict for mlti categories which are categories inspected outside of a root category tree such as for mlti transform
-    for mlti_entry in postprocess_dict['mlti_categories']:
-      mirror_dict, _1 = \
-      self.__populate_labelsencoding_dict_support2(mirror_dict, postprocess_dict, transform_dict, mlti_entry, 0)
+      df_train, \
+      df_test, \
+      postprocess_dict, \
+      mirror_dict, \
+      final_assigncat, \
+      masterNArows_train, \
+      masterNArows_test = \
+      self.__apply_processfamily(df_train,
+                                  df_test,
+                                  protected_features,
+                                  postprocess_dict,
+                                  transform_dict,
+                                  mirror_dict,
+                                  assigncat,
+                                  inverse_assigncat,
+                                  final_assigncat,
+                                  assignnan,
+                                  masterNArows_train,
+                                  masterNArows_test,
+                                  randomseed,
+                                  eval_ratio,
+                                  numbercategoryheuristic,
+                                  powertransform,
+                                  evalcat,
+                                  drift_dict,
+                                  assign_param,
+                                  printstatus,
+                                  inplace,
+                                  labels = False,
+                                )
 
     #_________________________________________________________
     #__WorkflowBlock: automunge infill derivation and insertion
@@ -44277,7 +45224,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.86'
+    automungeversion = '7.87'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -44294,6 +45241,7 @@ class AutoMunge:
     #as it will be used in the postmunge call below to process validation sets
     #note that some of the data structures will have been populated earlier such as column_dict etc
     postprocess_dict.update({'origtraincolumns' : columns_train, #list of origcolumns excluding any carved out as label or ID columns
+                             'protected_features' : protected_features, #any specified protected_features (of input column headers) recieved in assign_param or processdict / defaultparams for the noise transform option
                              'origcolumns_all' : origcolumns_all, #list of origcolumns including any carved out as label or ID columns
                              'pre_dimred_finalcolumns_train' : pre_dimred_finalcolumns_train, #list of returned columns preceding any dimensionality reduction (as may be conducted by PCA or Binary), if no dimensionality reduction performed this will be same as finalcolumns_train
                              'finalcolumns_train' : finalcolumns_train, #list of returned columns. Note that excl columns matches convention of returned set (as may vary based on excl_suffix parameter). Excludes columns returned in label or ID sets.
@@ -44383,7 +45331,7 @@ class AutoMunge:
 
     #note that encrypt_key value is not stored, when encryption performed final returned postprocess_dict records encryption as True
     postprocess_dict.update({'encryption' : False}) #marker for whether encryption took place in automunge based on the encrypt_key parameter
-    
+
     #consolidate miscparameters_results and temp_miscparameters_results
     postprocess_dict['miscparameters_results'].update(postprocess_dict['temp_miscparameters_results'])
     postprocess_dict['temp_miscparameters_results'] = {}
@@ -44950,7 +45898,7 @@ class AutoMunge:
     self.__random_parameters_params_append(params, postprocess_dict, \
                                           column, cousin, 'test', \
                                           df_test.shape[0], df_test.shape[0], \
-                                          False)
+                                          False, False, df_test)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[cousin] \
@@ -45035,7 +45983,7 @@ class AutoMunge:
     self.__random_parameters_params_append(params, postprocess_dict, \
                                           column, parent, 'test', \
                                           df_test.shape[0], df_test.shape[0], \
-                                          False)
+                                          False, False, df_test)
     
     if inplacecandidate is True:
       if 'inplace_option' not in process_dict[parent] \
@@ -45369,6 +46317,100 @@ class AutoMunge:
         del mdf_test[column]
 
     return mdf_test
+
+  def __apply_postprocessfamily(self,
+                                df_test,
+                                columns_train,
+                                postprocess_dict,
+                                driftreport,
+                                transform_dict,
+                                assign_param,
+                                printstatus,
+                                inplace,
+                                labels = False,
+                                masterNArows_test = pd.DataFrame(),
+                                postdrift_dict = {},
+                               ):
+    """
+    Aggregates the POSTprocessfamily functions and surrouding actions
+    Including evalcategory, getNArows, etc
+    the labels case is to distinguish between applying function to features or labels
+    """
+    
+    for column in columns_train:
+      
+      category = postprocess_dict['origcolumn'][column]['category']
+      
+      #printout display progress
+      if printstatus is True:
+        print("______")
+        print("")
+        if labels is False:
+          print("processing column: ", column)
+        else:
+          print("processing labels column: ", column)
+        print("    root category: ", category)
+        print("")
+      
+      #assignnan application
+      df_test = self.__assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
+      
+      #we also have convention that infinity and None values are by default subjected to infill
+      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
+      df_test = self.__convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
+      
+      if labels is False:
+        
+        #aggregating NArows may also serve purpose of aggregating drift statistics based on driftreport setting
+        
+        if driftreport in {'efficient', True}:
+          testNArows, postdrift_dict = \
+          self.__getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
+
+          if printstatus is True:
+            print("original source column drift stats:")
+            print(postprocess_dict['drift_dict'][column])
+            print("")
+            print("new source column drift stats:")
+            print(postdrift_dict[column])
+            print("")
+
+          #now append that NArows onto a master NA rows df
+          if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
+            masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
+
+        else:
+          #if drift statistics aren't desired, only aggreagte those NArows needed for infill support
+          if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
+            testNArows = self.__getNArows(df_test, column, category, postprocess_dict)
+            
+            #now append that NArows onto a master NA rows df
+            masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
+          
+      #process family
+      df_test = \
+      self.__postprocessfamily(df_test, column, category, \
+                               transform_dict, postprocess_dict, assign_param)
+      
+      #delete columns subject to replacement
+      df_test = \
+      self.__postcircleoflife(df_test, column, category, \
+                            transform_dict, postprocess_dict)
+      
+      #printout display progress
+      if printstatus is True:
+        print(" returned columns:")
+        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
+        print("")
+        
+      #this defragments the dataframe
+      if inplace is not True:
+        df_test = df_test.copy()
+
+    return df_test, \
+           postprocess_dict, \
+           masterNArows_test, \
+           postdrift_dict
 
   #__FunctionBlock: postmunge postprocess and custom_test functions
   
@@ -50878,6 +51920,27 @@ class AutoMunge:
         test_mu_dist = False
         test_sigma_dist = False
         test_flip_prob_dist = False
+        
+      if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        protected_feature = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['protected_feature']
+        attribute_stdev_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attribute_stdev_dict']
+        attributes = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attributes']
+        feature_stdev = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['feature_stdev']
+
+        #applied in case of nan type drift from pickling and encryption
+        attribute_stdev_dict = self.__convert_floatnan_to_npnan(attribute_stdev_dict)
+        attributes = self.__convert_floatnan_to_npnan(attributes)
+
+      else:
+        #backward compatibility preceding 7.87
+        protected_feature = False
+        attribute_stdev_dict = {}
+        attributes = []
+        feature_stdev = 0
 
       if 'inplace' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
         inplace = \
@@ -51097,7 +52160,30 @@ class AutoMunge:
         mdf_test[DPnm_column] = pd.DataFrame(binomial_samples, index=mdf_test.index)
 
         #now multiply activations by the normal samples
+        #this results in combining the Bernoulli and distribution samples into single set
+        #this is equivalent to multiplying the Bernoulli and Distribution samples since Bernoulli had 0's and 1's
         mdf_test.loc[mdf_test[DPnm_column] == 1, DPnm_column] = normal_samples
+        
+        #___
+        
+        if protected_feature is not False:
+
+          for attribute in attributes:
+
+            if feature_stdev == feature_stdev and feature_stdev > 0:
+              
+              if attribute == attribute:
+                #this applied the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature] == attribute, DPnm_column] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+              elif attribute != attribute:
+                #this applied the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature].isna(), DPnm_column] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+        
+        #___
 
         #now inject noise
         #this inplace support is a little different from convention
@@ -51204,6 +52290,27 @@ class AutoMunge:
         test_mu_dist = False
         test_sigma_dist = False
         test_flip_prob_dist = False
+        
+      if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        protected_feature = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['protected_feature']
+        attribute_stdev_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attribute_stdev_dict']
+        attributes = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attributes']
+        feature_stdev = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['feature_stdev']
+
+        #applied in case of nan type drift from pickling and encryption
+        attribute_stdev_dict = self.__convert_floatnan_to_npnan(attribute_stdev_dict)
+        attributes = self.__convert_floatnan_to_npnan(attributes)
+
+      else:
+        #backward compatibility preceding 7.87
+        protected_feature = False
+        attribute_stdev_dict = {}
+        attributes = set()
+        feature_stdev = 0
         
       #________
 
@@ -51419,6 +52526,27 @@ class AutoMunge:
         #now multiply activations by the normal samples
         mdf_test.loc[mdf_test[DPmm_column] == 1, DPmm_column] = normal_samples
         
+        #___
+        
+        if protected_feature is not False:
+
+          if feature_stdev == feature_stdev and feature_stdev > 0:
+
+            for attribute in attributes:
+
+              if attribute == attribute:
+                #this applies the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature] == attribute, DPmm_column] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+              elif attribute != attribute:
+                #this applies the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature].isna(), DPmm_column] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+        
+        #___
+        
         #cap outliers
         mdf_test = \
         self.__autowhere(mdf_test, DPmm_column, mdf_test[DPmm_column] < -0.5, -0.5, specified='replacement')
@@ -51584,6 +52712,27 @@ class AutoMunge:
         test_mu_dist = False
         test_sigma_dist = False
         test_flip_prob_dist = False
+        
+      if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        protected_feature = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['protected_feature']
+        attribute_stdev_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attribute_stdev_dict']
+        attributes = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attributes']
+        feature_stdev = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['feature_stdev']
+
+        #applied in case of nan type drift from pickling and encryption
+        attribute_stdev_dict = self.__convert_floatnan_to_npnan(attribute_stdev_dict)
+        attributes = self.__convert_floatnan_to_npnan(attributes)
+
+      else:
+        #backward compatibility preceding 7.87
+        protected_feature = False
+        attribute_stdev_dict = {}
+        attributes = set()
+        feature_stdev = 0
         
       #________
 
@@ -51835,6 +52984,27 @@ class AutoMunge:
 
         #now multiply activations by the normal samples
         mdf_test.loc[mdf_test[DPrt_column_temp2] == 1, DPrt_column_temp2] = normal_samples
+        
+        #___
+        
+        if protected_feature is not False:
+
+          if feature_stdev == feature_stdev and feature_stdev > 0:
+
+            for attribute in attributes:
+              
+              if attribute == attribute:
+                #this applies the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature] == attribute, DPrt_column_temp2] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+              elif attribute != attribute:
+                #this applies the noise scaling
+                #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
+                mdf_test.loc[mdf_test[protected_feature].isna(), DPrt_column_temp2] *= \
+                attribute_stdev_dict[attribute] / feature_stdev
+        
+        #___
         
         #cap outliers
         mdf_test = \
@@ -52176,6 +53346,29 @@ class AutoMunge:
         flip_prob_dist = False
         test_flip_prob_dist = False
         
+      #___
+      
+      if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        protected_feature = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['protected_feature']
+        attribute_weightings_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attribute_weightings_dict']
+        attributes = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attributes']
+        inplace = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inplace']
+
+        #applied in case of nan type drift from pickling and encryption
+        attribute_weightings_dict = self.__convert_floatnan_to_npnan(attribute_weightings_dict)
+        attributes = self.__convert_floatnan_to_npnan(attributes)
+
+      else:
+        #backward compatibility preceding 7.48
+        protected_feature = False
+        attribute_weightings_dict = {}
+        attributes = set()
+        inplace = False
+        
       #________
 
       #note that random_generator accessed from postmunge(.) parameter and may not be same as applied in automunge(.)
@@ -52286,6 +53479,12 @@ class AutoMunge:
       DPod_tempcolumn1 = 1
       DPod_tempcolumn2 = 2
       
+      if inplace is not True:
+        #copy source column into new column
+        mdf_test[DPod_column] = mdf_test[column].copy()
+      else:
+        mdf_test.rename(columns = {column : DPod_column}, inplace = True)
+      
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
@@ -52318,30 +53517,96 @@ class AutoMunge:
         binomial_activation_count = mdf_test[DPod_tempcolumn1].sum()
 
         sampling_id = 'choice' + sampling_type
-        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
-        sampling_resource_dict[sampling_id + '_call_count'] += 1
-        sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
-        if weighted is False:
-          choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
-        elif weighted is True:
-          choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
-
-        #the samples were a shape based on number of binomial activations, now extract to full column
-        mdf_test[DPod_tempcolumn2] = 0
-        mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
-
-        #now inject noise
-        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-        mdf_test[DPod_column] = \
-        mdf_test[column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
         
+        if protected_feature is False or weighted is False:
+
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += mdf_test.shape[0]
+
+          if weighted is False:
+            choice_samples = nprandom.choice(ord_encodings, size=(binomial_activation_count))
+          elif weighted is True:
+            choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
+
+          #the samples were a shape based on number of binomial activations, now extract to full column
+          mdf_test[DPod_tempcolumn2] = 0
+          mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
+
+          #now inject noise
+          #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
+          mdf_test[DPod_column] = \
+          mdf_test[DPod_column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+        
+        elif protected_feature is not False:
+          
+          seeds_available = sampling_resource_dict[sampling_id + '_seeds']
+
+          mdf_test[DPod_tempcolumn2] = 0
+          
+          #for test data we'll also consider test attributes that weren't found in the train data
+          #and apply aggregate feature weighting
+          #since attribute_weightings_dict is inspected as part of sampling we'll need to add temporary entries
+          temp_attribute_weightings_dict = deepcopy(attribute_weightings_dict)
+
+          test_attributes = list(mdf_test[protected_feature].unique())
+          extra_test_attributes = set(test_attributes) - set(attributes)
+
+          for extra_test_attribute in extra_test_attributes:
+            temp_attribute_weightings_dict.update({extra_test_attribute : weights})
+
+          for attribute in (attributes + list(extra_test_attributes)):
+
+            temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+
+            if attribute == attribute:
+              attribute_count = mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
+            elif attribute != attribute:
+              attribute_count = mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
+
+            attribute_seeds = seeds_available
+            
+          if attribute_count < len(seeds_available):
+            
+            attribute_seeds = seeds_available[:attribute_count]
+            
+          temp_sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
+          
+          nprandom = self.__get_nprandom(sampling_id, temp_sampling_resource_dict, nprandom_dict)
+          sampling_resource_dict[sampling_id + '_call_count'] += 1
+          sampling_resource_dict[sampling_id + '_sample_count'] += attribute_count
+          
+          choice_samples = nprandom.choice(ord_encodings, 
+                                           p=temp_attribute_weightings_dict[attribute], 
+                                           size=(attribute_count))
+          
+          if attribute == attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_column] = \
+            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_tempcolumn2]
+          elif attribute != attribute:
+            #the samples were a shape based on number of binomial activations, now extract to full column
+            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            
+            #now inject noise
+            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_column] = \
+            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_tempcolumn2]
+          
+          #if we have enough seeds left for the next attribute we'll expend the current used
+          if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+            next_attribute = attributes[(1+attributes.index(attribute))]
+            next_attribute_count = mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0]
+
+            if len(seeds_available[attribute_count:]) < next_attribute_count:
+              seeds_available = seeds_available[attribute_count:]
+
         del mdf_test[DPod_tempcolumn1]
         del mdf_test[DPod_tempcolumn2]
         
-      else:
-        
-        #for test data is just pass-through
-        mdf_test[DPod_column] = mdf_test[column].copy()
+      #___
 
       #data type is conditional based on encoding space
       max_encoding = len(ord_encodings) - 1
@@ -52426,6 +53691,24 @@ class AutoMunge:
         #backward compatibility preceding 7.49
         swap_noise = False
         
+      if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        protected_feature = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['protected_feature']
+        attribute_weightings_dict = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attribute_weightings_dict']
+        attributes = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['attributes']
+
+        #applied in case of nan type drift from pickling and encryption
+        attribute_weightings_dict = self.__convert_floatnan_to_npnan(attribute_weightings_dict)
+        attributes = self.__convert_floatnan_to_npnan(attributes)
+
+      else:
+        #backward compatibility preceding 7.87
+        protected_feature = False
+        attribute_weightings_dict = {}
+        attributes = []
+
       #___
         
       if 'flip_prob_dist' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
@@ -52553,10 +53836,12 @@ class AutoMunge:
       #check if df_test is to be treated as train or test data
       traindata = postprocess_dict['traindata']
       
-      def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest):
+      def _noise_inject(df, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest, protected_feature=False):
         """
         common support function used to inject noise to either mdf_train or mdf_test when applicable
         """
+
+        sampling_resource_dict = deepcopy(sampling_resource_dict)
 
         unique_count = df_unique.shape[0]
         unique_range = list(range(unique_count))
@@ -52577,8 +53862,25 @@ class AutoMunge:
           df_noise[df_noise_tempcolumn1] = pd.DataFrame(nprandom.binomial(n=1, p=flip_prob, size=(df.shape[0])), index=df.index)
         binomial_activation_count = df_noise[df_noise_tempcolumn1].sum()
 
-        sampling_id = 'choice_' + traintest
-        nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+        #_____
+        if protected_feature is not False:
+
+          seeds_available = sampling_resource_dict['choice_' + traintest + '_seeds']
+
+          if binomial_activation_count < len(seeds_available):
+
+            attribute_seeds = seeds_available[:attribute_count]
+
+            sampling_id = 'choice_' + traintest
+            sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
+
+            nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+
+        elif protected_feature is False:
+
+          sampling_id = 'choice_' + traintest
+          nprandom = self.__get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict)
+
         sampling_resource_dict[sampling_id + '_call_count'] += 1
         sampling_resource_dict[sampling_id + '_sample_count'] += df.shape[0]
         if weighted is False:
@@ -52611,7 +53913,7 @@ class AutoMunge:
       elif traindata is False:
         flip_prob = test_flip_prob
         weighted = test_weighted
-      
+
       #this is consistent with no noise injected for traindata scenarios of 'train_no_noise' or 'test_no_noise'
       if ( (trainnoise is True and traindata is True) \
       or (testnoise is True and traindata is False) ) \
@@ -52623,9 +53925,113 @@ class AutoMunge:
           traintest = 'test'
         
         if swap_noise is False:
-          #inject noise to mdf_test
-          mdf_test, sampling_resource_dict, binomial_activation_count = \
-          _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
+          if protected_feature is False: 
+            #inject noise to mdf_test
+            mdf_test, sampling_resource_dict, binomial_activation_count = \
+            _noise_inject(mdf_test, textcolumns, df_unique, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
+          elif protected_feature is not False:
+            
+            binomial_activation_count = 0
+            
+            #first we'll apply noise without scaling for test qattributes that weren't found in train set
+            #this is neccesary because we're inspecting protected_feature in the input state
+            test_attributes = list(mdf_test[protected_feature].unique())
+            extra_test_attributes = set(test_attributes) - set(attributes)
+            
+            if len(extra_test_attributes) > 0:
+
+              returned_noise_inject_df, temp_sampling_resource_dict, binomial_activation_count_attribute = \
+              _noise_inject(mdf_test.loc[mdf_test[protected_feature].isin(extra_test_attributes)].copy(), 
+                            textcolumns, 
+                            df_unique, 
+                            flip_prob, 
+                            weighted, 
+                            weights, 
+                            sampling_resource_dict, 
+                            nprandom_dict, 
+                            traintest,
+                            protected_feature)
+
+              for textcolumn in textcolumns:
+                mdf_test.loc[mdf_test[protected_feature].isin(extra_test_attributes), textcolumn] = \
+                returned_noise_inject_df[textcolumn]
+              del returned_noise_inject_df
+
+              binomial_activation_count += binomial_activation_count_attribute
+              
+              #if we have enough seeds left for the next attribute we'll expend the current used
+              if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+                next_attribute = attributes[0]
+
+                if next_attribute == next_attribute:
+                  next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0] * flip_prob * 0.15)
+                else:
+                  next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature].isna()].shape[0] * flip_prob * 0.15)
+
+                if len(sampling_resource_dict['choice_' + traintest + '_seeds'][binomial_activation_count_attribute:]) < next_attribute_count:                
+                  #this expends the used seeds
+                  sampling_resource_dict['choice_' + traintest + '_seeds'] = sampling_resource_dict['choice_' + traintest + '_seeds'][binomial_activation_count_attribute:]
+                  
+              #for protected_feature case we updated seeds for choice, now revert to orig but keep other logged entries
+              temp_sampling_resource_dict.update({'choice_' + traintest + '_seeds' : sampling_resource_dict['choice_' + traintest + '_seeds']})
+              sampling_resource_dict = temp_sampling_resource_dict
+              
+              #now cycle through the attributes
+              for attribute in attributes:
+                
+                if attribute == attribute:
+                  returned_noise_inject_df, temp_sampling_resource_dict, binomial_activation_count_attribute = \
+                  _noise_inject(mdf_test.loc[mdf_test[protected_feature] == attribute].copy(), 
+                                textcolumns, 
+                                attribute_weightings_dict[attribute]['df_unique'], 
+                                flip_prob, 
+                                weighted, 
+                                attribute_weightings_dict[attribute]['weights'], 
+                                sampling_resource_dict, 
+                                nprandom_dict, 
+                                traintest,
+                                protected_feature)
+
+                  for textcolumn in textcolumns:
+                    mdf_test.loc[mdf_test[protected_feature] == attribute, textcolumn] = returned_noise_inject_df[textcolumn]
+                  del returned_noise_inject_df
+
+                elif attribute != attribute:
+                  returned_noise_inject_df, temp_sampling_resource_dict, binomial_activation_count_attribute = \
+                  _noise_inject(mdf_test.loc[mdf_test[protected_feature].isna()].copy(), 
+                                textcolumns, 
+                                attribute_weightings_dict[attribute]['df_unique'], 
+                                flip_prob, 
+                                weighted, 
+                                attribute_weightings_dict[attribute]['weights'], 
+                                sampling_resource_dict, 
+                                nprandom_dict, 
+                                traintest,
+                                protected_feature)
+
+                  for textcolumn in textcolumns:
+                    mdf_test.loc[mdf_test[protected_feature].isna(), textcolumn] = returned_noise_inject_df[textcolumn]
+                  del returned_noise_inject_df
+
+                binomial_activation_count += binomial_activation_count_attribute
+                
+                #if we have enough seeds left for the next attribute we'll expend the current used
+                if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
+                  next_attribute = attributes[(1+attributes.index(attribute))]
+
+                  if next_attribute == next_attribute:
+                    next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature]==next_attribute].shape[0] * flip_prob * 0.15)
+                  else:
+                    next_attribute_count = int(mdf_test.loc[mdf_test[protected_feature].isna()].shape[0] * flip_prob * 0.15)
+
+                  if len(sampling_resource_dict['choice_' + traintest + '_seeds'][binomial_activation_count_attribute:]) < next_attribute_count:                
+                    #this expends the used seeds
+                    sampling_resource_dict['choice_' + traintest + '_seeds'] = sampling_resource_dict['choice_' + traintest + '_seeds'][binomial_activation_count_attribute:]
+
+                #for protected_feature case we updated seeds for choice, now revert to orig but keep other logged entries
+                temp_sampling_resource_dict.update({'choice_' + traintest + '_seeds' : sampling_resource_dict['choice_' + traintest + '_seeds']})
+                sampling_resource_dict = temp_sampling_resource_dict
+
         elif swap_noise is True:
           mdf_test, sampling_resource_dict, binomial_activation_count = \
           _noise_inject(mdf_test, textcolumns, mdf_test, flip_prob, weighted, weights, sampling_resource_dict, nprandom_dict, traintest)
@@ -54238,6 +55644,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge drift report evaluated
     #__WorkflowBlock: postmunge column processing
     #__WorkflowBlock: postmunge label column processing
+    #__WorkflowBlock: postmunge protected feature processing
     #__WorkflowBlock: postmunge apply infill
     #__WorkflowBlock: postmunge feature importance dimensionality reduction
     #__WorkflowBlock: postmunge PCA dimensionality reduction
@@ -54280,21 +55687,22 @@ class AutoMunge:
     if 'encryption' in postprocess_dict \
     and postprocess_dict['encryption'] is True \
     and encrypt_key is not False:
-      
+
+      postprocess_dict = deepcopy(postprocess_dict)
+
+      postprocess_dict, decode_valresult = \
+      self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
+
+      #decode_valresult saved after initializing pm_miscparameters_results below
+
+    elif 'encryption' in postprocess_dict \
+    and postprocess_dict['encryption'] is True \
+    and isinstance(inversion, str) \
+    and inversion in {'labels', 'denselabels'} \
+    and postprocess_dict['privacy_encode'] != 'private':
+
       #label inversion is available without encryption key unless privacy_encode = 'private'
-      if inversion in {'labels', 'denselabels'} and encrypt_key is False and postprocess_dict['privacy_encode'] != 'private':
-
-        postprocess_dict = deepcopy(postprocess_dict['labelsencoding_dict'])
-
-      #otherwise we'll use an encryption key passed through postmunge encrypt_key parameter to decode
-      else:
-
-        postprocess_dict = deepcopy(postprocess_dict)
-
-        postprocess_dict, decode_valresult = \
-        self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
-
-        #decode_valresult saved after initializing pm_miscparameters_results below
+      postprocess_dict = deepcopy(postprocess_dict['labelsencoding_dict'])
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge variable initializations and parameter validations
@@ -54462,7 +55870,7 @@ class AutoMunge:
         madethecut = postprocess_dict['madethecut']
 
     else:
-
+      
       madethecut = postprocess_dict['madethecut']
       FSmodel = None
       FScolumn_dict = {}
@@ -55032,87 +56440,37 @@ class AutoMunge:
     #the postprocessfamily function applies transormations based on the root category's family tree
     #the postcircleoflife function manages column replacements
 
-    #create an empty dataframe to serve as a store for each column's NArows
-    #the column id's for this df will follow convention from NArows of 
-    #column+'_NArows' for each column in columns_train
-    #these are used in the ML infill methods
-    #masterNArows_train = pd.DataFrame()
-    masterNArows_test = pd.DataFrame()
-    
-    #initialize postdrift_dict
-    postdrift_dict = {}
+    #first we check for protected_features, they will be prepared in a seperate for loop 
 
-    #For each column, determine appropriate processing function
-    #processing function will be based on evaluation of train set
-    for column in columns_train:
+    if 'protected_features' in postprocess_dict:
+      protected_features = postprocess_dict['protected_features']
+    else:
+      #backward compatibility preceding 7.87
+      protected_features = []
 
-      #traincategory = postprocess_dict['column_dict'][columnkey]['origcategory']
-      traincategory = postprocess_dict['origcolumn'][column]['category']
+    columns_train_copy = deepcopy(columns_train)
+    if len(protected_features) > 0:
+      for protected_feature in protected_features:
+        columns_train_copy.remove(protected_feature)
 
-      #originally I seperately used evalcategory to check the actual category of
-      #the test set, but now that we are allowing assigned categories that could
-      #get too complex, this type of functionality could be a future extension
-      #for now let's just make explicit assumption that test set has same 
-      #properties as train set
-      #(this approach greatly benefits latency)
+    df_test, \
+    postprocess_dict, \
+    masterNArows_test, \
+    postdrift_dict = \
+    self.__apply_postprocessfamily(df_test,
+                                    columns_train_copy,
+                                    postprocess_dict,
+                                    driftreport,
+                                    transform_dict,
+                                    assign_param,
+                                    printstatus,
+                                    inplace,
+                                    labels = False,
+                                    masterNArows_test = pd.DataFrame(),
+                                    postdrift_dict = {},
+                                  )
 
-      category = traincategory
-
-      #printout display progress
-      if printstatus is True:
-        print("______")
-        print("")
-        print("processing column: ", column)
-        print("    root category: ", category)
-        print("")
-
-      #assignnan application
-      df_test = self.__assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
-
-      #we also have convention that infinity and None values are by default subjected to infill
-      convert_to_nan_list = [np.inf, -np.inf, None, float("NaN")]
-      df_test = self.__convert_to_nan(df_test, column, category, postprocess_dict, convert_to_nan_list)
-
-      #create NArows (column of True/False where True coresponds to missing data)
-      if driftreport in {'efficient', True}:
-        testNArows, postdrift_dict = \
-        self.__getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
-
-        if printstatus is True:
-          print("original source column drift stats:")
-          print(postprocess_dict['drift_dict'][column])
-          print("")
-          print("new source column drift stats:")
-          print(postdrift_dict[column])
-          print("")
-
-      else:
-        if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
-          testNArows = self.__getNArows(df_test, column, category, postprocess_dict)
-
-      #now append that NArows onto a master NA rows df
-      if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
-        masterNArows_test = pd.concat([masterNArows_test, testNArows], axis=1)
-
-      #process family
-      df_test = \
-      self.__postprocessfamily(df_test, column, category, \
-                            transform_dict, postprocess_dict, assign_param)
-
-      #delete columns subject to replacement
-      df_test = \
-      self.__postcircleoflife(df_test, column, category, \
-                            transform_dict, postprocess_dict)
-
-      #printout display progress
-      if printstatus is True:
-        print(" returned columns:")
-        print(postprocess_dict['origcolumn'][column]['columnkeylist'])
-        print("")
-
-      #this defragments the dataframe
-      if inplace is not True:
-        df_test = df_test.copy()
+    del columns_train_copy
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge label column processing
@@ -55123,43 +56481,46 @@ class AutoMunge:
     #the postprocessfamily function applies transormations based on the root category's family tree
     #the postcircleoflife function manages column replacements
 
-    #process labels consistent to the train set if any are included in the postmunge test set
+    df_testlabels, \
+    postprocess_dict, \
+    _1, _2 = \
+    self.__apply_postprocessfamily(df_testlabels,
+                                    labels_column_listofcolumns_test,
+                                    postprocess_dict,
+                                    driftreport,
+                                    transform_dict,
+                                    assign_param,
+                                    printstatus,
+                                    inplace,
+                                    labels = True,
+                                    masterNArows_test = masterNArows_test,
+                                    postdrift_dict = {},
+                                  )
 
-    #ok now let's check if that labels column is present in the test set
-      
-    for labels_column_listofcolumns_entry in labels_column_listofcolumns_test:
-     
-      labelscategory = postprocess_dict['origcolumn'][labels_column_listofcolumns_entry]['category']
+    #_________________________________________________________
+    #__WorkflowBlock: postmunge protected feature processing
+    #If any protected features were specified they are prepared here (after features and labels)
+    #which serves purposes of ensuring they have a known configuration 
+    #when other features that might inspect them are applied
 
-      #apply assignnan_convert
-      df_testlabels = self.__assignnan_convert(df_testlabels, labels_column_listofcolumns_entry, labelscategory, postprocess_dict['assignnan'], postprocess_dict)
-      
-      #apply convert_inf_to_nan
-      df_testlabels = self.__convert_to_nan(df_testlabels, labels_column_listofcolumns_entry, labelscategory, postprocess_dict, convert_to_nan_list)
+    if len(protected_features) > 0:
 
-      if printstatus is True:
-        #printout display progress
-        print("______")
-        print("")
-        print("processing label column: ", labels_column_listofcolumns_entry)
-        print("    root label category: ", labelscategory)
-        print("")
-
-      #process family
-      df_testlabels = \
-      self.__postprocessfamily(df_testlabels, labels_column_listofcolumns_entry, labelscategory, \
-                             transform_dict, postprocess_dict, assign_param)
-
-      #delete columns subject to replacement
-      df_testlabels = \
-      self.__postcircleoflife(df_testlabels, labels_column_listofcolumns_entry, labelscategory, \
-                            transform_dict, postprocess_dict)
-    
-      #printout display progress
-      if printstatus is True:
-        print(" returned columns:")
-        print(postprocess_dict['origcolumn'][labels_column_listofcolumns_entry]['columnkeylist'])
-        print("")
+      df_test, \
+      postprocess_dict, \
+      masterNArows_test, \
+      postdrift_dict = \
+      self.__apply_postprocessfamily(df_test,
+                                      protected_features,
+                                      postprocess_dict,
+                                      driftreport,
+                                      transform_dict,
+                                      assign_param,
+                                      printstatus,
+                                      inplace,
+                                      labels = False,
+                                      masterNArows_test = masterNArows_test,
+                                      postdrift_dict = {},
+                                    )
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge apply infill
@@ -56324,13 +57685,16 @@ class AutoMunge:
     
     return labelsencoding_dict
 
-  def __populate_labelsencoding_dict_support2(self, labelsencoding_dict, postprocess_dict, transform_dict, category, i):
+  def __populate_labelsencoding_dict_support2(self, mirror_dict_, postprocess_dict, transform_dict, category, i):
     """
     #populates transform_dict and process_dict entries to mirror_dict or labelsencoding_dict
     #but only those associated with applied transforms
     #where mirror_dict is the returned form for postprocess_dict['transform_dict'] and postprocess_dict['process_dict']
     #which serves the purpose of omitting transform_dict and process_dict entries not inspected for derivations
     #which benefits privacy
+    
+    #since this function is used both for labelsencoding_dict and mirror_dict
+    #we'll refer to the target dictionary as mirror_dict_ just in case of memory leakage
 
     #the received category is a root category applied to an input feature or input label
     #e.g. root category = postprocess_dict['origcolumn'][labels_column_entry]['category']
@@ -56339,16 +57703,16 @@ class AutoMunge:
     #downstream tiers will receive category entries to primitive with offspring and i>0
     """
 
-    if 'transform_dict' not in labelsencoding_dict:
-      labelsencoding_dict.update({'transform_dict' : {}})
+    if 'transform_dict' not in mirror_dict_:
+      mirror_dict_.update({'transform_dict' : {}})
       
-    if 'process_dict' not in labelsencoding_dict:
-      labelsencoding_dict.update({'process_dict' : {}})
+    if 'process_dict' not in mirror_dict_:
+      mirror_dict_.update({'process_dict' : {}})
     
     familytree = transform_dict[category]
     
-    labelsencoding_dict['transform_dict'].update({category : transform_dict[category]})
-    labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+    mirror_dict_['transform_dict'].update({category : transform_dict[category]})
+    mirror_dict_['process_dict'].update({category : postprocess_dict['process_dict'][category]})
     
     #i will be 0 for upstream primitives
     if i == 0:
@@ -56358,7 +57722,7 @@ class AutoMunge:
         if len(familytree[primitive]) > 0:
           for category in familytree[primitive]:
             if category != None:
-              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+              mirror_dict_['process_dict'].update({category : postprocess_dict['process_dict'][category]})
       
       #populate transform_dict for categories with offspring, populated by calling function recursively
       for primitive in ['parents', 'siblings']:
@@ -56366,7 +57730,7 @@ class AutoMunge:
           for category in familytree[primitive]:
             if category != None:
               i+=1
-              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+              mirror_dict_, i = self.__populate_labelsencoding_dict_support2(mirror_dict_, postprocess_dict, transform_dict, category, i)
               i=0
     
     #i will > 0 for downstream primitives
@@ -56377,7 +57741,7 @@ class AutoMunge:
         if len(familytree[primitive]) > 0:
           for category in familytree[primitive]:
             if category != None:
-              labelsencoding_dict['process_dict'].update({category : postprocess_dict['process_dict'][category]})
+              mirror_dict_['process_dict'].update({category : postprocess_dict['process_dict'][category]})
       
       #populate transform_dict for categories with offspring, populated by calling function recursively
       for primitive in ['children', 'niecesnephews']:
@@ -56385,9 +57749,9 @@ class AutoMunge:
           for category in familytree[primitive]:
             if category != None:
               i+=1
-              labelsencoding_dict, i = self.__populate_labelsencoding_dict_support2(labelsencoding_dict, postprocess_dict, transform_dict, category, i)
+              mirror_dict_, i = self.__populate_labelsencoding_dict_support2(mirror_dict_, postprocess_dict, transform_dict, category, i)
 
-    return labelsencoding_dict, i
+    return mirror_dict_, i
 
   def __populate_labelsencoding_dict_support3(self, labelsencoding_dict, postprocess_dict):
     """
