@@ -3624,6 +3624,8 @@ category associated with the transformation function may be different than the r
 Note that DP transforms can be applied in conjunction with the automunge(.) or postmunge(.) noise_augment
 parameter to automatically prepare additional concatenated duplicates as a form of data augmentation.
 
+For distribution sampled numeric or weighted sampling categoric categories, the DP transforms have an option to scale different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature.
+
 * DPnb: applies a z-score normalization followed by a noise injection to train data sampled
 from a Gaussian which defaults to 0 mu and 0.06 sigma, but only to a subset of the data based
 on flip_prob parameter.
@@ -3646,6 +3648,7 @@ on flip_prob parameter.
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream z score via nmbr for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3671,6 +3674,7 @@ remains in range 0-1 (by scaling neg noise when scaled input <0.5 and scaling po
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: mu, sigma for DPnm, upstream minmax via mnmx for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3697,6 +3701,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
     - please note that each of the noise distribution parameters {mu, sigma, flip_prob, test_mu, test_sigma, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: mu, sigma, flip_prob for DPrt, also metrics comparable to retn
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3723,6 +3728,7 @@ flips the activation per parameter flip_prob which defaults to 0.03
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: flip_prob for DPbn, upstream binary via bnry for others
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
   - inversion available: yes
@@ -3747,6 +3753,7 @@ on number of activations)
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: flip_prob for DPod, upstream ordinal via ord3 for others
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes
@@ -3773,6 +3780,7 @@ can be passed directly to DPoh.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: comparable to onht
   - returned datatype: int8
   - inversion available: yes
@@ -3799,6 +3807,7 @@ can be passed directly to DP10.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: comparable to 1010
   - returned datatype: int8
   - inversion available: yes
@@ -3825,6 +3834,7 @@ can be passed to the intermediate category DPo3 which applies the DPod transform
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: hs10 metrics
   - returned datatype: int8
   - inversion available: yes
@@ -3855,6 +3865,7 @@ assignparam = {'mlhs' :
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
@@ -3879,6 +3890,7 @@ on number of activations).
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
     - 'retain_basis' accepts boolean defaulting to False, the use is associated with parameters passed as lists or distributions, when True the sampled basis from automunge(.) is carried through to postmunge(.) instead of a unique sampling for each
     - the DP transforms also accept parameters random_generator and sampling_resource_dict which are derived internally based on automunge or postmunge parameters
+    - 'protected_feature' defaults to False, accepts input column header string specifiation, scales different segments of a feature's noise profile to correspond to different attribute segments of an adjacent protected categoric feature, which is expected to benefit loss discrepency for the attributes of that protected feature
   - driftreport postmunge metrics: hash metrics
   - returned datatype: conditional integer based on hashing vocab size
   - inversion available: yes
