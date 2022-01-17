@@ -5367,6 +5367,7 @@ postreports_dict['dimensionality_reduction_driftstats'] = \
 - as one example, could inject one profile of small noise sigma with regular flip_prob, and then a second profile of large noise sigma with very small flip_prob as a downstream transform to the first noise profile
 - doing that with family tree primitives for DPnb which is nosie with z-score normalziation would look something like this, where were are overwriting fmaily trees for DPnb and DPn3 in transformdict and adding new processdict entry for the DPn4 which will be the downstream second perturbation vector
 - this is kind of like probabilistic programming although not turing complete
+
 ```
 tramnsformdict = {}
 
@@ -5399,3 +5400,17 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
                               'defaultparams' : {'sigma':0.05,
                                                  'flip_prob':0.03}}})
 ```
+
+7.87
+- new option for noise injection transforms via 'protected_feature' assignparam parameter
+- protected feature defaults to False, accepts string input header assignment of adjacent categoric feature
+- may be specified to a target noise transform or to all noise transform with usual assignparam options
+- when specified, noise injection to a target feature is scaled differently between segments corresponding to the adjacent protected feature
+- e.g. if we have a global noise scale, different segments of the feature may be exposed to different relative noise profile owing to their differences in segment distribution properties
+- now the different segments have noise scaled to align with the segment scale
+- including for distribution sampled noise in numeric noise and for weighted categoric sampling in categoric noise
+- this practice is expected to benefit loss discrepancy between attributes of a protected feature
+- was inspired by the identification of potential for loss discrepancy offered by Khani, F. and Liang, P. in "Feature noise induces loss discrepancy across groups.
+- as part of the update decided to modularize the column processing loops in automunge and postmunge for purposes of segregating the protected features into a separate for loop, which may be beneficial when parallelizing the master for loops to ensure the protected feature has a known configuration when it is accessed for the noise scaling
+- also found and fixed a small bug for public label inversion with encryption (had a pair of contradictory if statements)
+- added inplace support for DPod
