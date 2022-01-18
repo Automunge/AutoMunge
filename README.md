@@ -3748,6 +3748,7 @@ on number of activations)
     - 'testnoise' defaults to False, when True noise is injected to test data in both automunge and postmunge by default
     - noise injection parameters should be passed to 'DPod' transformation category from family tree
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'passthrough': defaults to False, when True the data type conversion is turned off to allow DPod to be applie for pass-through categoric
     - when activating testnoise, test data specific noise distribution parameters can be passed to {test_flip_prob, test_weighted}, which otherwise default to test_weighted matching the train data and test_flip_prob = 0.01
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as list of candidate values for a unique sampling applied in automunge and postmunge.
     - please note that each of the noise distribution parameters {flip_prob, test_flip_prob} can be passed as scipy.stats distribution for a uniquely sampled value with each application (this was implemented to support some experiments associated with noise_augment).
@@ -3958,7 +3959,8 @@ on number of activations).
   - returned datatype: consistent with input
   - inversion available: yes
 * DPse: for full pass-through other than swap noise injection (i.e. may be applied to numeric or categoric features with string entries). Comparable parameters supported to DPmc (swap_noise defaults to True). Only other edits are suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPse may be suitable for incorporating noise injections to categoric test features into a prior prepared pipeline. A similar pass-through transform for numeric features with distribution sampled injections is available as DPne as noted above.
-* DPne: for full pass-through other than numeric noise injection (i.e. no normalization applied). Comparable parameters supported to DPnb, samples gaussian by default also has laplace support. Note that for DPne the rescale_sigmas option defaults to True such that specified sigma parameters are rescaled by multiplication with the training set standard deviation, thus allowing common default sigma options independant of feature scale. For user specified sigma parameters they will also be rescaled unless rescale_sigmas has been deactivated. Only other edits to returned feature other than noise injection are conversion to float dtype / non numeric to NaN and suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPne may be suitable for incorporating noise injections to numeric test features into a prior prepared pipeline. A similar pass-through transform for categoric features with swap noise injections is available as DPse as noted below.
+* DPpc: for full pass-through other than weighted categoric injection (may be applie to categoric features with both numeric and string entries). Comparable parameter support to DPod (passthrough defaults to True). Excluded from ML infill and NArw aggregation. DPpc is an alternate to DPse for passthrough noise to categoric sets that fits the noise weightings to the train data as opposed to mathcing the train or test profile. Also has benefit fo protected_feature support.
+* DPne: for full pass-through other than numeric noise injection (i.e. no normalization applied). Comparable parameters supported to DPnb, samples gaussian by default also has laplace support. Note that for DPne the rescale_sigmas option defaults to True such that specified sigma parameters are rescaled by multiplication with the training set standard deviation, thus allowing common default sigma options independant of feature scale. For user specified sigma parameters they will also be rescaled unless rescale_sigmas has been deactivated. Only other edits to returned feature other than noise injection are conversion to float dtype / non numeric to NaN and suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPne may be suitable for incorporating noise injections to numeric test features into a prior prepared pipeline. Includes protected_feature support.
 
 Please note that DPse (passthrough swap noise e.g. for categoric), DPne (passthrough gaussian or laplace noise for numeric), DPsk (passthrough mask noise for numeric or categoric), and excl (passthrough without noise) can be used in tandem to pass a dataframe to automunge(.) for noise injection without other edits or infill, such as could be used to incorporate noise into an existing tabular pipeline. When limited to these three root categories the returned dataframe will match the same order of columns with only edits other than noise as updated column headers and DPne will overide any data types other than float. (To retain same order of rows can deactivate shuffletrain parameter.)
 
@@ -4491,6 +4493,7 @@ avoid unintentional duplication.
 - 'DPo8',
 - 'DPod',
 - 'DPoh',
+- 'DPpc',
 - 'DPqt',
 - 'DPrt',
 - 'DPse',
