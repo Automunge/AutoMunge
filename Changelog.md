@@ -5414,3 +5414,10 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - as part of the update decided to modularize the column processing loops in automunge and postmunge for purposes of segregating the protected features into a separate for loop, which may be beneficial when parallelizing the master for loops to ensure the protected feature has a known configuration when it is accessed for the noise scaling
 - also found and fixed a small bug for public label inversion with encryption (had a pair of contradictory if statements)
 - added inplace support for DPod
+
+7.88
+- new root category DPpc for DPod applied to passthrough categoric
+- available by new assignparam option for DPod as 'passthrough'
+- accepts boolean, defaults to False
+- in the process found a DPod bug for the protected_feature rolled out in last update, now fixed
+- through the resolution found opportunity to eliminate a support column in DPod that wasn't needed
