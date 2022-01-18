@@ -3792,6 +3792,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPpc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPpc'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -8428,6 +8437,17 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPse'}})
+    process_dict.update({'DPpc' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
+                                  'defaultparams' : {'passthrough' : True},
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPpc'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
