@@ -4401,6 +4401,15 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'DPpc' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPpc'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     #mlhs primarily intended for use as a downstream tree category
     transform_dict.update({'mlhs' : {'parents'       : [],
                                      'siblings'      : [],
@@ -9035,6 +9044,17 @@ class AutoMunge:
                                   'NArowtype' : 'totalexclude',
                                   'MLinfilltype' : 'totalexclude',
                                   'labelctgy' : 'DPse'}})
+    process_dict.update({'DPpc' : {'dualprocess' : self._process_DPod,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPod,
+                                  'inverseprocess' : self._inverseprocess_UPCS,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'noise_transform' : 'categoric',
+                                  'defaultparams' : {'passthrough' : True},
+                                  'NArowtype' : 'totalexclude',
+                                  'MLinfilltype' : 'totalexclude',
+                                  'labelctgy' : 'DPpc'}})
     #note that the default norm_category DPod is intended for use as a downstream tree category
     process_dict.update({'mlhs' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
@@ -26984,6 +27004,11 @@ class AutoMunge:
       inplace = params['inplace']
     else:
       inplace = False
+
+    if 'passthrough' in params:
+      passthrough = params['passthrough']
+    else:
+      passthrough = False
       
     #________
       
@@ -27099,9 +27124,8 @@ class AutoMunge:
       
     DPod_column = column + '_' + suffix
     DPod_tempcolumn1 = 1
-    DPod_tempcolumn2 = 2
     
-    newcolumns = [DPod_tempcolumn1, DPod_tempcolumn2]
+    newcolumns = [DPod_tempcolumn1]
     
     suffixoverlap_results = \
     self.__df_check_suffixoverlap(mdf_train, newcolumns, suffixoverlap_results, postprocess_dict['printstatus'])
@@ -27137,7 +27161,10 @@ class AutoMunge:
     weights = []
     if weighted is True:
       for entry in ord_encodings:
-        weight = (mdf_train[mdf_train[DPod_column] == entry].shape[0]) / mdf_train.shape[0]
+        if entry == entry:
+          weight = (mdf_train[mdf_train[DPod_column] == entry].shape[0]) / mdf_train.shape[0]
+        elif entry != entry:
+          weight = (mdf_train[mdf_train[DPod_column].isna()].shape[0]) / mdf_train.shape[0]
         weights.append(weight)
         
     #___
@@ -27158,12 +27185,18 @@ class AutoMunge:
         attribute_weights = []
         for entry in ord_encodings:
 
-          if attribute == attribute:
+          if attribute == attribute and entry == entry:
             attribute_weight = (mdf_train.loc[(mdf_train[protected_feature] == attribute) & (mdf_train[DPod_column] == entry)].shape[0]) \
             / mdf_train.loc[(mdf_train[protected_feature] == attribute)].shape[0]
-          else:
+          elif attribute != attribute and entry == entry:
             attribute_weight = (mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_column] == entry)].shape[0]) \
             / mdf_train.loc[mdf_train[protected_feature].isna()].shape[0]
+          elif attribute == attribute and entry != entry:
+            attribute_weight = (mdf_train.loc[(mdf_train[protected_feature] == attribute) & (mdf_train[DPod_column].isna())].shape[0]) \
+            / mdf_train.loc[(mdf_train[protected_feature] == attribute)].shape[0]
+          elif attribute != attribute and entry != entry:
+            attribute_weight = (mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_column].isna())].shape[0]) \
+            / mdf_train.loc[(mdf_train[protected_feature].isna())].shape[0]
           
           attribute_weights.append(attribute_weight)
           
@@ -27200,20 +27233,17 @@ class AutoMunge:
         elif weighted is True:
           choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
 
-        #the samples were a shape based on number of binomial activations, now extract to full column
-        mdf_train[DPod_tempcolumn2] = 0
-        mdf_train.loc[mdf_train[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
-
-        #now inject noise
-        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-        mdf_train[DPod_column] = \
-        mdf_train[DPod_column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
+        #the samples were a shape based on number of binomial activations, now inject
+        # if passthrough is False:
+        #   mdf_train[DPod_column] = \
+        #   mdf_train[DPod_column] * (1 - mdf_train[DPod_tempcolumn1]) + mdf_train[DPod_tempcolumn1] * mdf_train[DPod_tempcolumn2]
+        # else:
+        #this is equivalent to the multiplication operation and adds support for non-numeric entries
+        mdf_train.loc[(mdf_train[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
         
       elif protected_feature is not False:
         
         seeds_available = sampling_resource_dict[sampling_id + '_seeds']
-        
-        mdf_train[DPod_tempcolumn2] = 0
         
         for attribute in attributes:
           
@@ -27241,19 +27271,13 @@ class AutoMunge:
                                            size=(attribute_count))
 
           if attribute == attribute:
+
             #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_train.loc[(mdf_train[protected_feature]==attribute) & (mdf_train[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
-            
-            #now inject noise
-            mdf_train.loc[(mdf_train[protected_feature]==attribute), DPod_column] = \
-            mdf_train.loc[(mdf_train[protected_feature]==attribute), DPod_tempcolumn2]
+            mdf_train.loc[(mdf_train[protected_feature]==attribute) & (mdf_train[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
+
           elif attribute != attribute:
-            #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
-            
-            #now inject noise
-            mdf_train.loc[(mdf_train[protected_feature].isna()), DPod_column] = \
-            mdf_train.loc[(mdf_train[protected_feature].isna()), DPod_tempcolumn2]
+            #the samples were a shape based on number of binomial activations, now inject
+            mdf_train.loc[(mdf_train[protected_feature].isna()) & (mdf_train[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
 
           #if we have enough seeds left for the next attribute we'll expend the current used
           if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
@@ -27264,7 +27288,6 @@ class AutoMunge:
               seeds_available = seeds_available[attribute_count:]
 
       del mdf_train[DPod_tempcolumn1]
-      del mdf_train[DPod_tempcolumn2]
     
     #for test data is just pass-through unless testnoise or traindata is activated
     if testnoise is True and test_flip_prob > 0:
@@ -27293,20 +27316,12 @@ class AutoMunge:
         elif test_weighted is True:
           choice_samples = nprandom.choice(ord_encodings, p=weights, size=(test_binomial_activation_count))
 
-        #the samples were a shape based on number of binomial activations, now extract to full column
-        mdf_test[DPod_tempcolumn2] = 0
-        mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
-
-        #now inject noise
-        #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-        mdf_test[DPod_column] = \
-        mdf_test[DPod_column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+        #the samples were a shape based on number of binomial activations, now inject
+        mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_column] = choice_samples
         
       elif protected_feature is not False:
         
         seeds_available = sampling_resource_dict[sampling_id + '_seeds']
-        
-        mdf_test[DPod_tempcolumn2] = 0
         
         #for test data we'll also consider test attributes that weren't found in the train data
         #and apply aggregate feature weighting
@@ -27345,19 +27360,12 @@ class AutoMunge:
                                            size=(attribute_count))
           
           if attribute == attribute:
-            #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            #the samples were a shape based on number of binomial activations, now inject
+            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
             
-            #now inject noise
-            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_column] = \
-            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_tempcolumn2]
           elif attribute != attribute:
-            #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
-            
-            #now inject noise
-            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_column] = \
-            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_tempcolumn2]
+            #the samples were a shape based on number of binomial activations, now inject
+            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
 
           #if we have enough seeds left for the next attribute we'll expend the current used
           if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
@@ -27371,21 +27379,21 @@ class AutoMunge:
               seeds_available = seeds_available[attribute_count:]
 
       del mdf_test[DPod_tempcolumn1]
-      del mdf_test[DPod_tempcolumn2]
       
     #___
 
-    #data type is conditional based on encoding space
-    max_encoding = len(ord_encodings) - 1
-    if max_encoding <= 255:
-      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint8)
-      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
-    elif max_encoding <= 65535:
-      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint16)
-      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
-    else:
-      mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint32)
-      mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
+    if passthrough is False:
+      #data type is conditional based on encoding space
+      max_encoding = len(ord_encodings) - 1
+      if max_encoding <= 255:
+        mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint8)
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
+      elif max_encoding <= 65535:
+        mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint16)
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
+      else:
+        mdf_train[DPod_column] = mdf_train[DPod_column].astype(np.uint32)
+        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
 
     #create list of columns
     nmbrcolumns = [DPod_column]
@@ -27402,6 +27410,7 @@ class AutoMunge:
                                              'weights' : weights, \
                                              'suffix' : suffix, \
                                              'inplace' : inplace, \
+                                             'passthrough' : passthrough, \
                                              'testnoise' : testnoise, \
                                              'trainnoise' : trainnoise, \
                                              'sampling_resource_dict' : sampling_resource_dict, \
@@ -31892,7 +31901,6 @@ class AutoMunge:
       #(using DPod naming as a shortcut so can repurpose code associated with DPod)
       #don't have to worry about suffix overlap since columns in df will be strings
       DPod_tempcolumn1 = 1
-      DPod_tempcolumn2 = 2
 
       unique_count = df_unique.shape[0]
       unique_range = list(range(unique_count))
@@ -45224,7 +45232,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.87'
+    automungeversion = '7.88'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -53368,6 +53376,12 @@ class AutoMunge:
         attribute_weightings_dict = {}
         attributes = set()
         inplace = False
+
+      if 'passthrough' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        passthrough = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['passthrough']
+      else:
+        passthrough = False
         
       #________
 
@@ -53529,20 +53543,12 @@ class AutoMunge:
           elif weighted is True:
             choice_samples = nprandom.choice(ord_encodings, p=weights, size=(binomial_activation_count))
 
-          #the samples were a shape based on number of binomial activations, now extract to full column
-          mdf_test[DPod_tempcolumn2] = 0
-          mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_tempcolumn2] = choice_samples
-
-          #now inject noise
-          #this returns column value when DPod_tempcolumn1 is 0 or DPod_tempcolumn2 when DPod_tempcolumn1 is 1
-          mdf_test[DPod_column] = \
-          mdf_test[DPod_column] * (1 - mdf_test[DPod_tempcolumn1]) + mdf_test[DPod_tempcolumn1] * mdf_test[DPod_tempcolumn2]
+          #the samples were a shape based on number of binomial activations, now inject
+          mdf_test.loc[mdf_test[DPod_tempcolumn1] == 1, DPod_column] = choice_samples
         
         elif protected_feature is not False:
           
           seeds_available = sampling_resource_dict[sampling_id + '_seeds']
-
-          mdf_test[DPod_tempcolumn2] = 0
           
           #for test data we'll also consider test attributes that weren't found in the train data
           #and apply aggregate feature weighting
@@ -53581,19 +53587,12 @@ class AutoMunge:
                                            size=(attribute_count))
           
           if attribute == attribute:
-            #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
+            #the samples were a shape based on number of binomial activations, now inject
+            mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
             
-            #now inject noise
-            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_column] = \
-            mdf_test.loc[(mdf_test[protected_feature]==attribute), DPod_tempcolumn2]
           elif attribute != attribute:
-            #the samples were a shape based on number of binomial activations, now extract to full column
-            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_tempcolumn2] = choice_samples
-            
-            #now inject noise
-            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_column] = \
-            mdf_test.loc[(mdf_test[protected_feature].isna()), DPod_tempcolumn2]
+            #the samples were a shape based on number of binomial activations, now inject
+            mdf_test.loc[(mdf_test[protected_feature].isna()) & (mdf_test[DPod_tempcolumn1] == 1), DPod_column] = choice_samples
           
           #if we have enough seeds left for the next attribute we'll expend the current used
           if attribute != attributes[-1] and not (attribute != attribute and attributes[-1] != attributes[-1]):
@@ -53604,18 +53603,18 @@ class AutoMunge:
               seeds_available = seeds_available[attribute_count:]
 
         del mdf_test[DPod_tempcolumn1]
-        del mdf_test[DPod_tempcolumn2]
         
       #___
 
-      #data type is conditional based on encoding space
-      max_encoding = len(ord_encodings) - 1
-      if max_encoding <= 255:
-        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
-      elif max_encoding <= 65535:
-        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
-      else:
-        mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
+      if passthrough is False:
+        #data type is conditional based on encoding space
+        max_encoding = len(ord_encodings) - 1
+        if max_encoding <= 255:
+          mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint8)
+        elif max_encoding <= 65535:
+          mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint16)
+        else:
+          mdf_test[DPod_column] = mdf_test[DPod_column].astype(np.uint32)
 
     else:
 
