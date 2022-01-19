@@ -14226,9 +14226,12 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated for noise transforms in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #mlti doesn't register the missing_process_dict_noise_transform validation result since it is also used for non-noise trasnforms
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -14260,28 +14263,16 @@ class AutoMunge:
                                 'parameterlist_test_seeds' : [],
                                 'parameterlist_test_call_count' : 0,
                                 'parameterlist_test_sample_count' : 0,
+                                'statsdistribution_train' : 'custom',
+                                'statsdistribution_train_seeds' : [],
+                                'statsdistribution_train_call_count' : 0,
+                                'statsdistribution_train_sample_count' : 0,
+                                'statsdistribution_test' : 'custom',
+                                'statsdistribution_test_seeds' : [],
+                                'statsdistribution_test_call_count' : 0,
+                                'statsdistribution_test_sample_count' : 0,
                                 'random_generator_accepts_seeds' : True,
-                               }
-
-    # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-    #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-    #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-    #   entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-    #   if sampling_resource_dict[sampling_id] == 'custom' \
-    #   and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-    #   else:
-    #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-    #   return nprandom
-    
-    def erase_seeds(sampling_resource_dict):
-      #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-      keys = list(sampling_resource_dict)
-      for key in keys:
-        if key[-5:] == 'seeds':
-          del sampling_resource_dict[key]
-      return sampling_resource_dict
+                                }
 
     #________
 
@@ -14504,7 +14495,7 @@ class AutoMunge:
     #entropy seeding support
       
     #erase seeds
-    sampling_resource_dict = erase_seeds(sampling_resource_dict)
+    sampling_resource_dict = self.__erase_seeds(sampling_resource_dict)
     
     if 'noise_transform' in postprocess_dict['process_dict'][norm_category] \
     and postprocess_dict['process_dict'][norm_category]['noise_transform'] is not False \
@@ -14515,7 +14506,7 @@ class AutoMunge:
       for inputcolumn in textcolumns:
         if 'sampling_resource_dict' in mlti_norm_params_column_dict[inputcolumn]:
           mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'] = \
-          erase_seeds(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'])
+          self.__erase_seeds(mlti_norm_params_column_dict[inputcolumn]['sampling_resource_dict'])
         
       #aggregate counts into the returned sampling_resource_dict from norm_category reports
       for norm_column_dict in norm_column_dict_list:
@@ -24835,9 +24826,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -24860,7 +24855,6 @@ class AutoMunge:
                                 'choice_test' : 'custom',
                                 'choice_test_seeds' : [],
                                 'choice_test_call_count' : 0,
-                                'choice_test_sample_count' : 0,
                                 'choice_test_sample_count' : 0,
                                 'parameterlist_train' : 'custom',
                                 'parameterlist_train_seeds' : [],
@@ -25387,9 +25381,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -26048,9 +26046,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -26744,9 +26746,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -27028,9 +27034,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -27574,9 +27584,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform']  specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -28276,9 +28290,13 @@ class AutoMunge:
     #postmunge(.) has corresponding parameters to support
     if 'sampling_resource_dict' in params:
       sampling_resource_dict = params['sampling_resource_dict']
+    # else:
+    #as configured sampling_resource_dict is always populated in params by __random_parameters_params_append based on process_dict['noise_transform'] specification
     else:
-      #'custom' as used here means deferring to random_generator parameter
-      sampling_resource_dict = {'binomial_train' : 'custom',
+      #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
+      postprocess_dict['temp_miscparameters_results'].update({'missing_process_dict_noise_transform' : category})
+      sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                'binomial_train' : 'custom',
                                 'binomial_train_seeds' : [],
                                 'binomial_train_call_count' : 0,
                                 'binomial_train_sample_count' : 0,
@@ -34625,7 +34643,7 @@ class AutoMunge:
     #with corresponding labels)
     
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("_______________")
       print("Begin Feature Importance evaluation")
       print("")
@@ -35089,7 +35107,7 @@ class AutoMunge:
           entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
     
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print()
       print("______________________")
       print("sorted metric results:")
@@ -37511,12 +37529,12 @@ class AutoMunge:
     
     #check printstatus
     printstatus_valresult = False
-    if printstatus not in {True, False, 'silent'} or \
+    if printstatus not in {True, False, 'summary', 'silent'} or \
     (printstatus in {True, False} and not isinstance(printstatus, bool)):
       printstatus_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for printstatus parameter.")
-        print("Acceptable values are one of {True, False, 'silent'}")
+        print("Acceptable values are one of {True, False, 'summary', 'silent'}")
         print()
       
     miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
@@ -37664,11 +37682,12 @@ class AutoMunge:
     
     #check printstatus
     printstatus_valresult = False
-    if printstatus not in {True, False} or not isinstance(printstatus, bool):
+    if printstatus not in {True, False, 'summary', 'silent'} or \
+    printstatus in {True, False} and not isinstance(printstatus, bool):
       printstatus_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for printstatus parameter.")
-        print("Acceptable values are one of {True, False}")
+        print("Acceptable values are one of {True, False, 'summary', 'silent'}")
         print()
       
     pm_miscparameters_results.update({'printstatus_valresult' : printstatus_valresult})
@@ -39079,6 +39098,24 @@ class AutoMunge:
                               valid_entries={'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'},
                               valid_type=str)
     
+    #note the default scenario is updated following this call
+    sampling_dict, check_sampling_dict_result = \
+    _populate_sampling_dict_default(sampling_dict, 
+                              'seeding_type', 
+                              printstatus, 
+                              check_sampling_dict_result,
+                              default='default', 
+                              valid_entries={'supplemental_seeds', 'primary_seeds'},
+                              valid_type=str)
+    
+    #for 'seeding_type' the default depends on whether we are using bulk_seeds samplingtype
+    #so a temporary plug value now updated here
+    if sampling_dict['seeding_type'] == 'default':
+      if sampling_dict['sampling_type'] == 'bulk_seeds':
+        sampling_dict['seeding_type'] = 'primary_seeds'
+      else:
+        sampling_dict['seeding_type'] = 'supplemental_seeds'
+    
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'sampling_report_dict', 
@@ -40174,11 +40211,6 @@ class AutoMunge:
     #sampling_type expected as one of 
     #{'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'}
     sampling_type = sampling_dict['sampling_type']
-      
-    #in these sampling_type scenarios the transform will apply default PCG64 sampling even if a custom generator specified
-    #{'bulk_seeds', 'sampling_seed', 'transform_seed'}
-    #noting that any custom generator may still be applied for generating entropy seeds 
-    #in __prepare_seeds based on sampling_dict['extra_seed_generator']
     
     #note that in the custom generator scenario if custom generator not specified will also defer to PCG64
     if sampling_type in {'bulk_seeds', 'sampling_seed', 'transform_seed'}:
@@ -40188,6 +40220,14 @@ class AutoMunge:
                                       'statsdistribution_train', 'statsdistribution_test']:
         populated_sampling_resource_dict.update({generator_specification : 'default'})
     #else defer to the previously populated value 'custom'
+
+    #seeding_type refers to:
+    #'supplemental_seeds' means that entropy seeds are integrated into np.random.SeedSequence with entropy seeding from the OS. 
+    #'primary_seeds', in which user passed entropy seeds are the only source of seeding.
+    #note that when not specified bulk_seeds sampling_type defaults to primary_seeds,
+    #and other sampling_types default to supplemental_seeds
+    seeding_type = sampling_dict['seeding_type']
+    populated_sampling_resource_dict.update({'seeding_type' : seeding_type})
     
     #the category's process_dict entry is inspected for a noise_transform classification
     #this results in only transforms with process_dict['noise_transform'] specification being served seeds
@@ -40875,13 +40915,27 @@ class AutoMunge:
   def __get_nprandom(self, sampling_id, sampling_resource_dict, nprandom_dict):
     #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
     #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
+    #distinguishes between supplemental_seeds and primary_seeds seeding_type
+    #note that if a generator is called to generate additional seeds it does not use this function
+    #to avoid generating additional seeds for bulk_seeds sampling_type without supplemental seeding from OS
     
     entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
     if sampling_resource_dict[sampling_id] == 'custom' \
     and sampling_resource_dict['random_generator_accepts_seeds'] is False:
       nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
     else:
-      nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+      #in supplemental_seeds seeding_type user passed entropy_seeds supplement seeding from OS
+      if 'seeding_type' in sampling_resource_dict \
+      and sampling_resource_dict['seeding_type'] == 'supplemental_seeds' \
+      or 'seeding_type' not in sampling_resource_dict:
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
+      
+      #in primary_seeds seeding_type user passed entropy_seeds are only source of seeding
+      #this is the default for bulk_seeds sampling_type
+      elif 'seeding_type' in sampling_resource_dict \
+      and sampling_resource_dict['seeding_type'] == 'primary_seeds':
+        nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](seed = entropy_seeds))
 
     return nprandom
 
@@ -43829,7 +43883,7 @@ class AutoMunge:
       if featureselection == 'report':
 
         #printout display progress
-        if printstatus is True:
+        if printstatus in {True, 'summary'}:
           print("_______________")
           print("Feature Importance results returned")
           print("")
@@ -43867,7 +43921,7 @@ class AutoMunge:
     #if df_test was received as boolean False we create a dummy df_test from first row of df_train
 
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("_______________")
       print("Begin Automunge")
       print("")
@@ -45232,7 +45286,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.88'
+    automungeversion = '7.89'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45685,7 +45739,7 @@ class AutoMunge:
       df_test = df_test.copy()
 
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
 
       print("______")
       print("")
@@ -45693,14 +45747,14 @@ class AutoMunge:
       print(version_combined)
       print("")
 
+      print("Automunge returned train column set: ")
+      print(list(df_train))
+      print("")
+
       if df_trainID.empty is False:
         print("Automunge returned ID column set: ")
         print(list(df_trainID))
         print("")
-
-      print("Automunge returned train column set: ")
-      print(list(df_train))
-      print("")
 
       if df_labels.empty is False:
         print("Automunge returned label column set: ")
@@ -45768,7 +45822,7 @@ class AutoMunge:
       self.__encrypt_postprocess_dict(postprocess_dict, encrypt_key, privacy_encode, printstatus)
 
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
 
       print("_______________")
       print("Automunge Complete")
@@ -47377,8 +47431,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -47410,29 +47465,16 @@ class AutoMunge:
                                   'parameterlist_test_seeds' : [],
                                   'parameterlist_test_call_count' : 0,
                                   'parameterlist_test_sample_count' : 0,
+                                  'statsdistribution_train' : 'custom',
+                                  'statsdistribution_train_seeds' : [],
+                                  'statsdistribution_train_call_count' : 0,
+                                  'statsdistribution_train_sample_count' : 0,
+                                  'statsdistribution_test' : 'custom',
+                                  'statsdistribution_test_seeds' : [],
+                                  'statsdistribution_test_call_count' : 0,
+                                  'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
-      # def get_nprandom(sampling_id, sampling_resource_dict, nprandom_dict):
-      #   #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
-      #   #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
-      #   entropy_seeds = sampling_resource_dict[sampling_id + '_seeds']
-      #   if sampling_resource_dict[sampling_id] == 'custom' \
-      #   and sampling_resource_dict['random_generator_accepts_seeds'] is False:
-      #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]])
-      #   else:
-      #     nprandom = np.random.Generator(nprandom_dict[sampling_resource_dict[sampling_id]](np.random.SeedSequence(spawn_key=entropy_seeds)))
-
-      #   return nprandom
-
-#       def erase_seeds(sampling_resource_dict):
-#         #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
-#         keys = list(sampling_resource_dict)
-#         for key in keys:
-#           if key[-5:] == 'seeds':
-#             del sampling_resource_dict[key]
-#         return sampling_resource_dict
-
       #________
   
       #for entropy seeding support for mlti postprocess, 
@@ -51975,8 +52017,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -52338,8 +52381,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -52381,7 +52425,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -52760,8 +52803,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -52803,7 +52847,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -53134,8 +53177,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -53177,7 +53221,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -53401,8 +53444,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -53444,7 +53488,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -53738,8 +53781,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -53781,7 +53825,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -54126,8 +54169,9 @@ class AutoMunge:
       if 'sampling_resource_dict' in params:
         sampling_resource_dict = params['sampling_resource_dict']
       else:
-        #'custom' as used here means deferring to random_generator parameter
-        sampling_resource_dict = {'binomial_train' : 'custom',
+        #sampling_resource_dict initialized here for backward compatibility
+        sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
+                                  'binomial_train' : 'custom',
                                   'binomial_train_seeds' : [],
                                   'binomial_train_call_count' : 0,
                                   'binomial_train_sample_count' : 0,
@@ -54169,7 +54213,6 @@ class AutoMunge:
                                   'statsdistribution_test_sample_count' : 0,
                                   'random_generator_accepts_seeds' : True,
                                  }
-
       #________
       
       #scenarios where parameters passed as a list of candidates, options available for flip_prob/sigma
@@ -54760,7 +54803,7 @@ class AutoMunge:
     #with corresponding labels)
     
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("_______________")
       print("Begin Feature Importance evaluation")
       print("")
@@ -55422,9 +55465,10 @@ class AutoMunge:
     #prove useful to track drift from original training data.
     #returns a store of the temporary postprocess_dict containing the newly 
     #calculated normalziation parameters and a report of the results
+    #to be consistent with feature selection, drift report will return printouts in printstatus='summary' case
     """
     
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("_______________")
       print("Preparing Drift Report:")
       print("")
@@ -55450,7 +55494,7 @@ class AutoMunge:
         #backward compatibility preceding 7.35
         returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
       
-      if printstatus is True:
+      if printstatus in {True, 'summary'}:
         print("______")
         print("Preparing drift report for columns derived from: ", drift_column)
         print("")
@@ -55523,13 +55567,13 @@ class AutoMunge:
       
       if len(newreturnedcolumns) == 0:
         
-        if printstatus is True:
+        if printstatus in {True, 'summary'}:
           print("no new returned columns:")
           print("")
         
       else:
 
-        if printstatus is True:
+        if printstatus in {True, 'summary'}:
           print("new returned columns:")
           print(newreturnedcolumns)
           print("")
@@ -55540,7 +55584,7 @@ class AutoMunge:
       for origreturnedcolumn in returnedcolumns:
         if origreturnedcolumn not in newreturnedcolumns:
           if origreturnedcolumn == postprocess_dict['column_dict'][origreturnedcolumn]['categorylist'][0]:
-            if printstatus is True:
+            if printstatus in {True, 'summary'}:
               print("___")
               print("original derived column not in new returned column: ", origreturnedcolumn)
               print("")
@@ -55558,7 +55602,7 @@ class AutoMunge:
           drift_report[drift_column]['newreturnedcolumn'].update(\
           {newreturnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
           
-          if printstatus is True:
+          if printstatus in {True, 'summary'}:
             print("___")
             print("derived columns: ", postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'])
             print("")
@@ -55566,7 +55610,7 @@ class AutoMunge:
           if newreturnedcolumn in returnedcolumns \
           and postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'][0] == \
           drift_ppd['column_dict'][newreturnedcolumn]['categorylist'][0]:
-            if printstatus is True:
+            if printstatus in {True, 'summary'}:
               print("original automunge normalization parameters:")
               
               print(postprocess_dict['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
@@ -55579,20 +55623,20 @@ class AutoMunge:
           else:
             
             if newreturnedcolumn in returnedcolumns:
-              if printstatus is True:
+              if printstatus in {True, 'summary'}:
                 print("new derived column has first categorylist entry not matching first categorylist entry from original derivation")
                 print("For derived column: ", newreturnedcolumn)
                 print("This is treated comparably to new derived column not in original returned columns")
                 print("")
             else:
-              if printstatus is True:
+              if printstatus in {True, 'summary'}:
                 print("new derived column not in original returned columns: ", newreturnedcolumn)
                 print("")
               
             drift_report[drift_column]['newnotinorig'].update({newreturnedcolumn:{'newnormparam':\
             drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn]}})
             
-          if printstatus is True:
+          if printstatus in {True, 'summary'}:
             print("new postmunge normalization parameters:")
             print(drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
             print("")
@@ -55604,7 +55648,7 @@ class AutoMunge:
       #free up some memory
       del df_test2_temp, df_test3_temp, returnedcolumns
       
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("")
       print("_______________")
       print("Drift Report Complete")
@@ -55814,7 +55858,7 @@ class AutoMunge:
     pm_miscparameters_results.update({'random_generator_pm_valresult' : random_generator_pm_valresult})
     
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
       print("_______________")
       print("Begin Postmunge")
       print("")
@@ -57102,17 +57146,17 @@ class AutoMunge:
                                                      'new_driftstats' : postdrift_dict}})
 
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
+
+      print("Postmunge returned test column set: ")
+      print(list(df_test))
+      print("")
 
       print("_______________")
       if df_testID.empty is False:
         print("Postmunge returned ID column set: ")
         print(list(df_testID))
         print("")
-
-      print("Postmunge returned test column set: ")
-      print(list(df_test))
-      print("")
 
       if labelscolumn is not False:
         print("Postmunge returned label column set: ")
@@ -57182,7 +57226,7 @@ class AutoMunge:
       postreports_dict['pm_miscparameters_results']['postfeatureselect_automungecall_validationresults'] = {}
 
     #printout display progress
-    if printstatus is True:
+    if printstatus in {True, 'summary'}:
 
       print("_______________")
       print("Postmunge Complete")
