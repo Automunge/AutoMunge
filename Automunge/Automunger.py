@@ -37169,7 +37169,7 @@ class AutoMunge:
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                              trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                             noise_augment, ppd_append, orig_headers):
+                             noise_augment, ppd_append, orig_headers, cat_type):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -37653,6 +37653,17 @@ class AutoMunge:
         print()
       
     miscparameters_results.update({'orig_headers_valresult' : orig_headers_valresult})
+
+    #check cat_type
+    cat_type_valresult = False
+    if cat_type not in {True, False} or not isinstance(cat_type, bool):
+      cat_type_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for cat_type parameter.")
+        print("Acceptable values are one of {True, False}")
+        print()
+      
+    miscparameters_results.update({'cat_type_valresult' : cat_type_valresult})
 
     return miscparameters_results
     
@@ -43538,7 +43549,7 @@ class AutoMunge:
   
   def automunge(self, df_train, df_test = False,
                 labels_column = False, trainID_column = False, testID_column = False,
-                valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
+                valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
                 numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -43587,7 +43598,7 @@ class AutoMunge:
     #__WorkflowBlock: automunge duplicate row consolidation
     #__WorkflowBlock: automunge label rebalancing (e.g. oversampling)
     #__WorkflowBlock: automunge row shuffling
-    #__WorkflowBlock: automunge float data type management
+    #__WorkflowBlock: automunge data type management
     #__WorkflowBlock: automunge excl suffix management
     #__WorkflowBlock: automunge populate postprocess_dict
     #__WorkflowBlock: automunge privacy encoding
@@ -43673,7 +43684,7 @@ class AutoMunge:
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                                 noise_augment, ppd_append, orig_headers)
+                                 noise_augment, ppd_append, orig_headers, cat_type)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -45156,11 +45167,12 @@ class AutoMunge:
     #great the data is processed now let's do a few more global training preps
 
     #_________________________________________________________
-    #__WorkflowBlock: automunge float data type management
+    #__WorkflowBlock: automunge data type management
     #unlike integer types which are managed in transformation functions
     #float data types are collectively managed by the floatprecision parameter
     #unless deactivated for a category in dtype_convert process_dict entry
     #float transformations are applied by way of __floatprecision_transform
+    #also any conversion to pandas categorical dtype if elected based on cat_type parameter performed here
 
     #now we'll apply the floatprecision transformation    
     #floatprecision adjustment only applied to columns returned from transforms
@@ -45196,7 +45208,38 @@ class AutoMunge:
       df_labels = self.__floatprecision_transform(df_labels, floatcolumns_labels, floatprecision)
       if labelspresenttest is True:
         df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_labels, floatprecision)
-
+        
+    #if cat_type was activated, convert df_train to pandas categorical based on MLinfilltype
+    if cat_type is True:
+      for column in df_train.columns:
+        if column in postprocess_dict['column_dict'] \
+        and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+        in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act', 'concurrent_ordl', 'boolexclude', 'ordlexclude'} \
+        or column in final_returned_Binary_columns:
+          
+          df_train[column] = df_train[column].astype('category')
+          
+    #similar address for labels
+    if cat_type is True:
+      for column in df_labels.columns:
+        if column in postprocess_dict['column_dict'] \
+        and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+        in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act', 'concurrent_ordl', 'boolexclude', 'ordlexclude'} \
+        or column in final_returned_labelBinary_columns:
+          
+          df_labels[column] = df_labels[column].astype('category')
+    
+    #now that df_train has final dtype configuration (other than privacy_encoding conversions to headers and order)
+    #copy the dataframe with zero rows to store the dtype bassis in postprocess_dict
+    dtype_df = df_train[:0].copy()
+    dtype_labels_df = df_labels[:0].copy()
+    
+    #now if cat_type activated convert df_test and df_testlabels to comparable types with same categoric basis
+    if cat_type is True:
+      
+      df_test = df_test.astype(dtype_df.dtypes)
+      df_testlabels = df_testlabels.astype(dtype_labels_df.dtypes)
+    
     #_________________________________________________________
     #__WorkflowBlock: automunge excl suffix management
     #the excl (full passthrough) transform has a unique suffix convention in library
@@ -45286,7 +45329,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.89'
+    automungeversion = '7.90'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45382,6 +45425,9 @@ class AutoMunge:
                              'assignnan' : assignnan, #value of the assignnan parameter as passed to automunge(.)
                              'ML_cmnd' : ML_cmnd, #value of the ML_cmnd parameter after any initializations and conversions (such as based on _check_ML_cmnd or leakage_tolerance operations). This is recorded after ML infill.
                              'ML_cmnd_orig' : ML_cmnd_orig, #value of the ML_cmnd parameter as originally passed to automunge(.)
+                             'cat_type' : cat_type, #value of the cat_type parameter as passed to automunge
+                             'dtype_df' : dtype_df, #a copy of df_train with zero rows that stores pandas returned data type information (prior to any privacy encoding)
+                             'dtype_labels_df' : dtype_labels_df, #a copy of df_labels with zero rows that stores pandas returned data type information (prior to any privacy encoding)
                              'miscparameters_results' : miscparameters_results, #data structure reporting results of all validation checks performed during automunge, such as to validate legal parameter entries or properties of passed data. For details see "validation results" tab in this same spreadsheet
                              'randomrandomseed' : randomrandomseed, #boolean marker indicating if a random initialization of random seed was performed (True when user does not designate a randomseed)
                              'printstatus' : printstatus, #printstatus parameter as passed to automunge(.). activates printouts. (note that error message printouts are active even when this is off.)
@@ -55695,7 +55741,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge duplicate row consolidation
     #__WorkflowBlock: postmunge label rebalancing (e.g. oversampling)
     #__WorkflowBlock: postmunge row shuffling
-    #__WorkflowBlock: postmunge float data type management
+    #__WorkflowBlock: postmunge data type management
     #__WorkflowBlock: postmunge excl suffix management
     #__WorkflowBlock: postmunge privacy encoding
     #__WorkflowBlock: postmunge ppd_append additional features processing and concatination
@@ -56884,11 +56930,12 @@ class AutoMunge:
         df_testID = self.__df_shuffle(df_testID, postprocess_dict['postmunge_randomseed'])
 
     #_________________________________________________________
-    #__WorkflowBlock: postmunge float data type management
+    #__WorkflowBlock: postmunge data type management
     #unlike integer types which are managed in transformation functions
     #float data types are collectively managed by the floatprecision parameter
     #unless deactivated for a category in dtype_convert process_dict entry
     #float transformations are applied by way of __floatprecision_transform
+    #also any conversion to pandas categorical dtype if elected based on cat_type parameter performed here
 
     #now we'll apply the floatprecision transformation
     floatcolumns_test = list(df_test)
@@ -56921,6 +56968,13 @@ class AutoMunge:
     df_test = self.__floatprecision_transform(df_test, floatcolumns_test, floatprecision)
     if labelscolumn is not False:
       df_testlabels = self.__floatprecision_transform(df_testlabels, floatcolumns_testlabels, floatprecision)
+      
+    #now if cat_type activated convert df_test and df_testlabels to comparable types with same categoric basis
+    if 'cat_type' in postprocess_dict and postprocess_dict['cat_type'] is True:
+      #backward compatibility note: cat_type, dtype_df, dtype_labels_df added in 7.90
+      
+      df_test = df_test.astype(postprocess_dict['dtype_df'].dtypes)
+      df_testlabels = df_testlabels.astype(postprocess_dict['dtype_labels_df'].dtypes)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge excl suffix management
