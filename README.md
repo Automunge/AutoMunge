@@ -90,7 +90,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
+             valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -239,7 +239,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
+             valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -403,7 +403,7 @@ test, test_ID, test_labels, \
 postprocess_dict = \
 am.automunge(df_train, df_test = False,
              labels_column = False, trainID_column = False, testID_column = False,
-             valpercent=0.0, floatprecision = 32, shuffletrain = True, noise_augment = 0,
+             valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
              numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
@@ -572,6 +572,16 @@ usage and floating point precision, smaller for smaller footprint.)
 This currently defaults to 32 for 32-bit precision of float values. Note
 that there may be energy efficiency benefits at scale to basing this to 16.
 Note that integer data types are still retained with this option.
+
+* cat_type: accepts boolean defaulting to False, when True returned integer encoded categoric
+features are converted to pandas categorical data type based on the transform's MLinfill_type. 
+In some cases this may actually slightly increase dataframe memory usage and 
+is redundant with information stored in the postprocess_dict, however we expect there
+are potential downstream workflows where a user may prefer categoric data type which 
+is the reason for the option. Note that for cases where a categoric transform feature 
+did not have full representation in the training data set (e.g. as could be the case for fixed width bins with bnwd/bnwo/variants), 
+it is possible that this option will result in test data returned with missing values designated 
+as NaN entries (which is partly why this is not the default). Note that this same basis is carried through to postmunge.
 
 * shuffletrain: can be passed as one of _{True, False, 'traintest'}_ which 
 indicates if the returned sets will have their rows shuffled. Defaults to True 
