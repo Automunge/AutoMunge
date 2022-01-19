@@ -5421,3 +5421,15 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - accepts boolean, defaults to False
 - in the process found a DPod bug for the protected_feature rolled out in last update, now fixed
 - through the resolution found opportunity to eliminate a support column in DPod that wasn't needed
+
+7.89
+- new entropy seeding option available for sampling_dict specification as 'seeding_type'
+- refers to the distinction of whether user passed entropy seeds are to be integrated as supplemental seeds in conjunction with those seeds sourced from the operating system verses using the passed entropy seeds as the only seeds
+- sampling_dict['seeding_type'] = 'supplemental_seeds' means that entropy seeds are integrated into np.random.SeedSequence in conjunction with entropy seeding from the OS. 
+- sampling_dict['seeding_type'] = 'primary_seeds' means the passed entropy seeds are the only source of seeding.
+- note that unless otherwise specified, 'primary_seeds' is used as the default seeding_type in conjunction with the sampling_dict['sampling_type'] = 'bulk_seeds' scenario, and 'supplemental_seeds' is used as the default seeding_type in conjunction with all other sampling_dict['sampling_type'] scenarios
+- also new printstatus scenario available for automunge and postmunge as 'summary'
+- 'summary' only prints the openning and closing messages for succinctness purposes
+- struck a redundant support function in mlti
+- also, validation result now logged when user doesn't specify processdict['noise_transform'] as missing_process_dict_noise_transform
+- in other words, for custom noise transforms passed through processdict, it is important to specify processdict['noise_transform'] to ensure entropy seeding works consistent to documentation
