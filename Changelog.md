@@ -5433,3 +5433,10 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - struck a redundant support function in mlti
 - also, validation result now logged when user doesn't specify processdict['noise_transform'] as missing_process_dict_noise_transform
 - in other words, for custom noise transforms passed through processdict, it is important to specify processdict['noise_transform'] to ensure entropy seeding works consistent to documentation
+
+7.90
+- new automunge parameter cat_type, accepts boolean defaulting to False
+- when activated, returned categoric integer encodings are converted to pandas categoric on a column by column basis based on MLinfilltype
+- in some cases this may actually slightly increase dataframe memory usage and is redundant with information stored in the postprocess_dict, however we expect there are potential downstream workflows where a user may prefer categoric data type which is the reason for the option. 
+- note that for cases where a categoric transform feature did not have full representation in the training data set (e.g. as could be the case for fixed width bins with bnwd/bnwo/variants), it is possible that this option will result in test data returned with missing values designated as NaN entries (which is partly why this is not the default). 
+- Note that this same basis is carried through to postmunge.
