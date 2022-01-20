@@ -5452,3 +5452,10 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 7.92
 - quick bug fix to __stochastic_compute_categoric
 - was missing a column header variable initialization, I believe unintentionally struck with 7.88
+
+7.93
+- bug fix for variable initialization in labelsencoding_dict support function
+- these testings have identified a bug channel not identifiable in our prior validation setup
+- associated with python dictionary memory sharing
+- this rollout includes the relocation of our validation tests to run on a cloud setup with support of TestPyPI prior to formal PyPI upload
+- which we expect will resolve this channel going forward
