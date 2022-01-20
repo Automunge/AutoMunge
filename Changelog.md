@@ -5448,3 +5448,7 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - but was spotting in a cloud session by accessing from PyPI
 - will probably start running redundant validations in a cloud session adjacent to rollouts in some fashion
 - this case was originating from assignparam variable in support function __check_for_protected_features
+
+7.92
+- quick bug fix to __stochastic_compute_categoric
+- was missing a column header variable initialization, I believe unintentionally struck with 7.88
