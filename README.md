@@ -28,7 +28,7 @@
 [Automunge](https://automunge.com) is an open source python library that has formalized and automated the data preparations for tabular learning in between the workflow boundaries of received “tidy data” (one column per feature and one row per sample) and returned dataframes suitable for the direct application of machine learning. Under automation numeric features are normalized, categoric features are binarized, and missing data is imputed. Data transformations are fit to properties of a training set for a consistent basis on any partitioned “validation data” or additional “test data”. When preparing training data, a compact python dictionary is returned recording the steps and parameters of transformation, which then may serve as a key for preparing additional data on a consistent basis.
 
 > In other words, put simply:<br/>
->  - **automunge(.)** prepares tabular data for machine learning.<br/>
+>  - **automunge(.)** prepares tabular data for machine learning with encodings, missing data infill, and may channel quantum circuit sampling into features.<br/>
 >  - **postmunge(.)** consistently prepares additional data very efficiently.<br/>
 >  
 > We make machine learning easy.
