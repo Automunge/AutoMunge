@@ -5440,3 +5440,11 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - in some cases this may actually slightly increase dataframe memory usage and is redundant with information stored in the postprocess_dict, however we expect there are potential downstream workflows where a user may prefer categoric data type which is the reason for the option. 
 - note that for cases where a categoric transform feature did not have full representation in the training data set (e.g. as could be the case for fixed width bins with bnwd/bnwo/variants), it is possible that this option will result in test data returned with missing values designated as NaN entries (which is partly why this is not the default). 
 - Note that this same basis is carried through to postmunge.
+
+7.91
+- found a bug I believe introduced in 7.87
+- turns out is a hard to spot validation channel from a misnamed dictionary variable
+- which didn't show up in local testing due to memory sharing of python dictionaries
+- but was spotting in a cloud session by accessing from PyPI
+- will probably start running redundant validations in a cloud session adjacent to rollouts in some fashion
+- this case was originating from assignparam variable in support function __check_for_protected_features
