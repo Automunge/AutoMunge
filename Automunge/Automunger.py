@@ -10849,7 +10849,7 @@ class AutoMunge:
            masterNArows_train, \
            masterNArows_test
 
-  def __prepare_labelsencoding_dict(self, postprocess_dict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus):
+  def __prepare_labelsencoding_dict(self, postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus):
     """
     labelsencoding_dict is used to support public label inversion with enncryption
     in the privacy_encode = False or True case
@@ -44644,7 +44644,7 @@ class AutoMunge:
     #prepare labelsencoding_dict for public label inversion with encryption in privacy_encode = True case
     #this also updates mirror_dict to include labelctgy
     labelsencoding_dict, mirror_dict, postprocess_dict  = \
-    self.__prepare_labelsencoding_dict(postprocess_dict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus)
+    self.__prepare_labelsencoding_dict(postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge protected feature processing
@@ -45330,7 +45330,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.92'
+    automungeversion = '7.93'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
