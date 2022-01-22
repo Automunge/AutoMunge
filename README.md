@@ -698,9 +698,9 @@ all ML infill and PCA basis, can pass as entries to a list in ML_cmnd['full_excl
 Please note that columns returned from transforms with MLinfilltype 'totalexclude' (such as
 for the excl passthrough transform) are automatically excluded from ML infill basis.
 
-Please note that an operation is performed to evaluate for cases of a kind of data 
+Please note that an assessment is performed to evaluate for cases of a kind of data 
 leakage across features associated with correlated presence of missing data
-across rows, documented further below with ML_cmnd parameter. This operation
+across rows for exclusion, documented further below with ML_cmnd parameter. This assessment
 can be deactivated by passing ML_cmnd['leakage_tolerance'] = False. 
 
 Please note that for incorporating stochastic injections into the derived imputations, an
