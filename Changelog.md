@@ -5459,3 +5459,6 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - associated with python dictionary memory sharing
 - this rollout includes the relocation of our validation tests to run on a cloud setup with support of TestPyPI prior to formal PyPI upload
 - which we expect will resolve this channel going forward
+
+7.94
+- fixed a variable name typo originating from 7.87 that was interfering with leakage_tolerance inspection for MLinfill
