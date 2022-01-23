@@ -37398,11 +37398,12 @@ class AutoMunge:
       
     #check pandasoutput
     pandasoutput_valresult = False
-    if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
+    if pandasoutput in {True, False} and not isinstance(pandasoutput, bool) \
+    or pandasoutput not in {True, False, 'dataframe'}:
       pandasoutput_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for pandasoutput parameter.")
-        print("Acceptable values are one of {True, False}")
+        print("Acceptable values are one of {True, False, 'dataframe'}")
         print()
       
     miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
@@ -37683,11 +37684,12 @@ class AutoMunge:
     
     #check pandasoutput
     pandasoutput_valresult = False
-    if pandasoutput not in {True, False} or not isinstance(pandasoutput, bool):
+    if pandasoutput in {True, False} and not isinstance(pandasoutput, bool) \
+    or pandasoutput not in {True, False, 'dataframe'}:
       pandasoutput_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for pandasoutput parameter.")
-        print("Acceptable values are one of {True, False}")
+        print("Acceptable values are one of {True, False, 'dataframe'}")
         print()
       
     pm_miscparameters_results.update({'pandasoutput_valresult' : pandasoutput_valresult})
@@ -37816,7 +37818,7 @@ class AutoMunge:
     #check traindata
     traindata_valresult = False
     if traindata not in {True, False, 'train_no_noise', 'test_no_noise'} \
-    or traindata in {True, False} and not isinstance(pandasoutput, bool):
+    or traindata in {True, False} and not isinstance(traindata, bool):
       traindata_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for traindata parameter.")
@@ -43553,7 +43555,7 @@ class AutoMunge:
                 valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
                 dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
                 MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
-                numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
+                numbercategoryheuristic = 255, pandasoutput = 'dataframe', NArw_marker = True,
                 featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
                 Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
                 ML_cmnd = {'autoML_type':'randomforest',
@@ -43573,7 +43575,7 @@ class AutoMunge:
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
                 entropy_seeds = False, random_generator = False, sampling_dict = False,
-                privacy_encode = False, encrypt_key = False, printstatus = True):
+                privacy_encode = False, encrypt_key = False, printstatus = 'summary'):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
@@ -45330,7 +45332,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.94'
+    automungeversion = '7.95'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45829,8 +45831,8 @@ class AutoMunge:
       if df_testlabels.ndim == 2 and df_testlabels.shape[1] == 1:
         df_testlabels = np.ravel(df_testlabels)
 
-    #else flatten any single column label dataframes to series
-    else:
+    #else flatten any single column label dataframes to series except for pandasoutput = 'dataframe' case
+    elif pandasoutput is True:
       if len(df_labels.shape) > 1 and df_labels.shape[1] == 1:
         df_labels = df_labels[df_labels.columns[0]]
       if len(df_validationlabels1.shape) > 1 and df_validationlabels1.shape[1] == 1:
@@ -55706,8 +55708,8 @@ class AutoMunge:
   #__FunctionBlock: postmunge(.) definition
 
   def postmunge(self, postprocess_dict, df_test,
-                testID_column = False, pandasoutput = True, 
-                printstatus = True, inplace = False,
+                testID_column = False, pandasoutput = 'dataframe', 
+                printstatus = 'summary', inplace = False,
                 dupl_rows = False, TrainLabelFreqLevel = False, 
                 featureeval = False, traindata = False, noise_augment = 0,
                 driftreport = False, inversion = False,
@@ -56464,7 +56466,7 @@ class AutoMunge:
       
       postdrift_dict = {}
 
-      if printstatus is True:
+      if printstatus in {True, 'summary'}:
         print("_______________")
         print("Preparing Source Column Drift Report:")
         print("")
@@ -56473,7 +56475,7 @@ class AutoMunge:
 
         if column in postprocess_dict['drift_dict']:
 
-          if printstatus is True:
+          if printstatus in {True, 'summary'}:
             print("______")
             print("Preparing source column drift report for column: ", column)
             print("")
@@ -56486,7 +56488,7 @@ class AutoMunge:
           _1, postdrift_dict = \
           self.__getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
-          if printstatus is True:
+          if printstatus in {True, 'summary'}:
             print("new drift stats:")
             print(postdrift_dict[column])
             print("")
@@ -57255,7 +57257,7 @@ class AutoMunge:
         df_testlabels = pd.DataFrame().to_numpy()
 
     #else flatten any single column label dataframes to series
-    else:
+    elif pandasoutput is True:
       if len(df_testlabels.shape) > 1 and df_testlabels.shape[1] == 1:
         df_testlabels = df_testlabels[df_testlabels.columns[0]]
 
