@@ -93,7 +93,7 @@ am.automunge(df_train, df_test = False,
              valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
-             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
+             numbercategoryheuristic = 255, pandasoutput = 'dataframe', NArw_marker = True,
              featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
@@ -113,7 +113,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -147,7 +147,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = True, printstatus = True,
+             pandasoutput = 'dataframe', printstatus = True,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -242,7 +242,7 @@ am.automunge(df_train, df_test = False,
              valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
-             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
+             numbercategoryheuristic = 255, pandasoutput = 'dataframe', NArw_marker = True,
              featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
@@ -262,7 +262,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
 ```
 
 Or for the postmunge function:
@@ -296,7 +296,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = True, printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -406,7 +406,7 @@ am.automunge(df_train, df_test = False,
              valpercent=0.0, floatprecision = 32, cat_type = False, shuffletrain = True, noise_augment = 0,
              dupl_rows = False, TrainLabelFreqLevel = False, powertransform = False, binstransform = False,
              MLinfill = True, infilliterate=1, randomseed = False, eval_ratio = .5,
-             numbercategoryheuristic = 255, pandasoutput = True, NArw_marker = True,
+             numbercategoryheuristic = 255, pandasoutput = 'dataframe', NArw_marker = True,
              featureselection = False, featurethreshold = 0., inplace = False, orig_headers = False,
              Binary = False, PCAn_components = False, PCAexcl = [], excl_suffix = False,
              ML_cmnd = {'autoML_type':'randomforest',
@@ -426,7 +426,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = True)
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
@@ -759,11 +759,10 @@ to categorical treatment via hashing processing via 'hsh2', otherwise
 categorical sets default to binary encoding via '1010'. This defaults to 255.
 Heuristic can be deactivated by passing as False.
 
-* pandasoutput: a selector for format of returned sets. Defaults to _True_
-for returned pandas dataframe. If set to _True_ returns pandas dataframes
-(note that index is not always preserved, non-integer indexes are extracted to the ID sets,
+* pandasoutput: a selector for format of returned sets. Defaults to _'dataframe'_
+for returned pandas dataframe for all sets. Dataframes index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
-corresponding to the order of rows as they were passed to function). If set to _False_
+corresponding to the order of rows as they were passed to function). If set to _True_, features and ID sets are comparable, and single column label sets are converted to Pandas Series instead of dataframe. If set to _False_
 returns numpy arrays instead of dataframes. Note that the dataframes will have column
 specific data types, or returned numpy arrays will have a single data type. 
 
@@ -1909,7 +1908,7 @@ numeric features e.g. via DPqt or DPbx. Further detail on privacy encoding provi
 * encrypt_key: as one of {False, 16, 24, 32, bytes} (where bytes means a bytes type object with length of 16, 24, or 32) defaults to False, other scenarios all result in an encryption of the returned postprocess_dict. 16, 24, and 32 refer to the block size, where block size of 16 aligns with 128 bit encryption, 32 aligns with 256 bit. When encrypt_key is passed as an integer, a returned encrypt_key is derived and returned in the closing printouts. This returned printout should be copied and saved for use with the postmunge(.) encrypt_key parameter. In other words, without this encryption key, user will not be able to prepare additional data in postmunge(.) with the returned postprocess_dict. When encrypt_key is passed as a bytes object (of length 16, 24, or 32), it is treated as a user specified encryption key and not returned in printouts. When data is encrypted, the postprocess_dict returned from automunge(.) is still a dictionary that can be downloaded and uploaded with pickle, and based on which scenario was selected by the privacy_encode parameter (for scenarios other than 'private'), the returned postprocess_dict will contain some public entries that are not encrypted, such as ['columntype_report', 'label_columntype_report', 'privacy_encode', 'automungeversion', 'labelsencoding_dict', 'FS_sorted', 'column_map', 'sampling_report_dict'] - where FS_sorted and column_map are ommitted when privacy_encode is not False and all public entries are omitted when privacy_encode = 'private'. The encryption key, as either returned in printouts or based on user specification, can then be passed to the postmunge(.) encrypt_key parameter to prepare additional data. The only postmunge operation available without the encryption key is for label inverison (unless privacy_encode is 'private'). Thus privacy_encode may be fully private, and a user with access to the returned postprocess_dict will not be able to invert training data without the encryption key. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install). 
 
 * printstatus: user can pass _True/False/'summary'/'silent'_ indicating whether the function will print 
-status of processing during operation. Defaults to True for all printouts. When False only error
+status of processing during operation. Defaults to 'summary' to return a summary of returned sets and any feature importance or drift reports. True returns all printouts. When False only error
 message printouts generated. When 'summary' only reports and summary are printed. When 'silent' no printouts are generated.
 
 Ok well we'll demonstrate further below how to build custom transformation functions,
@@ -1945,7 +1944,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = True, printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -2079,7 +2078,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = True, printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = True, inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -2129,17 +2128,15 @@ list may include ID columns to be struck from the features and the second list m
 to be retained in the features. (We recommend only using testID_column specification for cases where df_test
 includes columns that weren't present in the original df_train, otehrwise it is automatic.)
 
-* pandasoutput: a selector for format of returned sets. Defaults to _True_
-for returned pandas dataframes. If set to _True_ returns pandas dataframes
-(note that index is not preserved, non-range indexes are extracted 
-to the ID sets, and automunge(.) generates an application specific range 
-integer index in ID sets corresponding to the order of rows as they were 
-passed to function). If set to _False_ returns numpy arrays instead of dataframes. 
-Note that the dataframes will have column specific data types, or returned numpy 
-arrays will have a single data type.
+* pandasoutput: a selector for format of returned sets. Defaults to _'dataframe'_
+for returned pandas dataframe for all sets. Dataframes index is not always preserved, non-integer indexes are extracted to the ID sets,
+and automunge(.) generates an application specific range integer index in ID sets 
+corresponding to the order of rows as they were passed to function). If set to _True_, features and ID sets are comparable, and single column label sets are converted to Pandas Series instead of dataframe. If set to _False_
+returns numpy arrays instead of dataframes. Note that the dataframes will have column
+specific data types, or returned numpy arrays will have a single data type. 
 
 * printstatus: user can pass _True/False/'summary'/'silent'_ indicating whether the function will print 
-status of processing during operation. Defaults to True for all printouts. When False only error
+status of processing during operation. Defaults to 'summary' to return a summary of returned sets and any feature importance or drift reports. True returns all printouts. When False only error
 message printouts generated. When 'summary' only reports and summary are printed. When 'silent' no printouts are generated.
 
 * inplace: defaults to False, when True the df_test passed to postmunge(.)
