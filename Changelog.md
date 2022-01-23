@@ -5462,3 +5462,15 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 
 7.94
 - fixed a variable name typo originating from 7.87 that was interfering with leakage_tolerance inspection for MLinfill
+
+7.95
+- updated a few default settings
+- new default for printstatus parameter is printstatus = 'summary'
+- this option is a little less obnoxious than the True case
+- new scenario supported for pandasoutput parameter as pandasoutput = 'dataframe'
+- also making this the new default
+- pandasoutput = 'dataframe' differs from prior default of pandasoutput = True in that single column label sets are now retained as dataframes instead of being converted to series
+- I've seen different conventions in different libraries on whether single column pandas labels are preferred as Series or DataFrame, decided to select the default on which is easiest to remember
+- the new default of pandasoutput = 'dataframe' aligns with case that all returned sets are dataframes, even single column label sets
+- apologies if anyone get's a bug out of this update, trying to err on the side of simplicity, should be easy to fix
+- also found and fixed a variable naming snafu interfering with validation of traindata parameter
