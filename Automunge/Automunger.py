@@ -40794,6 +40794,7 @@ class AutoMunge:
     """
 
     #2**32 - 1
+    #(note that np.random.SeedSequence accepts larger values, this range is used to align with its use for pandas seeding)
     max_capacity_seed = 4294967295
     
     randomrandomseed = False
@@ -40955,6 +40956,7 @@ class AutoMunge:
 
   def __erase_seeds(self, sampling_resource_dict):
     #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
+    #not applied in postprocess functions since postmunge(.) doesn't return a postprocess_dict
     keys = list(sampling_resource_dict)
     for key in keys:
       if key[-5:] == 'seeds':
@@ -45214,15 +45216,18 @@ class AutoMunge:
         
     #if cat_type was activated, convert df_train to pandas categorical based on MLinfilltype
     if cat_type is True:
+      cat_columns_train = []
       for column in df_train.columns:
         if column in postprocess_dict['column_dict'] \
         and postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
         in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act', 'concurrent_ordl', 'boolexclude', 'ordlexclude'} \
         or column in final_returned_Binary_columns:
           
+          cat_columns_train.append(column)
           df_train[column] = df_train[column].astype('category')
           
     #similar address for labels
+    cat_columns_labels = []
     if cat_type is True:
       for column in df_labels.columns:
         if column in postprocess_dict['column_dict'] \
@@ -45230,18 +45235,23 @@ class AutoMunge:
         in {'singlct', 'binary', 'multirt', '1010', 'concurrent_act', 'concurrent_ordl', 'boolexclude', 'ordlexclude'} \
         or column in final_returned_labelBinary_columns:
           
+          cat_columns_labels.append(column)
           df_labels[column] = df_labels[column].astype('category')
     
-    #now that df_train has final dtype configuration (other than privacy_encoding conversions to headers and order)
-    #copy the dataframe with zero rows to store the dtype bassis in postprocess_dict
-    dtype_df = df_train[:0].copy()
-    dtype_labels_df = df_labels[:0].copy()
+    if cat_type is True:
+      #now that df_train has final dtype configuration (other than privacy_encoding conversions to headers and order)
+      #copy the dataframe with zero rows to store the dtype bassis in postprocess_dict
+      dtype_df = df_train[cat_columns_train][:0].copy()
+      dtype_labels_df = df_labels[cat_columns_labels][:0].copy()
+    else:
+      dtype_df = False
+      dtype_labels_df = False
     
     #now if cat_type activated convert df_test and df_testlabels to comparable types with same categoric basis
     if cat_type is True:
       
-      df_test = df_test.astype(dtype_df.dtypes)
-      df_testlabels = df_testlabels.astype(dtype_labels_df.dtypes)
+      df_test[cat_columns_train] = df_test[cat_columns_train].astype(dtype_df[cat_columns_train].dtypes)
+      df_testlabels[cat_columns_labels] = df_testlabels[cat_columns_labels].astype(dtype_labels_df[cat_columns_labels].dtypes)
     
     #_________________________________________________________
     #__WorkflowBlock: automunge excl suffix management
@@ -45332,7 +45342,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.95'
+    automungeversion = '7.96'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -56011,6 +56021,7 @@ class AutoMunge:
 
       #this is one spot where having a labelscolumn postmunge(.) parameter would be nice, but not worth added complexity
       #this conversion from numpy has edge cases, best used in conjunction with exact match in order and composistion of columns between automunge and postmunge
+      #in other words, any ID columns should be in consistent position and training data labels should be positioned as final column
       elif inversion is False and postprocess_dict['labels_column'] is not False:
         #this is scenario of matching length of features and ID columns without labels
         #(we'll assume if number of ID columns and number of label columns match that the included columns are ID columns just to pick a convention)
@@ -56060,7 +56071,7 @@ class AutoMunge:
     #here is where inversion is performed if selected
     if inversion is not False:
       
-      #reset traindata entry in postprocess_dict to avoid overwrite of external
+      #reset temporary entries in postprocess_dict to avoid overwrite of external
       postprocess_dict['traindata'] = False
       postprocess_dict['temp_miscparameters_results'] = {}
       postprocess_dict['entropy_seeds'] = False
@@ -56153,6 +56164,14 @@ class AutoMunge:
     #those features will be extracted and later processed seperately in an internal postmunge call
     
     if 'new_feature_ppd' in postprocess_dict and postprocess_dict['new_feature_ppd'] != {}:
+      
+      dupl_rows_ppd_append_postmunge_valresult = False
+      if dupl_rows is not False:
+        dupl_rows_ppd_append_postmunge_valresult = True
+        if printstatus != 'silent':
+          print("Warning of possible error channel, postmunge dupl_rows not recomended when ppd_append was applied in automunge.")
+          print()
+      pm_miscparameters_results.update({'dupl_rows_ppd_append_postmunge_valresult' : dupl_rows_ppd_append_postmunge_valresult})
       
       new_feature_ppd_extract_headers_dict = {}
       new_feature_ppd_extract_df_dict = {}
@@ -56383,7 +56402,7 @@ class AutoMunge:
     #__WorkflowBlock: postmunge validate data set headers
     #validate columns of df_test match quantity, composition, and order of columns passed to automunge
 
-    #confirm consistency of train an test sets
+    #confirm consistency of train and test sets
 
     #check columns passed to postmunge(.) are consistent with train set passed to automunge(.)
     validate_traintest_columnlabelscompare = False
@@ -56975,9 +56994,12 @@ class AutoMunge:
     #now if cat_type activated convert df_test and df_testlabels to comparable types with same categoric basis
     if 'cat_type' in postprocess_dict and postprocess_dict['cat_type'] is True:
       #backward compatibility note: cat_type, dtype_df, dtype_labels_df added in 7.90
-      
-      df_test = df_test.astype(postprocess_dict['dtype_df'].dtypes)
-      df_testlabels = df_testlabels.astype(postprocess_dict['dtype_labels_df'].dtypes)
+          
+      #note that postprocess_dict['dtype_df'] only contains columns converted as a result of cat_type parameter
+      df_test[list(postprocess_dict['dtype_df'].columns)] = df_test[list(postprocess_dict['dtype_df'].columns)].astype(postprocess_dict['dtype_df'].dtypes)
+          
+      #similar address for labels          
+      df_testlabels[list(postprocess_dict['dtype_labels_df'].columns)] = df_testlabels[list(postprocess_dict['dtype_labels_df'].columns)].astype(postprocess_dict['dtype_labels_df'].dtypes)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge excl suffix management
@@ -57051,6 +57073,7 @@ class AutoMunge:
     #and then concatinated onto the right side of df_test in order of addition
     #(i.e., when multiple new features were added in multiple ppd_append's, they are registered in an order)
     #note this uses the postmunge randomseed to prepare the additional data
+    #note that dupl_rows not recomended when automunge ppd_append was applied, dupl_rows_ppd_append_postmunge_valresult logged above
 
     if 'new_feature_ppd' in postprocess_dict and postprocess_dict['new_feature_ppd'] != {}:
       
@@ -57065,7 +57088,7 @@ class AutoMunge:
         new_feature_df, _1, _2, _3 = \
         self.postmunge(postprocess_dict['new_feature_ppd'][i], new_feature_ppd_extract_df_dict[i],
                       printstatus = printstatus,
-                      dupl_rows = dupl_rows,
+                      dupl_rows = False,
                       traindata = traindata,
                       shuffletrain = shuffletrain,
                       entropy_seeds = entropy_seeds, 
