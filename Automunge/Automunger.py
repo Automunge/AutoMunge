@@ -12,7 +12,6 @@ patent pending, applications 16552857, 17021770
 #global imports
 import numpy as np
 import pandas as pd
-from copy import deepcopy
 
 #imports for automunge
 import random
@@ -37,10 +36,10 @@ from sklearn.metrics import f1_score
 #stats may be used for cases where user elects RandomSearchCV hyperparameter tuning
 from scipy import stats
 
-#imports for PCA dimensionality reduction
-from sklearn.decomposition import PCA
-from sklearn.decomposition import SparsePCA
-from sklearn.decomposition import KernelPCA
+#imports for PCA dimensionality reduction applied with application
+# from sklearn.decomposition import PCA
+# from sklearn.decomposition import SparsePCA
+# from sklearn.decomposition import KernelPCA
 
 #imports for DP family of transforms e.g. _process_DP** (DP transforms use np.random)
 # import numpy as np
@@ -49,10 +48,10 @@ from sklearn.decomposition import KernelPCA
 # from scipy.stats import boxcox
 
 #imports for _process_qttf
-from sklearn.preprocessing import QuantileTransformer
+# from sklearn.preprocessing import QuantileTransformer
 
 #imports for process_hldy 
-from pandas.tseries.holiday import USFederalHolidayCalendar
+# from pandas.tseries.holiday import USFederalHolidayCalendar
 
 #we also have imports for auto ML options in the support functions with their application
 #(this allows us to include the option without having their library install as a dependancy)
@@ -321,8 +320,8 @@ class AutoMunge:
   __train_lcinfillfunction
 
   #__FunctionBlock: PCA support functions
-  __populatePCAdefaults
   __evalPCA
+  __populatePCAdefaults
   __initSparsePCA
   __initKernelPCA
   __initPCA
@@ -422,6 +421,7 @@ class AutoMunge:
   __list_replace
   __list_sorting
   __autowhere
+  __autocopy
   __column_convert_support
   __orig_headers_support
 
@@ -9703,7 +9703,7 @@ class AutoMunge:
     #this one is for columns replaced as part of inplace operation
     if len(newcolumns) > 0:
       anewcolumn = list(newcolumns)[0]
-      temp_columnslist = deepcopy(postprocess_dict['column_dict'][anewcolumn]['columnslist'])
+      temp_columnslist = self.__autocopy(postprocess_dict['column_dict'][anewcolumn]['columnslist'])
       for newcolumn in temp_columnslist:
         if postprocess_dict['column_dict'][newcolumn]['deletecolumn'] == 'inplace':
           for newcolumn2 in temp_columnslist:
@@ -14340,15 +14340,7 @@ class AutoMunge:
       
     mlti_norm_params_column_dict = {}
     for inputcolumn in textcolumns:
-      #some cases can't deepcopy a random_generator entry so here is workaround
-      #the deepcopy is used to circumvent in memory durability since some entries edited in norm_category trasnforms
-      mlti_norm_params_copy = {}
-      for entry in mlti_norm_params:
-        if isinstance(mlti_norm_params[entry], (dict, list)):
-          mlti_norm_params_copy.update({entry : deepcopy(mlti_norm_params[entry])})
-        else:
-          mlti_norm_params_copy.update({entry : mlti_norm_params[entry]})
-      mlti_norm_params_column_dict.update({inputcolumn : mlti_norm_params_copy})
+      mlti_norm_params_column_dict.update({inputcolumn : self.__autocopy(mlti_norm_params)})
     
     #now apply one of custom_train / custom_test or dualprocess based on norm_category processdict entry
     
@@ -14376,7 +14368,7 @@ class AutoMunge:
         self.__custom_process_wrapper(mdf_train, mdf_test, inputcolumn, category, \
                                      norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
     
-        norm_column_dict_list += deepcopy(column_dict_list_portion)
+        norm_column_dict_list += self.__autocopy(column_dict_list_portion)
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
@@ -14408,7 +14400,7 @@ class AutoMunge:
         postprocess_dict['process_dict'][norm_category]['dualprocess'](mdf_train, mdf_test, inputcolumn, category, \
                                                                        norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
 
-        norm_column_dict_list += deepcopy(column_dict_list_portion)
+        norm_column_dict_list += self.__autocopy(column_dict_list_portion)
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
@@ -14444,7 +14436,7 @@ class AutoMunge:
         postprocess_dict['process_dict'][norm_category]['singleprocess'](mdf_test, inputcolumn, category, \
                                                                          norm_category, postprocess_dict, mlti_norm_params_column_dict[inputcolumn])
 
-        norm_column_dict_list += deepcopy(column_dict_list_portion)
+        norm_column_dict_list += self.__autocopy(column_dict_list_portion)
       
         norm_columnkey_dict = self.__populate_columnkey_dict(column_dict_list_portion, norm_columnkey_dict, norm_category)
 
@@ -17468,7 +17460,7 @@ class AutoMunge:
       for i in range(len(search)):
         search[i] = str(search[i]).upper()
       #similarly convert aggregated_dict keys and value lists to uppercase
-      aggregated_dict_preconvert = deepcopy(aggregated_dict)
+      aggregated_dict_preconvert = self.__autocopy(aggregated_dict)
       aggregated_dict = {}
       for key, value in aggregated_dict_preconvert.items():
         for i in range(len(value)):
@@ -17752,7 +17744,7 @@ class AutoMunge:
         search[i] = str(search[i]).upper()
       
       #similarly convert aggregated_dict keys and value lists to uppercase
-      aggregated_dict_preconvert = deepcopy(aggregated_dict)
+      aggregated_dict_preconvert = self.__autocopy(aggregated_dict)
       aggregated_dict = {}
       for key, value in aggregated_dict_preconvert.items():
         for i in range(len(value)):
@@ -18708,7 +18700,7 @@ class AutoMunge:
     test_unique_list = list(map(str, test_unique_list))
     extra_test_unique = list(set(test_unique_list) - set(unique_list))
 
-    test_overlap_dict = deepcopy(overlap_dict)
+    test_overlap_dict = self.__autocopy(overlap_dict)
     
     if test_same_as_train is True:
       
@@ -19988,6 +19980,8 @@ class AutoMunge:
     
     df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
     
+    from pandas.tseries.holiday import USFederalHolidayCalendar
+
     #grab list of holidays from import
     holidays = USFederalHolidayCalendar().holidays().tolist()
 
@@ -20856,6 +20850,8 @@ class AutoMunge:
       mdf_test[suffixcolumn] = 0
     
     else:
+      from sklearn.preprocessing import QuantileTransformer
+
       #initialize quantile transformer
       qttf = QuantileTransformer(n_quantiles=n_quantiles, 
                                 output_distribution=output_distribution,
@@ -27257,7 +27253,7 @@ class AutoMunge:
         
         for attribute in attributes:
           
-          temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+          temp_sampling_resource_dict = self.__autocopy(sampling_resource_dict)
           
           if attribute == attribute:
             attribute_count = mdf_train.loc[(mdf_train[protected_feature]==attribute) & (mdf_train[DPod_tempcolumn1] == 1)].shape[0]
@@ -27336,7 +27332,7 @@ class AutoMunge:
         #for test data we'll also consider test attributes that weren't found in the train data
         #and apply aggregate feature weighting
         #since attribute_weightings_dict is inspected as part of sampling we'll need to add temporary entries
-        temp_attribute_weightings_dict = deepcopy(attribute_weightings_dict)
+        temp_attribute_weightings_dict = self.__autocopy(attribute_weightings_dict)
         
         test_attributes = list(mdf_test[protected_feature].unique())
         extra_test_attributes = set(test_attributes) - set(attributes)
@@ -27346,7 +27342,7 @@ class AutoMunge:
         
         for attribute in (attributes + list(extra_test_attributes)):
           
-          temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+          temp_sampling_resource_dict = self.__autocopy(sampling_resource_dict)
           
           if attribute == attribute:
             attribute_count = mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
@@ -27878,7 +27874,7 @@ class AutoMunge:
       common support function used to inject noise to either mdf_train or mdf_test when applicable
       """
       
-      sampling_resource_dict = deepcopy(sampling_resource_dict)
+      sampling_resource_dict = self.__autocopy(sampling_resource_dict)
       
       unique_count = df_unique.shape[0]
       unique_range = list(range(unique_count))
@@ -31460,7 +31456,7 @@ class AutoMunge:
       self.__column_convert_support(MLinfill_targets, postprocess_dict, convert_to='input')
       
       #as received this includes label sets
-      origcolumns = deepcopy(list(postprocess_dict['origcolumn']))
+      origcolumns = self.__autocopy(list(postprocess_dict['origcolumn']))
     
       #remove the label entry
       labelcolumn = False
@@ -31570,7 +31566,7 @@ class AutoMunge:
     else:
       ML_cmnd.update({'leakage_dict':{}})
       leakage_dict_orig = {}
-    ML_cmnd.update({'leakage_dict_orig' : deepcopy(leakage_dict_orig)})
+    ML_cmnd.update({'leakage_dict_orig' : self.__autocopy(leakage_dict_orig)})
       
     if 'leakage_dict_derived' in ML_cmnd:
       leakage_dict_derived = ML_cmnd['leakage_dict_derived']
@@ -34651,7 +34647,7 @@ class AutoMunge:
     
     FS_validations = {}
 
-    FSML_cmnd = deepcopy(ML_cmnd)
+    FSML_cmnd = self.__autocopy(ML_cmnd)
     #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
     #don't yet have support for xgboost due to use of postprocess_dict['customML_inference_support']
     if ML_cmnd['autoML_type'] in {'customML', 'xgboost'}:
@@ -34660,7 +34656,7 @@ class AutoMunge:
     FS_PCAn_components = False
     FS_Binary = False
 
-    FS_assignparam = deepcopy(assignparam)
+    FS_assignparam = self.__autocopy(assignparam)
 
     totalvalidation = 0
     if isinstance(valpercent, float):
@@ -35252,7 +35248,7 @@ class AutoMunge:
     for key in assigninfill_withsuffix:
       all_specd_withsuffix += assigninfill_withsuffix[key]
     for key in assigninfill_sourcecolumn_converted:
-      assigninfill_sourcecolumn_converted_key_copy = deepcopy(assigninfill_sourcecolumn_converted[key])
+      assigninfill_sourcecolumn_converted_key_copy = self.__autocopy(assigninfill_sourcecolumn_converted[key])
       for entry in assigninfill_sourcecolumn_converted_key_copy:
         if entry in all_specd_withsuffix:
           assigninfill_sourcecolumn_converted[key].remove(entry)
@@ -36647,53 +36643,6 @@ class AutoMunge:
 
   #__FunctionBlock: PCA support functions
 
-  def __populatePCAdefaults(self, randomseed):
-    '''
-    populates sa dictionary with default values for PCA methods PCA, 
-    SparsePCA, and KernelPCA. (Each based on ScikitLearn default values)
-    #note that for SparsePCA the 'normalize_components' is not passed 
-    #since will be depreciated
-    '''
-
-    PCAdefaults = {'PCA':{}, 'SparsePCA':{}, 'KernelPCA':{}}
-
-    PCAdefaults['PCA'].update({'copy':True, \
-                               'whiten':False, \
-                               'svd_solver':'auto', \
-                               'tol':0.0, \
-                               'iterated_power':'auto', \
-                               'random_state':randomseed})
-
-    PCAdefaults['SparsePCA'].update({'alpha':1, \
-                                     'ridge_alpha':0.01, \
-                                     'max_iter':1000, \
-                                     'tol':1e-08, \
-                                     'method':'lars', \
-                                     'n_jobs':None, \
-                                     'U_init':None, \
-                                     'V_init':None, \
-                                     'verbose':False, \
-                                     'random_state':randomseed})
-#                                       , \
-#                                      'normalize_components':True})
-
-    PCAdefaults['KernelPCA'].update({'kernel':'linear', \
-                                     'gamma':None, \
-                                     'degree':3, \
-                                     'coef0':1, \
-                                     'kernel_params':None, \
-                                     'alpha':1.0, \
-                                     'fit_inverse_transform':False, \
-                                     'eigen_solver':'auto', \
-                                     'tol':0, \
-                                     'max_iter':None, \
-                                     'remove_zero_eig':False, \
-                                     'random_state':randomseed, \
-                                     'copy_X':True, \
-                                     'n_jobs':None})
-
-    return PCAdefaults
-
   def __evalPCA(self, df_train, PCAn_components, ML_cmnd):
     '''
     returns a PCA type (PCA_type)
@@ -36781,236 +36730,60 @@ class AutoMunge:
     
     return PCActgy, n_components
 
-  def __initSparsePCA(self, ML_cmnd, PCAdefaults, PCAn_components):
+  def __populatePCAdefaults(self, randomseed):
+    '''
+    populates sa dictionary with default values for PCA methods PCA, 
+    SparsePCA, and KernelPCA. (currently just applying the randomseed)
+    '''
+
+    PCAdefaults = {'PCA':{}, 'SparsePCA':{}, 'KernelPCA':{}}
+
+    PCAdefaults['PCA'].update({'random_state':randomseed})
+
+    PCAdefaults['SparsePCA'].update({'random_state':randomseed})
+
+    PCAdefaults['KernelPCA'].update({'random_state':randomseed})
+
+    return PCAdefaults
+
+  def __initSparsePCA(self, ML_cmnd, PCAdefaults, PCAn_components, PCAtype='SparsePCA'):
     '''
     function that assigns appropriate parameters based on defaults and user inputs
     and then initializes a SparsePCA model
     '''
+    
+    PCA_cmnd = self.__autocopy(ML_cmnd['PCA_cmnd'])
+    
+    #first strike any automunge specific parameters
+    for automunge_PCA_command in ['bool_ordl_PCAexcl', 'bool_PCA_excl', 'col_row_ratio']:
+      if automunge_PCA_command in PCA_cmnd:
+        del PCA_cmnd[automunge_PCA_command]
+        
+    #then update with any defaults (we populate a randomseed in __populatePCAdefaults)
+    PCA_cmnd.update(PCAdefaults[PCAtype])
+    PCA_cmnd.update({'n_components' : PCAn_components})
 
-    #if user passed values use those, otherwise pass scikit defaults
-    if 'alpha' in ML_cmnd['PCA_cmnd']:
-      alpha = ML_cmnd['PCA_cmnd']['alpha']
-    else:
-      alpha = PCAdefaults['SparsePCA']['alpha']
+    if PCAtype == 'SparsePCA':
+      from sklearn.decomposition import SparsePCA
+      PCAmodel = SparsePCA(**PCA_cmnd)
 
-    if 'ridge_alpha' in ML_cmnd['PCA_cmnd']:
-      ridge_alpha = ML_cmnd['PCA_cmnd']['ridge_alpha']
-    else:
-      ridge_alpha = PCAdefaults['SparsePCA']['ridge_alpha']
+    elif PCAtype == 'KernelPCA':
+      from sklearn.decomposition import KernelPCA
+      PCAmodel = KernelPCA(**PCA_cmnd)
 
-    if 'max_iter' in ML_cmnd['PCA_cmnd']:
-      max_iter = ML_cmnd['PCA_cmnd']['max_iter']
-    else:
-      max_iter = PCAdefaults['SparsePCA']['max_iter']
-
-    if 'tol' in ML_cmnd['PCA_cmnd']:
-      tol = ML_cmnd['PCA_cmnd']['tol']
-    else:
-      tol = PCAdefaults['SparsePCA']['tol']
-
-    if 'method' in ML_cmnd['PCA_cmnd']:
-      method = ML_cmnd['PCA_cmnd']['method']
-    else:
-      method = PCAdefaults['SparsePCA']['method']
-
-    if 'n_jobs' in ML_cmnd['PCA_cmnd']:
-      n_jobs = ML_cmnd['PCA_cmnd']['n_jobs']
-    else:
-      n_jobs = PCAdefaults['SparsePCA']['n_jobs']
-
-    if 'U_init' in ML_cmnd['PCA_cmnd']:
-      U_init = ML_cmnd['PCA_cmnd']['U_init']
-    else:
-      U_init = PCAdefaults['SparsePCA']['U_init']
-
-    if 'V_init' in ML_cmnd['PCA_cmnd']:
-      V_init = ML_cmnd['PCA_cmnd']['V_init']
-    else:
-      V_init = PCAdefaults['SparsePCA']['V_init']
-
-    if 'verbose' in ML_cmnd['PCA_cmnd']:
-      verbose = ML_cmnd['PCA_cmnd']['verbose']
-    else:
-      verbose = PCAdefaults['SparsePCA']['verbose']
-
-    if 'random_state' in ML_cmnd['PCA_cmnd']:
-      random_state = ML_cmnd['PCA_cmnd']['random_state']
-    else:
-      random_state = PCAdefaults['SparsePCA']['random_state']
-
-#     if 'normalize_components' in ML_cmnd['PCA_cmnd']:
-#       normalize_components = ML_cmnd['PCA_cmnd']['normalize_components']
-#     else:
-#       normalize_components = PCAdefaults['SparsePCA']['normalize_components']
-
-    #do other stuff?
-
-    #then train PCA model 
-    PCAmodel = SparsePCA(n_components = PCAn_components, \
-                         alpha = alpha, \
-                         ridge_alpha = ridge_alpha, \
-                         max_iter = max_iter, \
-                         tol = tol, \
-                         method = method, \
-                         n_jobs = n_jobs, \
-                         U_init = U_init, \
-                         V_init = V_init, \
-                         verbose = verbose, \
-                         random_state = random_state)
-#                          , \
-#                          normalize_components = normalize_components)
-
+    elif PCAtype == 'PCA':
+      from sklearn.decomposition import PCA
+      PCAmodel = PCA(**PCA_cmnd)
+    
     return PCAmodel
-
+  
   def __initKernelPCA(self, ML_cmnd, PCAdefaults, PCAn_components):
-    '''
-    function that assigns approrpiate parameters based on defaults and user inputs
-    and then initializes a KernelPCA model
-    '''
-
-    #if user passed values use those, otherwise pass scikit defaults
-    if 'kernel' in ML_cmnd['PCA_cmnd']:
-      kernel = ML_cmnd['PCA_cmnd']['kernel']
-    else:
-      kernel = PCAdefaults['KernelPCA']['kernel']
-
-    if 'gamma' in ML_cmnd['PCA_cmnd']:
-      gamma = ML_cmnd['PCA_cmnd']['gamma']
-    else:
-      gamma = PCAdefaults['KernelPCA']['gamma']
-
-    if 'degree' in ML_cmnd['PCA_cmnd']:
-      degree = ML_cmnd['PCA_cmnd']['degree']
-    else:
-      degree = PCAdefaults['KernelPCA']['degree']
-
-    if 'coef0' in ML_cmnd['PCA_cmnd']:
-      coef0 = ML_cmnd['PCA_cmnd']['coef0']
-    else:
-      coef0 = PCAdefaults['KernelPCA']['coef0']
-
-    if 'kernel_params' in ML_cmnd['PCA_cmnd']:
-      kernel_params = ML_cmnd['PCA_cmnd']['kernel_params']
-    else:
-      kernel_params = PCAdefaults['KernelPCA']['kernel_params']
-
-    if 'alpha' in ML_cmnd['PCA_cmnd']:
-      alpha = ML_cmnd['PCA_cmnd']['alpha']
-    else:
-      alpha = PCAdefaults['KernelPCA']['alpha']
-
-    if 'fit_inverse_transform' in ML_cmnd['PCA_cmnd']:
-      fit_inverse_transform = ML_cmnd['PCA_cmnd']['fit_inverse_transform']
-    else:
-      fit_inverse_transform = PCAdefaults['KernelPCA']['fit_inverse_transform']
-
-    if 'eigen_solver' in ML_cmnd['PCA_cmnd']:
-      eigen_solver = ML_cmnd['PCA_cmnd']['eigen_solver']
-    else:
-      eigen_solver = PCAdefaults['KernelPCA']['eigen_solver']
-
-    if 'tol' in ML_cmnd['PCA_cmnd']:
-      tol = ML_cmnd['PCA_cmnd']['tol']
-    else:
-      tol = PCAdefaults['KernelPCA']['tol']
-
-    if 'max_iter' in ML_cmnd['PCA_cmnd']:
-      max_iter = ML_cmnd['PCA_cmnd']['max_iter']
-    else:
-      max_iter = PCAdefaults['KernelPCA']['max_iter']
-
-    if 'remove_zero_eig' in ML_cmnd['PCA_cmnd']:
-      remove_zero_eig = ML_cmnd['PCA_cmnd']['remove_zero_eig']
-    else:
-      remove_zero_eig = PCAdefaults['KernelPCA']['remove_zero_eig']
-
-    if 'random_state' in ML_cmnd['PCA_cmnd']:
-      random_state = ML_cmnd['PCA_cmnd']['random_state']
-    else:
-      random_state = PCAdefaults['KernelPCA']['random_state']
-
-    if 'copy_X' in ML_cmnd['PCA_cmnd']:
-      copy_X = ML_cmnd['PCA_cmnd']['copy_X']
-    else:
-      copy_X = PCAdefaults['KernelPCA']['copy_X']
-
-    if 'n_jobs' in ML_cmnd['PCA_cmnd']:
-      n_jobs = ML_cmnd['PCA_cmnd']['n_jobs']
-    else:
-      n_jobs = PCAdefaults['KernelPCA']['n_jobs']
-
-    #do other stuff?
-
-    #then train PCA model 
-    PCAmodel = KernelPCA(n_components = PCAn_components, \
-                         kernel = kernel, \
-                         gamma = gamma, \
-                         degree = degree, \
-                         coef0 = coef0, \
-                         kernel_params = kernel_params, \
-                         alpha = alpha, \
-                         fit_inverse_transform = fit_inverse_transform, \
-                         eigen_solver = eigen_solver, \
-                         tol = tol, \
-                         max_iter = max_iter, \
-                         remove_zero_eig = remove_zero_eig, \
-                         random_state = random_state, \
-                         copy_X = copy_X, \
-                         n_jobs = n_jobs)
-
-    return PCAmodel
-
+    #comparable to __initSparsePCA with different PCAtype for inspecting PCAdefaults
+    return self.__initSparsePCA(ML_cmnd, PCAdefaults, PCAn_components, PCAtype='KernelPCA')
+  
   def __initPCA(self, ML_cmnd, PCAdefaults, PCAn_components):
-    '''
-    function that assigns approrpiate parameters based on defaults and user inputs
-    and then initializes a basic PCA model
-    '''
-
-    #run PCA version
-
-    #if user passed values use those, otherwise pass scikit defaults
-    if 'copy' in ML_cmnd['PCA_cmnd']:
-      copy = ML_cmnd['PCA_cmnd']['copy']
-    else:
-      copy = PCAdefaults['PCA']['copy']
-
-    if 'whiten' in ML_cmnd['PCA_cmnd']:
-      whiten = ML_cmnd['PCA_cmnd']['whiten']
-    else:
-      whiten = PCAdefaults['PCA']['whiten']
-
-    if 'svd_solver' in ML_cmnd['PCA_cmnd']:
-      svd_solver = ML_cmnd['PCA_cmnd']['svd_solver']
-    else:
-      svd_solver = PCAdefaults['PCA']['svd_solver']
-
-    if 'tol' in ML_cmnd['PCA_cmnd']:
-      tol = ML_cmnd['PCA_cmnd']['tol']
-    else:
-      tol = PCAdefaults['PCA']['tol']
-
-    if 'iterated_power' in ML_cmnd['PCA_cmnd']:
-      iterated_power = ML_cmnd['PCA_cmnd']['iterated_power']
-    else:
-      iterated_power = PCAdefaults['PCA']['iterated_power']
-
-    if 'random_state' in ML_cmnd['PCA_cmnd']:
-      random_state = ML_cmnd['PCA_cmnd']['random_state']
-    else:
-      random_state = PCAdefaults['PCA']['random_state']
-
-    #do other stuff?
-
-    #then train PCA model 
-    PCAmodel = PCA(n_components = PCAn_components, \
-                   copy = copy, \
-                   whiten = whiten, \
-                   svd_solver = svd_solver, \
-                   tol = tol, \
-                   iterated_power = iterated_power, \
-                   random_state = random_state)
-
-    return PCAmodel
+    #comparable to __initSparsePCA with different PCAtype for inspecting PCAdefaults
+    return self.__initSparsePCA(ML_cmnd, PCAdefaults, PCAn_components, PCAtype='PCA')
 
   def __boolexcl(self, ML_cmnd, df, PCAexcl, postprocess_dict):
     """
@@ -37125,14 +36898,20 @@ class AutoMunge:
     
     #initialize a PCA model
     if PCActgy == 'default' or PCActgy == 'SparsePCA':
+
+      from sklearn.decomposition import SparsePCA
   
       PCAmodel = self.__initSparsePCA(ML_cmnd, PCAdefaults, n_components)
 
     if PCActgy == 'KernelPCA':
+
+      from sklearn.decomposition import KernelPCA
   
       PCAmodel = self.__initKernelPCA(ML_cmnd, PCAdefaults, n_components)
     
     if PCActgy == 'PCA':
+
+      from sklearn.decomposition import PCA
   
       PCAmodel = self.__initPCA(ML_cmnd, PCAdefaults, n_components)
     
@@ -38754,6 +38533,7 @@ class AutoMunge:
         
       return ML_cmnd, check_ML_cmnd_result
             
+    #autoML_type is the library used for ML infill or feature importance, customML accesses user defined functions
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'autoML_type', 
@@ -38763,6 +38543,7 @@ class AutoMunge:
                               valid_entries={'randomforest', 'customML', 'flaml', 'catboost', 'xgboost'},
                               valid_type=str)
     
+    #MLinfill_cmnd is used to pass parameters to MLinfill training
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'MLinfill_cmnd', 
@@ -38772,6 +38553,8 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=dict)
     
+    #ML_cmnd['MLinfill_cmnd']['RandomForestClassifier'] passes parameters to random forest clasification
+    #expected as dicitonary {'parameter' : value}
     ML_cmnd['MLinfill_cmnd'], check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd['MLinfill_cmnd'], 
                               'RandomForestClassifier', 
@@ -38781,6 +38564,8 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=dict)
     
+    #ML_cmnd['MLinfill_cmnd']['RandomForestRegressor'] passes parameters to random forest regression
+    #expected as dicitonary {'parameter' : value}
     ML_cmnd['MLinfill_cmnd'], check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd['MLinfill_cmnd'], 
                               'RandomForestRegressor', 
@@ -38790,6 +38575,8 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=dict)
     
+    #PCA_type selects which type of PCA to be applied when PCAn_components specified in automunge
+    #default scenario defaults to kernel when all values non-negative, otherwise sparse
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'PCA_type', 
@@ -38799,6 +38586,10 @@ class AutoMunge:
                               valid_entries={'default', 'PCA', 'SparsePCA', 'KernelPCA'},
                               valid_type=str)
     
+    #PCA_cmnd used to select options for PCA, including bool_ordl_PCAexcl, bool_PCA_excl, col_row_ratio
+    #PCA_cmnd can also be used to pass parameters to PCA fit operation
+    #e.g. ML_cmnd['PCA_cmnd']['kernel'] = {'parameter' : value}
+    #PCA_cmnd distinguishes between automunge specific parameters and library options in init functions like __initSparsePCA
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'PCA_cmnd', 
@@ -38808,7 +38599,8 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=dict)
     
-    #bool_PCA_excl if specified takes precedence over bool_ordl_PCAexcl
+    #bool_ordl_PCAexcl excludes both boolean integer and ordinal integer encoded features from PCA 
+    #(note some MLinfilltypes like 'exclude' are automatically excluded)
     if 'bool_PCA_excl' not in ML_cmnd['PCA_cmnd']:
       ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
       _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
@@ -38819,6 +38611,9 @@ class AutoMunge:
                                 valid_entries={True, False},
                                 valid_type=bool)
     else:
+      #bool_PCA_excl if specified takes precedence over bool_ordl_PCAexcl
+      #bool_PCA_excl excludes just boolean integer encoded features from PCA
+      #(note some MLinfilltypes like 'exclude' are automatically excluded)
       ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
       _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
                                 'bool_PCA_excl', 
@@ -38828,6 +38623,8 @@ class AutoMunge:
                                 valid_entries={True, False},
                                 valid_type=bool)
     
+    #As a special convention, if PCAn_components passed as _None_ PCA is performed when # features exceeds 0.5 # rows (as a heuristic). 
+    #(The 0.5 value can also be updated in ML_cmnd by passing to ML_cmnd['PCA_cmnd']['col_row_ratio'].)
     ML_cmnd['PCA_cmnd'], check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd['PCA_cmnd'], 
                               'col_row_ratio', 
@@ -38837,6 +38634,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
 
+    #PCA_retain when activated the PCA dimensionality reduciton supplements instead of replaces columns serving as basis
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'PCA_retain', 
@@ -38846,6 +38644,7 @@ class AutoMunge:
                               valid_entries={True, False},
                               valid_type=bool)
     
+    #leakage_tolerance can be used to set tolerance or deactivate the automated leakage detection for ML infill exclusion
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'leakage_tolerance', 
@@ -38855,6 +38654,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=(float, bool))
     
+    #leakage_sets can be used to bidirectionally exclude particular features from each other's imputation model bases
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'leakage_sets', 
@@ -38864,6 +38664,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=list)
 
+    #full_exclude can be used to exclude a feature from all ML infill and PCA basis
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'full_exclude', 
@@ -38873,6 +38674,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=list)
     
+    #leakage_dict can be used to unidirectionally exclude features from another's basis
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'leakage_dict', 
@@ -38882,6 +38684,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=dict)
     
+    #hyperparam_tuner selects between types of hyperparameter tuning for randomforest or xgboost
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'hyperparam_tuner', 
@@ -38891,6 +38694,7 @@ class AutoMunge:
                               valid_entries={'gridCV', 'randomCV', 'optuna_XG1'},
                               valid_type=str)
     
+    #when randomCV hyperparam_tuner applied, randomCV_n_iter designates the number of iterations
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'randomCV_n_iter', 
@@ -38900,6 +38704,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=int)
 
+    #when optuna_XG1 hyperparam_tuner applied, optuna_n_iter designates the number of iterations per feature
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'optuna_n_iter', 
@@ -38909,6 +38714,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=int)
 
+    #when optuna_XG1 hyperparam_tuner applied, optuna_timeout designates the max tuning duration per feature
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'optuna_timeout', 
@@ -38918,6 +38724,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=int)
 
+    #when optuna_XG1 hyperparam_tuner applied, optuna_kfolds selects number of folds for cross validation in tuning
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'optuna_kfolds', 
@@ -38927,6 +38734,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=int)
 
+    #when optuna_XG1 hyperparam_tuner applied, optuna_early_stop selects number of iterations without improvement to trigger early stopping
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'optuna_early_stop', 
@@ -38936,6 +38744,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=int)
 
+    #optuna_max_depth_tuning_stepsize, for long tuning durations, we expect may be beneficial to change 2 to 1 (the optuna tutorial demonstrated defaulting to 2)
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'optuna_max_depth_tuning_stepsize', 
@@ -38944,7 +38753,8 @@ class AutoMunge:
                               default=2, 
                               valid_entries=False,
                               valid_type=(int))
-
+    
+    #xgboost_gpu_id designated which GPU will be used to train xgboost
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'xgboost_gpu_id', 
@@ -38954,6 +38764,8 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=(int, bool))
     
+    #by default the random seed passed to model training is stochastic between applications, 
+    #stochastic_training_seed can be used to set a fixed value matched to the global randomseed used for pandas
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_training_seed', 
@@ -38963,6 +38775,7 @@ class AutoMunge:
                               valid_entries={True, False},
                               valid_type=bool)
     
+    #stochastic_impute_numeric activates the injection of stochasticity into ML infill targeting numeric features
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_numeric', 
@@ -38972,6 +38785,7 @@ class AutoMunge:
                               valid_entries={True, False},
                               valid_type=bool)
     
+    #stochastic_impute_numeric_mu is mean of noise for stochastic_impute_numeric
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_numeric_mu', 
@@ -38981,6 +38795,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #stochastic_impute_numeric_sigma is scale of noise for stochastic_impute_numeric
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_numeric_sigma', 
@@ -38990,6 +38805,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #stochastic_impute_numeric_flip_prob is injection ratio of noise for stochastic_impute_numeric
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_numeric_flip_prob', 
@@ -38999,6 +38815,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #stochastic_impute_numeric_noisedistribution is distribution type for stochastic_impute_numeric
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_numeric_noisedistribution', 
@@ -39008,6 +38825,7 @@ class AutoMunge:
                               valid_entries={'normal', 'laplace'},
                               valid_type=str)
     
+    #stochastic_impute_categoric activates the injection of stochasticity into ML infill targeting categoric features
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_categoric', 
@@ -39017,6 +38835,7 @@ class AutoMunge:
                               valid_entries={True, False},
                               valid_type=bool)
     
+    #stochastic_impute_categoric_flip_prob is injection ratio of noise for stochastic_impute_categoric
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'stochastic_impute_categoric_flip_prob', 
@@ -39026,6 +38845,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #halt_iterate activates early stopping assessment for ML infill infilliterate
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'halt_iterate', 
@@ -39035,6 +38855,7 @@ class AutoMunge:
                               valid_entries={True, False},
                               valid_type=bool)
     
+    #categoric_tol sets categoric tolerance for early stopping criteria for halt_iterate (for ML infill infilliterate)
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'categoric_tol', 
@@ -39044,6 +38865,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #numeric_tol sets numeric tolerance for early stopping criteria for halt_iterate (for ML infill infilliterate)
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'numeric_tol', 
@@ -39053,6 +38875,7 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #customML_inference_support used to support populating ML_cmnd, not returned in the final postprocess_dict to reduce memory overhead since is redundant with ML_cmnd
     ML_cmnd, check_ML_cmnd_result = \
     _populate_ML_cmnd_default(ML_cmnd, 
                               'customML_inference_support', 
@@ -39103,6 +38926,7 @@ class AutoMunge:
         
       return sampling_dict, check_sampling_dict_result
             
+    #sampling_type can be used to designate number of supplemental entropy seeds applie to each sampling
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'sampling_type', 
@@ -39112,7 +38936,11 @@ class AutoMunge:
                               valid_entries={'default', 'bulk_seeds', 'sampling_seed', 'transform_seed'},
                               valid_type=str)
     
-    #note the default scenario is updated following this call
+    #seeding_type 'supplemental_seeds' means that entropy seeds are integrated into np.random.SeedSequence with entropy seeding from the operating system. 
+    #Also accepts 'primary_seeds', in which user passed entropy seeds are the only source of seeding. 
+    #Please note that 'primary_seeds' is used as the default for the bulk_seeds sampling_type 
+    #and 'supplemental_seeds' is used as the default for other sampling_type options.
+    #note the default scenario is updated following this call to one of those two configurations
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'seeding_type', 
@@ -39130,6 +38958,8 @@ class AutoMunge:
       else:
         sampling_dict['seeding_type'] = 'supplemental_seeds'
     
+    #sampling_report_dict may be passed by user as returned in a seperate automunge(.) call as postprocess_dict['sampling_report_dict']
+    #when not received an internal automunge(.) call takes place to populate one instead
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'sampling_report_dict', 
@@ -39139,6 +38969,9 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=(bool, dict))
     
+    #stochastic_count_safety_factor refers to the safety factor applied to seeding budget for stochastic elements
+    #like e.g. if we know the Bernoulli sampling ratio, we can derive the distribution sampling for bulk_seeds
+    #applying this safety factor to account for variance in Bernoulli result
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'stochastic_count_safety_factor', 
@@ -39148,6 +38981,12 @@ class AutoMunge:
                               valid_entries=False,
                               valid_type=float)
     
+    #extra_seed_generator selects which generator to use to populate extra seeds
+    #which is performed when a sampling_type specification other than default is applied
+    #and user did not pass sufficient external entropy_seeds to meet the budget
+    #in some cases the extra_seed_generator may generate all of the entropy seeds at once for passing to a numpy generator in the transforms
+    #which may benefit utilization rate of quantum hardware by eliminating latency of pandas operations from the QC utilization
+    #the off case refers to not sampling additional seeds when user does not meet budget
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'extra_seed_generator', 
@@ -39157,6 +38996,8 @@ class AutoMunge:
                               valid_entries={'custom', 'PCG64', 'MersenneTwister', 'off', 'sampling_generator'},
                               valid_type=str)
     
+    #sampling_generator selects which generator will be applied within the transforms
+    #which if the selection accepts seeding will include any seeds received as entropy_seeds
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'sampling_generator', 
@@ -39165,7 +39006,8 @@ class AutoMunge:
                               default='custom', 
                               valid_entries={'custom', 'PCG64', 'MersenneTwister'},
                               valid_type=str)
-
+    
+    #random_generator_accepts_seeds is derived internally when validating the user passed random_generator
     sampling_dict, check_sampling_dict_result = \
     _populate_sampling_dict_default(sampling_dict, 
                               'random_generator_accepts_seeds', 
@@ -39840,7 +39682,7 @@ class AutoMunge:
     
     return postprocess_dict
 
-  def __prepare_seeds(self, postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, randomseed, test_plug_marker):
+  def __prepare_seeds(self, postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, test_plug_marker):
     """
     if sampling_type != default
     we'll want to determine how many seeds are needed prior to entering processfamily
@@ -39905,10 +39747,10 @@ class AutoMunge:
       #note that postmunge also accepts user specified sampling_dict['sampling_report_dict'] which takes precedence over postprocess_dict
       sampling_report_dict = False
       if sampling_dict['sampling_report_dict'] is not False:
-        sampling_report_dict = deepcopy(sampling_dict['sampling_report_dict'])
+        sampling_report_dict = self.__autocopy(sampling_dict['sampling_report_dict'])
       elif 'sampling_report_dict' in postprocess_dict:
         #this is the postmunge case
-        sampling_report_dict = deepcopy(postprocess_dict['sampling_report_dict'])
+        sampling_report_dict = self.__autocopy(postprocess_dict['sampling_report_dict'])
         
       #note that different trainnoise / testnoise scenarios will be covered by the counts in sampling_report_dict
 
@@ -39985,7 +39827,7 @@ class AutoMunge:
       #if fewer seeds were provided, additional seeds are extracted except for the extra_seed_generator off case
       if provided_seed_count < seed_requirement and extra_seed_generator != 'off':
         
-        spawn_seed = [randomseed]
+        spawn_seed = []
         if provided_seed_count > 0:
           spawn_seed = [entropy_seeds[0]]
           entropy_seeds = np.delete(entropy_seeds, 0)
@@ -40217,7 +40059,7 @@ class AutoMunge:
 
     #we'll use sampling_resource_dict to log the counts used to generate seeds
     #and populated_sampling_resource_dict will be passed to the transform with seeds and zero counts
-    sampling_resource_dict = deepcopy(populated_sampling_resource_dict)
+    sampling_resource_dict = self.__autocopy(populated_sampling_resource_dict)
     
     #stochastic_count_safety_factor expected as float between 0-1
     stochastic_count_safety_factor = sampling_dict['stochastic_count_safety_factor']
@@ -40792,6 +40634,7 @@ class AutoMunge:
     the use between PCG64 or custom 
     will follow the convention of sampling_dict['extra_seed_generator']
     """
+    populate_randomseed_expended_seed_count = 0
 
     #2**32 - 1
     #(note that np.random.SeedSequence accepts larger values, this range is used to align with its use for pandas seeding)
@@ -40826,6 +40669,7 @@ class AutoMunge:
     
         shuffle_seed = [entropy_seeds[0]]
         entropy_seeds = np.delete(entropy_seeds, 0)
+        populate_randomseed_expended_seed_count += 1
 
         if sampling_generator_accepts_seeds is True:
           nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=shuffle_seed)))
@@ -40838,6 +40682,7 @@ class AutoMunge:
         
         spawn_seed = [entropy_seeds[0]]
         entropy_seeds = np.delete(entropy_seeds, 0)
+        populate_randomseed_expended_seed_count += 1
         
       elif len(entropy_seeds) == 1:
         
@@ -40854,7 +40699,7 @@ class AutoMunge:
 
       randomseed = int(nprandom.integers(0, high=max_capacity_seed, size=1))
           
-    return randomseed, randomrandomseed, entropy_seeds
+    return randomseed, randomrandomseed, entropy_seeds, populate_randomseed_expended_seed_count
 
   def __sample_from_parameter_list(self, parameter_list, sampling_resource_dict, nprandom_dict, traintest):
     #traintest accepts {'train', 'test'}
@@ -41034,7 +40879,7 @@ class AutoMunge:
           #defaultparams gets special treatment since accessing entries in a dictionary
           if 'defaultparams' in processdict[pointercategory]:
             if 'defaultparams' in processdict[targetcategory]:
-              defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
+              defaultparams = self.__autocopy(processdict[pointercategory]['defaultparams'])
               defaultparams.update(processdict[targetcategory]['defaultparams'])
               processdict[targetcategory]['defaultparams'] = defaultparams
             else:
@@ -41073,7 +40918,7 @@ class AutoMunge:
               #defaultparams gets special treatment since accessing entries in a dictionary
               if 'defaultparams' in process_dict[pointercategory]:
                 if 'defaultparams' in processdict[targetcategory]:
-                  defaultparams = deepcopy(process_dict[pointercategory]['defaultparams'])
+                  defaultparams = self.__autocopy(process_dict[pointercategory]['defaultparams'])
                   defaultparams.update(processdict[targetcategory]['defaultparams'])
                   processdict[targetcategory]['defaultparams'] = defaultparams
                 else:
@@ -41103,7 +40948,7 @@ class AutoMunge:
           #defaultparams gets special treatment since accessing entries in a dictionary
           if 'defaultparams' in processdict[pointercategory]:
             if 'defaultparams' in processdict[targetcategory]:
-              defaultparams = deepcopy(processdict[pointercategory]['defaultparams'])
+              defaultparams = self.__autocopy(processdict[pointercategory]['defaultparams'])
               defaultparams.update(processdict[targetcategory]['defaultparams'])
               processdict[targetcategory]['defaultparams'] = defaultparams
             else:
@@ -41127,7 +40972,7 @@ class AutoMunge:
         #defaultparams gets special treatment since accessing entries in a dictionary
         if 'defaultparams' in process_dict[pointercategory]:
           if 'defaultparams' in processdict[targetcategory]:
-            defaultparams = deepcopy(process_dict[pointercategory]['defaultparams'])
+            defaultparams = self.__autocopy(process_dict[pointercategory]['defaultparams'])
             defaultparams.update(processdict[targetcategory]['defaultparams'])
             processdict[targetcategory]['defaultparams'] = defaultparams
           else:
@@ -41311,7 +41156,7 @@ class AutoMunge:
     
     if 'columns' in assignnan:
       
-      columns_copy = deepcopy(assignnan['columns'])
+      columns_copy = self.__autocopy(assignnan['columns'])
       
       for entry in columns_copy:
         
@@ -41368,7 +41213,7 @@ class AutoMunge:
       data_ = [np.nan if x != x else x for x in data_]
       
     if isinstance(data_, dict):
-      for key, value in deepcopy(data_).items():
+      for key, value in self.__autocopy(data_).items():
         if key != key:
           del data_[key]
           data_[np.nan] = value
@@ -41701,7 +41546,7 @@ class AutoMunge:
     printstatus = postprocess_dict['printstatus']
     
     if isinstance(Binary, list):
-      Binary_orig = deepcopy(Binary)
+      Binary_orig = self.__autocopy(Binary)
     else:
       Binary_orig = Binary
     
@@ -42836,8 +42681,8 @@ class AutoMunge:
     #_populate_columntype_report may be called prior to applying Binary
     if 'returned_Binary_sets' in postprocess_dict:
       #this supports Binary returned columns
-      Binary_sets_log = {'trainlog' : deepcopy(postprocess_dict['returned_Binary_sets']),
-                        'labellog' : deepcopy(postprocess_dict['final_returned_labelBinary_sets'])}
+      Binary_sets_log = {'trainlog' : self.__autocopy(postprocess_dict['returned_Binary_sets']),
+                        'labellog' : self.__autocopy(postprocess_dict['final_returned_labelBinary_sets'])}
     else:
       Binary_sets_log = {'trainlog' : [],
                         'labellog' : []}
@@ -43199,6 +43044,41 @@ class AutoMunge:
       
     return df
 
+  def __autocopy(self, original):
+    """
+    python's deepcopy is useful for copying dictionaries to avoid overwrite from memory sharing
+    (python lists and dictionaries are mutable containers such that setting a=b means a is b)
+    the only hitch is that there are some non-native entries incompatible with deepcopy
+    this is not an issue in current implementation
+    but since we are allowing custom defined functions
+    it is possible that a user may wish to store a non-native entry in the normalization_dict
+    this support function circumvents by copying in different fashion where appropriate
+    resulting in what is equivalent to a deepcopy but with support for non-native entries
+    """
+    
+    if isinstance(original, dict):
+      orig_dict_copy = {}
+      for entry in original:
+        if isinstance(original[entry], (dict, list)):
+          entry_copy = self.__autocopy(original[entry])
+          orig_dict_copy.update({entry : entry_copy})
+        else:
+          orig_dict_copy.update({entry : original[entry]})
+      return orig_dict_copy
+    
+    elif isinstance(original, list):
+      orig_list_copy = []
+      for entry in original:
+        if isinstance(entry, (dict, list)):
+          entry_copy = self.__autocopy(entry)
+          orig_list_copy.append(entry_copy)
+        else:
+          orig_list_copy.append(entry)
+      return orig_list_copy
+    
+    else:
+      return original
+
   def __column_convert_support(self, mixedcolumns_list, postprocess_dict, convert_to='returned'):
     """
     Support function to convert a received list of column headers mixedcolumns_list
@@ -43529,7 +43409,7 @@ class AutoMunge:
     #if prior postprocess_dict was recieved encrypted first we decrypt
     if 'encryption' in ppd_append and ppd_append['encryption'] is True:
       
-      ppd_append = deepcopy(ppd_append)
+      ppd_append = self.__autocopy(ppd_append)
 
       ppd_append, decode_valresult = \
       self.__decrypt_postprocess_dict(ppd_append, encrypt_key, printstatus)
@@ -43622,42 +43502,42 @@ class AutoMunge:
     trainID_column_orig = trainID_column
     testID_column_orig = testID_column
 
-    #deepcopy passed dictionaries so as not to edit exterior objects
+    #__autocopy passed dictionaries so as not to edit exterior objects
     #(these are not expected to be large objects so the memory impact is negligable)
     #including ML_cmnd, assigncat, assignparam, assigninfill, assignnan, transformdict, processdict 
     if isinstance(ML_cmnd, dict):
-      ML_cmnd = deepcopy(ML_cmnd)
+      ML_cmnd = self.__autocopy(ML_cmnd)
       #ML_cmnd_orig is to record state of ML_cmnd as received
-      ML_cmnd_orig = deepcopy(ML_cmnd)
+      ML_cmnd_orig = self.__autocopy(ML_cmnd)
     if isinstance(assigncat, dict):
-      assigncat = deepcopy(assigncat)
+      assigncat = self.__autocopy(assigncat)
     if isinstance(assignparam, dict):
-      assignparam = deepcopy(assignparam)
+      assignparam = self.__autocopy(assignparam)
     if isinstance(assigninfill, dict):
-      assigninfill = deepcopy(assigninfill)
+      assigninfill = self.__autocopy(assigninfill)
     if isinstance(assignnan, dict):
-      assignnan = deepcopy(assignnan)
+      assignnan = self.__autocopy(assignnan)
     if isinstance(transformdict, dict):
-      transformdict = deepcopy(transformdict)
+      transformdict = self.__autocopy(transformdict)
     if isinstance(processdict, dict):
-      processdict = deepcopy(processdict)
+      processdict = self.__autocopy(processdict)
     if isinstance(sampling_dict, dict):
-      sampling_dict = deepcopy(sampling_dict)
+      sampling_dict = self.__autocopy(sampling_dict)
 
     #similarly copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
     if isinstance(labels_column, list):
-      labels_column = deepcopy(labels_column)
+      labels_column = self.__autocopy(labels_column)
     if isinstance(trainID_column, list):
-      trainID_column = deepcopy(trainID_column)
+      trainID_column = self.__autocopy(trainID_column)
     if isinstance(testID_column, list):
-      testID_column = deepcopy(testID_column)
+      testID_column = self.__autocopy(testID_column)
     if isinstance(Binary, list):
-      Binary = deepcopy(Binary)
+      Binary = self.__autocopy(Binary)
     if isinstance(PCAexcl, list):
-      PCAexcl = deepcopy(PCAexcl)
+      PCAexcl = self.__autocopy(PCAexcl)
     if isinstance(entropy_seeds, list):
-      entropy_seeds = deepcopy(entropy_seeds)
+      entropy_seeds = self.__autocopy(entropy_seeds)
 
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
     assigncat = self.__assigncat_str_convert(assigncat)
@@ -43815,7 +43695,7 @@ class AutoMunge:
     miscparameters_results.update({'check_assignparam_result' : check_assignparam_result})
 
     #initialize autoMLer which is data structure to support ML infill training and inference
-    #a future extension may allow user to pass custom entries
+    #custom training loops are supported as documented in read me section Custom ML Infill Functions
     autoMLer = self.__assemble_autoMLer()
 
     random_generator_valresult, random_generator_accepts_seeds = \
@@ -43836,7 +43716,7 @@ class AutoMunge:
     #when a sampling performed randomrandomseed returned as True
     #this is used in row shuffling and other random seeds that don't need to match automunge random seed
     #note that this may expend two entropy_seeds
-    randomseed, randomrandomseed, entropy_seeds = \
+    randomseed, randomrandomseed, entropy_seeds, populate_randomseed_expended_seed_count = \
     self.__populate_randomseed(randomseed, entropy_seeds, 
                               random_generator, sampling_dict)
 
@@ -44224,7 +44104,7 @@ class AutoMunge:
       #if df_train.index.names == [None]:
       if None in df_train.index.names:
 
-        revised_index_names = deepcopy(orig_index_names)
+        revised_index_names = self.__autocopy(orig_index_names)
 
         revised_index_names[orig_index_names.index(None)] = origindexcolumn
 
@@ -44257,7 +44137,7 @@ class AutoMunge:
       #if df_train.index.names == [None]:
       if None in df_test.index.names:
 
-        revised_index_names = deepcopy(orig_index_names)
+        revised_index_names = self.__autocopy(orig_index_names)
 
         revised_index_names[orig_index_names.index(None)] = origindexcolumn
 
@@ -44354,7 +44234,8 @@ class AutoMunge:
       else:
         shuffle_param=False
         
-      #we'll wait to split out the validation labels
+      #we'll wait to split out the validation labels 
+      #(it is ok that this randomseed might be reset, the labels don't need a comaprable ranodmseed)
       df_train, df_validation1 = \
       self.__df_split_specified(df_train, valpercent, shuffle_param, randomseed)
 
@@ -44530,10 +44411,19 @@ class AutoMunge:
     rowcount_train = df_train.shape[0]
     rowcount_test = df_test.shape[0]
     postprocess_dict = \
-    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, 'traintest', randomseed, test_plug_marker)
+    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, 'traintest', test_plug_marker)
+
+    #now if we had a random random seed for pandas seeding, repopulate using entropy seeds in case we didn't have sufficient seeds earlier in workflow
+    if randomrandomseed is True and sampling_dict['sampling_type'] != 'default' and populate_randomseed_expended_seed_count == 0:
+
+      randomseed, randomrandomseed, entropy_seeds, _4 = \
+      self.__populate_randomseed(False, postprocess_dict['entropy_seeds'], 
+                                random_generator, sampling_dict)
+
+      postprocess_dict.update({'randomseed' : randomseed})
     
     #mirror assigncat which will populate the returned categories from eval function
-    final_assigncat = deepcopy(assigncat)
+    final_assigncat = self.__autocopy(assigncat)
 
     inverse_assigncat = self.__create_inverse_assigncat(assigncat)
     
@@ -44563,7 +44453,7 @@ class AutoMunge:
     protected_features = self.__check_for_protected_features(assign_param, processdict)
 
     #columns_train_copy will strike protected features
-    columns_train_copy = deepcopy(columns_train)
+    columns_train_copy = self.__autocopy(columns_train)
     if len(protected_features) > 0:
       for protected_feature in protected_features:
         columns_train_copy.remove(protected_feature)
@@ -45342,7 +45232,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.96'
+    automungeversion = '7.97'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45581,7 +45471,7 @@ class AutoMunge:
     postprocess_dict.update({'inverse_privacy_headers_labels_dict' : inverse_privacy_headers_labels_dict}) #comparable to inverse_privacy_headers_train_dict but for columns in labels set
 
     #now generate a privacy_encoded verison of columntype_report
-    private_columntype_report = deepcopy(postprocess_dict['columntype_report'])
+    private_columntype_report = self.__autocopy(postprocess_dict['columntype_report'])
     
     for key in columntype_report:
 
@@ -45597,7 +45487,7 @@ class AutoMunge:
     postprocess_dict.update({'private_columntype_report' : private_columntype_report})
 
     #now generate a privacy_encoded verison of label_columntype_report
-    private_label_columntype_report = deepcopy(label_columntype_report)
+    private_label_columntype_report = self.__autocopy(label_columntype_report)
 
     for key in private_label_columntype_report:
 
@@ -49417,7 +49307,7 @@ class AutoMunge:
       test_unique_list = list(map(str, test_unique_list))
       extra_test_unique = list(set(test_unique_list) - set(unique_list))
 
-      test_overlap_dict = deepcopy(overlap_dict)
+      test_overlap_dict = self.__autocopy(overlap_dict)
       
       if test_same_as_train is True:
         
@@ -50028,6 +49918,7 @@ class AutoMunge:
         
       #apply transform to test set
       if qttf is not False:
+        from sklearn.preprocessing import QuantileTransformer
         mdf_test[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_test[suffixcolumn])), index=mdf_test.index)
       else:
         mdf_test[suffixcolumn] = 0
@@ -53655,7 +53546,7 @@ class AutoMunge:
           #for test data we'll also consider test attributes that weren't found in the train data
           #and apply aggregate feature weighting
           #since attribute_weightings_dict is inspected as part of sampling we'll need to add temporary entries
-          temp_attribute_weightings_dict = deepcopy(attribute_weightings_dict)
+          temp_attribute_weightings_dict = self.__autocopy(attribute_weightings_dict)
 
           test_attributes = list(mdf_test[protected_feature].unique())
           extra_test_attributes = set(test_attributes) - set(attributes)
@@ -53665,7 +53556,7 @@ class AutoMunge:
 
           for attribute in (attributes + list(extra_test_attributes)):
 
-            temp_sampling_resource_dict = deepcopy(sampling_resource_dict)
+            temp_sampling_resource_dict = self.__autocopy(sampling_resource_dict)
 
             if attribute == attribute:
               attribute_count = mdf_test.loc[(mdf_test[protected_feature]==attribute) & (mdf_test[DPod_tempcolumn1] == 1)].shape[0]
@@ -53942,7 +53833,7 @@ class AutoMunge:
         common support function used to inject noise to either mdf_train or mdf_test when applicable
         """
 
-        sampling_resource_dict = deepcopy(sampling_resource_dict)
+        sampling_resource_dict = self.__autocopy(sampling_resource_dict)
 
         unique_count = df_unique.shape[0]
         unique_range = list(range(unique_count))
@@ -54829,6 +54720,19 @@ class AutoMunge:
     and trasnformed sets.
     '''
 
+    #a future extension could only import one of these model types
+    #issue is the PCA_type = 'default' scenario could be multiple types
+    #importing all three is equivalent to what was already in place when these were global imports
+
+    # if 'ML_cmnd' in postprocess_dict \
+    # and 'PCA_type' in postprocess_dict['ML_cmnd']['PCA_type'] \
+    # and postprocess_dict['ML_cmnd']['PCA_type'] in {}:
+    #   PCA_type = postprocess_dict['ML_cmnd']['PCA_type']
+
+    from sklearn.decomposition import PCA
+    from sklearn.decomposition import SparsePCA
+    from sklearn.decomposition import KernelPCA
+
     #apply the transform
     PCAset_test = postprocess_dict['PCAmodel'].transform(PCAset_test)
 
@@ -54903,7 +54807,7 @@ class AutoMunge:
     if labels_present is True:
     
       #copy postprocess_dict to customize for feature importance evaluation
-      FSpostprocess_dict = deepcopy(postprocess_dict)
+      FSpostprocess_dict = self.__autocopy(postprocess_dict)
       testID_column = testID_column
       pandasoutput = True
       printstatus = printstatus
@@ -55538,7 +55442,7 @@ class AutoMunge:
     #temporary store for updated normalization parameters
     #we'll copy all the support stuff from original pp_d but delete the 'column_dict'
     #entries for our new derivations below
-    drift_ppd = deepcopy(postprocess_dict)
+    drift_ppd = self.__autocopy(postprocess_dict)
     drift_ppd['column_dict'] = {}
     #temp_miscparameters_results is inspected in an edge case
     drift_ppd.update({'temp_miscparameters_results' : {}})
@@ -55765,7 +55669,7 @@ class AutoMunge:
     # #copy postprocess_dict into internal state so don't edit external object
     # #(going to leave this out for now in case has large memory overhead impact
     # #as in some scenarios postprocess_dict can be a large file)
-    # postprocess_dict = deepcopy(postprocess_dict)
+    # postprocess_dict = self.__autocopy(postprocess_dict)
     # #The only edits made to postproces_dict in postmunge are:
     # #- to track infill status (via column_dict infillcomplete marker)
     # #- setting traindata setting based on traindata parameter
@@ -55790,7 +55694,7 @@ class AutoMunge:
     and postprocess_dict['encryption'] is True \
     and encrypt_key is not False:
 
-      postprocess_dict = deepcopy(postprocess_dict)
+      postprocess_dict = self.__autocopy(postprocess_dict)
 
       postprocess_dict, decode_valresult = \
       self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
@@ -55804,7 +55708,7 @@ class AutoMunge:
     and postprocess_dict['privacy_encode'] != 'private':
 
       #label inversion is available without encryption key unless privacy_encode = 'private'
-      postprocess_dict = deepcopy(postprocess_dict['labelsencoding_dict'])
+      postprocess_dict = self.__autocopy(postprocess_dict['labelsencoding_dict'])
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge variable initializations and parameter validations
@@ -55828,17 +55732,6 @@ class AutoMunge:
     #validate entropy_seeds and align to common type
     entropy_seeds, entropy_seeds_pm_result = \
     self.__check_entropy_seeds(entropy_seeds, printstatus)
-
-    #initialize randomseed for default configuration of random random seed
-    #when a sampling performed randomrandomseed returned as True
-    #this is used in row shuffling and other random seeds that don't need to match automunge random seed
-    #note that this may expend two entropy_seeds
-    randomseed, randomrandomseed, entropy_seeds = \
-    self.__populate_randomseed(randomseed, entropy_seeds, 
-                              random_generator, sampling_dict)
-
-    #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
-    postprocess_dict.update({'postmunge_randomseed' : randomseed})
 
     #backward compatibility preceding 7.46
     if 'temp_miscparameters_results' not in postprocess_dict:
@@ -55866,7 +55759,18 @@ class AutoMunge:
       rowcount_train = 0
       rowcount_test = 0
     postprocess_dict = \
-    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, randomseed, postprocess_dict['test_plug_marker'])
+    self.__prepare_seeds(postprocess_dict, sampling_dict, random_generator, entropy_seeds, rowcount_train, rowcount_test, traintest, postprocess_dict['test_plug_marker'])
+
+    #initialize randomseed for default configuration of random random seed
+    #when a sampling performed randomrandomseed returned as True
+    #this is used in row shuffling and other random seeds that don't need to match automunge random seed
+    #note that this may expend two entropy_seeds
+    randomseed, randomrandomseed, entropy_seeds, _4 = \
+    self.__populate_randomseed(randomseed, postprocess_dict['entropy_seeds'], 
+                              random_generator, sampling_dict)
+
+    #store a few temporary entries in postprocess_dict that will be struck or reset prior to return, including postmunge_randomseed, traindata, temp_pm_miscparameters_results
+    postprocess_dict.update({'postmunge_randomseed' : randomseed})
 
     #traindata only matters when transforms apply different methods for train vs test
     #such as for noise injection to train data for differential privacy or for label smoothing transforms
@@ -55889,11 +55793,11 @@ class AutoMunge:
     #copy any input lists to internal state
     #(these won't be large so not taking account of inplace parameter)
     if isinstance(testID_column, list):
-      testID_column = deepcopy(testID_column)
+      testID_column = self.__autocopy(testID_column)
     if isinstance(inversion, list):
-      inversion = deepcopy(inversion)
+      inversion = self.__autocopy(inversion)
     if isinstance(entropy_seeds, list):
-      entropy_seeds = deepcopy(entropy_seeds)
+      entropy_seeds = self.__autocopy(entropy_seeds)
 
     #quick conversion of any passed column idenitfiers to str
     testID_column = self.__parameter_str_convert(testID_column)
@@ -56006,7 +55910,7 @@ class AutoMunge:
     #this step can be omitted to reduce memory overhead with inplace parameter
     if inplace is not True:
       df_test = df_test.copy()
-      # postprocess_dict = deepcopy(postprocess_dict)
+      # postprocess_dict = self.__autocopy(postprocess_dict)
 
     #functionality to support passed numpy arrays
     #if passed object was a numpy array, convert to pandas dataframe
@@ -56308,7 +56212,7 @@ class AutoMunge:
           while origindexcolumn in orig_index_names:
             origindexcolumn += ','
 
-        revised_index_names = deepcopy(orig_index_names)
+        revised_index_names = self.__autocopy(orig_index_names)
 
         revised_index_names[orig_index_names.index(None)] = origindexcolumn
 
@@ -56559,7 +56463,7 @@ class AutoMunge:
       #backward compatibility preceding 7.87
       protected_features = []
 
-    columns_train_copy = deepcopy(columns_train)
+    columns_train_copy = self.__autocopy(columns_train)
     if len(protected_features) > 0:
       for protected_feature in protected_features:
         columns_train_copy.remove(protected_feature)
@@ -57154,7 +57058,7 @@ class AutoMunge:
           augrandomseed = randomseed
         
         #these are postmunge specific temporary postprocess_dict entries, reset after this postmunge call
-        temp_miscparameters_results = deepcopy(postprocess_dict['temp_miscparameters_results'])
+        temp_miscparameters_results = self.__autocopy(postprocess_dict['temp_miscparameters_results'])
         traindata = postprocess_dict['traindata']
         postmunge_randomseed = postprocess_dict['postmunge_randomseed']
 
@@ -60458,7 +60362,7 @@ class AutoMunge:
     if isinstance(inversion, str):
       inversion_orig = inversion
     elif isinstance(inversion, list):
-      inversion_orig = deepcopy(inversion)
+      inversion_orig = self.__autocopy(inversion)
 
     inversion_PCA_valresult = False
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None and postprocess_dict['PCA_retain'] is not True:
