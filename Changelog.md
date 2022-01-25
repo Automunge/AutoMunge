@@ -5483,3 +5483,23 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - identified a (remote) error channel from code review associated with incompatibility of postmunge dupl_rows options and automunge ppd_append option
 - basically becuse ppd_append results in preparing sets of features seperately, the dupl_rows option may not consistently consolidate duplicate rows resulting in halt with the concat operaiton
 - now when identified a printout is returned and postmugne validation result logged as dupl_rows_ppd_append_postmunge_valresult
+
+7.97
+- in python, dictionaries and lists are mutable object containers
+- such that setting a = b means a is b
+- we have tried to circumvent that by using deepcopy operation on dictionaries in a few places
+- but recently identified an edge case for deepcopy in presence of some types of non-native objects
+- wanted to avoid this edge case coming up with user defined transformation functions
+- for cases of storing non-native objects in normalization_dict
+- so new __autocopy function replaces use of deepcopy in library
+- with equivalent functionality and edge case support
+- struck deepcopy import
+- updated a few PCA support functions for initializating PCA models to accomodate error channel if scikit depreciates one of their parameter settings and we don't notice
+- we had run into this on random forest a little while back, lesson learned to let the library manage the defaults
+- moved PCA imports into associated support functions instead of making them global
+- makes sense since they are only called once, results in slightly lower overhead for postmunge when not applying PCA
+- also moved import for QuantileTransformer into qttf transformation functions
+- also moved import for USFederalHolidayCalendar into hldy transformation function
+- a slight revision to automunge initialization of randomseed for pandas seeding
+- now it may be initialized twice, first for some neutral applicaiton, and second, if it was a specified sampling_type other than default and user didn't pass any entropy_seeds, again after initializing entropy seeds to allow for seeding initialization
+- added some code comments here and there
