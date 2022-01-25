@@ -594,7 +594,7 @@ the bottom of the train set. Note that row correspondence with shuffling is
 maintained between train / ID / label sets. Note that we recommend deactivating 
 shuffletrain for sequential (time-series) data.
 
-* noise_augment: accepts type int or float(int) >=0, defaults to 0 - used to specify 
+* noise_augment: accepts type int or float(int) >=0, defaults to 0. Used to specify 
 a count of additional duplicates of training data prepared and concatenated with the
 original train set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. (Noise injection
@@ -606,7 +606,7 @@ noise_augment is received as a dtype of float(int), all of the duplicates will b
 with noise. When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish
 between duplicates by the original df_train.shape in comparison to the ID set's Automunge_index.
 Please be aware that with large dataframes a large duplicate count may run into memory constraints,
-in which case additional duplicates can be prepared separately in postmunge(.). Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option with entropy seeding we recommend passing a custom extra_seed_generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
+in which case additional duplicates can be prepared separately in postmunge(.). Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option with entropy seeding we recommend passing a custom extra_seed_generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increase entropy_seed budget proportional to the number of additional duplicates with noise).
 
 * dupl_rows: can be passed as _(True/False/'traintest'/'test')_ which indicates
 if duplicate rows will be consolidated to single instance in returned sets. (In
@@ -2256,7 +2256,7 @@ DP family of transforms for noise injection to train sets or label smoothing tra
 as True treats df_test as a train set for purposes of these specific transforms, otherwise
 default of False treats df_test as a test set (which turns off noise injection for DP transforms). As you would expect, 'train_no_noise' and 'test_no_noise' designates data passed to postmunge(.) as train or test data but turns off noise injections.
 
-* noise_augment: accepts type int or float(int) >=0. Defaults to 0 - used to specify 
+* noise_augment: accepts type int or float(int) >=0. Defaults to 0. Used to specify 
 a count of additional duplicates of test data prepared and concatenated with the
 original test set. Intended for use in conjunction with noise injection, such that
 the increased size of training corpus can be a form of data augmentation. 
@@ -2268,7 +2268,7 @@ noise_augment is received as a dtype of float(int), all of the duplicates will b
 with noise. When shuffletrain is activated the duplicates are collectively shuffled, and can distinguish
 between duplicates by the original df_test.shape in comparison to the ID set's Automunge_index.
 Please be aware that with large dataframes a large duplicate count may run into memory constraints,
-in which case additional duplicates can be prepared in additional postmunge(.) calls. Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option with entropy seeding we recommend passing a custom extra_seed_generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increased entropy_seed budget proportional to the number of additional duplicates with noise).
+in which case additional duplicates can be prepared in additional postmunge(.) calls. Note that the entropy seed budget only accounts for preparing one set of data, for the noise_augment option with entropy seeding we recommend passing a custom extra_seed_generator with a sampling_type specification, which will result in internal samplings of additional entropy seeds for each additional noise_augment duplicate (or for the bulk_seeds case with external sampling can increase entropy_seed budget proportional to the number of additional duplicates with noise).
 
 * returnedsets: Can be passed as one of _{True, False, 'test_ID', 'test_labels', 'test_ID_labels'}_. 
 Designates the composition of the sets returned
