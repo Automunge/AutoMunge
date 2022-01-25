@@ -5474,3 +5474,12 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - the new default of pandasoutput = 'dataframe' aligns with case that all returned sets are dataframes, even single column label sets
 - apologies if anyone get's a bug out of this update, trying to err on the side of simplicity, should be easy to fix
 - also found and fixed a variable naming snafu interfering with validation of traindata parameter
+
+7.96
+- revised the cat_type parameter implementation rolled out in 7.90
+- now avoids a redundant dtype conversion
+- was wondering if might have been a channel for inconsistency with exotic data types I might not be aware of
+- fixed a potential bug channel in ppd_append associated with duplicate_rows parameter
+- identified a (remote) error channel from code review associated with incompatibility of postmunge dupl_rows options and automunge ppd_append option
+- basically becuse ppd_append results in preparing sets of features seperately, the dupl_rows option may not consistently consolidate duplicate rows resulting in halt with the concat operaiton
+- now when identified a printout is returned and postmugne validation result logged as dupl_rows_ppd_append_postmunge_valresult
