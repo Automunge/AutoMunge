@@ -5503,3 +5503,8 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - a slight revision to automunge initialization of randomseed for pandas seeding
 - now it may be initialized twice, first for some neutral applicaiton, and second, if it was a specified sampling_type other than default and user didn't pass any entropy_seeds, again after initializing entropy seeds to allow for seeding initialization
 - added some code comments here and there
+
+7.98
+- found a possible memory sharing issue associated with attempted function encapsulation renaming on mutable container renamed overlapping to another mutable retainer
+- now reverted the encapsulation to original expected external name scheme
+- trying to keep a clean name space
