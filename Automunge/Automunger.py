@@ -43060,6 +43060,9 @@ class AutoMunge:
     it is possible that a user may wish to store a non-native entry in the normalization_dict
     this support function circumvents by copying in different fashion where appropriate
     resulting in what is equivalent to a deepcopy but with support for non-native entries
+
+    this function has not been benchmarked for performance against large scale dictionaries
+    (expected largest dictionaries it targets is the postprocess_dict, which has most of memory overhead for trained models)
     """
     
     if isinstance(original, dict):
