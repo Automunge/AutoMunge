@@ -1748,8 +1748,8 @@ processdict =  {'DLmm' : {'dualprocess'    : am._process_DPmm,
                           'MLinfilltype'   : 'numeric'}}
 ```
 
-Since specification of transformation functions can be kind of cumbersome in order
-to dig out from the codebase naming conventions for internally defined functions, a
+Since specification of transformation functions and other processdict entries can be kind of cumbersome in order
+to dig out from the codebase naming conventions e.g. for internally defined functions, a
 simplification is available when populating a processdict for a user passed entry by
 way of the 'functionpointer' entry. When a functionpointer category entry is included, 
 the transformation functions and other entries that are not already specified are 
