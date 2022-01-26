@@ -5508,3 +5508,11 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - found a possible memory sharing issue associated with attempted function encapsulation renaming on mutable container renamed overlapping to another mutable retainer
 - now reverted the encapsulation to original expected external name scheme
 - trying to keep a clean name space
+
+7.99
+- similar update to 7.98
+- identified another potential overlap in naming space from function being used to support targeting two different mutable containers of similar form
+- now the encapsulations have a distinct naming convention
+- referring to difference between processdict (user passed parameter), process_dict (internal version after consolidation between user passed and internal library), and now the support functions which can receive either of these two will use the internal name processdict_
+- the use of these support functions (associated with functionpointer specification) for both versions was a recent addition is reason for the occurrence
+- we made note of this underscore naming convention in essay Specification of Derivations with Automunge, in hindsight it is possibly an example of naming scheme technical debt, but we use a similar distinction between external/internal for a few parameters so at least is consistent (e.g. transformdict/transform_dict, assignparam/assign_param)
