@@ -10585,7 +10585,7 @@ class AutoMunge:
 
     return mdf_train, mdf_test, column_dict_list
 
-  def __check_for_protected_features(self, assignparam, processdict):
+  def __check_for_protected_features(self, assign_param, processdict):
     """
     for cases where any protected_feature have specification
     either in assign_param or processdict
@@ -10595,26 +10595,26 @@ class AutoMunge:
     
     protected_features = []
     
-    for entry_1 in assignparam:
+    for entry_1 in assign_param:
       #global specification {global_assignparam : {param : value}}
       if entry_1 == 'global_assignparam':
-        if 'protected_feature' in assignparam[entry_1]:
-          if assignparam[entry_1]['protected_feature'] is not False:
-            protected_features.append(assignparam[entry_1]['protected_feature'])
+        if 'protected_feature' in assign_param[entry_1]:
+          if assign_param[entry_1]['protected_feature'] is not False:
+            protected_features.append(assign_param[entry_1]['protected_feature'])
             
       #default category specification {default_assignparam : {category : {param : value}}}
       elif entry_1 == 'default_assignparam':
-        for entry_2 in assignparam[entry_1]:
-          if 'protected_feature' in assignparam[entry_1][entry_2] \
-          and assignparam[entry_1][entry_2]['protected_feature'] is not False:
-            protected_features.append(assignparam[entry_1][entry_2]['protected_feature'])
+        for entry_2 in assign_param[entry_1]:
+          if 'protected_feature' in assign_param[entry_1][entry_2] \
+          and assign_param[entry_1][entry_2]['protected_feature'] is not False:
+            protected_features.append(assign_param[entry_1][entry_2]['protected_feature'])
 
       #target specification {category : {column : {param : value}}}
       else:
-        for entry_2 in assignparam[entry_1]:
-          if 'protected_feature' in assignparam[entry_1][entry_2] \
-          and assignparam[entry_1][entry_2]['protected_feature'] is not False:
-            protected_features.append(assignparam[entry_1][entry_2]['protected_feature'])
+        for entry_2 in assign_param[entry_1]:
+          if 'protected_feature' in assign_param[entry_1][entry_2] \
+          and assign_param[entry_1][entry_2]['protected_feature'] is not False:
+            protected_features.append(assign_param[entry_1][entry_2]['protected_feature'])
 
     #user specified processdict may have protected_feature specifciation in defaultparams
     for root in processdict:
@@ -45232,7 +45232,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.97'
+    automungeversion = '7.98'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
