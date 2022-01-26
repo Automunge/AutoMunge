@@ -40810,7 +40810,7 @@ class AutoMunge:
   
   #__FunctionBlock: functionpointer support
 
-  def __grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict, process_dict, \
+  def __grab_functionpointer_entries_support(self, targetcategory, pointercategory, processdict_, process_dict, \
                                             i, check_functionpointer_result, printstatus):
     """
     #support function for grab_processdict_functions
@@ -40831,6 +40831,9 @@ class AutoMunge:
     #and for chains of functionpointer entries the targetcategory remains same and pointercategory is updated
 
     #functionpointer halts when it reaches a processdict or process_dict entry without a functionpointer
+    
+    #note that processdict_ may be recieved either as the external processdict or process_dict
+    #so setting a distinct name as processdict_ to avoid overlap in mutable container naming space
     """
     
     #update_targets are the targets for functionpointer, 
@@ -40859,43 +40862,43 @@ class AutoMunge:
       
       #_1_
       #checking that pointercategory != targetcategory ensures self-referential are accessed from process_dict instead of processdict
-      if pointercategory in processdict and pointercategory != targetcategory:
+      if pointercategory in processdict_ and pointercategory != targetcategory:
         
         #if function poitner points to a category that itself has a functionpointer
         #then after accessing entries not previously specified 
         #we'll call _grab_processdict_functions_support recursively
         
         #_2_
-        if 'functionpointer' in processdict[pointercategory]:
+        if 'functionpointer' in processdict_[pointercategory]:
 
           #_3_
           for update_target in update_targets:
             
-            if update_target in processdict[pointercategory] \
-            and update_target not in processdict[targetcategory]:
-              processdict[targetcategory][update_target] = processdict[pointercategory][update_target]
+            if update_target in processdict_[pointercategory] \
+            and update_target not in processdict_[targetcategory]:
+              processdict_[targetcategory][update_target] = processdict_[pointercategory][update_target]
               
           #_3_
           #defaultparams gets special treatment since accessing entries in a dictionary
-          if 'defaultparams' in processdict[pointercategory]:
-            if 'defaultparams' in processdict[targetcategory]:
-              defaultparams = self.__autocopy(processdict[pointercategory]['defaultparams'])
-              defaultparams.update(processdict[targetcategory]['defaultparams'])
-              processdict[targetcategory]['defaultparams'] = defaultparams
+          if 'defaultparams' in processdict_[pointercategory]:
+            if 'defaultparams' in processdict_[targetcategory]:
+              defaultparams = self.__autocopy(processdict_[pointercategory]['defaultparams'])
+              defaultparams.update(processdict_[targetcategory]['defaultparams'])
+              processdict_[targetcategory]['defaultparams'] = defaultparams
             else:
-              processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+              processdict_[targetcategory]['defaultparams'] = processdict_[pointercategory]['defaultparams']
           
           #_3_
           #make sure the linked pointercategory doesn't have self-referential functionpointer
           #which happens when used to overwrite it's own process_dict entry
-          if pointercategory != processdict[pointercategory]['functionpointer']:
+          if pointercategory != processdict_[pointercategory]['functionpointer']:
 
             #now new pointer category is the functionpointer entry of the prior functionpointer entry
-            pointercategory = processdict[pointercategory]['functionpointer']
+            pointercategory = processdict_[pointercategory]['functionpointer']
 
             #follow through recursion
-            processdict, i, check_functionpointer_result = \
-            self.__grab_functionpointer_entries_support(targetcategory, pointercategory, processdict, process_dict, \
+            processdict_, i, check_functionpointer_result = \
+            self.__grab_functionpointer_entries_support(targetcategory, pointercategory, processdict_, process_dict, \
                                                        i, check_functionpointer_result, printstatus)
           
           #_3_
@@ -40904,7 +40907,7 @@ class AutoMunge:
           #so that they aren't interpreted as infinite loops
           #so instead of calling _grab_functionpointer_entries_support on processdict
           #we'll just access from the corresponding process_dict entry
-          elif pointercategory == processdict[pointercategory]['functionpointer']:
+          elif pointercategory == processdict_[pointercategory]['functionpointer']:
             
             #_4_
             if pointercategory in process_dict:
@@ -40912,17 +40915,17 @@ class AutoMunge:
               for update_target in update_targets:
 
                 if update_target in process_dict[pointercategory] \
-                and update_target not in processdict[targetcategory]:
-                  processdict[targetcategory][update_target] = process_dict[pointercategory][update_target]
+                and update_target not in processdict_[targetcategory]:
+                  processdict_[targetcategory][update_target] = process_dict[pointercategory][update_target]
 
               #defaultparams gets special treatment since accessing entries in a dictionary
               if 'defaultparams' in process_dict[pointercategory]:
-                if 'defaultparams' in processdict[targetcategory]:
+                if 'defaultparams' in processdict_[targetcategory]:
                   defaultparams = self.__autocopy(process_dict[pointercategory]['defaultparams'])
-                  defaultparams.update(processdict[targetcategory]['defaultparams'])
-                  processdict[targetcategory]['defaultparams'] = defaultparams
+                  defaultparams.update(processdict_[targetcategory]['defaultparams'])
+                  processdict_[targetcategory]['defaultparams'] = defaultparams
                 else:
-                  processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
+                  processdict_[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
 
             #_4_
             else:
@@ -40936,23 +40939,23 @@ class AutoMunge:
             
         #_2_
         #else grab and halt the chain since no functionpoitner populated for pointercategory
-        elif 'functionpointer' not in processdict[pointercategory]:
+        elif 'functionpointer' not in processdict_[pointercategory]:
 
           #_3_
           for update_target in update_targets:
 
-            if update_target in processdict[pointercategory] \
-            and update_target not in processdict[targetcategory]:
-              processdict[targetcategory][update_target] = processdict[pointercategory][update_target]
+            if update_target in processdict_[pointercategory] \
+            and update_target not in processdict_[targetcategory]:
+              processdict_[targetcategory][update_target] = processdict_[pointercategory][update_target]
 
           #defaultparams gets special treatment since accessing entries in a dictionary
-          if 'defaultparams' in processdict[pointercategory]:
-            if 'defaultparams' in processdict[targetcategory]:
-              defaultparams = self.__autocopy(processdict[pointercategory]['defaultparams'])
-              defaultparams.update(processdict[targetcategory]['defaultparams'])
-              processdict[targetcategory]['defaultparams'] = defaultparams
+          if 'defaultparams' in processdict_[pointercategory]:
+            if 'defaultparams' in processdict_[targetcategory]:
+              defaultparams = self.__autocopy(processdict_[pointercategory]['defaultparams'])
+              defaultparams.update(processdict_[targetcategory]['defaultparams'])
+              processdict_[targetcategory]['defaultparams'] = defaultparams
             else:
-              processdict[targetcategory]['defaultparams'] = processdict[pointercategory]['defaultparams']
+              processdict_[targetcategory]['defaultparams'] = processdict_[pointercategory]['defaultparams']
                 
       #_1_
       #if pointercategory wasn't in user passed processdict, we'll next check the internal library process_dict
@@ -40965,18 +40968,18 @@ class AutoMunge:
         for update_target in update_targets:
 
           if update_target in process_dict[pointercategory] \
-          and update_target not in processdict[targetcategory]:
-            processdict[targetcategory][update_target] = process_dict[pointercategory][update_target]
+          and update_target not in processdict_[targetcategory]:
+            processdict_[targetcategory][update_target] = process_dict[pointercategory][update_target]
 
         #_2_
         #defaultparams gets special treatment since accessing entries in a dictionary
         if 'defaultparams' in process_dict[pointercategory]:
-          if 'defaultparams' in processdict[targetcategory]:
+          if 'defaultparams' in processdict_[targetcategory]:
             defaultparams = self.__autocopy(process_dict[pointercategory]['defaultparams'])
-            defaultparams.update(processdict[targetcategory]['defaultparams'])
-            processdict[targetcategory]['defaultparams'] = defaultparams
+            defaultparams.update(processdict_[targetcategory]['defaultparams'])
+            processdict_[targetcategory]['defaultparams'] = defaultparams
           else:
-            processdict[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
+            processdict_[targetcategory]['defaultparams'] = process_dict[pointercategory]['defaultparams']
 
       #_1_
       #if pointercategory wasn't found in either of processdict or process_dict
@@ -40990,9 +40993,9 @@ class AutoMunge:
           print("note that self-referential functionpointers only supported when overwriting entry in process_dict")
           print()
 
-    return processdict, i, check_functionpointer_result
+    return processdict_, i, check_functionpointer_result
   
-  def __grab_functionpointer_entries(self, processdict, process_dict, printstatus):
+  def __grab_functionpointer_entries(self, processdict_, process_dict, printstatus):
     """
     #checks for functionpointer entries in user passed processdict
     #when present populates that category with associated pointer entries not previously assigned
@@ -41011,23 +41014,26 @@ class AutoMunge:
     #we'll have convention that only processdict entries can have functionpointers, not proces_dict entries
 
     #note that also supports passing processdict as process_dict for use of functionpointer towards process_dict
+    
+    #note that processdict_ may be recieved either as the external processdict or process_dict
+    #so setting a distinct name as processdict_ to avoid overlap in mutable container naming space
     """
     
     check_functionpointer_result = False
     
-    for entry in processdict:
+    for entry in processdict_:
       
-      if 'functionpointer' in processdict[entry]:
+      if 'functionpointer' in processdict_[entry]:
         
         i = 0
         targetcategory = entry
-        pointercategory = processdict[entry]['functionpointer']
+        pointercategory = processdict_[entry]['functionpointer']
         
-        processdict, i, check_functionpointer_result = \
-        self.__grab_functionpointer_entries_support(targetcategory, pointercategory, processdict, process_dict, \
+        processdict_, i, check_functionpointer_result = \
+        self.__grab_functionpointer_entries_support(targetcategory, pointercategory, processdict_, process_dict, \
                                                i, check_functionpointer_result, printstatus)
 
-    return processdict, check_functionpointer_result
+    return processdict_, check_functionpointer_result
 
   #__FunctionBlock: column assignments string conversion
   
@@ -45232,7 +45238,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.98'
+    automungeversion = '7.99'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
