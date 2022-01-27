@@ -5516,3 +5516,9 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - referring to difference between processdict (user passed parameter), process_dict (internal version after consolidation between user passed and internal library), and now the support functions which can receive either of these two will use the internal name processdict_
 - the use of these support functions (associated with functionpointer specification) for both versions was a recent addition is reason for the occurrence
 - we made note of this underscore naming convention in essay Specification of Derivations with Automunge, in hindsight it is possibly an example of naming scheme technical debt, but we use a similar distinction between external/internal for a few parameters so at least is consistent (e.g. transformdict/transform_dict, assignparam/assign_param)
+
+8.0
+- updated entropy_seeding range from (2 ** 63) to (2 ** 31 - 1) to align with int32
+- updated randomseed range from (2 ** 32 - 1) to (2 ** 31 - 1) to align with int32
+- found and fixed a small equality operator misframing that was interfering with xgboost label prep
+- also updated xgboost classification so that it doesn't train a model for the nunique == 1 case
