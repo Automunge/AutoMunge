@@ -33170,35 +33170,40 @@ class AutoMunge:
     model = False
     if modeltype == 'classification':
 
-      df_train_filllabel = df_train_filllabel.astype(int)
+      if df_train_filllabel.nunique() <= 1:
+        model = False
 
-      #classify_regress will be basis of optuna tuner
-      classify_regress = 'classify'
-      #for binary classification using different xgboost objective basis
-      if booleantype == True:
-        classify_regress = 'boolean'
-      
-      tuned_params = {"use_label_encoder" : False}
-      if ML_cmnd['hyperparam_tuner'] == 'optuna_XG1':
-        tuned_params = \
-        self.__optuna_XG1(df_train_filltrain, df_train_filllabel, 0.25, ML_cmnd, randomseed, classify_regress)
       else:
-        #otherwise set any settings based on ML_cmnd['xgboost_gpu_id']
-        #noting that specific commands passed through ML_cmnd['MLinfill_cmnd'] still take precedence
-        if ML_cmnd['xgboost_gpu_id'] is not False:
-          tuned_params.update({'tree_method' : 'gpu_hist',
-                               'gpu_id'      : ML_cmnd['xgboost_gpu_id'] })
 
-      #now update with any commands passed through ML_cmnd['MLinfill_cmnd']
-      tuned_params.update(commands)
+        df_train_filllabel = df_train_filllabel.astype(int)
 
-      from xgboost import XGBClassifier
-      model = XGBClassifier(**tuned_params)
+        #classify_regress will be basis of optuna tuner
+        classify_regress = 'classify'
+        #for binary classification using different xgboost objective basis
+        if booleantype == True:
+          classify_regress = 'boolean'
+        
+        tuned_params = {"use_label_encoder" : False}
+        if ML_cmnd['hyperparam_tuner'] == 'optuna_XG1':
+          tuned_params = \
+          self.__optuna_XG1(df_train_filltrain, df_train_filllabel, 0.25, ML_cmnd, randomseed, classify_regress)
+        else:
+          #otherwise set any settings based on ML_cmnd['xgboost_gpu_id']
+          #noting that specific commands passed through ML_cmnd['MLinfill_cmnd'] still take precedence
+          if ML_cmnd['xgboost_gpu_id'] is not False:
+            tuned_params.update({'tree_method' : 'gpu_hist',
+                                'gpu_id'      : ML_cmnd['xgboost_gpu_id'] })
 
-      #train the model without validation set
-      model.fit(
-        df_train_filltrain, df_train_filllabel,
-      )
+        #now update with any commands passed through ML_cmnd['MLinfill_cmnd']
+        tuned_params.update(commands)
+
+        from xgboost import XGBClassifier
+        model = XGBClassifier(**tuned_params)
+
+        #train the model without validation set
+        model.fit(
+          df_train_filltrain, df_train_filllabel,
+        )
       
     elif modeltype == 'regression':
 
@@ -33788,7 +33793,7 @@ class AutoMunge:
       original_labels = sorted(list(df2[1].unique()))
       
       #this tests for fully represented encoding space
-      if len(set(df2[1].astype(int).unique()) - set(range(len(original_labels)))) == 0:
+      if len(set(df2[1].astype(int).unique()) - set(range(len(original_labels)))) != 0:
 
         sequential_labels = list(range(len(original_labels)))
 
@@ -37123,11 +37128,11 @@ class AutoMunge:
         print("Error: invalid entry passed for randomseed parameter.")
         print("Acceptable values are integers within 0:2**32-1 or False")
         print()
-    elif randomseed < 0 or randomseed > 4294967295:
+    elif randomseed < 0 or randomseed > 2147483647:
       randomseed_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for randomseed parameter.")
-        print("Acceptable values are integers within 0:2**32-1 or False")
+        print("Acceptable values are integers within 0:2**31-1 or False")
         print()
       
     miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
@@ -37627,11 +37632,11 @@ class AutoMunge:
         print("Error: invalid entry passed for randomseed parameter.")
         print("Acceptable values are integers within 0:2**32-1 or False")
         print()
-    elif randomseed < 0 or randomseed > 4294967295:
+    elif randomseed < 0 or randomseed > 2147483647:
       randomseed_valresult = True
       if printstatus != 'silent':
         print("Error: invalid entry passed for randomseed parameter.")
-        print("Acceptable values are integers within 0:2**32-1 or False")
+        print("Acceptable values are integers within 0:2**31-1 or False")
         print()
       
     pm_miscparameters_results.update({'randomseed_valresult' : randomseed_valresult})
@@ -39829,7 +39834,7 @@ class AutoMunge:
         
         spawn_seed = []
         if provided_seed_count > 0:
-          spawn_seed = [entropy_seeds[0]]
+          spawn_seed = [int(entropy_seeds[0])]
           entropy_seeds = np.delete(entropy_seeds, 0)
           provided_seed_count -= 1
 
@@ -39862,21 +39867,21 @@ class AutoMunge:
         
         extra_seeds_needed = int(seed_requirement - provided_seed_count)
         
-        #2**63 max selected to align with max capacity for nprandom.integers
-        max_capacity_integer = int(2**63)
+        #2**31-1 max selected to align with max capacity for np.int32
+        max_capacity_integer = int(2**31 - 1)
         min_capacity_integer = 0
 
         extra_seeds = nprandom.integers(min_capacity_integer, high=max_capacity_integer, size=extra_seeds_needed).astype(int)
 
         extra_seeds = extra_seeds.astype(int)
         
-        entropy_seeds = np.concatenate((entropy_seeds, extra_seeds), axis=0)
+        entropy_seeds = np.concatenate((entropy_seeds, extra_seeds), axis=0).astype(int)
         
       #now one more shuffle using the shuffle_seed
       if len(entropy_seeds) > 2:
         
         #let's access the first entry as our shuffle seed
-        shuffle_seed = [entropy_seeds[0]]
+        shuffle_seed = [int(entropy_seeds[0])]
         entropy_seeds = np.delete(entropy_seeds, 0)
         
         if sampling_generator =='PCG64':
@@ -39902,7 +39907,7 @@ class AutoMunge:
         nprandom.shuffle(entropy_seeds)
         
     #now let's store the results in ppd
-    postprocess_dict['entropy_seeds'] = entropy_seeds
+    postprocess_dict['entropy_seeds'] = entropy_seeds.astype(int)
     postprocess_dict['sampling_dict'] = sampling_dict
     postprocess_dict['random_generator'] = random_generator
     
@@ -39987,7 +39992,7 @@ class AutoMunge:
     #a shuffle operation will be performed preceding each access of seeds
     def _shuffle_seeds(entropy_seeds, random_generator, sampling_type, sampling_generator, random_generator_accepts_seeds):
       if len(entropy_seeds) > 2:
-        shuffle_seed = [entropy_seeds[0]]
+        shuffle_seed = [int(entropy_seeds[0])]
         #we dont' delete seeds in the default sampling_type scenario
         if sampling_type != 'default':
           entropy_seeds = np.delete(entropy_seeds, 0)
@@ -40633,12 +40638,14 @@ class AutoMunge:
     if a custom random_generator was specified
     the use between PCG64 or custom 
     will follow the convention of sampling_dict['extra_seed_generator']
+    
+    entropy_seeds may either recieve parameter entropy_seeds or postprocess_dict['entropy_seeds']
     """
     populate_randomseed_expended_seed_count = 0
 
-    #2**32 - 1
-    #(note that np.random.SeedSequence accepts larger values, this range is used to align with its use for pandas seeding)
-    max_capacity_seed = 4294967295
+    #2**31 - 1
+    #(note that np.random.SeedSequence accepts larger values, this range is used to align with np.int32
+    max_capacity_seed = 2147483647
     
     randomrandomseed = False
     if randomseed is False:
@@ -40667,7 +40674,7 @@ class AutoMunge:
       
       if len(entropy_seeds) > 2:
     
-        shuffle_seed = [entropy_seeds[0]]
+        shuffle_seed = [int(entropy_seeds[0])]
         entropy_seeds = np.delete(entropy_seeds, 0)
         populate_randomseed_expended_seed_count += 1
 
@@ -40680,7 +40687,7 @@ class AutoMunge:
         
       if len(entropy_seeds) >= 2:
         
-        spawn_seed = [entropy_seeds[0]]
+        spawn_seed = [int(entropy_seeds[0])]
         entropy_seeds = np.delete(entropy_seeds, 0)
         populate_randomseed_expended_seed_count += 1
         
@@ -40689,8 +40696,8 @@ class AutoMunge:
         spawn_seed = [entropy_seeds[0]]
 
       else:
-        #(2**32 - 1)
-        spawn_seed = [random.randint(0,max_capacity_seed)]
+        #(2**31 - 1)
+        spawn_seed = [int(random.randint(0,max_capacity_seed))]
 
       if sampling_generator_accepts_seeds is True:
         nprandom = np.random.Generator(randomgenerator(np.random.SeedSequence(spawn_key=spawn_seed)))
@@ -45241,7 +45248,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '7.99'
+    automungeversion = '8.0'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
