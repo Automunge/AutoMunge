@@ -6,7 +6,7 @@ contact available via automunge.com
 
 Copyright (C) 2018, 2019, 2020, 2021 Nicholas Teague - All Rights Reserved
 
-patent pending, applications 16552857, 17021770
+patent pending, including applications 16552857, 17021770
 """
 
 #global imports
@@ -96,6 +96,7 @@ class AutoMunge:
   __grab_params
   __custom_process_wrapper
   __check_for_protected_features
+  __messy_data_prep
   __apply_processfamily
   __prepare_labelsencoding_dict
 
@@ -3770,6 +3771,15 @@ class AutoMunge:
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
+
+    transform_dict.update({'DTmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DTmp'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
     
     #DTo7 primarily intended for use as a downstream tree category
     transform_dict.update({'DTo7' : {'parents'       : [],
@@ -4011,6 +4021,15 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DBmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DBmp'],
+                                     'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -4303,6 +4322,15 @@ class AutoMunge:
                                      'siblings'      : [],
                                      'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPmp'],
+                                     'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -8304,6 +8332,19 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DTmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DTmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DTmp'}})
     process_dict.update({'DTo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
@@ -8603,6 +8644,19 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DBmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DBmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DBmp'}})
     process_dict.update({'DBo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
@@ -8942,6 +8996,19 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DPmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DPmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DPmp'}})
     process_dict.update({'DPo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
@@ -10254,7 +10321,18 @@ class AutoMunge:
           for key in assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']]:
 
             params.update({key : assign_param[category][postprocess_dict['column_dict'][column]['origcolumn']][key]})
-    
+            
+      #messy_data_headers refers to input features in multi column encodings
+      if 'messy_data_headers' in assign_param:
+        
+        #we'll know it is an inputcolumn if not in column_dict
+        if column not in postprocess_dict['column_dict'] \
+        and column in assign_param['messy_data_headers']:
+
+          #messy convention doesn't have inplace support
+          params.update({'inplace' : False})
+          params.update({'messy_data_headers' : assign_param['messy_data_headers'][column]})
+        
     return params
 
   def __custom_process_wrapper(self, mdf_train, mdf_test, column, category, \
@@ -10624,9 +10702,88 @@ class AutoMunge:
             protected_features.append(processdict[root]['defaultparams']['protected_feature'])
 
     #consolidate redundancies
+    #these are sorted outside of this function for consistent order
     protected_features = list(set(protected_features))
 
     return protected_features
+
+  def __messy_data_prep(self, protected_features, assigncat, assign_param, postprocess_dict, printstatus):
+    """
+    messy_data refers to non tidy feature sets with more than one column per feature
+    we'll have convention that to designate column aggregations to treat as single feature
+    user can pass a set of input headers to assigncat as a {set} of headers in place of a string
+    
+    this funciton serves multiple purposes assocaited with the messy_data convenion
+    assigncat is inspected to identify messy specification as sets of strings within the specification list
+    and replaces messy sets with one of those entries
+    
+    the other entries from a messy set are added to protected_features
+    and also added to assigncat['null'] 
+    
+    and also added to assign_param['messy_data_headers']
+    in the form
+    {inputcolumn : {messy_set}}
+    
+    which is accessed in __grab_params
+    where the root category is used to selectively pass to tree categories for that root
+    as params['messy_data_headers'] = messy_set
+    and also with params['inplace'] = False
+    
+    then with the protected features the others are prepared in a seperate for loop and deleted with the null
+    """
+    
+    messy_data_headers_dict = {}
+    add_to_null_set = set()
+    already_populated_set = set()
+    
+    messy_set_overlap_valresult = False
+    
+    #inspect assigncat to identify messy sets
+    #convention is is user assigned a single set they are embeded in list brackets in __assigncat_str_convert
+    for rootcat in assigncat:
+      
+      current_list = assigncat[rootcat]
+      
+      for current_list_set in current_list:
+        
+        if isinstance(current_list_set, set):
+          
+          if len(current_list_set - already_populated_set) < len(current_list_set):
+            messy_set_overlap_valresult = True
+            if printstatus != 'silent':
+              print("Warning of potential error from overlapping messy_data set specifications in assigncat")
+              print()   
+          already_populated_set = already_populated_set | current_list_set
+          
+          #access element from set
+          for inputcolumn in sorted(list(current_list_set)):
+            break
+          
+          #populate messy_data_headers_dict
+          messy_data_headers_dict.update({inputcolumn : sorted(list(current_list_set))})
+    
+          #add entries to protected_features and assigncat[null]
+          for current_list_set_entry in current_list_set:
+          
+            if current_list_set_entry != inputcolumn:
+              
+              protected_features = protected_features + [current_list_set_entry]
+              
+              add_to_null_set = add_to_null_set | {current_list_set_entry}
+              
+          #replace the asisgncat set specification with the excerpt
+          assigncat[rootcat][current_list.index(current_list_set)] = inputcolumn
+              
+    #now add messy_data_headers_dict to assign_param
+    assign_param.update({'messy_data_headers' : messy_data_headers_dict})
+    
+    #then the null specifications of the new protected_features are added to assigncat
+    if 'null' not in assigncat:
+      assigncat.update({'null':list(add_to_null_set)})
+    else:
+      assigncat['null'] = assigncat['null'] + list(add_to_null_set)
+
+    return protected_features, assigncat, assign_param, messy_set_overlap_valresult
 
   def __apply_processfamily(self,
                             df_train,
@@ -27537,6 +27694,13 @@ class AutoMunge:
     else:
       upstream_hs10 = False
       
+    if 'messy_data_headers' in params:
+      messy_data_headers = params['messy_data_headers']
+      if messy_data_headers == []:
+        messy_data_headers = [column]
+    else:
+      messy_data_headers = False
+      
     if 'inplace' in params:
       inplace = params['inplace']
     else:
@@ -27693,6 +27857,31 @@ class AutoMunge:
       #which is desired behavior for that use case
       inputtextcolumns = [column]
       
+    if isinstance(messy_data_headers, list):
+      inputtextcolumns = messy_data_headers.copy()
+
+      none_categorical = True
+      for inputtextcolumn in inputtextcolumns:
+        if isinstance(mdf_train[inputtextcolumn].dtype, pd.api.types.CategoricalDtype) \
+        or isinstance(mdf_test[inputtextcolumn].dtype, pd.api.types.CategoricalDtype):
+          none_categorical = False
+
+      if none_categorical is False:
+        mdf_train[inputtextcolumns] = mdf_train[inputtextcolumns].astype('object')
+        mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].astype('object')
+
+      #since messy_data_headers is for input headers, we'll apply an adjinfill
+      #since DPmc needs all valid entries
+      #apply ffill to replace NArows with value from adjacent cell in preceding row
+      mdf_train[inputtextcolumns] = mdf_train[inputtextcolumns].fillna(method='ffill')
+      mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(method='ffill')
+
+      #we'll follow with a bfill just in case first row had a nan
+      mdf_train[inputtextcolumns] = mdf_train[inputtextcolumns].fillna(method='bfill')
+      mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(method='bfill')
+
+      mdf_train[inputtextcolumns] = mdf_train[inputtextcolumns].fillna(0)
+      mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(0)
     
     #the returned columns will each have consistent suffix appending
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
@@ -27722,7 +27911,7 @@ class AutoMunge:
     #subsequent data type conversion relies on max encoding, we'll apply this before noise injection
     maxencodings = {}
     if swap_noise is False:
-      if upstream_hs10 is False:
+      if upstream_hs10 is False and not isinstance(messy_data_headers, list):
         for textcolumn in textcolumns:
           maxencoding = mdf_train[textcolumn].max()
           maxencodings.update({textcolumn : maxencoding})
@@ -27902,7 +28091,8 @@ class AutoMunge:
 
         if binomial_activation_count < len(seeds_available):
           
-          attribute_seeds = seeds_available[:attribute_count]
+          #in the protected_feature case this function is being called on the attribute partition
+          attribute_seeds = seeds_available[:binomial_activation_count]
           
           sampling_id = 'choice_' + traintest
           sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
@@ -28137,7 +28327,7 @@ class AutoMunge:
   
     #now apply data type conversion, this should align with received data types, just applying in case of drift
     #in swap_noise scenario we'll default to the input data type since this might be applied downstream of floats
-    if swap_noise is False:
+    if swap_noise is False and not isinstance(messy_data_headers, list):
       for textcolumn in textcolumns:
 
         max_encoding_for_dtype_convert = maxencodings[textcolumn]
@@ -28175,6 +28365,7 @@ class AutoMunge:
                                               'suffix' : suffix, \
                                               'maxencodings' : maxencodings, \
                                               'upstream_hs10' : upstream_hs10, \
+                                              'messy_data_headers' : messy_data_headers, \
                                               'inplace' : inplace, \
                                               'sampling_resource_dict' : sampling_resource_dict, \
                                               'binomial_activation_count' : binomial_activation_count, \
@@ -37865,43 +38056,50 @@ class AutoMunge:
     #assigncat, if any found return an error message
     """
 
-    assigncat_redundant_dict = {}
-    result = False
+    aggregated_set = set()
+    aggregated_list = []
+    prior_identified_redundant = set()
 
-    for assigncatkey1 in sorted(assigncat):
-      #assigncat_list.append(set(assigncat[key]))
-      current_set = set(assigncat[assigncatkey1])
-      redundant_items = {}
-      for assigncatkey2 in assigncat:
-        if assigncatkey2 != assigncatkey1:
-          second_set = set(assigncat[assigncatkey2])
-          common = current_set & second_set
-          if len(common) > 0:
-            for common_item in common:
-              if common_item not in assigncat_redundant_dict:
-                assigncat_redundant_dict.update({common_item:[assigncatkey1, assigncatkey2]})
-              else:
-                if assigncatkey1 not in assigncat_redundant_dict[common_item]:
-                  assigncat_redundant_dict[common_item].append(assigncatkey1)
-                  #assigncat_redundant_dict[common_item] += key1
-                if assigncatkey2 not in assigncat_redundant_dict[common_item]:
-                  assigncat_redundant_dict[common_item].append(assigncatkey2)
-                  #assigncat_redundant_dict[common_item] += key2
+    check_assigncat_result = False
 
-    #assigncat_redundant_dict
+    for key, value in assigncat.items():
 
-    if len(assigncat_redundant_dict) > 0:
-      result = True
-      if printstatus != 'silent':
-        print("Error, the following columns assigned to multiple root categories in assigncat:")
-        for assigncatkey3 in sorted(assigncat_redundant_dict):
-          print("")
-          print("Column: ", assigncatkey3)
-          print("Found in following assigncat entries:")
-          print(assigncat_redundant_dict[assigncatkey3])
-          print("")
+      #value will either be a list or set after going through __assigncat_str_convert
+      if isinstance(value, list):
 
-    return result
+        value_sets = [x for x in value if isinstance(x, set)]
+        for value_set in value_sets:
+          
+          aggregated_set = aggregated_set | value_set
+          aggregated_list = aggregated_list + list(value_set)
+
+        value_list = [x for x in value if not isinstance(x, set)]
+
+        aggregated_list = aggregated_list + value_list
+        aggregated_set = aggregated_set | set(value_list)
+      
+      #set specification converted to [set()] in __assigncat_str_convert
+#       elif isinstance(value, set):
+#         aggregated_set = aggregated_set | value
+#         aggregated_list = aggregated_list + list(value)
+
+      if len(aggregated_list) > len(aggregated_set):
+
+        aggregated_list_copy = aggregated_list.copy()
+        for entry in aggregated_set:
+          aggregated_list_copy.remove(entry)
+          
+        if len(set(aggregated_list_copy) - prior_identified_redundant) > 0:
+
+          prior_identified_redundant = prior_identified_redundant | set(aggregated_list_copy)
+
+          check_assigncat_result = True
+          if printstatus != 'silent':
+            print("Warning of expected error due to redundant column assignment in assigncat")
+            print("for assignments to: ", key)
+            print("for column headers: ", aggregated_list_copy)
+
+    return check_assigncat_result
   
   def __check_assigncat2(self, assigncat, transform_dict, printstatus):
     """
@@ -37988,6 +38186,14 @@ class AutoMunge:
     for entry1 in assigncat:
       for entry2 in assigncat[entry1]:
         inverse_assigncat.update({entry2 : entry1})
+
+    #in cases of messy_data there may be redundant specifications to null and from evalcategory
+    #so strip the redundancy, null governs
+    if 'null' in assigncat:
+      for entry1 in assigncat['null']:
+        if entry1 in inverse_assigncat \
+        and inverse_assigncat[entry1] != 'null':
+          inverse_assigncat[entry1] = 'null'
         
     return inverse_assigncat
 
@@ -39149,20 +39355,15 @@ class AutoMunge:
     check_processdict_result = False
     check_processdict_result2 = False
 
-    #the reason these two assignparam strings are reserved for use as category keys
+    #the reason these assignparam strings are reserved for use as category keys
     #is because if used tham as categories wouldn't be able to pass assignparam params to them
     #since assignparam parsing would interpret the categories as assignparam keywords
-    if 'global_assignparam' in processdict:
-      check_processdict_result2 = True
-      if printstatus != 'silent':
-        print("error: processdict has entry for 'global_assignparam'")
-        print("which is a reserved category string for use in assignparam")
-
-    if 'default_assignparam' in processdict:
-      check_processdict_result2 = True
-      if printstatus != 'silent':
-        print("error: processdict has entry for 'default_assignparam'")
-        print("which is a reserved category string for use in assignparam")
+    for reserved_str in ['global_assignparam', 'default_assignparam', 'messy_data_headers']:
+      if reserved_str in processdict:
+        check_processdict_result2 = True
+        if printstatus != 'silent':
+          print("error: processdict has entry for ", reserved_str)
+          print("which is a reserved category string for use in assignparam")
     
     for entry in processdict:
       
@@ -41044,31 +41245,87 @@ class AutoMunge:
 
   #__FunctionBlock: column assignments string conversion
   
-  def __assigncat_str_convert(self, assigncat):
+  def __assigncat_str_convert(self, assigncat, printstatus):
     """
     #Converts all assigncat entries to string (just in case user passed integer)
     #
     #also converts any single string/integer entries passed without list brackets 
     #into a single entry list
+    #and set specifications are retained
     """
     
-    #ignore edge case where user passes empty dictionary
-    if assigncat != {}:
+    assigncat_str_convert_valresult = False
     
-      for assigncatkey in sorted(assigncat):
-        current_list = assigncat[assigncatkey]
-        
-        #check if current_list is a list, if not populate it as single entry in a list
-        if type(current_list) != type([]):
-          assigncat[assigncatkey] = [current_list]
-          current_list = assigncat[assigncatkey]
-        
-        #then convert any entries in the list to string type
-        assigncat[assigncatkey] = [str(i) for i in current_list]
+    for assigncatkey in assigncat:
+      current_list = assigncat[assigncatkey]
 
-      del current_list
+      if isinstance(current_list, str):
+        current_list = [current_list]
 
-    return assigncat
+      elif isinstance(current_list, (int, float)):  
+        current_list = [str(int(current_list))]
+        
+      elif isinstance(current_list, set):
+        
+        if len([x for x in current_list if not isinstance(x, (str, int, float))]) > 0:
+          assigncat_str_convert_valresult = True
+          if printstatus != 'silent':
+            print("warning of potential error channel")
+            print("assigncat accepts specification as a dictiaonry with str keys")
+            print("and values of str/int/float/set types representing column headers")
+            print("or a list/set with entries of those types")
+            print()
+            
+        else:
+          
+          current_list_set = set()
+          for x in current_list:
+            current_list_set = current_list_set | {str(x)}
+            
+          current_list = [current_list_set]
+
+      elif isinstance(current_list, list):
+        
+        current_list_others = []
+        current_list_sets = []
+        
+        if len([x for x in current_list if not isinstance(x, (str, int, float, set))]) > 0:
+
+          assigncat_str_convert_valresult = True
+          if printstatus != 'silent':
+            print("warning of potential error channel")
+            print("assigncat accepts specification as a dictiaonry with str keys")
+            print("and values of str/int/float/set types representing column headers")
+            print("or a list/set with entries of those types")
+            print()
+
+        current_list_sets = [x for x in current_list if isinstance(x, set)]
+        current_list_others = [str(x) for x in current_list if not isinstance(x, set)]
+
+        for x in current_list_sets:
+          current_set = set()
+          for y in x:
+
+            if isinstance(y, (str, int, float)):
+              current_set = current_set | {str(y)}
+
+            else:
+
+              assigncat_str_convert_valresult = True
+              if printstatus != 'silent':
+                print("warning of potential error channel")
+                print("assigncat accepts specification as a dictiaonry with str keys")
+                print("and values of str/int/float/set types representing column headers")
+                print("or a list/set with entries of those types")
+                print()
+
+          current_list_sets[current_list_sets.index(x)] = current_set
+          
+        current_list = current_list_others + current_list_sets
+
+      assigncat[assigncatkey] = current_list
+
+    return assigncat, assigncat_str_convert_valresult
 
   def __assigninfill_str_convert(self, assigninfill):
     """
@@ -43556,7 +43813,7 @@ class AutoMunge:
       entropy_seeds = self.__autocopy(entropy_seeds)
 
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
-    assigncat = self.__assigncat_str_convert(assigncat)
+    assigncat, assigncat_str_convert_valresult = self.__assigncat_str_convert(assigncat, printstatus)
     assigninfill = self.__assigninfill_str_convert(assigninfill)
     assignparam = self.__assignparam_str_convert(assignparam)
     assignnan = self.__assignnan_str_convert(assignnan)
@@ -44437,6 +44694,23 @@ class AutoMunge:
                                 random_generator, sampling_dict)
 
       postprocess_dict.update({'randomseed' : randomseed})
+
+    #we'll check if there are any protected features and process those columns in a seperate for loop
+    #To ensure the features needing their basis have access in the input form
+    #(in an alternate configuration the protected features could just be placed on far right of dataframe
+    #this way works better when parallelizing the for loops)
+    protected_features = self.__check_for_protected_features(assign_param, processdict)
+
+    #we'll add to the protected_features any input column sets and update assigncat to treta them as null
+    #and also log them in assign_param['messy_data_headers']
+    protected_features, assigncat, assign_param, messy_set_overlap_valresult = \
+    self.__messy_data_prep(protected_features, assigncat, assign_param, postprocess_dict, printstatus)
+
+    miscparameters_results.update({'messy_set_overlap_valresult' : messy_set_overlap_valresult})
+
+    #since some of __messy_data_prep appends set entries to protected_features
+    #we'll have convention of sorting protected_features to ensure consistent order between automunge calls
+    protected_features = sorted(protected_features)
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = self.__autocopy(assigncat)
@@ -44465,8 +44739,6 @@ class AutoMunge:
     #To ensure the features needing their basis have access in the input form
     #(in an alternate configuration the protected features could just be placed on far right of dataframe
     #this way works better when parallelizing the for loops)
-
-    protected_features = self.__check_for_protected_features(assign_param, processdict)
 
     #columns_train_copy will strike protected features
     columns_train_copy = self.__autocopy(columns_train)
@@ -45248,7 +45520,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.0'
+    automungeversion = '8.10'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -53698,6 +53970,13 @@ class AutoMunge:
       else:
         #backward compatibility preceding 7.49
         swap_noise = False
+
+      if 'messy_data_headers' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        messy_data_headers = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['messy_data_headers']
+      else:
+        #backward compatibility preceding 8.10
+        messy_data_headers = False
         
       if 'protected_feature' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
         protected_feature = \
@@ -53834,6 +54113,26 @@ class AutoMunge:
           test_flip_prob = 1
         
       #___
+
+      if isinstance(messy_data_headers, list):
+
+        none_categorical = True
+        for inputtextcolumn in inputtextcolumns:
+          if isinstance(mdf_test[inputtextcolumn].dtype, pd.api.types.CategoricalDtype):
+            none_categorical = False
+
+        if none_categorical is False:
+          mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].astype('object')
+
+        #since messy_data_headers is for input headers, we'll apply an adjinfill
+        #since DPmc needs all valid entries
+        #apply ffill to replace NArows with value from adjacent cell in preceding row
+        mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(method='ffill')
+
+        #we'll follow with a bfill just in case first row had a nan
+        mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(method='bfill')
+
+        mdf_test[inputtextcolumns] = mdf_test[inputtextcolumns].fillna(0)
       
       if inplace is not True:
         for inputtextcolumn in inputtextcolumns:
@@ -53876,8 +54175,9 @@ class AutoMunge:
           seeds_available = sampling_resource_dict['choice_' + traintest + '_seeds']
 
           if binomial_activation_count < len(seeds_available):
-
-            attribute_seeds = seeds_available[:attribute_count]
+            
+            #in the protectect_feature case this function is being called on an attribute partition
+            attribute_seeds = seeds_available[:binomial_activation_count]
 
             sampling_id = 'choice_' + traintest
             sampling_resource_dict.update({sampling_id + '_seeds' : attribute_seeds})
@@ -54046,7 +54346,8 @@ class AutoMunge:
         
       #now apply data type conversion, this should align with received data types, just applying in case of drift
       #in swap_noise scenario will defer to the upstream data type
-      if swap_noise is False:
+      if swap_noise is False and not isinstance(messy_data_headers, list):
+
         for textcolumn in textcolumns:
 
           max_encoding_for_dtype_convert = maxencodings[textcolumn]
