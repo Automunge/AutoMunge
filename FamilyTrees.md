@@ -3161,6 +3161,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
+
+    transform_dict.update({'DTmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DTmp'],
+                                     'cousins'       : [],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
     
     #DTo7 primarily intended for use as a downstream tree category
     transform_dict.update({'DTo7' : {'parents'       : [],
@@ -3402,6 +3411,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'siblings'      : [],
                                      'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DBmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DBmp'],
+                                     'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -3694,6 +3712,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'siblings'      : [],
                                      'auntsuncles'   : ['ordl'],
                                      'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'DPmp' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['DPmp'],
+                                     'cousins'       : [],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
@@ -7697,6 +7724,19 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DTmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DTmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DTmp'}})
     process_dict.update({'DTo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
@@ -7996,6 +8036,19 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DBmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DBmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DBmp'}})
     process_dict.update({'DBo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
@@ -8335,6 +8388,19 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'boolexclude',
                                   'labelctgy' : 'DPmc'}})
+    #note that inplace set to False when receiving messy_data_headers specification
+    process_dict.update({'DPmp' : {'dualprocess' : self._process_DPmc,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_DPmc,
+                                  'inverseprocess' : self._inverseprocess_DPmc,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'messy_data_headers' : []},
+                                  'noise_transform' : 'categoric',
+                                  'defaultinfill' : 'adjinfill',
+                                  'NArowtype' : 'exclude',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'DPmp'}})
     process_dict.update({'DPo7' : {'dualprocess' : self._process_DPod,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_DPod,
