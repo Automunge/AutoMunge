@@ -5522,3 +5522,23 @@ processdict.update({'DPn4' : {'functionpointer' : 'DPnb',
 - updated randomseed range from (2 ** 32 - 1) to (2 ** 31 - 1) to align with int32
 - found and fixed a small equality operator misframing that was interfering with xgboost label prep
 - also updated xgboost classification so that it doesn't train a model for the nunique == 1 case
+
+8.10
+- added support for injecting noise into one-hot encoded sets included in a dataframe
+- lifted the requirement that input features need to meet "tidy data" requirement
+- new convention is that input features can encompass multiple columns, although retaining requirement of one row per sample
+- this was added for use with DPmc for categoric noise injection to pass-through sets with weighted activation flips
+- new root category as DPmp for passthrough, excluded from ML infill and NArw aggregation, although note that since DPmc requires all valid entries performing a default adjinfill to DPmp
+- available by assigncat specification of replacing a string header entry with a set of string header entries (or for a list of string header entries replacing one of the strings in list with a set of aggregated string header entries)
+- for example, both of these would be valid specifications
+
+```
+assigncat = {'DPmp' : {'column1', 'column2'}}
+assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
+```
+
+- Where in the second case DPmp would be applied first to the set {'column1', 'column2'} and separately to the single input column 'column3'
+- this might be useful for injecting noise to one-hot encoded columns
+- for now DPmp is the transform that makes the most sense for this capability for weighted categoric activation set flip, also DPse for swap noise
+- possibly further transformation support pending, need to think about it
+- also found and fixed a small implementation snafu interfering with protected_feature support for DPmc transform which is in family tree for DP10 and DPoh
