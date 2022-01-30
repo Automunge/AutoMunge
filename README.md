@@ -1132,6 +1132,13 @@ assigncat = {'DPnb':['input_column_1', 'input_column_2']}
 Note that for single entry column assignments a user can just pass the string or integer 
 of the column header without the list brackets.
 
+Note tht a small number of transforms, such as DPmp or DPse, support assigncat specification
+with multiple input columns treated as a single feature, available by in the assigncat 
+specification replacing a single input header string with a {set} of input header strings.
+```
+assigncat = {'DPmp':[{'input_column_1', 'input_column_2'}]}
+```
+
 * assignparam:
 A user may pass column-specific or category specific parameters to those transformation 
 functions that accept parameters. Any parameters passed to automunge(.) will be saved in
@@ -3972,8 +3979,9 @@ on number of activations).
   - driftreport postmunge metrics: mask_value, other noise parameters
   - returned datatype: consistent with input
   - inversion available: yes
-* DPse: for full pass-through other than swap noise injection (i.e. may be applied to numeric or categoric features with string entries). Comparable parameters supported to DPmc (swap_noise defaults to True). Only other edits are suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPse may be suitable for incorporating noise injections to categoric test features into a prior prepared pipeline. A similar pass-through transform for numeric features with distribution sampled injections is available as DPne as noted above.
+* DPse: for full pass-through other than swap noise injection (i.e. may be applied to numeric or categoric features with string entries). Comparable parameters supported to DPmc (swap_noise defaults to True). Only other edits are suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPse may be suitable for incorporating noise injections to categoric test features into a prior prepared pipeline. A similar pass-through transform for numeric features with distribution sampled injections is available as DPne as noted above. Note that this can be applied to multi-column input sets by assigncat specification that replaces a single input header string with a {set} of input header strings.
 * DPpc: for full pass-through other than weighted categoric injection (may be applie to categoric features with both numeric and string entries). Comparable parameter support to DPod (passthrough defaults to True). Excluded from ML infill and NArw aggregation. DPpc is an alternate to DPse for passthrough noise to categoric sets that fits the noise weightings to the train data as opposed to mathcing the train or test profile. Also has benefit fo protected_feature support.
+* DPmp: similar to DPpc but can be applied to multi-column sets, such as e.g. to inject noise into one hot encoded categoric features. Can be applied to multi-column input sets by assigncat specification that replaces a single input header string with a {set} of input header strings.
 * DPne: for full pass-through other than numeric noise injection (i.e. no normalization applied). Comparable parameters supported to DPnb, samples gaussian by default also has laplace support. Note that for DPne the rescale_sigmas option defaults to True such that specified sigma parameters are rescaled by multiplication with the training set standard deviation, thus allowing common default sigma options independant of feature scale. For user specified sigma parameters they will also be rescaled unless rescale_sigmas has been deactivated. Only other edits to returned feature other than noise injection are conversion to float dtype / non numeric to NaN and suffix appender on the returned column header. Excluded from ML infill and NArw aggregation. DPne may be suitable for incorporating noise injections to numeric test features into a prior prepared pipeline. Includes protected_feature support.
 
 Please note that DPse (passthrough swap noise e.g. for categoric), DPne (passthrough gaussian or laplace noise for numeric), DPsk (passthrough mask noise for numeric or categoric), and excl (passthrough without noise) can be used in tandem to pass a dataframe to automunge(.) for noise injection without other edits or infill, such as could be used to incorporate noise into an existing tabular pipeline. When limited to these three root categories the returned dataframe will match the same order of columns with only edits other than noise as updated column headers and DPne will overide any data types other than float. (To retain same order of rows can deactivate shuffletrain parameter.)
@@ -4461,6 +4469,7 @@ avoid unintentional duplication.
 - 'DBm2',
 - 'DBmc',
 - 'DBmm',
+- 'DBmp',
 - 'DBn2',
 - 'DBn3',
 - 'DBn4',
@@ -4493,6 +4502,7 @@ avoid unintentional duplication.
 - 'DPm2',
 - 'DPmc',
 - 'DPmm',
+- 'DPmp',
 - 'DPn2',
 - 'DPn3',
 - 'DPn4',
@@ -4523,6 +4533,7 @@ avoid unintentional duplication.
 - 'DTm2',
 - 'DTmc',
 - 'DTmm',
+- 'DTmp',
 - 'DTn2',
 - 'DTn3',
 - 'DTn4',
@@ -5241,8 +5252,8 @@ Please note that if you included externally initialized functions in an automung
 like for custom_train transformation functions, they will need 
 to be reinitialized by user prior to uploading an externally saved postprocess_dict with pickle
 in a new notebook. (This was a design decision for security considerations.) Please note that 
-parameters passed to the custom transform through assignparam require compatibility 
-with a python deepcopy operation.
+if you assign a multicolumn input feature set to a single root category with tree categories in 
+custom_train convention by assigncat {set} bracket specification e.g. assigncat = {'newt':[{'column1', 'column2'}]} then your custom_train transform will recieve those headers as a list through normalization_dict['messy_data_headers'].
 
 Further details on custom transformations provided in the essay [Custom Transformations with Automunge](https://medium.com/automunge/custom-transformations-with-automunge-ae694c635a7e).
 
