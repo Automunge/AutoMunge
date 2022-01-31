@@ -127,6 +127,7 @@ class AutoMunge:
   __GPS_parse
   _custom_train_GPS1
   _process_mlti
+  _process_cnsl
   _process_lngt
   _process_bnst
   _process_UPCS
@@ -461,6 +462,7 @@ class AutoMunge:
   _postprocess_smth
   _custom_test_GPS1
   _postprocess_mlti
+  _postprocess_cnsl
   _postprocess_splt
   _postprocess_spl2
   _postprocess_sp19
@@ -596,6 +598,7 @@ class AutoMunge:
   _inverseprocess_smth
   _custom_inversion_GPS1
   _inverseprocess_mlti
+  _inverseprocess_cnsl
   _custom_inversion_ordl
   _inverseprocess_strg
   _inverseprocess_bnry
@@ -1208,14 +1211,67 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
-    #mlto primarily intended for use as a downstream tree category
-    transform_dict.update({'mlto' : {'parents'       : [],
+    transform_dict.update({'mltG' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['ordl'],
+                                     'auntsuncles'   : ['mltG'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'mlto' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mlto'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['cnsl'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'mlt2' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mlt2'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['cns2'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
+    transform_dict.update({'mlt3' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['mlt3'],
+                                     'cousins'       : [NArw],
+                                     'children'      : ['cns3'],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+  
+    transform_dict.update({'cnsl' : {'parents'       : ['mlto'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['1010'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'cns2' : {'parents'       : ['mlt2'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['onht'],
+                                     'friends'       : []}})
+
+    transform_dict.update({'cns3' : {'parents'       : ['mlt3'],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : [],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : ['ord3'],
                                      'friends'       : []}})
 
     transform_dict.update({'smth' : {'parents'       : ['smt0'],
@@ -1296,7 +1352,7 @@ class AutoMunge:
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['mlto'],
+                                     'coworkers'     : ['mltG'],
                                      'friends'       : []}})
 
     transform_dict.update({'GPS6' : {'parents'       : ['GPS6'],
@@ -1305,7 +1361,7 @@ class AutoMunge:
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['mlto', 'mlti'],
+                                     'coworkers'     : ['mltG', 'mlti'],
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : [],
@@ -5753,7 +5809,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
+    process_dict.update({'mltG' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mlti,
                                   'inverseprocess' : self._inverseprocess_mlti,
@@ -5765,7 +5821,85 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_ordl',
+                                  'labelctgy' : 'mltG'}})
+    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'conditionalinteger',
+                                                     'norm_category' : 'ord3',
+                                                     'norm_params' : {'str_convert' : True}},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_ordl',
                                   'labelctgy' : 'mlto'}})
+    process_dict.update({'mlt2' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'conditionalinteger',
+                                                     'norm_category' : 'ord3',
+                                                     'norm_params' : {'str_convert' : True}},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_ordl',
+                                  'labelctgy' : 'mlt2'}})
+    process_dict.update({'mlt3' : {'dualprocess' : self._process_mlti,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_mlti,
+                                  'inverseprocess' : self._inverseprocess_mlti,
+                                  'info_retention' : False,
+                                  'inplace_option' : True,
+                                  'defaultparams' : {'dtype' : 'conditionalinteger',
+                                                     'norm_category' : 'ord3',
+                                                     'norm_params' : {'str_convert' : True}},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'concurrent_ordl',
+                                  'labelctgy' : 'mlt3'}})
+    process_dict.update({'cnsl' : {'dualprocess' : self._process_cnsl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_cnsl,
+                                  'inverseprocess' : self._inverseprocess_cnsl,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'messy_data_headers' : [],
+                                                     'pad_character' : '_',
+                                                     'upstream_ordinal' : True},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : '1010'}})
+    process_dict.update({'cns2' : {'dualprocess' : self._process_cnsl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_cnsl,
+                                  'inverseprocess' : self._inverseprocess_cnsl,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'messy_data_headers' : [],
+                                                     'pad_character' : '_',
+                                                     'upstream_ordinal' : True},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'onht'}})
+    process_dict.update({'cns3' : {'dualprocess' : self._process_cnsl,
+                                  'singleprocess' : None,
+                                  'postprocess' : self._postprocess_cnsl,
+                                  'inverseprocess' : self._inverseprocess_cnsl,
+                                  'info_retention' : True,
+                                  'inplace_option' : False,
+                                  'defaultparams' : {'messy_data_headers' : [],
+                                                     'pad_character' : '_',
+                                                     'upstream_ordinal' : True},
+                                  'defaultinfill' : 'naninfill',
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : 'exclude',
+                                  'labelctgy' : 'ord3'}})
     process_dict.update({'smt0' : {'custom_train' : self._custom_train_onht,
                                   'custom_test' : self._custom_test_onht,
                                   'custom_inversion' : self._custom_inversion_onht,
@@ -10326,8 +10460,8 @@ class AutoMunge:
       if 'messy_data_headers' in assign_param:
         
         #we'll know it is an inputcolumn if not in column_dict
-        if column not in postprocess_dict['column_dict'] \
-        and column in assign_param['messy_data_headers']:
+        if column in assign_param['messy_data_headers'] \
+        and column not in postprocess_dict['column_dict']:
 
           #messy convention doesn't have inplace support
           params.update({'inplace' : False})
@@ -10715,7 +10849,7 @@ class AutoMunge:
     
     this funciton serves multiple purposes assocaited with the messy_data convenion
     assigncat is inspected to identify messy specification as sets of strings within the specification list
-    and replaces messy sets with one of those entries
+    and replaces messy sets in assigncat with one of those entries
     
     the other entries from a messy set are added to protected_features
     and also added to assigncat['null'] 
@@ -14335,6 +14469,13 @@ class AutoMunge:
     else:
       inplace = False
       
+    if 'messy_data_headers' in params:
+      messy_data_headers = params['messy_data_headers']
+      if messy_data_headers == []:
+        messy_data_headers = [column]
+    else:
+      messy_data_headers = False
+      
     #________
 
     #when applying mlti as a noise transform mlhs for DPhs
@@ -14450,6 +14591,9 @@ class AutoMunge:
     else:
       #origcolumn scenario when not applied as downstream transform
       inputtextcolumns = [column]
+      
+    if isinstance(messy_data_headers, list) and column not in postprocess_dict['column_dict']:
+      inputtextcolumns = messy_data_headers.copy()
     
     #the returned columns will each have consistent suffix appending
     textcolumns = [(x + '_' + suffix) for x in inputtextcolumns]
@@ -14685,6 +14829,7 @@ class AutoMunge:
                                                               'inputtextcolumns' : inputtextcolumns, \
                                                               'norm_columnkey_dict' : norm_columnkey_dict, \
                                                               'norm_column_dict_list' : norm_column_dict_list, \
+                                                              'messy_data_headers' : messy_data_headers, \
                                                               'dtype' : dtype, \
                                                               'max_encoding_for_dtype_convert_dict' : max_encoding_for_dtype_convert_dict, \
                                                               'final_returned_columns' : final_returned_columns, \
@@ -14713,6 +14858,147 @@ class AutoMunge:
                            'infillcomplete' : False, \
                            'suffixoverlap_results' : suffixoverlap_results, \
                            'deletecolumn' : False}}
+
+      column_dict_list.append(column_dict)
+    
+    return mdf_train, mdf_test, column_dict_list
+
+  def _process_cnsl(self, mdf_train, mdf_test, column, category, treecategory, postprocess_dict, params = {}):
+    '''
+    #process_cnsl(mdf_train, mdf_test, column, category, postprocess_dict, params = {})
+    #function to consolidate multiple categoric columns into a single categoric column
+    #this is similar to what is done in Binary
+    #now that we have the messy data convention from 8.10 wanted to get comparable functionality in family trees
+    #recommend applying an upstream mlto to align to a common form between input columns as ordinal
+    #note that this will convert all entries into strings prior to consolidation
+    
+    #note that cnsl pads out the representation of each input with underscore characters
+    #which relies on convention of ordinal encoded input to avoid edge case
+    #based on padding to width of max string with in encoding space
+    '''
+    
+    suffixoverlap_results = {}
+    
+    #initialize parameters
+
+    if 'suffix' in params:
+      suffix = params['suffix']
+    else:
+      suffix = treecategory
+      
+    if 'messy_data_headers' in params:
+      messy_data_headers = params['messy_data_headers']
+      if messy_data_headers == []:
+        messy_data_headers = [column]
+    else:
+      messy_data_headers = False
+      
+#     if 'inplace' in params:
+#       inplace = params['inplace']
+#     else:
+#       inplace = False
+      
+    if 'pad_character' in params:
+      pad_character = params['pad_character']
+    else:
+      pad_character = '_'
+      
+    if 'upstream_ordinal' in params:
+      upstream_ordinal = params['upstream_ordinal']
+    else:
+      upstream_ordinal = True
+      
+    #this function is intended to be applied donstream of a potentially multi column encoding 
+    #meaning there may be multiple columns serving as target
+    #we'll access the upstream categorylist stored in postprocess_dict
+    #or otherwise if this is an upstream trasnform just apply to the received column
+    if column in postprocess_dict['column_dict']:
+      inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+    else:
+      #origcolumn scenario when not applied as downstream transform
+      #note that this scenario also is automatically applied 
+      #when this transform applied downstream of a concurrent MLinfilltype with mlti
+      #since at that point column won't be in column_dict
+      #which is desired behavior for that use case
+      inputtextcolumns = [column]
+      
+    if isinstance(messy_data_headers, list) and column not in postprocess_dict['column_dict']:
+      inputtextcolumns = messy_data_headers.copy()
+    
+    #the returned columns will each have consistent suffix appending
+    textcolumn = (column + '_' + suffix)
+    
+    #we don't offer inplace support for most DP transforms since they usually involve support columns
+    #we might be able to make inplace work for this one
+    
+    #check suffixoverlap before copying
+    suffixoverlap_results = \
+    self.__df_check_suffixoverlap(mdf_train, textcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
+    
+    mdf_train[textcolumn] = ''
+    mdf_test[textcolumn] = ''
+    
+    #we'll do two versions with and without integer conversion to remove float trailing 0's
+    if upstream_ordinal is True:
+
+      #find the max string length to pad out with underscroe character
+      #an alternate character can be selected by parameter pad_character
+      unique_list = []
+      for inputtextcolumn in inputtextcolumns:
+        unique_list += list(mdf_train[inputtextcolumn].unique())
+      #get longest length entry
+      longest_len = len([str(int(x)) for x in unique_list if unique_list.index(x) == 0 or len(str(int(x))) > len(str(int(unique_list[unique_list.index(x)-1])))])
+      
+    else:
+
+      #find the max string length to pad out with underscroe character
+      #an alternate character can be selected by parameter pad_character
+      unique_list = list(mdf_train[inputtextcolumns].unique())
+      #get longest length entry
+      longest_len = len([str(x) for x in unique_list if unique_list.index(x) == 0 or len(int(x)) > len(str(unique_list[unique_list.index(x)-1]))])
+
+    #add a contingency factor for case where encoding space wasn't fully represented
+    #this scenario is not common in our library
+    #as used here if ordinal encoding space found in train set was 10^3, this will support encodings up to 10^10
+    longest_len += 7
+    
+    #now consolidate with padding
+    #we'll do two versions with and without integer conversion to remove float trailing 0's  
+    for inputtextcolumn in inputtextcolumns:
+
+      if upstream_ordinal is True:
+        mdf_train[textcolumn] += mdf_train[inputtextcolumn].astype(int).astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+        mdf_test[textcolumn] += mdf_test[inputtextcolumn].astype(int).astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+        
+      else:
+        mdf_train[textcolumn] += mdf_train[inputtextcolumn].astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+        mdf_test[textcolumn] += mdf_test[inputtextcolumn].astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+      
+    column_dict_list = []
+
+    normalization_dict = {}
+
+    normalization_dict = {textcolumn : {'longest_len' : longest_len,
+                                        'pad_character' : pad_character,
+                                        'upstream_ordinal' : upstream_ordinal,
+                                        'messy_data_headers' : messy_data_headers,
+                                        'suffix' : suffix,
+                                        'inputtextcolumns' : inputtextcolumns,
+                                       }}
+    
+    for textcolumn in [textcolumn]:
+    
+      column_dict = {textcolumn : {'category' : treecategory, \
+                                   'origcategory' : category, \
+                                   'normalization_dict' : normalization_dict, \
+                                   'origcolumn' : column, \
+                                   'inputcolumn' : column, \
+                                   'columnslist' : [textcolumn], \
+                                   'categorylist' : [textcolumn], \
+                                   'infillmodel' : False, \
+                                   'infillcomplete' : False, \
+                                   'suffixoverlap_results' : suffixoverlap_results, \
+                                   'deletecolumn' : False}}
 
       column_dict_list.append(column_dict)
     
@@ -27857,7 +28143,7 @@ class AutoMunge:
       #which is desired behavior for that use case
       inputtextcolumns = [column]
       
-    if isinstance(messy_data_headers, list):
+    if isinstance(messy_data_headers, list) and column not in postprocess_dict['column_dict']:
       inputtextcolumns = messy_data_headers.copy()
 
       none_categorical = True
@@ -34569,9 +34855,9 @@ class AutoMunge:
     return train_df, labels_df
 
   #__FunctionBlock: automunge feature importance
-  
+
   def __trainFSmodel(self, am_subset, am_labels, randomseed, \
-                   process_dict, postprocess_dict, labelctgy, ML_cmnd, printstatus):
+                   process_dict, FSpostprocess_dict, labelctgy, ML_cmnd, printstatus):
     """
     This function is used in feature importance evaluation
     And serves to translate a feature importance model to the conventions of ML infill
@@ -34586,12 +34872,12 @@ class AutoMunge:
 
       df_train_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
       df_test_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
-      categorylist = postprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
+      categorylist = FSpostprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
 
-      _infilla, _infillb, FSmodel, postprocess_dict = \
+      _infilla, _infillb, FSmodel, FSpostprocess_dict = \
       self.__predictinfill(categorylist[0], labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
-                         randomseed, postprocess_dict, ML_cmnd, postprocess_dict['autoMLer'], printstatus, \
+                         randomseed, FSpostprocess_dict, ML_cmnd, FSpostprocess_dict['autoMLer'], printstatus, \
                          categorylist = categorylist)
 
       del _infilla, _infillb
@@ -34600,7 +34886,7 @@ class AutoMunge:
       
       FSmodel = False
     
-    return FSmodel
+    return FSmodel, FSpostprocess_dict
   
   def __createFSsets(self, am_subset, column, columnslist, randomseed):
     '''
@@ -34844,10 +35130,6 @@ class AutoMunge:
     FS_validations = {}
 
     FSML_cmnd = self.__autocopy(ML_cmnd)
-    #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
-    #don't yet have support for xgboost due to use of postprocess_dict['customML_inference_support']
-    if ML_cmnd['autoML_type'] in {'customML', 'xgboost'}:
-      FSML_cmnd['autoML_type'] = 'randomforest'
 
     FS_PCAn_components = False
     FS_Binary = False
@@ -34890,6 +35172,17 @@ class AutoMunge:
     am_labels = pd.DataFrame(am_labels)
     am_validation1 = pd.DataFrame(am_validation1)
     am_validationlabels1 = pd.DataFrame(am_validationlabels1)
+
+    #automunge will have struck any customML training functions for different reason, reintroduce for training feture importance model
+    if 'customML' in ML_cmnd and 'customML_Classifier_train' in ML_cmnd['customML'] \
+    and 'customML' in FSpostprocess_dict['autoMLer']:
+      FSpostprocess_dict['ML_cmnd']['customML']['customML_Classifier_train'] = ML_cmnd['customML']['customML_Classifier_train']
+      FSpostprocess_dict['ML_cmnd']['customML']['customML_Regressor_train'] = ML_cmnd['customML']['customML_Regressor_train']
+
+      temp_autoMLer = self.__assemble_autoMLer()
+      for modeltarget in temp_autoMLer['customML']:
+        FSpostprocess_dict['autoMLer']['customML'][modeltarget]['train'] = \
+        temp_autoMLer['customML'][modeltarget]['train']
 
     #capture any ML_cmnd preprocessing returned from automunge
     FSML_cmnd = FSpostprocess_dict['ML_cmnd']
@@ -35071,11 +35364,20 @@ class AutoMunge:
       FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
 
       #apply function trainFSmodel
-      #FSmodel, baseaccuracy = \
-      FSmodel = \
+
+      #'customML_inference_support' for feature selection is a little tricky since it is being used in different context than ML infill
+      FSpostprocess_dict['customML_inference_support'] = {}
+
+      FSmodel, FSpostprocess_dict = \
       self.__trainFSmodel(am_train, am_labels, randomseed, \
                         FSprocess_dict, FSpostprocess_dict, labelctgy, FSML_cmnd, \
                         printstatus)
+
+      #now carry the 'customML_inference_support' from FSpostprocess_dict to FSpostprocess_dict['ML_cmnd']
+      #this means that can't currently do ML infill on automunge call to prepare feature selction data as would overwrite
+      #which has been our basis anyway'
+      #basically the inference functions are inspecting customML_inference_support in ML_cmnd
+      FSpostprocess_dict['ML_cmnd']['customML_inference_support'] = FSpostprocess_dict['customML_inference_support']
       
       if FSmodel is False:
         
@@ -44711,6 +45013,15 @@ class AutoMunge:
     #since some of __messy_data_prep appends set entries to protected_features
     #we'll have convention of sorting protected_features to ensure consistent order between automunge calls
     protected_features = sorted(protected_features)
+
+    #quick validagtion result that a specified protected feature is foudn in data
+    protected_features_in_headers_valresult = False
+    if len(set(protected_features) - set(columns_train)) > 0:
+      protected_features_in_headers_valresult = True
+      if printstatus != 'silent':
+        print("error channel: a protected feature appears to have been specified in assignparam that was not found in df_train headers")
+        print("this may also be a result of set bracket specification to assigncat having entries not found in df_train")
+    miscparameters_results.update({'protected_features_in_headers_valresult' : protected_features_in_headers_valresult})
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = self.__autocopy(assigncat)
@@ -45520,7 +45831,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.10'
+    automungeversion = '8.11'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -47871,6 +48182,70 @@ class AutoMunge:
           #origcolumn scenario when not applied as downstream transform
           inputtextcolumns = [column]
 
+        for inputtextcolumn in inputtextcolumns:
+          del mdf_test[inputtextcolumn]
+    
+    return mdf_test
+
+  def _postprocess_cnsl(self, mdf_test, column, postprocess_dict, columnkey, params = {}):
+    '''
+    #postprocess correpsonding to _process_cnsl
+    #in addition to assignparam testnoise parameter
+    #noise injection may be performed based on postmunge traindata parameter
+    #otherwise this is a passthrough transform
+    '''
+    
+    #normkey used to retrieve the normalization dictionary 
+    normkey = False
+    if len(columnkey) > 0:      
+      normkey = columnkey[0]
+          
+    #normkey is False when process function returns empty set
+    if normkey is not False:
+      
+      longest_len = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['longest_len']
+      pad_character = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['pad_character']
+      upstream_ordinal = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['upstream_ordinal']
+      messy_data_headers = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['messy_data_headers']
+      suffix = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['suffix']
+      inputtextcolumns = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+        
+      #___
+      
+      textcolumn = column + '_' + suffix
+      
+      mdf_test[textcolumn] = ''
+      
+      #now consolidate with padding
+      #we'll do two versions with and without integer conversion to remove float trailing 0's  
+      for inputtextcolumn in inputtextcolumns:
+
+        if upstream_ordinal is True:
+          mdf_test[textcolumn] += mdf_test[inputtextcolumn].astype(int).astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+
+        else:
+          mdf_test[textcolumn] += mdf_test[inputtextcolumn].astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
+      
+    else:
+
+      if 'inplace' in params:
+        inplace = params['inplace']
+      else:
+        inplace = False
+
+      if inplace is True:
+        if column in postprocess_dict['column_dict']:
+          inputtextcolumns = postprocess_dict['column_dict'][column]['categorylist']
+        else:
+          #origcolumn scenario when not applied as downstream transform
+          inputtextcolumns = [column]
+          
         for inputtextcolumn in inputtextcolumns:
           del mdf_test[inputtextcolumn]
     
@@ -55163,8 +55538,7 @@ class AutoMunge:
       'unspecified' : []}
 
       #since we dont' save the training functions in postprocess_dict for customML case, feature selection defaults to random forest
-      #don't yet have support for xgboost due to use of psotprocess_dict[''customML_inference_support']
-      if ML_cmnd['autoML_type'] in {'customML', 'xgboost'}:
+      if ML_cmnd['autoML_type'] in {'customML'}:
         autoMLer = self.__assemble_autoMLer()
         FSpostprocess_dict['autoMLer'] = autoMLer
         ML_cmnd['autoML_type'] = 'randomforest'
@@ -55195,6 +55569,11 @@ class AutoMunge:
 
       am_labels, am_validationlabels1 = \
       self.__df_split(am_labels, totalvalidation, False, randomseed)
+
+      #__
+
+      #customML autoMLtype not supported for postmunge feature importance 
+      #since don't have access to model training function
 
       #__
       
@@ -55374,12 +55753,19 @@ class AutoMunge:
         FS_validations.update({'FS_numeric_data_result': FS_numeric_data_result})
         FS_validations.update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
 
+        #this is assocaited with adding support for XGBoost and customML
+        #since they use this to log information for label conversion to fully represented range integer
+        FSpostprocess_dict['customML_inference_support'] = {}
+
         #apply function trainFSmodel
         #FSmodel, baseaccuracy = \
-        FSmodel = \
+        FSmodel, FSpostprocess_dict = \
         self.__trainFSmodel(am_train, am_labels, randomseed, \
                           FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
                           printstatus)
+
+        #the inference functions inspect customML_inference_support in ML_cmnd
+        FSpostprocess_dict['ML_cmnd']['customML_inference_support'] = FSpostprocess_dict['customML_inference_support']
         
         if FSmodel is False:
           
@@ -59651,6 +60037,38 @@ class AutoMunge:
     
     return df, inputcolumn
 
+  def _inverseprocess_cnsl(self, df, categorylist, postprocess_dict):
+    """
+    #inverse transform corresponding to process_cnsl
+    #is simply a pass-through function, original character cases not retained
+    #does not perform infill, assumes clean data
+    #translations are for column renaming purposes
+    """
+    
+    normkey = categorylist[0]
+
+    longest_len = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['longest_len']
+    pad_character = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['pad_character']
+    upstream_ordinal = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['upstream_ordinal']
+    inputtextcolumns = \
+    postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['inputtextcolumns']
+
+    for inputtextcolumn in inputtextcolumns:
+      
+      df[inputtextcolumn] = df[normkey].str.slice(start=0, stop=longest_len).str.replace(pad_character, '').copy()
+      df[normkey] = df[normkey].str.slice(start=longest_len)
+
+      if upstream_ordinal is True:
+        df[inputtextcolumn] = df[inputtextcolumn].astype(int)
+      
+    #this returns an arbitrary one of the input columns which is fine
+    inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
+    
+    return df, inputcolumn
+
   def _custom_inversion_ordl(self, df, returnedcolumn_list, inputcolumn, normalization_dict):
     """
     #rewrite of the ordl inversion
@@ -60642,7 +61060,9 @@ class AutoMunge:
     
       for column in full_returned_columns:
 
-        if column in source_columns:
+        if column in source_columns \
+        or 'protected_features' in postprocess_dict \
+        and column in postprocess_dict['protected_features']:
           
           recovered_list += [column]
 
