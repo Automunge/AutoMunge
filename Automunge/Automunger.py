@@ -5986,7 +5986,7 @@ class AutoMunge:
                                   'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
-                                  'labelctgy' : 'mlto'}})
+                                  'labelctgy' : 'mltG'}})
     process_dict.update({'GPS6' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
                                   'custom_inversion' : self._custom_inversion_GPS1,
@@ -5996,7 +5996,7 @@ class AutoMunge:
                                   'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
-                                  'labelctgy' : 'mlto'}})
+                                  'labelctgy' : 'mltG'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
