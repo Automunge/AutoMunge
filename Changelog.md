@@ -5542,3 +5542,16 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - for now DPmp is the transform that makes the most sense for this capability for weighted categoric activation set flip, also DPse for swap noise
 - possibly further transformation support pending, need to think about it
 - also found and fixed a small implementation snafu interfering with protected_feature support for DPmc transform which is in family tree for DP10 and DPoh
+
+8.11
+- added support for training feature importance model with xgboost in both automunge and postmunge and customML in automunge 
+- (needed to align the conversion applied for fully represented range integer labels)
+- customML doesn't have access to training funcitons in postmugne so defaults to random forest
+- fixed the inversion process for messy data convention, now all of the assigncat set specification input columns when recovered are retained
+- new root categories cnsl/cns2/cns3
+- cnsl stands for consolidate, and is used to aggregate column sets in messy data convention that are specified by assigncat set bracket specification to return a single categoric encoding, where cnsl returns a 1010, cns2 returns a onht, and cns3 returns a ord3
+- this is similar functionality to what was previously available through Binary dimensionality reduction, now since it is incorporated into the family tree it can be applied directly to input columns instead of requiring a preceding encoding
+- another benefit is that now missing data infill is supported for consolidated sets
+- where missing marker aggregation is based on the first column of the messy set alphabetical
+- small tweak to GPS5/GPS6 family trees to differentiate a default parameter setting vs a different one applied by the new cnsl trees
+- flipped the order of an if statement from 8.10, should make it run a tiny bit faster
