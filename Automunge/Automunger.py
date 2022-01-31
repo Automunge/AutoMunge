@@ -1211,18 +1211,19 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'mltG' : {'parents'       : [],
+    #mlto primarily intended for use as a downstream tree category
+    transform_dict.update({'mlto' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['mltG'],
+                                     'auntsuncles'   : ['ord3'],
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
-    transform_dict.update({'mlto' : {'parents'       : [],
+    transform_dict.update({'mlt1' : {'parents'       : [],
                                      'siblings'      : [],
-                                     'auntsuncles'   : ['mlto'],
+                                     'auntsuncles'   : ['mlt1'],
                                      'cousins'       : [NArw],
                                      'children'      : ['cnsl'],
                                      'niecesnephews' : [],
@@ -1247,7 +1248,7 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
   
-    transform_dict.update({'cnsl' : {'parents'       : ['mlto'],
+    transform_dict.update({'cnsl' : {'parents'       : ['mlt1'],
                                      'siblings'      : [],
                                      'auntsuncles'   : [],
                                      'cousins'       : [NArw],
@@ -1352,7 +1353,7 @@ class AutoMunge:
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['mltG'],
+                                     'coworkers'     : ['mlto'],
                                      'friends'       : []}})
 
     transform_dict.update({'GPS6' : {'parents'       : ['GPS6'],
@@ -1361,7 +1362,7 @@ class AutoMunge:
                                      'cousins'       : [NArw],
                                      'children'      : [],
                                      'niecesnephews' : [],
-                                     'coworkers'     : ['mltG', 'mlti'],
+                                     'coworkers'     : ['mlto', 'mlti'],
                                      'friends'       : []}})
 
     transform_dict.update({'lngt' : {'parents'       : [],
@@ -5809,7 +5810,7 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
                                   'labelctgy' : 'mlti'}})
-    process_dict.update({'mltG' : {'dualprocess' : self._process_mlti,
+    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mlti,
                                   'inverseprocess' : self._inverseprocess_mlti,
@@ -5821,8 +5822,8 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_ordl',
-                                  'labelctgy' : 'mltG'}})
-    process_dict.update({'mlto' : {'dualprocess' : self._process_mlti,
+                                  'labelctgy' : 'mlto'}})
+    process_dict.update({'mlt1' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mlti,
                                   'inverseprocess' : self._inverseprocess_mlti,
@@ -5834,7 +5835,7 @@ class AutoMunge:
                                   'defaultinfill' : 'naninfill',
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_ordl',
-                                  'labelctgy' : 'mlto'}})
+                                  'labelctgy' : 'mlt1'}})
     process_dict.update({'mlt2' : {'dualprocess' : self._process_mlti,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_mlti,
@@ -5986,7 +5987,7 @@ class AutoMunge:
                                   'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
-                                  'labelctgy' : 'mltG'}})
+                                  'labelctgy' : 'mlto'}})
     process_dict.update({'GPS6' : {'custom_train' : self._custom_train_GPS1,
                                   'custom_test' : None,
                                   'custom_inversion' : self._custom_inversion_GPS1,
@@ -5996,7 +5997,7 @@ class AutoMunge:
                                   'defaultparams' : {'GPS_convention' : 'nonunique'},
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : 'concurrent_nmbr',
-                                  'labelctgy' : 'mltG'}})
+                                  'labelctgy' : 'mlto'}})
     process_dict.update({'lngt' : {'dualprocess' : None,
                                   'singleprocess' : self._process_lngt,
                                   'postprocess' : None,
@@ -59896,10 +59897,14 @@ class AutoMunge:
     df = self.__autowhere(df, latt_column, condition, 'S', 'N')
     
     #now add the degrees characters
-    df[latt_column] = df[latt_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    #The following alternate frame was due to a backward compatibility halt that I couldn't identify by inspection so using a coersion
+    # df[latt_column] = df[latt_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    df.loc[df[supportcolumn2]==df[supportcolumn2], latt_column] = df.loc[df[supportcolumn2]==df[supportcolumn2], latt_column].astype(str) + df.loc[df[supportcolumn2]==df[supportcolumn2], supportcolumn2].astype(int).astype(str).str.zfill(2)
     
     #now add the first two minutes characters
-    df[latt_column] = df[latt_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    #The following alternate frame was due to a backward compatibility halt that I couldn't identify by inspection so using a coersion
+    # df[latt_column] = df[latt_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    df.loc[df[supportcolumn1]==df[supportcolumn1], latt_column] = df.loc[df[supportcolumn1]==df[supportcolumn1], latt_column] + df.loc[df[supportcolumn1]==df[supportcolumn1], supportcolumn1].astype(int).astype(str).str.zfill(2)
     
     #now add the decimal
     df[latt_column] = df[latt_column] + '.'
@@ -59926,11 +59931,15 @@ class AutoMunge:
     condition = df[long_column].astype(float) < 0
     df = self.__autowhere(df, long_column, condition, 'W', 'E')
     
+    #The following alternate frame was due to a backward compatibility halt that I couldn't identify by inspection so using a coersion
     #now add the degrees characters
-    df[long_column] = df[long_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    # df[long_column] = df[long_column].astype(str) + df[supportcolumn2].astype(int).astype(str).str.zfill(2)
+    df.loc[df[supportcolumn2]==df[supportcolumn2], long_column] = df.loc[df[supportcolumn2]==df[supportcolumn2], long_column].astype(str) + df.loc[df[supportcolumn2]==df[supportcolumn2], supportcolumn2].astype(int).astype(str).str.zfill(2)
     
+    #The following alternate frame was due to a backward compatibility halt that I couldn't identify by inspection so using a coersion
     #now add the first two minutes characters
-    df[long_column] = df[long_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    # df[long_column] = df[long_column] + df[supportcolumn1].astype(int).astype(str).str.zfill(2)
+    df.loc[df[supportcolumn1]==df[supportcolumn1], long_column] = df.loc[df[supportcolumn1]==df[supportcolumn1], long_column] + df.loc[df[supportcolumn1]==df[supportcolumn1], supportcolumn1].astype(int).astype(str).str.zfill(2)
     
     #now add the decimal
     df[long_column] = df[long_column] + '.'
