@@ -1004,8 +1004,6 @@ ML_cmnd = {'autoML_type'      : 'xgboost',
 ```
 The implementation makes of XGBoost's "scikit-learn API", so accepted parameters are consistent with XGBClassifier and XGBRegressor. Please note that we recommend setting the gpu_id with ML_cmnd['xgboost_gpu_id'] (rather than passing through parameters) for consistent treatment between tuning and training, which automatically sets tree_method as gpu_hist. (If you intend to put the automunge(.) returned postprocess_dict into production you may want to set the predicter to cpu_predictor as shown so can run ML infill inference without a GPU.) If you don't know your gpu device id, they are usually integers (e.g. if you have one CUDA gpu the device id is usually the integer 0, you can verify this by passing "nvidia-smi" in a terminal window). 'xgboost_gpu_id' defaults to False when not specified, meaning training and inference are conducted on CPU.
 
-For esoteric reason we don't yet have support for training feature importance models with xgboost, feature importance models will instead train with the default of random forest. Other built in autoML_types are supported.
-
 Further information on the Optuna library is available on arxiv as Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, Masanori Koyama. Optuna: A Next-generation Hyperparameter Optimization Framework. [arXiv:1907.10902](https://arxiv.org/abs/1907.10902#). Our tuning implementation owes a thank you to a tutorial provided by Optuna.
 
 Please note that model training by default incorporates a random random seed with each application,
@@ -3242,7 +3240,7 @@ Note that text and onht are implemented with the same functions by updates to th
     - 'ordered_overide': default to True, accepts boolean indicating if columns received as pandas ordered categoric will use that basis for order of the returned columns. Note this is deactivated when activation parameters are specified (all/add/less/consolidated).
     - 'frequency_sort': boolean defaults to True, when activated the order of returned columns is sorted by frequency of entries as found in the train set, when deactivated sorting is alphabetic
 * onht: converts categorical sets to one-hot encoded set of boolean identifiers 
-(like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents). Note that text and onht are implemented with the same functions by updates to the suffix_convention parameter.
+(like text but different convention for returned column headers and distinct encodings for numbers and numerical string equivalents). Note that text and onht are implemented with the same functions by updates to the suffix_convention parameter. To apply onht to a "messy" feature with multiple columns in input headers can apply assigncat set bracket specification to root category 'cns2'.
   - useful for: similar to text transform preceding but with numbered column header convention
   - default infill: no activation in row
   - default NArowtype: justNaN
@@ -3281,7 +3279,7 @@ Note that text and onht are implemented with the same functions by updates to th
   - returned datatype: conditional based on size of encoding space (uint8 / uint16 / uint32)
   - inversion available: yes with full recovery
 * ord3: converts categoric sets to ordinal integer encoded set, sorted first by frequency of category 
-occurrence, second basis for common count entries is alphabetical
+occurrence, second basis for common count entries is alphabetical. To apply ord3 to a "messy" feature with multiple columns in input headers can apply assigncat set bracket specification to root category 'cns3'.
   - useful for: similar to ordl preceding but activations are sorted by entry frequency instead of alphabetical
   - default infill: unique activation
   - default NArowtype: justNaN
@@ -3307,7 +3305,7 @@ occurrence, second basis for common count entries is alphabetical
 label sets passed to downstream libraries to ensure they treat labels as target for classification instead
 of regression.
 * 1010: converts categorical sets of >2 unique values to binary encoding (more memory 
-efficient than one-hot encoding)
+efficient than one-hot encoding). To apply 1010 to a "messy" feature with multiple columns in input headers can apply assigncat set bracket specification to root category 'cnsl'.
   - useful for: our default categoric encoding for sets with number of entries below numbercategoryheustic (defaulting to 255)
   - default infill: naninfill, with returned distinct activation set of all 0's
   - default NArowtype: justNaN
@@ -4626,6 +4624,9 @@ avoid unintentional duplication.
 - 'bxc6',
 - 'bxc7',
 - 'bxcx',
+- 'cnsl',
+- 'cns2',
+- 'cns3',
 - 'copy',
 - 'cost',
 - 'd2d2',
@@ -4725,6 +4726,7 @@ avoid unintentional duplication.
 - 'mint',
 - 'misn',
 - 'mlhs',
+- 'mltG',
 - 'mlti',
 - 'mlto',
 - 'mltp',
@@ -5404,7 +5406,7 @@ ML_cmnd = {'autoML_type' : 'customML',
                          'customML_Regressor_train'   : customML_train_regressor, 
                          'customML_Regressor_predict' : customML_predict_regressor}}
 ```
-Please note that for customML autoML_type, feature importance is performed with the default random forest. (This was a design decision that benefits privacy of custom model training when sharing postprocess_dict with third party, this way only customML inference needs to be re-initialized when uploading postprocess_dict in a separate notebook.)
+Please note that for customML autoML_type, feature importance in postmunge is performed with the default random forest. (This was a design decision that benefits privacy of custom model training when sharing postprocess_dict with third party, this way only customML inference needs to be re-initialized when uploading postprocess_dict in a separate notebook.)
 
 Note that the library has an internal suite of inference functions for different ML libraries 
 that can optionally be used in place of a user defined customML inference function. These can
