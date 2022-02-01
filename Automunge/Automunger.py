@@ -4,7 +4,7 @@ See file LICENSE or go to https://github.com/Automunge/AutoMunge for full licens
 
 contact available via automunge.com
 
-Copyright (C) 2018, 2019, 2020, 2021 Nicholas Teague - All Rights Reserved
+Copyright (C) 2018, 2019, 2020, 2021, 2022 Nicholas Teague - All Rights Reserved
 
 patent pending, including applications 16552857, 17021770
 """
@@ -14974,7 +14974,7 @@ class AutoMunge:
       else:
         mdf_train[textcolumn] += mdf_train[inputtextcolumn].astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
         mdf_test[textcolumn] += mdf_test[inputtextcolumn].astype(str).str.pad(longest_len, side='left', fillchar=pad_character).str.slice(start=0, stop=longest_len)
-      
+
     column_dict_list = []
 
     normalization_dict = {}
@@ -35155,7 +35155,7 @@ class AutoMunge:
                   shuffletrain = True, TrainLabelFreqLevel = False, powertransform = powertransform, \
                   binstransform = binstransform, MLinfill = False, infilliterate=1, randomseed = randomseed, \
                   excl_suffix = True, \
-                  numbercategoryheuristic = numbercategoryheuristic, pandasoutput = True, NArw_marker = NArw_marker, \
+                  numbercategoryheuristic = numbercategoryheuristic, pandasoutput = 'dataframe', NArw_marker = NArw_marker, \
                   featureselection = False, \
                   PCAn_components = FS_PCAn_components, \
                   Binary = FS_Binary, \
@@ -35167,12 +35167,6 @@ class AutoMunge:
 
     #record validation results from automunge call internal to featureselect
     FS_validations.update({'featureselect_automungecall_validationresults' : FSpostprocess_dict['miscparameters_results']})
-
-    #in case these are single column series convert to dataframe
-    am_train = pd.DataFrame(am_train)
-    am_labels = pd.DataFrame(am_labels)
-    am_validation1 = pd.DataFrame(am_validation1)
-    am_validationlabels1 = pd.DataFrame(am_validationlabels1)
 
     #automunge will have struck any customML training functions for different reason, reintroduce for training feture importance model
     if 'customML' in ML_cmnd and 'customML_Classifier_train' in ML_cmnd['customML'] \
@@ -45832,7 +45826,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.11'
+    automungeversion = '8.12'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -46181,6 +46175,7 @@ class AutoMunge:
                       entropy_seeds = postprocess_dict['entropy_seeds'],
                       random_generator = random_generator,
                       sampling_dict = sampling_dict,
+                      pandasoutput = 'dataframe',
                       randomseed = augrandomseed)
 
         #this adjusts Automunge_index to avoid duplicates
@@ -46192,8 +46187,8 @@ class AutoMunge:
         df_trainID = pd.concat([df_trainID, duplicate_i_ID], axis=0, ignore_index=True)
 
         if labels_column is not False:
-          #single column labels returned from postmunge will be a series instead of dataframe
-          df_labels = pd.concat([pd.DataFrame(df_labels), pd.DataFrame(duplicate_i_labels)], axis=0, ignore_index=True)
+          #single column labels returned from postmunge will be a dataframe
+          df_labels = pd.concat([df_labels, duplicate_i_labels], axis=0, ignore_index=True)
 
         del duplicate_i, duplicate_i_ID, duplicate_i_labels, _1
 
@@ -46239,9 +46234,10 @@ class AutoMunge:
 
       #process validation set consistent to train set with postmunge here
       #note that traindata parameter consistent with postmunge(.) default (False)
+      #and pandasoutput intentionally set to 'dataframe'
       df_validation1, _2, df_validationlabels1, _4 = \
       self.postmunge(postprocess_dict, df_validation1, testID_column = False, \
-                     pandasoutput = True, printstatus = printstatus, \
+                     pandasoutput = 'dataframe', printstatus = printstatus, \
                      shuffletrain = False, dupl_rows = dupl_rows,
                      entropy_seeds = postprocess_dict['entropy_seeds'],
                      random_generator = random_generator,
@@ -55502,7 +55498,7 @@ class AutoMunge:
       #copy postprocess_dict to customize for feature importance evaluation
       FSpostprocess_dict = self.__autocopy(postprocess_dict)
       testID_column = testID_column
-      pandasoutput = True
+      pandasoutput = 'dataframe'
       printstatus = printstatus
       TrainLabelFreqLevel = False
       featureeval = False
@@ -55559,10 +55555,6 @@ class AutoMunge:
 
       #record validation results from postmunge call
       FS_validations.update({'postfeatureselect_automungecall_validationresults' : FSpostreports_dict['pm_miscparameters_results']})
-
-      #in case these are single column series convert to dataframe
-      am_train = pd.DataFrame(am_train)
-      am_labels = pd.DataFrame(am_labels)
 
       #prepare validaiton sets for FS
       am_train, am_validation1 = \
@@ -57775,6 +57767,7 @@ class AutoMunge:
                       entropy_seeds = entropy_seeds, 
                       random_generator = random_generator,
                       sampling_dict = sampling_dict,
+                      pandasoutput = 'dataframe',
                       randomseed = augrandomseed)
 
         #now reset the temporary postmunge postprocess_dict entries
@@ -57792,7 +57785,7 @@ class AutoMunge:
         df_testID = pd.concat([df_testID, duplicate_i_ID], axis=0, ignore_index=True)
 
         if labelscolumn is not False:
-          #single column labels returned from postmunge will be a series instead of dataframe
+          #single column labels returned from postmunge will be a dataframe
           df_testlabels = pd.concat([pd.DataFrame(df_testlabels), pd.DataFrame(duplicate_i_labels)], axis=0, ignore_index=True)
 
         del duplicate_i, duplicate_i_ID, duplicate_i_labels, _1
