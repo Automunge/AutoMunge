@@ -5555,3 +5555,8 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - where missing marker aggregation is based on the first column of the messy set alphabetical
 - small tweak to GPS5/GPS6 family trees to differentiate a default parameter setting vs a different one applied by the new cnsl trees
 - flipped the order of an if statement from 8.10, should make it run a tiny bit faster
+
+8.12
+- found an edge case scenario that was interfering with automunge(.) pandasoutput='dataframe' case for validation labels resulting in single column validation labels returned as series instead of dataframe which did not align with documentation
+- now resolved
+- a tweak to code comments here and there for clarity
