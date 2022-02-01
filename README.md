@@ -762,7 +762,7 @@ to categorical treatment via hashing processing via 'hsh2', otherwise
 categorical sets default to binary encoding via '1010'. This defaults to 255.
 Heuristic can be deactivated by passing as False.
 
-* pandasoutput: a selector for format of returned sets. Defaults to _'dataframe'_
+* pandasoutput: selects format of returned sets. Defaults to _'dataframe'_
 for returned pandas dataframe for all sets. Dataframes index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
 corresponding to the order of rows as they were passed to function). If set to _True_, features and ID sets are comparable, and single column label sets are converted to Pandas Series instead of dataframe. If set to _False_
@@ -2136,7 +2136,7 @@ list may include ID columns to be struck from the features and the second list m
 to be retained in the features. (We recommend only using testID_column specification for cases where df_test
 includes columns that weren't present in the original df_train, otehrwise it is automatic.)
 
-* pandasoutput: a selector for format of returned sets. Defaults to _'dataframe'_
+* pandasoutput: selects format of returned sets. Defaults to _'dataframe'_
 for returned pandas dataframe for all sets. Dataframes index is not always preserved, non-integer indexes are extracted to the ID sets,
 and automunge(.) generates an application specific range integer index in ID sets 
 corresponding to the order of rows as they were passed to function). If set to _True_, features and ID sets are comparable, and single column label sets are converted to Pandas Series instead of dataframe. If set to _False_
