@@ -5427,6 +5427,16 @@ ML_cmnd = {'autoML_type' : 'customML',
 
 And thus ML infill can run with any tabular learning library or algorithm. BYOML.
 
+ ___
+
+* Please note that Automunge with 8.13 introduced what is currently an experimental implementation for final model training and inference. For example, they are well suited for training a final model in conjunction with our optuna_XG1 hyperparameter tuner using the same ML_cmnd API to select tuning options. Note that this option can apply a different model architecture or tuning options than those used for ML infill.
+
+- automodel(.) accepts a training set and postprocess_dict as returned from automunge(.) to automatically train a model which is saved in the postprocess_dict
+- autoinference(.) accepts a test set prepared in automunge(.) or postmunge(.) and a postprocess_dict which has been populated by automodel and returns the results of inference.
+- encrypted postprocess_dict by encrypt_key parameter pending support
+
+We don't consider these new functions fully audited or polished just yet, but have validated that they are functional in limited testing.
+
  ___ 
 
 ## Conclusion
