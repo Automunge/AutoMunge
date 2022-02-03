@@ -70,6 +70,7 @@ class AutoMunge:
   #01 - automunge(.) related Function Blocks
   #02 - postmunge(.) related Function Blocks
   #03 - inversion related Function Blocks
+  #04 - experimental model training Function Blocks
 
   Under each of these headers, we've aggregated function definitions by theme
   Where each of these "Function Blocks" can be navigated to by a control F search
@@ -621,6 +622,17 @@ class AutoMunge:
   __df_inversion
   __df_inversion_meta
   __inversion_parent
+
+  #________________________________________________
+  #04 - experimental model training Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: model training Function Blocks
+  __check_model_parameters
+  automodel
+
+  #__FunctionBlock: model inference Function Blocks
+  autoinference
   """
   
   def __init__(self):
@@ -30888,7 +30900,7 @@ class AutoMunge:
     if 'stochastic_training_seed' in ML_cmnd and ML_cmnd['stochastic_training_seed'] is False:
       randomseed = randomseed
     else:
-      randomseed = random.randint(0,4294967295)
+      randomseed = random.randint(0,2147483647)
     
     #grab autoML_type from ML_cmnd, this will be one of our keys for autoMLer dictionary
     autoML_type = ML_cmnd['autoML_type']
@@ -31551,7 +31563,7 @@ class AutoMunge:
           #val_tuple specifies the boundaries of current fold's validation split
           val_tuple = (i/kfolds, (i+1)/kfolds)
           #we'll have a unique random seed for shuffling each fold
-          trial_randomseed = random.randint(0,4294967295)
+          trial_randomseed = random.randint(0,2147483647)
           
           #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
           #we'll apply a unique random seed with each trial
@@ -31611,7 +31623,7 @@ class AutoMunge:
           #val_tuple specifies the boundaries of current fold's validation split
           val_tuple = (i/kfolds, (i+1)/kfolds)
           #we'll have a unique random seed for shuffling each fold
-          trial_randomseed = random.randint(0,4294967295)
+          trial_randomseed = random.randint(0,2147483647)
           
           #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
           #we'll apply a unique random seed with each trial
@@ -34858,7 +34870,8 @@ class AutoMunge:
   #__FunctionBlock: automunge feature importance
 
   def __trainFSmodel(self, am_subset, am_labels, randomseed, \
-                   process_dict, FSpostprocess_dict, labelctgy, ML_cmnd, printstatus):
+                   process_dict, FSpostprocess_dict, labelctgy, FSML_cmnd, printstatus, 
+                   FSautoMLer=False):
     """
     This function is used in feature importance evaluation
     And serves to translate a feature importance model to the conventions of ML infill
@@ -34871,6 +34884,9 @@ class AutoMunge:
     
     if len(list(am_labels)) > 0:
 
+      if FSautoMLer is False:
+        FSautoMLer = FSpostprocess_dict['autoMLer']
+
       df_train_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
       df_test_fillfeatures_plug = pd.DataFrame(am_subset[:][:1].copy())
       categorylist = FSpostprocess_dict['column_dict'][list(am_labels)[0]]['categorylist']
@@ -34878,7 +34894,7 @@ class AutoMunge:
       _infilla, _infillb, FSmodel, FSpostprocess_dict = \
       self.__predictinfill(categorylist[0], labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
-                         randomseed, FSpostprocess_dict, ML_cmnd, FSpostprocess_dict['autoMLer'], printstatus, \
+                         randomseed, FSpostprocess_dict, FSML_cmnd, FSautoMLer, printstatus, \
                          categorylist = categorylist)
 
       del _infilla, _infillb
@@ -34970,6 +34986,9 @@ class AutoMunge:
       np_predictions = autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, FSmodel, np_shuffleset, printstatus_for_predict, categorylist_for_predict)
       #np_predictions = FSmodel.predict(np_shuffleset)
       
+      #this absolute translation is to align with mean_squared_log_error use for performance metric
+      #which is specific to feature importance
+
       #just in case this returned any negative predictions
       np_predictions = np.absolute(np_predictions)
       #and we're trying to generalize here so will go ahead and apply to labels
@@ -40471,7 +40490,7 @@ class AutoMunge:
     
     #initalize entropy seed parameters to single form between alternate scenarios
     if len(entropy_seeds) == 0:
-      # entropy_seeds = np.array([random.randint(0,4294967295)])
+      # entropy_seeds = np.array([random.randint(0,2147483647)])
       entropy_seeds = np.array([])
 
     if random_generator == False:
@@ -45826,7 +45845,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.12'
+    automungeversion = '8.13'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -45837,7 +45856,8 @@ class AutoMunge:
 
     #and consolidated all customML_inference_support entries from postprocess_dict
     ML_cmnd['customML_inference_support'].update(postprocess_dict['customML_inference_support'])
-    del postprocess_dict['customML_inference_support']
+    #reset to empty dictionary
+    postprocess_dict['customML_inference_support'] = {}
 
     #here we'll finish populating the postprocess_dict that is returned from automunge
     #as it will be used in the postmunge call below to process validation sets
@@ -61596,3 +61616,460 @@ class AutoMunge:
         df_test = df_test.to_numpy()
 
       return df_test, final_recovered_list, inversion_info_dict
+
+  #________________________________________________
+  #04 - experimental model training Function Blocks
+  #________________________________________________
+
+  #__FunctionBlock: model training Function Blocks
+
+  def __check_model_parameters(self, train, labels, postprocess_dict, 
+                               ML_cmnd, encrypt_key,
+                               printstatus, randomseed):
+    """
+    valdates parameters passed to automodel
+    
+    right now just checking types
+    there are some further validations possible such as for the data structures
+    could spot check a few entries present etc
+    """
+    
+    model_validation_results = {}
+    
+    #check train
+    train_valresult = False
+    if not isinstance(train, type(pd.DataFrame())):
+      train_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for train parameter.")
+        print("Acceptable values are of type pandas dataframe")
+        print()
+      
+    model_validation_results.update({'train_valresult' : train_valresult})
+    
+    #check labels
+    labels_valresult = False
+    if not isinstance(labels, type(pd.DataFrame())):
+      labels_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for labels parameter.")
+        print("Acceptable values are of type pandas dataframe")
+        print()
+      
+    model_validation_results.update({'labels_valresult' : labels_valresult})
+    
+    #check postprocess_dict
+    postprocess_dict_valresult = False
+    if not isinstance(postprocess_dict, dict):
+      postprocess_dict_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for postprocess_dict parameter.")
+        print("Acceptable values are of type dict")
+        print()
+      
+    model_validation_results.update({'postprocess_dict_valresult' : postprocess_dict_valresult})
+    
+    #check ML_cmnd
+    ML_cmnd_valresult = False
+    if not isinstance(ML_cmnd, dict) and ML_cmnd is not False:
+      ML_cmnd_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for ML_cmnd parameter.")
+        print("Acceptable values are of type dict or boolean False")
+        print()
+      
+    model_validation_results.update({'ML_cmnd_valresult' : ML_cmnd_valresult})
+    
+    #check encrypt_key
+    encrypt_key_valresult = False
+    if not isinstance(encrypt_key, (int, bytes, bool)) \
+    or isinstance(encrypt_key, int) and encrypt_key not in {False, 16, 24, 32} \
+    or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
+      encrypt_key_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for encrypt_key parameter.")
+        print("Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
+        print("When passed as a bytes object the length can be one of {16, 24, 32}")
+        print()
+      
+    model_validation_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
+    
+    #check printstatus
+    printstatus_valresult = False
+    if printstatus not in {True, False, 'summary', 'silent'} or \
+    (printstatus in {True, False} and not isinstance(printstatus, bool)):
+      printstatus_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for printstatus parameter.")
+        print("Acceptable values are one of {True, False, 'summary', 'silent'}")
+        print()
+      
+    model_validation_results.update({'printstatus_valresult' : printstatus_valresult})
+    
+    #check randomseed
+    randomseed_valresult = False
+    if not isinstance(randomseed, (int)) or randomseed is True:
+      randomseed_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers within 0:2**32-1 or False")
+        print()
+    elif randomseed < 0 or randomseed > 2147483647:
+      randomseed_valresult = True
+      if printstatus != 'silent':
+        print("Error: invalid entry passed for randomseed parameter.")
+        print("Acceptable values are integers within 0:2**31-1 or False")
+        print()
+      
+    model_validation_results.update({'randomseed_valresult' : randomseed_valresult})
+    
+    return model_validation_results
+
+  def automodel(self, train, labels, postprocess_dict, 
+                ML_cmnd = False, encrypt_key = False, 
+                printstatus = True, randomseed = False):
+    """
+    ***first let's get this up and running then will revisit for encrypt_key considerations
+
+    ***Please note this function is considered experimental / not fully audited
+    
+    uses output of automunge(.) (trian/labels) to train a model for inference
+    returns postprocess_dict with additional entry 
+    of a trained model for postmunge inference
+    so that postmunge can apply inference internally to return predictions in label set
+    
+    ML_cmnd defaults to matching the basis in postprocess_dict
+    however to use different model options or to use customML
+    ML_cmnd should be reinitalized and passed to automodel
+    In other words, ML_cmnd if specified will not inspect postprocess_dict['ML_cmnd']
+    
+    if postprocess_dict is recieved as encrypted
+    the encrypt_key parameter accepts the key to decrypt if needed
+    
+    noise_augment can be applied with support of sampling parameters
+    noise_augment / entropy_seeds / sampling_dict / random_generator
+    
+    printstatus and randomseed used as expected
+    
+    returns postprocess_dict with new entries for final_model, customML_inference_support_labels, model_validation_results
+    
+    #regarding postprocess_dict data structure
+    #this function consolidates derived model_validation_results with postprocess_dict['miscparameters_results']
+    #this function will populate and revert back to {} entry for customML_inference_support
+    #this function returns new entries in 'final_model', include:
+    #final_trained_model, final_model_ML_cmnd, final_model_autoMLer, final_model_categorylist, final_model_labelctgy
+    #if a label Binary consolidation was present, this function will add a new column_dict entry 
+    #for the final consolidated label set stored under the first returned consolidation column    
+    """
+    
+    # #printout display progress
+    # if printstatus in {True, 'summary'}:
+    #   print("_______________")
+    #   print("Begin AutoModel training")
+    #   print("")
+      
+    #copy external dictionaries or lists to internal state
+    for parameter in \
+    [ML_cmnd, postprocess_dict]:
+      if isinstance(parameter, (list, dict)):
+        parameter = self.__autocopy(parameter)
+        
+    #a few of the postprocess_dict entries may get overwritten for model training
+    #we'll access the originals and revert at close
+#     ML_cmnd_orig = self.__autocopy(postprocess_dict['ML_cmnd'])
+#     autoMLer_orig = self.__autocopy(postprocess_dict['autoMLer'])
+    #expected as an empty dictionary
+    customML_inference_support_orig = \
+    self.__autocopy(postprocess_dict['customML_inference_support'])
+    
+    #validate valid parameter values received
+    model_validation_results = \
+    self.__check_model_parameters(train, labels, postprocess_dict, 
+                                 ML_cmnd, encrypt_key,
+                                 printstatus, randomseed)
+    
+    autoMLer = self.__autocopy(postprocess_dict['autoMLer'])
+    
+    #need to inspect ML_cmnd for cases where differs from ML_cmnd saved in postprocess_dict
+    #if so will reinitialize
+    if ML_cmnd is False:
+      ML_cmnd = self.__autocopy(postprocess_dict['ML_cmnd'])
+
+      #if autoMLtype is customML, the training functions won't have been saved in postprocess_dict
+      autoML_type_customML_valresult = False
+      if ML_cmnd['autoML_type'] == 'customML':
+        autoML_type_customML_valresult = True
+        if printstatus != 'silent':
+          print("warning of missing entry in postprocess_dict['ML_cmnd']['autoML_type']")
+          print("when customML autoML_type is applied in automunge(.)")
+          print("the training function is not retained") 
+          print("so that it doesn't have to be reinitialized in a seperate notebook")
+          print("to apply customML in this funciton please pass a training and inference function")
+          print("through the ML_cmnd parameter")
+          print("which accepts similar specifications to its use in automunge(.)")
+          print()
+
+          autoMLer = self.__assemble_autoMLer()
+          ML_cmnd['autoML_type'] = 'randomforest'
+
+      model_validation_results.update({'autoML_type_customML_valresult' : autoML_type_customML_valresult})
+      
+    elif isinstance(ML_cmnd, dict):
+      #this will initialize any missing entries for ML_cmnd
+      #using the same defaults as were populated in automunge(.)
+      ML_cmnd_valresult_2, ML_cmnd = \
+      self.__check_ML_cmnd(ML_cmnd, printstatus)
+      model_validation_results.update({'ML_cmnd_valresult_2' : ML_cmnd_valresult_2})
+      
+#       #this will be reset to ML_cmnd_orig before return
+#       postprocess_dict['ML_cmnd'] = ML_cmnd
+      
+    #We'll assume validation sets are performed in ML wrappers
+    #for an alternate version that includes options for cross validation and tuning of encodings
+    #an extension is planned as autotune that will be built on top of this function
+    
+    #__
+
+    #we'll remove columns from ML_cmnd['full_exclude'] or with MLinfilltype == 'totalexclude'
+    #using a simpler method than applied in ML infill for this purpose since we're only training one model
+
+    full_exclude_specified = []
+    if 'full_exclude' in ML_cmnd:
+      full_exclude_specified = ML_cmnd['full_exclude']
+
+    totalexclude_MLinfilltype = []
+    for column_dict_entry in postprocess_dict['column_dict']:
+      column_dict_entry_category = postprocess_dict['column_dict'][column_dict_entry]['category']
+      column_dict_entry_category_MLinfilltype = postprocess_dict['process_dict'][column_dict_entry_category]['MLinfilltype']
+      if column_dict_entry_category_MLinfilltype == 'totalexclude':
+        totalexclude_MLinfilltype.append(column_dict_entry)
+
+    nonnumeric_columns = full_exclude_specified + totalexclude_MLinfilltype
+    #convert to returtned header format
+    nonnumeric_columns = self.__column_convert_support(nonnumeric_columns, postprocess_dict, convert_to='returned')
+
+    nonnumeric_columns = list(set(nonnumeric_columns) & set(train))
+
+    #now drop any potentially nonnumeric columns
+    train = train.drop(nonnumeric_columns, axis=1)
+
+    #__
+    
+    process_dict = postprocess_dict['process_dict']
+    
+    #we'll assume train and labels set are already validated in __check_model_parameters
+    
+    #find origcateogry of labels from postprocess_dict
+    labelcolumnkey = list(labels)[0]
+
+    if labelcolumnkey in postprocess_dict['column_dict']:
+
+      origcolumn = postprocess_dict['column_dict'][labelcolumnkey]['origcolumn']
+      origcategory = postprocess_dict['column_dict'][labelcolumnkey]['origcategory']
+
+      #find labelctgy from process_dict based on this origcategory
+      labelctgy = process_dict[origcategory]['labelctgy']
+
+      categorylist = []
+
+      for label_column in labels.columns:
+
+        if label_column in postprocess_dict['column_dict'] \
+        and postprocess_dict['column_dict'][label_column]['category'] == labelctgy:
+
+          categorylist = postprocess_dict['column_dict'][label_column]['categorylist']
+
+          #we'll follow convention that if target label category MLinfilltype is concurrent
+          #we'll arbitrarily take the first column and use that as target
+          if postprocess_dict['process_dict'][labelctgy]['MLinfilltype'] \
+          in {'concurrent_act', 'concurrent_nmbr', 'concurrent_ordl'}:
+
+            categorylist = [categorylist[0]]
+
+          break
+          
+      #same as if labelcolumnkey not in postprocess_dict['column_dict']:
+      #only other scenario for labels is column originated from categoric consolidation
+      if len(postprocess_dict['labels_Binary_dict']) > 0:
+
+        #for categoric consolidated labels, we are going to edit the column_dict and process_dict
+        #as a hack to enable __trainFSmodel support
+        #noting that in so doing there is a remote edge case of process_dict edit interfering with user overwrite to processdict
+        #so we have some additional accomodation there as well
+
+        label_column = postprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns'][0]
+
+        categorylist = postprocess_dict['labels_Binary_dict'][0]['returned_Binary_columns']
+
+        labelctgy = postprocess_dict['labels_Binary_dict'][0]['Btype']
+
+        #since process_dict only returns entries applied for transformations, there is chance a Binary transform isn't included
+        #so as part of the hack we'll add the associated Binary transform for purposes of inspecting the MLinfilltype
+        #postprocess_dict['process_dict'] will only be inspected for MLinfilltype in __trainFSmodel and __shuffleaccuracy
+
+        #in cases where labelctgy is already an entry in process_dict we'll add suffix until unique
+        remote_overwrite_edge_case_marker = False
+        if labelctgy in postprocess_dict['process_dict']:
+          remote_overwrite_edge_case_marker = True
+
+        if labelctgy == 'ord3':
+
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in postprocess_dict['process_dict']:
+              labelctgy += 'B'
+
+          postprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'singlct'}})
+
+        if labelctgy == 'onht':
+
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in postprocess_dict['process_dict']:
+              labelctgy += 'B'
+
+          postprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : 'multirt'}})
+
+        if labelctgy == '1010':
+
+          if remote_overwrite_edge_case_marker is True:
+            #this is in case user specified by chance the same string in processdict
+            while labelctgy in postprocess_dict['process_dict']:
+              labelctgy += 'B'
+
+          postprocess_dict['process_dict'].update({labelctgy : {'MLinfilltype' : '1010'}})
+
+        #this is a hack to support __trainFSmodel with categoric consolidations
+        postprocess_dict['column_dict'].update({label_column : {'categorylist' : categorylist,
+                                                                'columnslist' : list(labels), 
+                                                                'category' : labelctgy,
+                                                                'origcategory' : labelctgy}})
+
+      if len(categorylist) == 0:
+        if printstatus != 'silent':
+          #this is a remote edge case, printout added for troubleshooting support
+          print("Label root category processdict entry contained a labelctgy entry not found in family tree")
+          print("Model training will not run without valid labelgctgy processdict entry")
+          print()
+
+        labelctgy_not_found_in_familytree_pm_valresult = True
+        model_validation_results.update({'labelctgy_not_found_in_familytree_pm_valresult' : labelctgy_not_found_in_familytree_pm_valresult})
+
+      elif len(categorylist) == 1:
+        labels = pd.DataFrame(labels[categorylist[0]])
+
+      else:
+        labels = labels[categorylist]
+      
+      #validate that data is all valid numeric
+      numeric_data_result, all_valid_entries_result = \
+      self.__validate_allvalidnumeric(train, printstatus)
+
+      model_validation_results.update({'numeric_data_result': numeric_data_result})
+      model_validation_results.update({'all_valid_entries_result': all_valid_entries_result})
+      
+      #train the model
+      model, postprocess_dict = \
+      self.__trainFSmodel(train, labels, randomseed, \
+                          process_dict, postprocess_dict, labelctgy, ML_cmnd, \
+                          printstatus, FSautoMLer=autoMLer)
+      
+      #we'll store the model and a few entrires to support inference
+      #in postprocess_dict['final_model']
+      
+      postprocess_dict['final_model'] = {}
+      postprocess_dict['final_model']['final_trained_model'] = model
+      postprocess_dict['final_model']['final_model_ML_cmnd'] = self.__autocopy(ML_cmnd)
+      postprocess_dict['final_model']['final_model_autoMLer'] = self.__autocopy(postprocess_dict['autoMLer'])
+      postprocess_dict['final_model']['final_model_categorylist'] = categorylist
+      postprocess_dict['final_model']['final_model_labelctgy'] = labelctgy
+      
+#       postprocess_dict['final_label_column'] = label_column
+      
+      #the inference functions inspect customML_inference_support in ML_cmnd
+      #we'll have convention for postprocess_dict['customML_inference_support']
+      #that for labels we'll store in postprocess_dict['customML_inference_support_labels']
+      #and then transfer to ML_cmnd for any inference
+      postprocess_dict['customML_inference_support_labels'] = \
+      self.__autocopy(postprocess_dict['customML_inference_support'])
+      
+      #reset this to empty dictionary, is used to support some of data conversions in training/inference
+      postprocess_dict['customML_inference_support'] = {}
+      
+#       postprocess_dict['ML_cmnd'] = ML_cmnd_orig
+#       postprocess_dict['autoMLer'] = autoMLer_orig
+#       #expected as an empty dictionary
+#       postprocess_dict['customML_inference_support'] = customML_inference_support_orig
+      
+      #save validation results
+      postprocess_dict['miscparameters_results'].update(model_validation_results)
+
+    return postprocess_dict
+
+  #__FunctionBlock: model inference Function Blocks
+
+  def autoinference(self, test, postprocess_dict, encrypt_key = False, 
+                    printstatus = True, randomseed = False):
+    """
+    ***Please note this function is considered experimental / not fully audited
+
+    This function can be applied to test data returned from automugne or postmunge
+    In conjunction with the postprocess_dict
+    and runs inference on the model saved from automodel in postprocess_dictzs
+    """
+    
+    if 'final_model' not in postprocess_dict or postprocess_dict['final_model'] is False:
+      df_predictions = pd.DataFrame() 
+    
+    else:
+      
+      #initialize a few variables accessed from postprocess_dict
+      
+      ML_cmnd = self.__autocopy(postprocess_dict['final_model']['final_model_ML_cmnd'])
+      
+      autoML_type = ML_cmnd['autoML_type']
+      
+      autoMLer = self.__autocopy(postprocess_dict['final_model']['final_model_autoMLer'])
+      
+      model = self.__autocopy(postprocess_dict['final_model']['final_trained_model'])
+      
+      ML_cmnd.update({'customML_inference_support' : postprocess_dict['customML_inference_support_labels']})
+      
+      label_categorylist = postprocess_dict['final_model']['final_model_categorylist']
+      
+      process_dict = postprocess_dict['process_dict']
+      
+      labelscategory = postprocess_dict['final_model']['final_model_labelctgy']
+      
+      #the type of inference operation is based on MLinfillitype of the labelscategory
+      
+      MLinfilltype = process_dict[labelscategory]['MLinfilltype']
+      
+      if MLinfilltype in {'numeric', 'concurrent_nmbr', 'integer'}:
+        ML_application = 'regression'
+      elif MLinfilltype in {'singlct', 'concurrent_ordl'}:
+        ML_application = 'ordinalclassification'
+      elif MLinfilltype in {'binary', 'concurrent_act'}:
+        ML_application = 'booleanclassification'
+      elif MLinfilltype in {'multirt', '1010'}:
+        ML_application = 'onehotclassification'
+        
+      if MLinfilltype not in {'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
+
+        #this produces inference predictions as a numpy array
+        np_predictions = \
+        autoMLer[autoML_type][ML_application]['predict'](ML_cmnd, model, test, printstatus, label_categorylist)
+
+        if MLinfilltype == '1010':
+
+          df_predictions = \
+          self.__convert_onehot_to_1010(df_predictions)
+
+        #convert infill values to dataframe
+        df_predictions = pd.DataFrame(np_predictions, columns = label_categorylist)
+        
+      else:
+        
+        df_predictions = pd.DataFrame() 
+        
+    return df_predictions
