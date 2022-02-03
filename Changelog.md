@@ -5560,3 +5560,11 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - found an edge case scenario that was interfering with automunge(.) pandasoutput='dataframe' case for validation labels resulting in single column validation labels returned as series instead of dataframe which did not align with documentation
 - now resolved
 - a tweak to code comments here and there for clarity
+
+8.13
+- replaced remaining instances of randomseed sampling max from (2 ** 32 -1) to recently corrected range of (2 ** 31 - 1). (Apparently had missed when this was rolled out since they were represented by the integer instead of the formula.)
+- integrated a few experimental functions associated with a final model training and inference. Don't consider these fully audited or polished at this point, they are for experiments and a seed for iterations. Since they are accessed outside of traditional interface of automunge(.) or postmunge(.) assuming users won't mind. They are well suited for training a final model in conjunction with our optuna_XG1 hyperparameter tuner for example using the same ML_cmnd API to select tuning options. Note that this option can apply a different model architecture or tuning options than those used for ML infill.
+- automodel(.) accepts a training set and postprocess_dict as returned from automunge(.) to automatically train a model which is saved in the postprocess_dict
+- autoinference(.) accepts a test set prepared in automunge(.) or postmunge(.) and a postprocess_dict which has been populated by automodel and returns the results of inference.
+- encrypted postprocess_dict by encrypt_key parameter not yet supported
+- to reiterate we don't consider these new functions fully audited or polished just yet, but have validated that they are functional in limited testing.
