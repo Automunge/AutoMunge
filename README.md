@@ -5433,7 +5433,7 @@ And thus ML infill can run with any tabular learning library or algorithm. BYOML
 
 - automodel(.) accepts a training set and postprocess_dict as returned from automunge(.) to automatically train a model which is saved in the postprocess_dict
 - autoinference(.) accepts a test set prepared in automunge(.) or postmunge(.) and a postprocess_dict which has been populated by automodel and returns the results of inference.
-- encrypted postprocess_dict by encrypt_key parameter pending support
+- Note that when a model from automodel(.) is populated in a postprocess_dict, then when additional test data is prepared with that postprocess_dict in postmunge(.), if the test set does not include label features, then autoinference will automatically be called within postmunge(.) with the results of inference returned in the returned labels set we call test_labels.
 
 We don't consider these new functions fully audited or polished just yet, but have validated that they are functional in limited testing.
 
