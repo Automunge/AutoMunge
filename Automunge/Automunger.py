@@ -13688,8 +13688,8 @@ class AutoMunge:
       categorylist = []
     
     else:
-      mdf_train[suffixcolumn] = 0
-      mdf_test[suffixcolumn] = 0
+      mdf_train.loc[:, suffixcolumn] = 0
+      mdf_test.loc[:, suffixcolumn] = 0
       
       binary_missing_plug = 0
       onevalue = 1
@@ -18436,6 +18436,10 @@ class AutoMunge:
       
       mdf_train.rename(columns = {column : suffixcolumn}, inplace = True)
       mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+    if mdf_train[suffixcolumn].dtype.name == 'category':
+      mdf_train[suffixcolumn] = mdf_train[suffixcolumn].astype('object')
+      mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
       
     #apply defaultinfill based on processdict entry
     #(this will default to naninfill)
@@ -18494,8 +18498,8 @@ class AutoMunge:
       ordl_dict2.update({newcolumn : i})
       i += 1
       
-    mdf_train[suffixcolumn] = 0
-    mdf_test[suffixcolumn] = 0
+    mdf_train.loc[:, suffixcolumn] = 0
+    mdf_test.loc[:, suffixcolumn] = 0
     
     for newcolumn in newcolumns:
 
@@ -21302,8 +21306,8 @@ class AutoMunge:
 
     if input_mean != input_mean:
       qttf = False
-      mdf_train[suffixcolumn] = 0
-      mdf_test[suffixcolumn] = 0
+      mdf_train.loc[:, suffixcolumn] = 0
+      mdf_test.loc[:, suffixcolumn] = 0
     
     else:
       from sklearn.preprocessing import QuantileTransformer
@@ -21459,12 +21463,12 @@ class AutoMunge:
       if test_bxcx_lmbda is not False:
         mdf_test[suffixcolumn] = stats.boxcox(mdf_test[suffixcolumn], lmbda = bxcx_lmbda)
       else:
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
       
     elif bxcx_lmbda is False:
       
-      mdf_train[suffixcolumn] = 0
-      mdf_test[suffixcolumn] = 0
+      mdf_train.loc[:, suffixcolumn] = 0
+      mdf_test.loc[:, suffixcolumn] = 0
       
     #this is to address an error when bxcx transform produces overflow
     #I'm not sure of cause, showed up in the housing set)
@@ -21472,13 +21476,13 @@ class AutoMunge:
     max_test = mdf_test[suffixcolumn].max()
     
     if max_train > (2 ** 31 - 1):
-      mdf_train[suffixcolumn] = 0
+      mdf_train.loc[:, suffixcolumn] = 0
       if postprocess_dict['printstatus'] != 'silent':
         print("overflow condition found in boxcox transform to train set, column set to 0: ", suffixcolumn)
         print()
       
     if max_test > (2 ** 31 - 1):
-      mdf_test[suffixcolumn] = 0
+      mdf_test.loc[:, suffixcolumn] = 0
       if postprocess_dict['printstatus'] != 'silent':
         print("overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
         print()
@@ -23905,8 +23909,8 @@ class AutoMunge:
       del mdf_test[binscolumn]
       
     else:
-      mdf_train[binscolumn] = 0
-      mdf_test[binscolumn] = 0
+      mdf_train.loc[:, binscolumn] = 0
+      mdf_test.loc[:, binscolumn] = 0
       
       textcolumns = [binscolumn]
       
@@ -24106,8 +24110,8 @@ class AutoMunge:
       
     else:
       
-      mdf_train[binscolumn] = 0
-      mdf_test[binscolumn] = 0
+      mdf_train.loc[:, binscolumn] = 0
+      mdf_test.loc[:, binscolumn] = 0
       
       bn_count = bincount
       bins_id = False
@@ -24385,8 +24389,8 @@ class AutoMunge:
       del mdf_test[binscolumn]
       
     else:
-      mdf_train[binscolumn] = 0
-      mdf_test[binscolumn] = 0
+      mdf_train.loc[:, binscolumn] = 0
+      mdf_test.loc[:, binscolumn] = 0
       
       textcolumns = [binscolumn]
       
@@ -28411,7 +28415,7 @@ class AutoMunge:
         choice_samples = nprandom.choice(unique_range, p=weights, size=(binomial_activation_count))
         
       #the samples were a shape based on number of binomial activations, now extract to full column
-      df_noise[df_noise_tempcolumn2] = 0
+      df_noise.loc[:, df_noise_tempcolumn2] = 0
       df_noise.loc[df_noise[df_noise_tempcolumn1] == 1, df_noise_tempcolumn2] = choice_samples
 
       #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
@@ -34442,7 +34446,8 @@ class AutoMunge:
     df_array = pd.DataFrame(np_onehot, columns = columnslist)
 
     #create new column to store encodings
-    df_array['1010'] = 0
+    # df_array['1010'] = 0
+    df_array.loc[:, '1010'] = 0
 
     #copy columns headers to activated cells, others are 0
     for column in df_array:
@@ -34599,7 +34604,9 @@ class AutoMunge:
       #now populate any missing columns
       for activation_column in activations_list:
         if activation_column not in df2:
-          df2[activation_column] = 0
+          # df2[activation_column] = 0
+          # df2 = pd.concat([df2, pd.DataFrame({activation_column:np.zeros((df2.shape[0]))}, index=df2.index)], axis=1)
+          df2.loc[:,activation_column] = 0
           
       #now reorder columns, this also drops columns not found in activation_list
       df2 = df2[activations_list]
@@ -43607,7 +43614,8 @@ class AutoMunge:
     #elif column not in df, populate as a new column of all zeros
     elif column not in df:
       #initialize with arbitrary plug value
-      df[column] = 0
+      # df[column] = 0
+      df.loc[:, column] = 0
       
     if df[column].dtype.name == 'category':
       if isinstance(replacement, (type(pd.DataFrame({0:[1]})), type(pd.Series([1])), type(np.array([])))):
@@ -43780,7 +43788,8 @@ class AutoMunge:
     public_dict = {'encryption' : True}
     
     public_entries = ['columntype_report', 'label_columntype_report', 'privacy_encode', 
-                      'automungeversion', 'labelsencoding_dict', 'sampling_report_dict']
+                      'automungeversion', 'labelsencoding_dict', 'sampling_report_dict',
+                      'final_model']
     #column_map reports origination of features
     #columntype_report report types and groupings of features
     #privacy_encode is value of privacy_encode as passed to automunge(.) for reference
@@ -43795,7 +43804,9 @@ class AutoMunge:
     if privacy_encode in {True, False}:
       
       for public_entry in public_entries:
-        public_dict.update({public_entry : postprocess_dict[public_entry]})
+
+        if public_entry in postprocess_dict:
+          public_dict.update({public_entry : postprocess_dict[public_entry]})
         
     #now we'll convert our postprocess_dict to a bytes representation with pickle
     import pickle
@@ -45845,7 +45856,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.13'
+    automungeversion = '8.14'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -49885,9 +49896,12 @@ class AutoMunge:
         mdf_test[suffixcolumn] = mdf_test[column].copy()
       else:
         mdf_test.rename(columns = {column : suffixcolumn}, inplace = True)
+
+      if mdf_test[suffixcolumn].dtype.name == 'category':
+        mdf_test[suffixcolumn] = mdf_test[suffixcolumn].astype('object')
       
       if len(search_dict) == 0:
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
         
       else:
 
@@ -49904,7 +49918,7 @@ class AutoMunge:
 
     #       mdf_test[newcolumn] = mdf_test[newcolumn].astype(np.int8)
 
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
 
         for newcolumn in newcolumns:
           mdf_test = \
@@ -50601,7 +50615,7 @@ class AutoMunge:
         from sklearn.preprocessing import QuantileTransformer
         mdf_test[suffixcolumn] = pd.DataFrame(qttf.transform(pd.DataFrame(mdf_test[suffixcolumn])), index=mdf_test.index)
       else:
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
       
     else:
 
@@ -50668,18 +50682,18 @@ class AutoMunge:
         if test_bxcx_lmbda is not False:
           mdf_test[suffixcolumn] = stats.boxcox(mdf_test[suffixcolumn], lmbda = bxcx_lmbda)
         else:
-          mdf_test[suffixcolumn] = 0
+          mdf_test.loc[:, suffixcolumn] = 0
 
       elif bxcx_lmbda is False:
 
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
         
       #this is to address an error when bxcx transform produces overflow
       #I'm not sure of cause, showed up in the housing set)
       max_test = mdf_test[suffixcolumn].max()
       
       if max_test > (2 ** 31 - 1):
-        mdf_test[suffixcolumn] = 0
+        mdf_test.loc[:, suffixcolumn] = 0
         if postprocess_dict['printstatus'] != 'silent':
           print("overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
           print()
@@ -52001,7 +52015,7 @@ class AutoMunge:
         
       else:
         
-        mdf_test[binscolumn] = 0
+        mdf_test.loc[:, binscolumn] = 0
 
     else:
 
@@ -52084,7 +52098,7 @@ class AutoMunge:
         
       else:
         
-        mdf_test[binscolumn] = 0
+        mdf_test.loc[:, binscolumn] = 0
 
     else:
 
@@ -52212,7 +52226,7 @@ class AutoMunge:
         
       else:
         
-        mdf_test[binscolumn] = 0
+        mdf_test.loc[:, binscolumn] = 0
 
     else:
 
@@ -54589,7 +54603,7 @@ class AutoMunge:
           choice_samples = nprandom.choice(unique_range, p=weights, size=(binomial_activation_count))
 
         #the samples were a shape based on number of binomial activations, now extract to full column
-        df_noise[df_noise_tempcolumn2] = 0
+        df_noise.loc[:, df_noise_tempcolumn2] = 0
         df_noise.loc[df_noise[df_noise_tempcolumn1] == 1, df_noise_tempcolumn2] = choice_samples
 
         #df_unique2 will be used to populate replacement activation sets corresponding to indexes sampled in df_noise[df_noise_tempcolumn2]
@@ -57846,6 +57860,25 @@ class AutoMunge:
     postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
                                                      'new_driftstats' : postdrift_dict}})
 
+    #this functionality is still experimental
+    #this is for returning results of inference to the label sets
+    #when a final_model was trained after automunge(.) with automodel(.)
+
+    if labelscolumn is False:
+      if 'final_model' in postprocess_dict:
+        if printstatus in {True, 'summary'}:
+          print("_______________")
+          print("Running inference with model saved from automodel(.)")
+          print("This functionality is still experimental.")
+          print("Results of inference will be returned as the test_labels set.")
+          print()
+
+        labelscolumn = postprocess_dict['labels_column']
+
+        df_testlabels = \
+        self.autoinference(df_test, postprocess_dict, encrypt_key = False, 
+                           printstatus = printstatus, randomseed = randomseed)
+
     #printout display progress
     if printstatus in {True, 'summary'}:
 
@@ -59197,7 +59230,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
     
     #for pwr2 trasnform suffix is either '_10^#' for positive values or '_-10^#' for negative
     for column in categorylist:
@@ -59240,7 +59273,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
@@ -59405,7 +59438,7 @@ class AutoMunge:
 
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
     
     for i in range(len(bins_id)):
       
@@ -59478,7 +59511,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #bins_id is False when original data in train set was all non-numeric
     if bins_id is not False:
@@ -59526,7 +59559,7 @@ class AutoMunge:
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
@@ -59639,7 +59672,7 @@ class AutoMunge:
     #except for bottom bucket replaced with ceiling and top bucket replaced with floor
     #so don't have to deal with inf
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
     
     bucket_ids = []
     for textcolumn in textcolumns:
@@ -59695,7 +59728,7 @@ class AutoMunge:
     #except for bottom bucket replaced with ceiling and top bucket replaced with floor
     #so don't have to deal with inf
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
     
     bucket_ids = []
     for textcolumn in textcolumns:
@@ -59742,7 +59775,7 @@ class AutoMunge:
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #infill recovery
     df = \
@@ -59790,7 +59823,7 @@ class AutoMunge:
     #except for bottom bucket replaced with ceiling and top bucket replaced with floor
     #so don't have to deal with inf
     
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #we'll convert the input to integers
     df[normkey] = df[normkey].astype(int, errors='ignore')
@@ -60784,7 +60817,7 @@ class AutoMunge:
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
     #initialize inputcolumn
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
     
     #populate fractionals
     if fractional_bits > 0:
@@ -60820,7 +60853,7 @@ class AutoMunge:
     operation = normalization_dict['operation']
 
     #Now initialize the inputcolumn
-    df[inputcolumn] = 0
+    df.loc[:, inputcolumn] = 0
 
     #access the returned column from returnedcolumn_list which will have one entry
     returnedcolumn = returnedcolumn_list[0]
@@ -61773,6 +61806,18 @@ class AutoMunge:
     [ML_cmnd, postprocess_dict]:
       if isinstance(parameter, (list, dict)):
         parameter = self.__autocopy(parameter)
+
+    automodel_decode_valresult = False
+
+    if 'encryption' in postprocess_dict \
+    and postprocess_dict['encryption'] is True \
+    and encrypt_key is not False:
+
+      postprocess_dict, automodel_decode_valresult = \
+      self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
+
+    if randomseed is False:
+      randomseed = int(np.random.Generator(np.random.PCG64()).integers(0, high=2147483647, size=1))
         
     #a few of the postprocess_dict entries may get overwritten for model training
     #we'll access the originals and revert at close
@@ -61787,6 +61832,8 @@ class AutoMunge:
     self.__check_model_parameters(train, labels, postprocess_dict, 
                                  ML_cmnd, encrypt_key,
                                  printstatus, randomseed)
+
+    model_validation_results.update({'automodel_decode_valresult' : automodel_decode_valresult})
     
     autoMLer = self.__autocopy(postprocess_dict['autoMLer'])
     
@@ -62004,6 +62051,12 @@ class AutoMunge:
       #save validation results
       postprocess_dict['miscparameters_results'].update(model_validation_results)
 
+      #if postprocess_dict was received as entrypted encrypt again before return
+      #perform postprocess_dict encryption if elected by encrypt_key
+      if encrypt_key is not False:
+        postprocess_dict = \
+        self.__encrypt_postprocess_dict(postprocess_dict, encrypt_key, postprocess_dict['privacy_encode'], printstatus)
+
     return postprocess_dict
 
   #__FunctionBlock: model inference Function Blocks
@@ -62017,11 +62070,23 @@ class AutoMunge:
     In conjunction with the postprocess_dict
     and runs inference on the model saved from automodel in postprocess_dictzs
     """
+
+    if 'encryption' in postprocess_dict \
+    and postprocess_dict['encryption'] is True \
+    and encrypt_key is not False:
+
+      postprocess_dict = self.__autocopy(postprocess_dict)
+
+      postprocess_dict, decode_valresult = \
+      self.__decrypt_postprocess_dict(postprocess_dict, encrypt_key, printstatus)
     
     if 'final_model' not in postprocess_dict or postprocess_dict['final_model'] is False:
       df_predictions = pd.DataFrame() 
     
     else:
+
+      if randomseed is False:
+        randomseed = int(np.random.Generator(np.random.PCG64()).integers(0, high=2147483647, size=1))
       
       #initialize a few variables accessed from postprocess_dict
       
