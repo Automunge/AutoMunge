@@ -5568,3 +5568,9 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - autoinference(.) accepts a test set prepared in automunge(.) or postmunge(.) and a postprocess_dict which has been populated by automodel and returns the results of inference.
 - encrypted postprocess_dict by encrypt_key parameter not yet supported
 - to reiterate we don't consider these new functions fully audited or polished just yet, but have validated that they are functional in limited testing.
+
+8.14
+- replaced a few instances throughout of initializing a new column as set to a constant with a .loc method to reduce fragmentation warning printouts (pandas can be annoying sometimes)
+- added encrypt_key support to automodel(.) and autoinference(.)
+- new tutorial 14 added to demonstrate encoding data sets exceeding local memory capacity by applying postmunge(.) in chunks
+- added a still experimental integration of autoinference(.) directly integrated into a postmunge(.) call, so that if a postprocess_dict had a final model populated in automodel(.) and the df_test set passed to postmunge did not include a labels column, then the autoinference function is automatically called on the test data to generate output of inference which is returned in place of the labels set test_labels.
