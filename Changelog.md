@@ -5582,5 +5582,6 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - this is kind of like when they designed typewriters they took into account letter occurrence frequency
 - yeah don't know if will have significant benefit, is primarily for use at initialization, still every little bit helps.
 - new root category '10mz', comparable to '1010' but with default max_zero = True
+- max_zero was partly inspired by reading through "Quantum Computing with Python and IBM Quantum Experience" by Robert Loredo
 - also a cleanup to data structures returned from running automodel with customML 
 - now when running automodel with customML user doesn't have to reinitialize the training functions for postmunge or autoinference
