@@ -2376,6 +2376,15 @@ class AutoMunge:
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'10mz' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['10mz'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'null' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['null'],
@@ -7180,6 +7189,16 @@ class AutoMunge:
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
+    process_dict.update({'10mz' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'max_zero' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : '10mz'}})
     process_dict.update({'qttf' : {'dualprocess' : self._process_qttf,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_qttf,
@@ -20005,6 +20024,16 @@ class AutoMunge:
       null_activation = True
       normalization_dict.update({'null_activation' : null_activation})
       
+    #max_zero results in an encoding basis whereby higher frequency entries
+    #have a higher prevelance of 0 entries in their encoding
+    #the expectation is this may benefit applications with quantum circuits where 0 is lower energy state
+    #this is similar philosophy to when they designed typewriters they put higher frequency letters further apart
+    if 'max_zero' in normalization_dict:
+      max_zero = normalization_dict['max_zero']
+    else:
+      max_zero = False
+      normalization_dict.update({'max_zero' : max_zero})
+      
     #______
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
@@ -20043,12 +20072,27 @@ class AutoMunge:
       #if we already had accessed from category dtype convert those to string 
       if labels_train != set():
         labels_train = set([str(x) for x in list(labels_train)])
-        
+
     #extract categories for column labels if we didn't already for category dtype
     #note that .unique() extracts the labels as a numpy array which we convert to set
     if labels_train == set():
       labels_train = set(df[column].unique())
       labels_train = {x for x in labels_train if x==x}
+      
+    #in the max_zero case we'll sort unique entries by frequency
+    if max_zero is True:
+
+      tempstring = 'asdf'
+      if tempstring in df:
+        while tempstring in df:
+          tempstring += 'z'
+          
+      labels_train_ordered = pd.DataFrame(df[column].value_counts())
+      #note this sorting has an edge case for bytes type entries when str_convert passed as False
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      labels_train_ordered = list(labels_train_ordered.index)
+      #by convention NaN is reserved for use with missing data
+      labels_train_ordered = [x for x in labels_train_ordered if x==x]
     
     #______
     
@@ -20151,9 +20195,14 @@ class AutoMunge:
     
     #now prepare our binarization
     
-    #convert labels_train to list and sort alphabetically
+    #convert labels_train to list 
     labels_train = list(labels_train)
-    labels_train = sorted(labels_train, key=str)
+    if max_zero is False:
+      #and sort alphabetically
+      labels_train = sorted(labels_train, key=str)
+    elif max_zero is True:
+      #else sort by frequency for max_zero case
+      labels_train = self.__list_sorting(labels_train_ordered, labels_train)
     
     #add our missing_marker, note adding as first position will result in all 0 representation
     if null_activation is True:
@@ -20174,17 +20223,35 @@ class AutoMunge:
     #initialize dictionary to store encodings
     binary_encoding_dict = {}
     
-    for i in range(listlength):
-      
-      #this converts the integer i to binary encoding
-      #where f is an f string for inserting the column coount into the string to designate length of encoding
-      #0 is to pad out the encoding with 0's for the length
-      #and b is telling it to convert to binary 
-      #note this returns a string
-      encoding = format(i, f"0{binary_column_count}b")
+    if max_zero is False:
+      for i in range(listlength):
 
-      #store the encoding in a dictionary
-      binary_encoding_dict.update({labels_train[i] : encoding})
+        #this converts the integer i to binary encoding
+        #where f is an f string for inserting the column coount into the string to designate length of encoding
+        #0 is to pad out the encoding with 0's for the length
+        #and b is telling it to convert to binary 
+        #note this returns a string
+        encoding = format(i, f"0{binary_column_count}b")
+
+        #store the encoding in a dictionary
+        binary_encoding_dict.update({labels_train[i] : encoding})
+        
+    elif max_zero is True:
+      #this approach results in sorting the binary encodings by zero prevelance from high to low
+      encodings = []
+      for i in range(int(2**binary_column_count)):
+        encodings.append( format(i, f"0{binary_column_count}b") )
+        
+      #one_count_dict has form {encoding : count of '1' in encoding}
+      one_count_dict = \
+      dict(zip(encodings, [pd.Series([int(x) for x in list(y)]).sum() for y in encodings]))
+      
+      encodings_sorted = \
+      list(dict(sorted(one_count_dict.items(), key=lambda item: item[1])))
+      
+      #now populate binary_encoding_dict
+      for i in range(listlength):
+        binary_encoding_dict.update({labels_train[i] : encodings_sorted[i]})
       
     if null_activation is False:
       
@@ -32734,8 +32801,10 @@ class AutoMunge:
     autoMLer_keys_to_delete.remove(autoMLtype)
     
     for autoMLer_key_to_delete in autoMLer_keys_to_delete:
+
+      if autoMLer_key_to_delete in postprocess_dict['autoMLer']:
       
-      del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
+        del postprocess_dict['autoMLer'][autoMLer_key_to_delete]
     
     #for customML scenario, we'll only store the inference function so user doesn't have to reintialize trainer for postmunge
     #tradeoff is that postmunge feature importance will need to apply a different model type
@@ -45856,7 +45925,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.14'
+    automungeversion = '8.15'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number) + '_' \
@@ -62030,7 +62099,26 @@ class AutoMunge:
       postprocess_dict['final_model']['final_model_autoMLer'] = self.__autocopy(postprocess_dict['autoMLer'])
       postprocess_dict['final_model']['final_model_categorylist'] = categorylist
       postprocess_dict['final_model']['final_model_labelctgy'] = labelctgy
-      
+
+      #___
+      #some cleanups to returned data strucutes in postprocess_dict['final_model']
+      #so don't have to reinitialize training functions
+      #similar to what is done in automunge(.) with __autoMLer_cleanup
+
+      if postprocess_dict['final_model']['final_model_ML_cmnd']['autoML_type'] == 'customML':
+        #modeltarget is e.g. booleanclassification, ordinalclassification, etc
+        for modeltarget in postprocess_dict['final_model']['final_model_autoMLer']['customML']:
+          if 'train' in postprocess_dict['final_model']['final_model_autoMLer']['customML'][modeltarget]:
+            del postprocess_dict['final_model']['final_model_autoMLer']['customML'][modeltarget]['train']
+
+      #we'll also strike any populated customML training functions passed to ML_cmnd['customML']
+      if 'customML' in postprocess_dict['final_model']['final_model_ML_cmnd']:
+        if 'customML_Classifier_train' in postprocess_dict['final_model']['final_model_ML_cmnd']['customML']:
+          postprocess_dict['final_model']['final_model_ML_cmnd']['customML']['customML_Classifier_train'] = True
+        if 'customML_Regressor_train' in postprocess_dict['final_model']['final_model_ML_cmnd']['customML']:
+          postprocess_dict['final_model']['final_model_ML_cmnd']['customML']['customML_Regressor_train'] = True
+      #___
+
 #       postprocess_dict['final_label_column'] = label_column
       
       #the inference functions inspect customML_inference_support in ML_cmnd
