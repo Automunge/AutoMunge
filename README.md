@@ -3318,6 +3318,7 @@ efficient than one-hot encoding). To apply 1010 to a "messy" feature with multip
     - 'add_activations': defaults to False, user can pass as a list of entries that will be added as targets for activations (resulting in extra returned columns if those entries aren't present in the train set)
     - 'less_activations': defaults to False, user can pass as a list of entries that won't be treated as targets for activation (these entries will instead receive no activation)
     - 'consolidated_activations': defaults to False, user can pass a list of entries (or a list of lists of entries) that will have their activations consolidated to a single common activation. For consolidation with NaN missing data representation user should instead apply an assignnan conversion.
+    - 'max_zero': defaults to False, when activated the encodings are conducted to maximize 0 encoding representation for unique entries as sorted by frequency (e.g. most frequent entries have most zeros in their encoding.) This was implemented since 0 is the low energy state for quantum circuits. The root category '10mz' applies 1010 with this parameter defaulting to activated.
   - driftreport postmunge metrics: _1010_binary_encoding_dict / _1010_overlap_replace / 
 	                           _1010_binary_column_count / _1010_activations_dict
   (for example if 1010 encoded to three columns based on number of categories <8,
@@ -4456,6 +4457,7 @@ Here are those root categories presented again in a concise sorted list, intende
 avoid unintentional duplication.
 - '1010',
 - '101d',
+- '10mz',
 - 'DB10',
 - 'DB1s',
 - 'DBb2',
