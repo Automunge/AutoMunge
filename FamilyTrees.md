@@ -1750,6 +1750,15 @@ For simplicity just going to copy the code directly from code base where these d
                                      'coworkers'     : [],
                                      'friends'       : []}})
 
+    transform_dict.update({'10mz' : {'parents'       : [],
+                                     'siblings'      : [],
+                                     'auntsuncles'   : ['10mz'],
+                                     'cousins'       : [NArw],
+                                     'children'      : [],
+                                     'niecesnephews' : [],
+                                     'coworkers'     : [],
+                                     'friends'       : []}})
+
     transform_dict.update({'null' : {'parents'       : [],
                                      'siblings'      : [],
                                      'auntsuncles'   : ['null'],
@@ -6556,6 +6565,16 @@ For simplicity just going to copy the code directly from code base where these d
                                   'NArowtype' : 'justNaN',
                                   'MLinfilltype' : '1010',
                                   'labelctgy' : '1010'}})
+    process_dict.update({'10mz' : {'custom_train' : self._custom_train_1010,
+                                  'custom_test' : self._custom_test_1010,
+                                  'custom_inversion' : self._custom_inversion_1010,
+                                  'info_retention' : True,
+                                  'inplace_option' : True,
+                                  'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'max_zero' : True},
+                                  'NArowtype' : 'justNaN',
+                                  'MLinfilltype' : '1010',
+                                  'labelctgy' : '10mz'}})
     process_dict.update({'qttf' : {'dualprocess' : self._process_qttf,
                                   'singleprocess' : None,
                                   'postprocess' : self._postprocess_qttf,
