@@ -5574,3 +5574,13 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - added encrypt_key support to automodel(.) and autoinference(.)
 - new tutorial 14 added to demonstrate encoding data sets exceeding local memory capacity by applying postmunge(.) in chunks
 - added a still experimental integration of autoinference(.) directly integrated into a postmunge(.) call, so that if a postprocess_dict had a final model populated in automodel(.) and the df_test set passed to postmunge did not include a labels column, then the autoinference function is automatically called on the test data to generate output of inference which is returned in place of the labels set test_labels.
+
+8.15
+- new assignparam option support for 1010 binarization as max_zero
+- max_zero ensures unique entries with highest frequency in train set have the highest prevalance of zero entries in their encoding set
+- the thought was that there might be cases where categoric entries are fed to a quantum computer, in which case a binarization with more zeros would have less occurrence of relaxation noise since 0 is a low energy state
+- this is kind of like when they designed typewriters they took into account letter occurrence frequency
+- yeah don't know if will have significant benefit, is primarily for use at initialization, still every little bit helps.
+- new root category '10mz', comparable to '1010' but with default max_zero = True
+- also a cleanup to data structures returned from running automodel with customML 
+- now when running automodel with customML user doesn't have to reinitialize the training functions for postmunge or autoinference
