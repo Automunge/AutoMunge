@@ -432,8 +432,7 @@ class AutoMunge:
   __autowhere
   __autocopy
   __autoprint
-  __check_logger_dict
-  __init_logger_dict
+  __logger_append
   __column_convert_support
   __orig_headers_support
 
@@ -744,8 +743,6 @@ class AutoMunge:
     #unless that root category is also entered as a tree category entry
     #in one of the root category's upstream primitives with offspring
     """
-
-    logger_dict = self.__check_logger_dict()
 
     transform_dict = {}
 
@@ -5174,8 +5171,6 @@ class AutoMunge:
     #for a category's use as a tree category
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     process_dict = {}
     
     process_dict.update({'nmbr' : {'dualprocess' : self._process_numerical,
@@ -9848,7 +9843,7 @@ class AutoMunge:
   #__FunctionBlock: automunge process family functions
 
   def __processfamily(self, df_train, df_test, column, origcategory, \
-                    transform_dict, postprocess_dict, assign_param):
+                    transform_dict, postprocess_dict, assign_param, logger):
     '''
     #as automunge runs a for loop through each column in automunge, this is the master 
     #processing function applied which runs through the different family primitives
@@ -9860,8 +9855,6 @@ class AutoMunge:
     #siblings, cousins, parents, auntsuncles
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     inplaceperformed = False
     
     #final upstream transform from parents or auntsuncles is elligible for inplace
@@ -9881,7 +9874,7 @@ class AutoMunge:
         #note we use the processparent function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self.__processparent(df_train, df_test, column, sibling, origcategory, final_upstream, \
-                          transform_dict, postprocess_dict, assign_param)
+                          transform_dict, postprocess_dict, assign_param, logger)
     
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[origcategory]['cousins']:
@@ -9892,7 +9885,7 @@ class AutoMunge:
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self.__processcousin(df_train, df_test, column, cousin, origcategory, final_upstream, \
-                            transform_dict, postprocess_dict, assign_param)
+                            transform_dict, postprocess_dict, assign_param, logger)
 
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[origcategory]['parents']:
@@ -9901,7 +9894,7 @@ class AutoMunge:
 
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self.__processparent(df_train, df_test, column, parent, origcategory, final_upstream, \
-                          transform_dict, postprocess_dict, assign_param)
+                          transform_dict, postprocess_dict, assign_param, logger)
         
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[origcategory]['auntsuncles']:
@@ -9911,7 +9904,7 @@ class AutoMunge:
         #note we use the processcousin function here
         df_train, df_test, postprocess_dict, inplaceperformed = \
         self.__processcousin(df_train, df_test, column, auntuncle, origcategory, final_upstream, \
-                            transform_dict, postprocess_dict, assign_param)
+                            transform_dict, postprocess_dict, assign_param, logger)
 
     #if a replacement primitive was applied and inplace wasn't performed register the column to orig_noinplace
     if len(transform_dict[origcategory]['auntsuncles']) \
@@ -9930,8 +9923,6 @@ class AutoMunge:
     
     #templist1 is the list of df_train columns before processfamily
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #if we had replacement transformations performed on first generation \
     #then delete the original column
@@ -9983,8 +9974,6 @@ class AutoMunge:
     #name of the column after the last processing function is saved as a key
     #in the column_dict
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #(reason for "key2" instead of key1 is some shuffling during editing)
     for key2 in column_dict:
@@ -10038,8 +10027,6 @@ class AutoMunge:
     #Here column_dict_list is the list of dictionaries returned from a single processing function
     """
 
-    logger_dict = self.__check_logger_dict()
-
     if len(column_dict_list) > 0:
 
       inputcolumn = column_dict_list[0][list(column_dict_list[0])[0]]['inputcolumn']
@@ -10054,7 +10041,7 @@ class AutoMunge:
     return postprocess_dict
   
   def __processcousin(self, df_train, df_test, column, cousin, origcategory, final_upstream, \
-                     transform_dict, postprocess_dict, assign_param):
+                     transform_dict, postprocess_dict, assign_param, logger):
     '''
     #cousin is one of the primitives for processfamily function, and it involves
     #transformations without downstream derivations without replacement of source column
@@ -10074,8 +10061,6 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
 
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     process_dict = postprocess_dict['process_dict']
     
@@ -10156,13 +10141,13 @@ class AutoMunge:
       #since we populate results with unique integer identifier performing here a little dictionary munging
       # if postprocess_dict['printstatus'] != 'silent':
         
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Please note that a tree category was accessed as category ', cousin)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Originating from generations of root category ', origcategory)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Which did not have processing functions populated in processdict')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Processing functions in custom_train or dual/single/post process convention ')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Are required when a category is accessed as a tree category entry in a family tree.')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Otherwise tree category is treated as None and no downstream generations are accessed.')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', 'Please note that a tree category was accessed as category ', cousin)
+      self.__autoprint('warning', 'Originating from generations of root category ', origcategory)
+      self.__autoprint('warning', 'Which did not have processing functions populated in processdict')
+      self.__autoprint('warning', 'Processing functions in custom_train or dual/single/post process convention ')
+      self.__autoprint('warning', 'Are required when a category is accessed as a tree category entry in a family tree.')
+      self.__autoprint('warning', 'Otherwise tree category is treated as None and no downstream generations are accessed.')
+      self.__autoprint('warning', '')
 
       column_dict_list = []
 
@@ -10196,6 +10181,7 @@ class AutoMunge:
       logger_dict['validations']['treecategory_with_empty_processing_functions_valresult'].update(
         treecategory_with_empty_processing_functions_valresult
         )
+      logger = self.__logger_append(logger)
       #_____
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
@@ -10205,7 +10191,7 @@ class AutoMunge:
     return df_train, df_test, postprocess_dict, inplaceperformed
 
   def __processparent(self, df_train, df_test, column, parent, origcategory, final_upstream, \
-                    transform_dict, postprocess_dict, assign_param):
+                    transform_dict, postprocess_dict, assign_param, logger):
     '''
     #parent is one of the primitives for processfamily function, and it involves
     #transformations with downstream derivations with replacement of source column
@@ -10227,8 +10213,6 @@ class AutoMunge:
     #we want to apply in order of
     #upstream process, niecesnephews, friends, children, coworkers
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     process_dict = postprocess_dict['process_dict']
 
@@ -10310,13 +10294,13 @@ class AutoMunge:
       #_____aggregating validaiton results for non callable functions in processdict entry
       # if postprocess_dict['printstatus'] != 'silent':
 
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Please note that a tree category was accessed as category ', parent)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Originating from generations of root category ', origcategory)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Which did not have processing functions populated in processdict')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Processing functions in custom_train or dual/single/post process convention ')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Are required when a category is accessed as a tree category entry in a family tree.')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', 'Otherwise tree category is treated as None and no downstream generations are accessed.')
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', 'Please note that a tree category was accessed as category ', parent)
+      self.__autoprint('warning', 'Originating from generations of root category ', origcategory)
+      self.__autoprint('warning', 'Which did not have processing functions populated in processdict')
+      self.__autoprint('warning', 'Processing functions in custom_train or dual/single/post process convention ')
+      self.__autoprint('warning', 'Are required when a category is accessed as a tree category entry in a family tree.')
+      self.__autoprint('warning', 'Otherwise tree category is treated as None and no downstream generations are accessed.')
+      self.__autoprint('warning', '')
 
       column_dict_list = []
 
@@ -10350,6 +10334,7 @@ class AutoMunge:
       logger_dict['validations']['treecategory_with_empty_processing_functions_valresult'].update(
         treecategory_with_empty_processing_functions_valresult
         )
+      logger = self.__logger_append(logger)
       #_____
 
     #update the columnslist and normalization_dict for both column_dict and postprocess_dict
@@ -10397,7 +10382,7 @@ class AutoMunge:
           #parent column
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self.__processparent(df_train, df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                             transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param, logger)
 
       #process any friends
       for friend in transform_dict[parent]['friends']:
@@ -10408,7 +10393,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self.__processcousin(df_train, df_test, parentcolumn, friend, origcategory, final_downstream, \
-                             transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param, logger)
 
       for child in transform_dict[parent]['children']:
 
@@ -10419,7 +10404,7 @@ class AutoMunge:
           #parent column
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self.__processparent(df_train, df_test, parentcolumn, child, origcategory, final_downstream, \
-                             transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param, logger)
 
       #process any coworkers
       for coworker in transform_dict[parent]['coworkers']:
@@ -10430,7 +10415,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_train, df_test, postprocess_dict, parent_inplaceperformed = \
           self.__processcousin(df_train, df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                             transform_dict, postprocess_dict, assign_param)
+                             transform_dict, postprocess_dict, assign_param, logger)
 
       #if we had replacement transformations performed then mark column for deletion
       if len(transform_dict[parent]['children']) \
@@ -10459,8 +10444,6 @@ class AutoMunge:
     #to parameters set as defaultparams in processdict definition.
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     params = {}
     
     if 'defaultparams' in processdict_entry:
@@ -10579,8 +10562,6 @@ class AutoMunge:
     in postmunge (_custom_inverseprocess_wrapper)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     custom_process_wrapper_dict = {}
     
@@ -10863,8 +10844,6 @@ class AutoMunge:
     to ensure available in original form when noise trasnforms are applied
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     protected_features = []
     
     for entry_1 in assign_param:
@@ -10926,8 +10905,6 @@ class AutoMunge:
     then with the protected features the others are prepared in a seperate for loop and deleted with the null
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     messy_data_headers_dict = {}
     add_to_null_set = set()
     already_populated_set = set()
@@ -10947,8 +10924,8 @@ class AutoMunge:
           if len(current_list_set - already_populated_set) < len(current_list_set):
             messy_set_overlap_valresult = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "Warning of potential error from overlapping messy_data set specifications in assigncat")
-            self.__autoprint(printstatus, 'warning', '')   
+            self.__autoprint('warning', "Warning of potential error from overlapping messy_data set specifications in assigncat")
+            self.__autoprint('warning', '')   
           already_populated_set = already_populated_set | current_list_set
           
           #access element from set
@@ -11003,6 +10980,7 @@ class AutoMunge:
                             assign_param,
                             printstatus,
                             inplace,
+                            logger,
                             labels = False,
                            ):
     """
@@ -11011,8 +10989,6 @@ class AutoMunge:
     the labels case is to distinguish between applying function to features or labels
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #For each column, perform processing 
     #based on either category assignments in assigncat 
     #or under automation based on train set feature evaluation in _evalcategory
@@ -11030,9 +11006,9 @@ class AutoMunge:
           #printout display progress
           # if printstatus is True:
           if labels is False:
-            self.__autoprint(printstatus, 'debug', "evaluating column: ", column)
+            self.__autoprint('debug', "evaluating column: ", column)
           else:
-            self.__autoprint(printstatus, 'debug', "evaluating label column: ", column)
+            self.__autoprint('debug', "evaluating label column: ", column)
 
           #assigncat has special case, can assign distinct columns to automated evaluation
           #if user assigned column to 'eval' or 'ptfm'
@@ -11057,9 +11033,9 @@ class AutoMunge:
         #printout display progress
         # if printstatus is True:
         if labels is False:
-          self.__autoprint(printstatus, 'debug', "evaluating column: ", column)
+          self.__autoprint('debug', "evaluating column: ", column)
         else:
-          self.__autoprint(printstatus, 'debug', "evaluating labels column: ", column)
+          self.__autoprint('debug', "evaluating labels column: ", column)
 
         if evalcat is False:
           category = self.__evalcategory(df_train, column, randomseed, eval_ratio, \
@@ -11122,16 +11098,16 @@ class AutoMunge:
       #printout display progress
       # if printstatus is True:
       if labels is False:
-        self.__autoprint(printstatus, 'debug', "processing column: ", column)
+        self.__autoprint('debug', "processing column: ", column)
       else:
-        self.__autoprint(printstatus, 'debug', "processing labels column: ", column)
-      self.__autoprint(printstatus, 'debug', "    root category: ", category)
+        self.__autoprint('debug', "processing labels column: ", column)
+      self.__autoprint('debug', "    root category: ", category)
 
       ##
       #now process family
       df_train, df_test, postprocess_dict = \
       self.__processfamily(df_train, df_test, column, category, \
-                        transform_dict, postprocess_dict, assign_param)
+                        transform_dict, postprocess_dict, assign_param, logger)
 
       ##
       #now delete columns that were subject to replacement when inplace transform wasn't available
@@ -11182,9 +11158,9 @@ class AutoMunge:
       ##
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', " returned columns:")
-      self.__autoprint(printstatus, 'debug', postprocess_dict['origcolumn'][column]['columnkeylist'])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', " returned columns:")
+      self.__autoprint('debug', postprocess_dict['origcolumn'][column]['columnkeylist'])
+      self.__autoprint('debug', "")
 
       if inplace is not True:
         #this defragments the dataframes
@@ -11204,7 +11180,7 @@ class AutoMunge:
            masterNArows_train, \
            masterNArows_test
 
-  def __prepare_labelsencoding_dict(self, postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus):
+  def __prepare_labelsencoding_dict(self, postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus, logger):
     """
     labelsencoding_dict is used to support public label inversion with enncryption
     in the privacy_encode = False or True case
@@ -11215,8 +11191,6 @@ class AutoMunge:
     including also relevant entries for transform_dict and process_dict
     and any other postprocess_dict entries needed to support label inversion
     """
-
-    logger_dict = self.__check_logger_dict()
 
     labelsencoding_dict = {'transforms' : {}}
     
@@ -11252,6 +11226,7 @@ class AutoMunge:
 
       logger_dict['validations'].update({'check_processdict3_valresult' : check_processdict3_valresult,
                                                               'check_processdict3_validlabelctgy_valresult' : check_processdict3_validlabelctgy_valresult})
+      logger = self.__logger_append(logger)
       
     return labelsencoding_dict, mirror_dict, postprocess_dict
 
@@ -11289,8 +11264,6 @@ class AutoMunge:
     note that when column is pandas category dtype if an infill value not already a registered entry we add it with add_categories
     """    
 
-    logger_dict = self.__check_logger_dict()
-    
     #if this is test data then we are expecting a populated defaultinfill_dict from the train data
     #otherwise we'll initialize
     
@@ -11548,8 +11521,6 @@ class AutoMunge:
     #(this helps with a rare potential workflow when data sets are repeatedly run through automunge)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     indexcolumn_valresult = False
 
     fullset = set()
@@ -11604,8 +11575,6 @@ class AutoMunge:
     #which we know the number of returned columns from Binary will be <= a value as function of nunique
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #root column will be base of the new column header
     rootcolumn = root
     set_Binary_column_valresult = False
@@ -11668,8 +11637,6 @@ class AutoMunge:
     #if overlap found a validation result will be returned
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #the returned column names check for overlap with existing columns to accomodate edge case
     origcolumns = set(postprocess_dict['origcolumn'])
     returnedcolumns = set(postprocess_dict['column_dict'])
@@ -11703,25 +11670,23 @@ class AutoMunge:
     #if so returns error message and logs in suffixoverlap_results
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #test for overlap error
     if newcolumn in df_train.columns:
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "*****************")
-      self.__autoprint(printstatus, 'warning', "Warning of suffix overlap error")
-      self.__autoprint(printstatus, 'warning', "When creating new column: ", newcolumn)
-      self.__autoprint(printstatus, 'warning', "The column was already found present in df_train headers.")
-      self.__autoprint(printstatus, 'warning', "")
-      self.__autoprint(printstatus, 'warning', "Some potential quick fixes for this error include:")
-      self.__autoprint(printstatus, 'warning', "- rename columns to integers before passing to automunge(.)")
-      self.__autoprint(printstatus, 'warning', "- strip underscores '_' from column header titles.")
-      self.__autoprint(printstatus, 'warning', "(convention is all suffix appenders include an underscore)")
-      self.__autoprint(printstatus, 'warning', "")
-      self.__autoprint(printstatus, 'warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
-      self.__autoprint(printstatus, 'warning', "*****************")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "*****************")
+      self.__autoprint('warning', "Warning of suffix overlap error")
+      self.__autoprint('warning', "When creating new column: ", newcolumn)
+      self.__autoprint('warning', "The column was already found present in df_train headers.")
+      self.__autoprint('warning', "")
+      self.__autoprint('warning', "Some potential quick fixes for this error include:")
+      self.__autoprint('warning', "- rename columns to integers before passing to automunge(.)")
+      self.__autoprint('warning', "- strip underscores '_' from column header titles.")
+      self.__autoprint('warning', "(convention is all suffix appenders include an underscore)")
+      self.__autoprint('warning', "")
+      self.__autoprint('warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
+      self.__autoprint('warning', "*****************")
+      self.__autoprint('warning', "")
       
       suffixoverlap_results.update({newcolumn : True})
       
@@ -11742,8 +11707,6 @@ class AutoMunge:
     #or alternatively as a list of column headers
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #this will result in a set of column headers for both cases (if df_train passed as list or dataframe)
     origcolumns = set(df_train)
 
@@ -11755,19 +11718,19 @@ class AutoMunge:
       if newcolumn in origcolumns:
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "*****************")
-        self.__autoprint(printstatus, 'warning', "Warning of suffix overlap error")
-        self.__autoprint(printstatus, 'warning', "When creating new column: ", newcolumn)
-        self.__autoprint(printstatus, 'warning', "The column was already found present in df_train headers.")
-        self.__autoprint(printstatus, 'warning', "")
-        self.__autoprint(printstatus, 'warning', "Some potential quick fixes for this error include:")
-        self.__autoprint(printstatus, 'warning', "- rename columns to integers before passing to automunge(.)")
-        self.__autoprint(printstatus, 'warning', "- strip underscores '_' from column header titles.")
-        self.__autoprint(printstatus, 'warning', "(convention is all suffix appenders include an underscore)")
-        self.__autoprint(printstatus, 'warning', "")
-        self.__autoprint(printstatus, 'warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
-        self.__autoprint(printstatus, 'warning', "*****************")
-        self.__autoprint(printstatus, 'warning', "")
+        self.__autoprint('warning', "*****************")
+        self.__autoprint('warning', "Warning of suffix overlap error")
+        self.__autoprint('warning', "When creating new column: ", newcolumn)
+        self.__autoprint('warning', "The column was already found present in df_train headers.")
+        self.__autoprint('warning', "")
+        self.__autoprint('warning', "Some potential quick fixes for this error include:")
+        self.__autoprint('warning', "- rename columns to integers before passing to automunge(.)")
+        self.__autoprint('warning', "- strip underscores '_' from column header titles.")
+        self.__autoprint('warning', "(convention is all suffix appenders include an underscore)")
+        self.__autoprint('warning', "")
+        self.__autoprint('warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
+        self.__autoprint('warning', "*****************")
+        self.__autoprint('warning', "")
 
         suffixoverlap_results.update({newcolumn : True})
 
@@ -11777,7 +11740,7 @@ class AutoMunge:
         
     return suffixoverlap_results
 
-  def __suffix_overlap_final_aggregation_and_printouts(self, postprocess_dict, logger_dict):
+  def __suffix_overlap_final_aggregation_and_printouts(self, postprocess_dict, logger_dict, logger):
     """
     #Performs a final round of printouts in case of identified suffix overlap error
     #Also aggregates the validation results stored in column_dict
@@ -11788,8 +11751,6 @@ class AutoMunge:
     #(False is good)
     """
 
-    # logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_aggregated_result = False
     
     #then at completion of automunge(.), aggregate the suffixoverlap results
@@ -11800,22 +11761,23 @@ class AutoMunge:
           
           suffixoverlap_aggregated_result = True
           # if postprocess_dict['printstatus'] != 'silent':
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "*****************")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "Warning of suffix overlap error")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "When creating new column: ", entry2)
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "The column was already found present in df_train headers.")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "Some potential quick fixes for this error include:")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "- rename columns to integers before passing to automunge(.)")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "- strip underscores '_' from column header titles.")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "(convention is all suffix appenders include an underscore)")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "*****************")
-          self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
+          self.__autoprint('warning', "*****************")
+          self.__autoprint('warning', "Warning of suffix overlap error")
+          self.__autoprint('warning', "When creating new column: ", entry2)
+          self.__autoprint('warning', "The column was already found present in df_train headers.")
+          self.__autoprint('warning', "")
+          self.__autoprint('warning', "Some potential quick fixes for this error include:")
+          self.__autoprint('warning', "- rename columns to integers before passing to automunge(.)")
+          self.__autoprint('warning', "- strip underscores '_' from column header titles.")
+          self.__autoprint('warning', "(convention is all suffix appenders include an underscore)")
+          self.__autoprint('warning', "")
+          self.__autoprint('warning', "Please note any updates to column headers will need to be carried through to assignment parameters.")
+          self.__autoprint('warning', "*****************")
+          self.__autoprint('warning', "")
       
       logger_dict['validations']['suffixoverlap_results'].update(
       postprocess_dict['column_dict'][entry1]['suffixoverlap_results'])
+      logger = self.__logger_append(logger)
 
     #note that we automatically mitigate this channel now by revision of the PCA column root
     if 'PCA_suffixoverlap_results' in logger_dict['validations']:
@@ -11824,15 +11786,15 @@ class AutoMunge:
 
             suffixoverlap_aggregated_result = True
             # if postprocess_dict['printstatus'] != 'silent':
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "*****************")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Warning of suffix overlap error")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "When creating PCA column: ", entry1)
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "The column was already found present in df_train headers.")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Note that PCA returned columns are of form: PCAcol0")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Where # is integer")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "This form of column header should be avoided in passed data.")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
+            self.__autoprint('warning', "*****************")
+            self.__autoprint('warning', "Warning of suffix overlap error")
+            self.__autoprint('warning', "When creating PCA column: ", entry1)
+            self.__autoprint('warning', "The column was already found present in df_train headers.")
+            self.__autoprint('warning', "")
+            self.__autoprint('warning', "Note that PCA returned columns are of form: PCAcol0")
+            self.__autoprint('warning', "Where # is integer")
+            self.__autoprint('warning', "This form of column header should be avoided in passed data.")
+            self.__autoprint('warning', "")
 
     #note that we automatically mitigate this channel now by revision of the Binary column root
     if 'Binary_suffixoverlap_results' in logger_dict['validations']:
@@ -11841,16 +11803,16 @@ class AutoMunge:
 
             suffixoverlap_aggregated_result = True
             # if postprocess_dict['printstatus'] != 'silent':
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "*****************")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Warning of suffix overlap error")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "When creating Binary column: ", entry1)
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "The column was already found present in df_train headers.")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Note that Binary returned columns are of form: Binary_1010_#")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Where # is integer")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "This error might have occured if you passed data including column header 'Binary' to '1010' transform")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "This form of column header should be avoided in passed data.")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
+            self.__autoprint('warning', "*****************")
+            self.__autoprint('warning', "Warning of suffix overlap error")
+            self.__autoprint('warning', "When creating Binary column: ", entry1)
+            self.__autoprint('warning', "The column was already found present in df_train headers.")
+            self.__autoprint('warning', "")
+            self.__autoprint('warning', "Note that Binary returned columns are of form: Binary_1010_#")
+            self.__autoprint('warning', "Where # is integer")
+            self.__autoprint('warning', "This error might have occured if you passed data including column header 'Binary' to '1010' transform")
+            self.__autoprint('warning', "This form of column header should be avoided in passed data.")
+            self.__autoprint('warning', "")
 
     if 'excl_suffixoverlap_results' in logger_dict['validations']:
       for entry1 in logger_dict['validations']['excl_suffixoverlap_results']:
@@ -11858,35 +11820,36 @@ class AutoMunge:
 
             suffixoverlap_aggregated_result = True
             # if postprocess_dict['printstatus'] != 'silent':
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "*****************")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "Warning of suffix overlap error")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "When removing '_excl' suffix for column: ", entry1)
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "The column without suffix was already found present in df_train headers.")
-            self.__autoprint(postprocess_dict['printstatus'], 'warning', "")
+            self.__autoprint('warning', "*****************")
+            self.__autoprint('warning', "Warning of suffix overlap error")
+            self.__autoprint('warning', "When removing '_excl' suffix for column: ", entry1)
+            self.__autoprint('warning', "The column without suffix was already found present in df_train headers.")
+            self.__autoprint('warning', "")
             
     logger_dict['validations'].update({'suffixoverlap_aggregated_result':suffixoverlap_aggregated_result})
+    logger = self.__logger_append(logger)
 
     if 'indexcolumn_valresult' in logger_dict['validations'] \
     and logger_dict['validations']['indexcolumn_valresult'] is True:
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "please note that the Automunge_index returned in the ID sets had a header update to avoid overlap")
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "updated Automunge_index header is: ", postprocess_dict['indexcolumn'])
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "please note that the Automunge_index returned in the ID sets had a header update to avoid overlap")
+      self.__autoprint('warning', "updated Automunge_index header is: ", postprocess_dict['indexcolumn'])
+      self.__autoprint('warning', '')
 
     if 'PCA_columns_valresult' in logger_dict['validations'] \
     and logger_dict['validations']['PCA_columns_valresult'] is True:
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "please note that the PCA derivation had a root header update to avoid overlap")
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "returned PCA columns are: ", postprocess_dict['returned_PCA_columns'])
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "please note that the PCA derivation had a root header update to avoid overlap")
+      self.__autoprint('warning', "returned PCA columns are: ", postprocess_dict['returned_PCA_columns'])
+      self.__autoprint('warning', '')
 
     if 'set_Binary_column_valresult' in logger_dict['validations'] \
     and logger_dict['validations']['set_Binary_column_valresult'] is True:
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "please note that the Binary derivation had a root header update to avoid overlap")
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "returned Binary columns are: ", postprocess_dict['returned_Binary_columns'])
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "returned label Binary columns are: ", postprocess_dict['final_returned_labelBinary_columns'])
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "please note that the Binary derivation had a root header update to avoid overlap")
+      self.__autoprint('warning', "returned Binary columns are: ", postprocess_dict['returned_Binary_columns'])
+      self.__autoprint('warning', "returned label Binary columns are: ", postprocess_dict['final_returned_labelBinary_columns'])
+      self.__autoprint('warning', '')
     
     return postprocess_dict
 
@@ -11901,8 +11864,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'suffix' in params:
@@ -11968,8 +11929,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12159,8 +12118,6 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12277,8 +12234,6 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12413,8 +12368,6 @@ class AutoMunge:
     #and apply adjinfill here in transform
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12525,8 +12478,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12664,8 +12615,6 @@ class AutoMunge:
     #dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12838,8 +12787,6 @@ class AutoMunge:
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -12987,8 +12934,6 @@ class AutoMunge:
     #based on division by max absolute values from training set.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -13126,8 +13071,6 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -13268,8 +13211,8 @@ class AutoMunge:
     #divisor
     if divisor not in {'minmax', 'std', 'mad'}:
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+      self.__autoprint('warning', '')
     if divisor == 'minmax':
       divisor = maxminusmin
     elif divisor == 'mad':
@@ -13374,8 +13317,6 @@ class AutoMunge:
     #dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -13555,8 +13496,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     #note this is a "dualprocess" function since is applied to both dataframes
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     suffixoverlap_results = {}
     
@@ -13844,8 +13783,6 @@ class AutoMunge:
     #primary difference is cleaner code and trimmed a little fat
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #suffix_convention is to distinguish between text and onht suffixes
     #eg text: column + _str(entry) vs onht: column + _str(int)
     #(originally text followed conention column(minus suffix) + _entry)
@@ -14170,8 +14107,6 @@ class AutoMunge:
     #testsmooth parameter to activate consistently smoothing test data
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
       
     if 'activation' in params:
@@ -14318,8 +14253,6 @@ class AutoMunge:
     but is also possible the benefit would be offset by the redundant parsing
     """
 
-    logger_dict = self.__check_logger_dict()
-
     comma_counter = 0
     maxparsed_address = 0
     str_length = len(coordinates)
@@ -14441,8 +14374,6 @@ class AutoMunge:
     Note that this function uses the support function _GPS_parse
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #GPS_convention is to distinguish between conventions for format of received GPS coordinates
     #default is based on structure of the "$GPGGA message"
     #which was output from an RTK GPS receiver
@@ -14549,8 +14480,6 @@ class AutoMunge:
     #user should instead structure upstream trasnform as a set of numeric mlinfilltype trasnforms.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
       
     if 'norm_category' in params:
@@ -14994,8 +14923,6 @@ class AutoMunge:
     #based on padding to width of max string with in encoding space
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -15131,8 +15058,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -15238,8 +15163,6 @@ class AutoMunge:
     implemented in the singleprocess convention
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'upstreaminteger' in params:
@@ -15319,8 +15242,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -15413,8 +15334,6 @@ class AutoMunge:
     #missing values are ignored by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
@@ -15763,8 +15682,6 @@ class AutoMunge:
     #to follow with an ordl encoding
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
 #     overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
@@ -16125,8 +16042,6 @@ class AutoMunge:
     #sp19 is comparable to sp15 but with a returned binary encoding aggregation
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #overlap_lengths = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7 , 6, 5]
@@ -16588,8 +16503,6 @@ class AutoMunge:
     #only complete entries are checked for presence as subsets in other entries
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
       
     if 'concurrent_activations' in params:
@@ -16853,8 +16766,6 @@ class AutoMunge:
     #sbs3 is comparable to sbst but with a returned binary encoding aggregation
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
       
     if 'concurrent_activations' in params:
@@ -17239,8 +17150,6 @@ class AutoMunge:
     #user can manually specify a vocab_size with vocab-size parameter
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -17339,8 +17248,6 @@ class AutoMunge:
       converts a string to list of words by splitting words from space characters
       assumes any desired special characters have already been stripped
       """
-
-      logger_dict = self.__check_logger_dict()
 
       wordlist = []
       j = 0
@@ -17561,8 +17468,6 @@ class AutoMunge:
     #or user can manually specify a vocab_size instead of relying on heuristic
     """
     
-    logger_dict = self.__check_logger_dict()
-
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -17772,8 +17677,6 @@ class AutoMunge:
     #missing values are ignored by default
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
         
     if 'search' in params:
@@ -17956,8 +17859,6 @@ class AutoMunge:
     #for more efficient application in postmunge
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
         
     if 'search' in params:
@@ -18241,8 +18142,6 @@ class AutoMunge:
     #test set not found in train set
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
         
     if 'search' in params:
@@ -18528,8 +18427,6 @@ class AutoMunge:
     #(e.g. entries at end of list are prioritized over beginning)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
         
     if 'search' in params:
@@ -18738,8 +18635,6 @@ class AutoMunge:
     #note also supports passing aggregate as a single list of terms without embedded lists
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'aggregate' in params:
@@ -18823,8 +18718,6 @@ class AutoMunge:
     #we are leaving infill in place as np.nan
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'suffix' in params:
@@ -18972,8 +18865,6 @@ class AutoMunge:
     #does not perform infill, just converts entries to string
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'suffix' in params:
@@ -19022,8 +18913,6 @@ class AutoMunge:
     #suffix for column suffix identifier
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'convention' in params:
@@ -19188,8 +19077,6 @@ class AutoMunge:
     #where True copiues overlap_dict from train for test, False parses test entries not found in train
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'convention' in params:
@@ -19461,8 +19348,6 @@ class AutoMunge:
     #the ordl normalization_dict has a few reserved strings
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #ordered_overide is boolean to indicate if order of integer encoding basis will 
     #defer to cases when a column is a pandas categorical ordered set
     if 'ordered_overide' in normalization_dict:
@@ -19764,8 +19649,6 @@ class AutoMunge:
     #we'll set default values as False signalling not applied
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -19978,8 +19861,6 @@ class AutoMunge:
     #test sets recive comparable encoding
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'suffix' in params:
@@ -20099,8 +19980,6 @@ class AutoMunge:
     #the 1010 normalization_dict has a few reserved strings
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #_____
     #First we'll access parameters from normalization_dict
 
@@ -20443,8 +20322,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -20529,8 +20406,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'suffix' in params:
@@ -20605,8 +20480,6 @@ class AutoMunge:
     #note this is a "singleprocess" function since is applied to single dataframe
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -20710,8 +20583,6 @@ class AutoMunge:
     #defdault infill is eight days a week
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -20821,8 +20692,6 @@ class AutoMunge:
     #default infill is 0
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -20943,8 +20812,6 @@ class AutoMunge:
     #such as may be useful when a set of timestamps includes entries from multiple time zones
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21034,8 +20901,6 @@ class AutoMunge:
     #accets parameter 'function' to distinguish between sin/cos
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21286,8 +21151,6 @@ class AutoMunge:
     #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21472,8 +21335,6 @@ class AutoMunge:
     qttf returned as False when fit operation not performed
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'n_quantiles' in params:
@@ -21613,8 +21474,6 @@ class AutoMunge:
     We have a few scenarios where transform won't be applied signaled by setting bxcx_lmbda = False
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21700,14 +21559,14 @@ class AutoMunge:
     if max_train > (2 ** 31 - 1):
       mdf_train.loc[:, suffixcolumn] = 0
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "overflow condition found in boxcox transform to train set, column set to 0: ", suffixcolumn)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "overflow condition found in boxcox transform to train set, column set to 0: ", suffixcolumn)
+      self.__autoprint('warning', '')
       
     if max_test > (2 ** 31 - 1):
       mdf_test.loc[:, suffixcolumn] = 0
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
+      self.__autoprint('warning', '')
     
     #output of a list of the created column names
     nmbrcolumns = [suffixcolumn]
@@ -21760,8 +21619,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21874,8 +21731,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -21988,8 +21843,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22103,8 +21956,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22206,8 +22057,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22309,8 +22158,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22410,8 +22257,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22516,8 +22361,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22617,8 +22460,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -22716,8 +22557,6 @@ class AutoMunge:
     #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'negvalues' in params:
@@ -23019,8 +22858,6 @@ class AutoMunge:
     #negative values based on negvalues parameter, makes comparable to por2
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -23337,8 +23174,6 @@ class AutoMunge:
     #suffix appender is '_bins_#'' where # is integer for bin id
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'bincount' in params:
@@ -23524,8 +23359,6 @@ class AutoMunge:
     #bsor is comparable to bins but returns ordinal encoded column
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -23714,8 +23547,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'width' in params:
@@ -23873,8 +23704,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -24029,8 +23858,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'bincount' in params:
@@ -24234,8 +24061,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -24448,8 +24273,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'bincount' in params:
@@ -24726,8 +24549,6 @@ class AutoMunge:
     #default infill is no acitvations in a row
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #buckets can be passed as list for direct values or as a set to signal they are percent values
@@ -24894,8 +24715,6 @@ class AutoMunge:
     #removes buckets without activations in train set
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #buckets can be passed as list for direct values or as a set to signal they are percent values
@@ -25060,8 +24879,6 @@ class AutoMunge:
     
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -25231,8 +25048,6 @@ class AutoMunge:
     #segments without activations are included
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -25430,8 +25245,6 @@ class AutoMunge:
     #this will average out to the feature stdev accross segments
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -25555,6 +25368,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -25995,8 +25809,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -26113,6 +25925,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -26632,8 +26445,6 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #accepts divisor parameters of 'minmax' or 'std', eg divisor for normalization equation
@@ -26781,6 +26592,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -27011,8 +26823,8 @@ class AutoMunge:
     #divisor
     if divisor not in {'minmax', 'std', 'mad'}:
       # if postprocess_dict['printstatus'] != 'silent':
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', "Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
-      self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+      self.__autoprint('warning', "Error: retn transform parameter 'divisor' only accepts entries of 'minmax' 'mad' or 'std'")
+      self.__autoprint('warning', '')
     if divisor == 'minmax':
       divisor = maxminusmin
     elif divisor == 'mad':
@@ -27421,8 +27233,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -27484,6 +27294,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -27675,8 +27486,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -27775,6 +27584,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -28227,8 +28037,6 @@ class AutoMunge:
     #and so assumes data already integer encoded with infill
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -28335,6 +28143,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -28997,8 +28806,6 @@ class AutoMunge:
     #flip_prob/test_flip_prob can also be passed as list of condidate values or as scipy stats distribution
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -29071,6 +28878,7 @@ class AutoMunge:
     else:
       #a validation result logged in case user forgot to swpecify processdict['noise_transform'], noting that this will also register for postmunge drift report
       logger_dict['validations'].update({'missing_process_dict_noise_transform' : category})
+      # logger = self.__logger_append(logger)
 
       sampling_resource_dict = {'seeding_type' : 'supplemental_seeds', 
                                 'binomial_train' : 'custom',
@@ -29280,8 +29088,6 @@ class AutoMunge:
     #for cases of overflow (inadequate registers for number size) replaced with overflow value
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     #initialize parameters
@@ -29507,8 +29313,6 @@ class AutoMunge:
     #for scenarios where no columns are returned
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     # df = df.drop([column], axis=1)
@@ -29545,8 +29349,6 @@ class AutoMunge:
     #(as inversion operates on heuristic of selecting shortest path with full information retention, else shortest path)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -29610,8 +29412,6 @@ class AutoMunge:
     #from replacement primitives to corresponding supplement primitives
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
 
     if 'inplace' in params:
@@ -29676,8 +29476,6 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -29749,8 +29547,6 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -29863,8 +29659,6 @@ class AutoMunge:
     #for missing values, uses adjacent cell infill as default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     suffixoverlap_results = {}
     
     if 'inplace' in params:
@@ -29949,8 +29743,6 @@ class AutoMunge:
     in returned sets these instances will have a defaultinfill of 0 applied followed by any MLinfill when applicable
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #check for parameter
     if 'operation' in normalization_dict:
       operation = normalization_dict['operation']
@@ -30063,8 +29855,6 @@ class AutoMunge:
     #for now the range of options is short enough that a single string specificaiton is sufficient
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #first we consider special cases associated with powertransform parameter passed as one of {'excl', 'exc2', 'infill'}
     #an additional powertransform parameter scenario (when passed as True) is presented further below
     
@@ -30481,8 +30271,6 @@ class AutoMunge:
     #(option activated external to this function)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     NArowtype = postprocess_dict['process_dict'][category]['NArowtype']
     
     #There is a small cost of memory overhead associated with this copy operation
@@ -30861,8 +30649,6 @@ class AutoMunge:
     #(stdrdinfill does not need to run getNArows)
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #get lists of which orig columns will need to run getNArows in postmunge
     excluded_from_postmunge_getNArows = []
     included_in_postmunge_getNArows = []
@@ -30907,8 +30693,6 @@ class AutoMunge:
     #wherein activations are 0 if a datetime is present and 1 if not
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     df[column] = pd.to_datetime(df[column], errors = 'coerce')
 
     NArows = pd.isna(df[column])
@@ -30924,8 +30708,6 @@ class AutoMunge:
     #partly inspired by stack overflow discussion 
     #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
     """
-
-    logger_dict = self.__check_logger_dict()
 
     try:
       s = float(s)
@@ -30944,8 +30726,6 @@ class AutoMunge:
     #partly inspired by stack overflow discussion 
     #https://stackoverflow.com/questions/354038/how-do-i-check-if-a-string-is-a-number-float
     """
-
-    logger_dict = self.__check_logger_dict()
 
     try:
       #strips out commas
@@ -30969,8 +30749,6 @@ class AutoMunge:
     #based on what is recognized as a float
     """
 
-    logger_dict = self.__check_logger_dict()
-
     try:
       #strips out spaces, periods other than first and last character, replaces commas with periods, cast as float
       s = float(s[0] + s[1:-1].replace(' ','').replace('.','').replace(',','.') + s[-1])
@@ -30991,8 +30769,6 @@ class AutoMunge:
     #treats numeric entries as number as well
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #first we find overlaps from mdf_train
     
     unique_list = list(df[column].astype(str).unique())
@@ -31070,7 +30846,7 @@ class AutoMunge:
 
   def __MLinfillfunction(self, df_train, df_test, column, postprocess_dict, \
                         masterNArows_train, masterNArows_test, randomseed, \
-                        ML_cmnd, printstatus):
+                        ML_cmnd, printstatus, logger):
     '''
     #new function ML infill, generalizes the MLinfill application between categories
     #def __MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -31080,8 +30856,6 @@ class AutoMunge:
     #please note that general convention is even single column sets are cast as dataframes instead of series
     #we prefer this convention for support of common operations independant of single or multi column sets
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #df_traininfill later returned to support infilliterate early stopping criteria
     #returned as False when infill performed with another column from categorylist
@@ -31119,13 +30893,13 @@ class AutoMunge:
       postprocess_dict = \
       self.__check_ML_infill_2(df_train_filltrain, df_train_filllabel, 
                              df_train_fillfeatures, df_test_fillfeatures, printstatus,
-                             column, postprocess_dict, ampm = 'am')
+                             column, postprocess_dict, logger, ampm = 'am')
 
       #predict infill values using defined function predictinfill(.)
       df_traininfill, df_testinfill, model, postprocess_dict = \
       self.__predictinfill(column, category, df_train_filltrain, df_train_filllabel, \
                         df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                        postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = categorylist)
+                        postprocess_dict, ML_cmnd, autoMLer, printstatus, logger, categorylist = categorylist)
 
       #now we'll add our trained model to the postprocess_dict
       postprocess_dict['column_dict'][column]['infillmodel'] \
@@ -31200,7 +30974,7 @@ class AutoMunge:
 
   def __predictinfill(self, column, category, df_train_filltrain, df_train_filllabel, \
                     df_train_fillfeatures, df_test_fillfeatures, randomseed, \
-                    postprocess_dict, ML_cmnd, autoMLer, printstatus, categorylist = []):
+                    postprocess_dict, ML_cmnd, autoMLer, printstatus, logger, categorylist = []):
     '''
     #predictinfill(category, df_train_filltrain, df_train_filllabel, \
     #df_train_fillfeatures, df_test_fillfeatures, randomseed, categorylist), \
@@ -31213,8 +30987,6 @@ class AutoMunge:
     #model
     #accepts autoMLer populated with architecture options which is applied based on entries to ML_cmnd
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #this validation result populated below may be relevant 
     #when after leakage carveouts there aren't enough remaining features to serve as basis
@@ -31258,17 +31030,19 @@ class AutoMunge:
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : True}
         )
+        logger = self.__logger_append(logger)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
-        self.__autoprint(printstatus, 'debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
+        self.__autoprint('debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+        self.__autoprint('debug', '')
       
       else:
 
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : False}
         )
+        logger = self.__logger_append(logger)
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -31323,17 +31097,19 @@ class AutoMunge:
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : True}
         )
+        logger = self.__logger_append(logger)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
-        self.__autoprint(printstatus, 'debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
+        self.__autoprint('debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+        self.__autoprint('debug', '')
 
       else:
 
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : False}
         )
+        logger = self.__logger_append(logger)
         
         #now call our training function
         #which handles tuning if applicable, model initialization, and training
@@ -31378,17 +31154,19 @@ class AutoMunge:
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : True}
         )
+        logger = self.__logger_append(logger)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
-        self.__autoprint(printstatus, 'debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
+        self.__autoprint('debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+        self.__autoprint('debug', '')
 
       else:
 
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : False}
         )
+        logger = self.__logger_append(logger)
         
         #future extension - Label Smoothing for ML infill
         #(might incorporate this into the training function to be activated by ML_cmnd)
@@ -31436,17 +31214,19 @@ class AutoMunge:
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : True}
         )
+        logger = self.__logger_append(logger)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
-        self.__autoprint(printstatus, 'debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "ML infill model had insufficient features or samples to serve as basis, training halted.")
+        self.__autoprint('debug', "This may be a result of automated leakage carveouts from ML_cmnd['leakage_tolerance'].")
+        self.__autoprint('debug', '')
 
       else:
 
         logger_dict['validations']['not_enough_samples_or_features_for_MLinfill_result'].update(
           {column : False}
         )
+        logger = self.__logger_append(logger)
 
         #convert from binary to one-hot encoding
         df_train_filllabel = \
@@ -31527,8 +31307,6 @@ class AutoMunge:
     #and df_test_fillfeatures
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #create 3 new dataframes for each train column - the train and labels \
@@ -31658,8 +31436,6 @@ class AutoMunge:
     #override the categorylist >1 methods
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     
     #NArows column name uses original column name + _NArows as key
@@ -31726,8 +31502,6 @@ class AutoMunge:
     #default is scikit Random Forest via 'randomforest'
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #initialize tune_marker to default
     tune_marker = False
     
@@ -31767,8 +31541,6 @@ class AutoMunge:
     #e.g. under default supports 'RandomForestRegressor' & 'RandomForestClassifier'
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #initialize returned dictionaries
     static_params = {}
     tune_params = {}
@@ -31835,8 +31607,6 @@ class AutoMunge:
     this can be set to 1 with ML_cmnd['optuna_max_depth_tuning_stepsize']
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if classify_regress in {'classify', 'boolean'}:
       from xgboost import XGBClassifier
     elif classify_regress == 'regress':
@@ -32047,8 +31817,6 @@ class AutoMunge:
     #this multicolumn representation is used to evaluate halting criteria for infilliterate
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if MLinfilltype in {'multirt', '1010'}:
       
       categorylist = list(df_traininfill)
@@ -32080,8 +31848,6 @@ class AutoMunge:
     """
     Appends entries to halt_dict associated with the current target column
     """
-
-    logger_dict = self.__check_logger_dict()
 
     if iteration > 0:
       
@@ -32138,8 +31904,6 @@ class AutoMunge:
     #if early stopping was activated by ML_cmnd['halt_iterate'] = True
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #initialize
     stop_result = False
     
@@ -32273,8 +32037,6 @@ class AutoMunge:
     for increased sensitivity, set a lower leakage_tolerance threshold, accepts floats in range 0-1 inclusive
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'leakage_tolerance' in ML_cmnd:
       leakage_tolerance = ML_cmnd['leakage_tolerance']
     else:
@@ -32348,8 +32110,6 @@ class AutoMunge:
     #which has effect of excluding them from ML infill basis of other features
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'full_exclude' in ML_cmnd:
       full_exclude = ML_cmnd['full_exclude']
     else:
@@ -32401,8 +32161,6 @@ class AutoMunge:
     note that a final bit of leakage_dict prep is later performed in _convert_leakage_sets to scrub columnslist entries
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'leakage_dict' in ML_cmnd:
       leakage_dict_orig = ML_cmnd['leakage_dict']
     else:
@@ -32513,8 +32271,6 @@ class AutoMunge:
     so we'll have access to column_dict in postprocess_dict
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #access leakage_sets from ML_cmnd
     if 'leakage_sets' in ML_cmnd:
       leakage_sets = ML_cmnd['leakage_sets']
@@ -32579,8 +32335,6 @@ class AutoMunge:
     df_train is df_train as passed to infill with suffix appenders and only need be passed for train data in automunge
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     category = postprocess_dict['column_dict'][column]['category']
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
     categorylist = postprocess_dict['column_dict'][column]['categorylist']
@@ -32661,8 +32415,6 @@ class AutoMunge:
     that set will be included in set of unique activaiton sets from df_unique
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #(inspected in _stochastic_impute)
 #     #Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
 #     if 'stochastic_impute_categoric' in ML_cmnd and ML_cmnd['stochastic_impute_categoric'] is True:     
@@ -32850,8 +32602,6 @@ class AutoMunge:
     Note that noise sampling from distributions is supported by numpy.random
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #(inspected in _stochastic_impute)
 #     #Note that noise injections will only be applied when user passes ML_cmnd['stochastic_impute_numeric'] = True
 #     if 'stochastic_impute_numeric' in ML_cmnd and ML_cmnd['stochastic_impute_numeric'] is True:      
@@ -33029,8 +32779,6 @@ class AutoMunge:
     #note that binary encoded sets use onehotclassification by way of 1010->text conversion in predictinfill function
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     autoMLer = {}
     
     autoMLer.update({'randomforest' : {'booleanclassification'  : {'train'   : self._train_randomforest_classifier,
@@ -33082,8 +32830,6 @@ class AutoMunge:
     that won't be inspected in postmunge
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'autoML_type' not in ML_cmnd:
       ML_cmnd.update({'autoML_type' : 'randomforest'})
       
@@ -33126,8 +32872,6 @@ class AutoMunge:
     note that we apply our own random seed by default instead of defering to scikit
     (where randomseed is randomized if not specified)
     '''
-
-    logger_dict = self.__check_logger_dict()
   
     MLinfilldefaults = {'RandomForestClassifier':{}, 'RandomForestRegressor':{}}
     
@@ -33143,8 +32887,6 @@ class AutoMunge:
     and then initializes a RandomForestClassifier model
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #populate ML_cmnd if stuff not already present
     if 'MLinfill_cmnd' not in ML_cmnd:
       ML_cmnd.update({'MLinfill_cmnd':{}})
@@ -33169,8 +32911,6 @@ class AutoMunge:
     and then initializes a RandomForestRegressor model
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #populate ML_cmnd if stuff not already present
     if 'MLinfill_cmnd' not in ML_cmnd:
       ML_cmnd.update({'MLinfill_cmnd':{}})
@@ -33213,8 +32953,6 @@ class AutoMunge:
     #and default values for Random Forest Classifer are initialized with populateMLinfilldefaults
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #for single column convert to a series
     if df_train_filllabel.shape[1] == 1:
       df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
@@ -33267,8 +33005,8 @@ class AutoMunge:
                                      n_iter = randomCV_n_iter)
       else:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")      
+        self.__autoprint('warning', '')
       
       #now we'll run a fit on the grid search
       #for now won't pass any fit parameters (which means omitting the scikit option for sample_weight)
@@ -33279,9 +33017,9 @@ class AutoMunge:
       tuned_params = tuned_model.best_params_    
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "tuned parameters:")
-      self.__autoprint(printstatus, 'debug', tuned_params)
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "tuned parameters:")
+      self.__autoprint('debug', tuned_params)
+      self.__autoprint('debug', "")
 
       return tuned_model, postprocess_dict
 
@@ -33301,8 +33039,6 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     infill = model.predict(fillfeatures)
     
     return infill
@@ -33331,8 +33067,6 @@ class AutoMunge:
     #and default values for Random Forest Regressor are initialized with populateMLinfilldefaults
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #for single column convert to a series
     df_train_filllabel = df_train_filllabel[df_train_filllabel.columns[0]]
     
@@ -33381,8 +33115,8 @@ class AutoMunge:
                                      n_iter = randomCV_n_iter)
       else:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: randomforest hyperparam_tuner currently only supports 'gridCV' or 'randomCV'.")
+        self.__autoprint('warning', '')
       
       #now we'll run a fit on the grid search
       #for now won't pass any fit parameters (which means omitting the scikit option for sample_weight)
@@ -33393,9 +33127,9 @@ class AutoMunge:
       tuned_params = tuned_model.best_params_    
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "tuned parameters:")
-      self.__autoprint(printstatus, 'debug', tuned_params)
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "tuned parameters:")
+      self.__autoprint('debug', tuned_params)
+      self.__autoprint('debug', "")
         
       return tuned_model, postprocess_dict
 
@@ -33415,8 +33149,6 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     infill = model.predict(fillfeatures)
     
     return infill
@@ -33426,8 +33158,6 @@ class AutoMunge:
     this option no longer supported as of 7.72
     retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
     """
-
-    logger_dict = self.__check_logger_dict()
 
     print("Please note autogluon ml infill option no longer supported as of 7.72")
     return False, postprocess_dict
@@ -33446,8 +33176,6 @@ class AutoMunge:
     retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
     """
 
-    logger_dict = self.__check_logger_dict()
-
     print("Please note autogluon ml infill option no longer supported as of 7.72")
     return np.zeros(shape=(1,len(categorylist)))
 
@@ -33456,8 +33184,6 @@ class AutoMunge:
     this option no longer supported as of 7.72
     retaining function naming space for backward compatibility of prior populated postprocess_dict referencing this function
     """
-
-    logger_dict = self.__check_logger_dict()
 
     print("Please note autogluon ml infill option no longer supported as of 7.72")
     return np.zeros(shape=(1,len(categorylist)))
@@ -33468,8 +33194,6 @@ class AutoMunge:
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_classifier_fit']
     #converts multi column one hot sets to ordinal (no string conversion required)
     """
-
-    logger_dict = self.__check_logger_dict()
 
     # #user can conduct this import externally to speed up this function
     # module = 'flaml.automl'
@@ -33543,8 +33267,6 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    logger_dict = self.__check_logger_dict()
-
     # #user can conduct this import externally to speed up this function
     # module = 'flaml.automl'
     # if module not in sys.modules:
@@ -33571,8 +33293,6 @@ class AutoMunge:
     #Trains a model for ML infill using flaml regressor
     #accepts parameters to fit operation as ML_cmnd['MLinfill_cmnd']['flaml_regressor_fit']
     """
-
-    logger_dict = self.__check_logger_dict()
 
     # #user can conduct this import externally to speed up this function
     # module = 'flaml.automl'
@@ -33625,8 +33345,6 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    logger_dict = self.__check_logger_dict()
-
     # #user can conduct this import externally to speed up this function
     # module = 'flaml.automl'
     # if module not in sys.modules:
@@ -33653,8 +33371,6 @@ class AutoMunge:
     #ML_cmnd['MLinfill_cmnd']['catboost_classifier_fit']['eval_ratio'] = 0.15
     #note that early stopping may cause issues in ML infill when all instances of label carried into validation set
     """
-
-    logger_dict = self.__check_logger_dict()
 
     # #user can conduct this import externally to speed up this function
     # module = 'catboost'
@@ -33798,8 +33514,6 @@ class AutoMunge:
     #such as a range of integers
     """
 
-    logger_dict = self.__check_logger_dict()
-
     # #user can conduct this import externally to speed up this function
     # module = 'catboost'
     # if module not in sys.modules:
@@ -33829,8 +33543,6 @@ class AutoMunge:
     #defaults to early stopping with 15% validation set, can be turned off by passing 
     #ML_cmnd['MLinfill_cmnd']['catboost_classifier_fit']['eval_ratio'] = 0
     """
-
-    logger_dict = self.__check_logger_dict()
 
     # #user can conduct this import externally to speed up this function
     # module = 'catboost'
@@ -33950,8 +33662,6 @@ class AutoMunge:
     #returns infill predictions
     """
 
-    logger_dict = self.__check_logger_dict()
-
     # #user can conduct this import externally to speed up this function
     # module = 'catboost'
     # if module not in sys.modules:
@@ -33993,8 +33703,6 @@ class AutoMunge:
     modeltype accepted as classification, boolean, and regression
     where boolean differs from classificaiton by setting different xgboost objective in tuning
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #xgboost tuning with optuna benefits from distinguishing between binary classification and multi target classificaiton
     #booleantype is marker for this purpose and primary use is for passing entry to optuna tuner
@@ -34135,8 +33843,6 @@ class AutoMunge:
     and makes use of the xgboost default inference function to run inference
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if model is not False:
 
       if modeltype == 'classification':
@@ -34250,8 +33956,6 @@ class AutoMunge:
     #                       'customML_Regressor_predict' :function}}
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     columntype_report = self.__populate_columntype_report(postprocess_dict, list(df_train_filltrain))
     
     #featurekey is a unique concatinated string of all column headers serving as basis for this model
@@ -34380,8 +34084,6 @@ class AutoMunge:
     #{'tensorflow', 'xgboost', 'catboost', 'flaml', 'randomforest'}
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if model is not False:
       
       #featurekey is a unique concatinated string of all column headers serving as basis for this model
@@ -34476,9 +34178,7 @@ class AutoMunge:
     which is applied to derive infill
     modeltype is expected as one of {'classification', 'regression'}
     """
-
-    logger_dict = self.__check_logger_dict()
-        
+    
     if defaulttype == 'tensorflow':
       if modeltype == 'classification':
         try:
@@ -34534,8 +34234,6 @@ class AutoMunge:
     #based on tensorflow, including conversion to tensor
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #need to validate
 
     # #user can conduct this import externally to speed up this function
@@ -34578,8 +34276,6 @@ class AutoMunge:
     #based on tensorflow, including conversion to tensor
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #need to validate
 
     # #user can conduct this import externally to speed up this function
@@ -34598,8 +34294,6 @@ class AutoMunge:
     #based on xgboost XGBClassifier or XGBRegressor
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     # #user can conduct this import externally to speed up this function
     # module = 'xgboost'
     # if module not in sys.modules:
@@ -34615,8 +34309,6 @@ class AutoMunge:
     #based on catboost CatBoostClassifier or CatBoostRegressor
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     # #user can conduct this import externally to speed up this function
     # module = 'catboost'
     # if module not in sys.modules:
@@ -34632,8 +34324,6 @@ class AutoMunge:
     #based on flaml AutoML
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     # #user can conduct this import externally to speed up this function
     # module = 'flaml.automl'
     # if module not in sys.modules:
@@ -34647,8 +34337,6 @@ class AutoMunge:
     """
     #scikit random forest classifier and regressor already imported
     """
-
-    logger_dict = self.__check_logger_dict()
 
     infill = model.predict(features)
 
@@ -34668,8 +34356,6 @@ class AutoMunge:
     #(featureskey workflow now takes place in __sequential_range_integer)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     df2 = pd.DataFrame({-1:[-1]*df.shape[0]}, index=df.index)
     
     for column in df:
@@ -34700,8 +34386,6 @@ class AutoMunge:
     #df2 is a dataframe with header of the integer 1
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #the ordinal encoding may have gaps in the set of sequential ranged integers
     #some learning libraries need a fully represented set of integers from 0-max
     #so this option translates from the gapped representation to sequential fully represented
@@ -34747,8 +34431,6 @@ class AutoMunge:
     and header of integer 0
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     df = pd.DataFrame(df)
 
     df[0] = df[0].astype(int)
@@ -34781,8 +34463,6 @@ class AutoMunge:
 
     #(featureskey workflow now takes place in __sequential_range_integer_invert)
     """
-
-    logger_dict = self.__check_logger_dict()
 
     df = pd.DataFrame(df)
 
@@ -34825,8 +34505,6 @@ class AutoMunge:
     and in some cases returns columns with no activaitons
     """
 
-    logger_dict = self.__check_logger_dict()
-
     received_column_count = df_array.shape[1]
     
     df_onehot = pd.DataFrame(index=df_array.index)
@@ -34866,8 +34544,6 @@ class AutoMunge:
     this is applied in context of infill conversions, 
     so sequential range integer index is ok (doesn't need to match index of another dataframe)
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #create list of binary encodings corresponding to the onehot array
     #assumes consistent order of columns from convert_1010_to_onehot basis
@@ -34947,8 +34623,6 @@ class AutoMunge:
     and then rename columns to consistent form as activation_list and align composition and order
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #current configuration is scenario 0
     if scenario == 0:
 
@@ -35057,8 +34731,6 @@ class AutoMunge:
     #returns a dataframe set of all rows which included that label in the column
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     df = df[df[column] == label]
 
     return df
@@ -35079,8 +34751,6 @@ class AutoMunge:
     #note that the methods take into account the MLinfilltype 
     #of the lblctgy entry (tree category) associated with label set root category
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #find origcateogry of am_labels from FSpostprocess_dict
     labelcolumnkey = list(labels_df)[0]
@@ -35317,7 +34987,7 @@ class AutoMunge:
 
   def __trainFSmodel(self, am_subset, am_labels, randomseed, \
                    process_dict, FSpostprocess_dict, labelctgy, FSML_cmnd, printstatus, 
-                   FSautoMLer=False):
+                  logger,  FSautoMLer=False):
     """
     This function is used in feature importance evaluation
     And serves to translate a feature importance model to the conventions of ML infill
@@ -35328,8 +34998,6 @@ class AutoMunge:
     since feature importance does not apply same approach for partitioning sets as ML infill
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if len(list(am_labels)) > 0:
 
       if FSautoMLer is False:
@@ -35342,7 +35010,7 @@ class AutoMunge:
       _infilla, _infillb, FSmodel, FSpostprocess_dict = \
       self.__predictinfill(categorylist[0], labelctgy, am_subset, am_labels, \
                          df_train_fillfeatures_plug, df_test_fillfeatures_plug, \
-                         randomseed, FSpostprocess_dict, FSML_cmnd, FSautoMLer, printstatus, \
+                         randomseed, FSpostprocess_dict, FSML_cmnd, FSautoMLer, printstatus, logger, \
                          categorylist = categorylist)
 
       del _infilla, _infillb
@@ -35362,8 +35030,6 @@ class AutoMunge:
     by Terence Parr, Kerem Turgutlu, Christopher Csiszar, and Jeremy Howard
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     shuffleset = am_subset.copy()
     
     for clcolumn in columnslist:
@@ -35380,8 +35046,6 @@ class AutoMunge:
     similar to createFSsets except performed such as to only leave one column from
     the columnslist untouched and shuffle the rest 
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     shuffleset2 = am_subset.copy()
     
@@ -35404,8 +35068,6 @@ class AutoMunge:
 
     np_shuffleset and np_labels are now recast as pandas dataframe, leaving the "np" in place for convenience
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     ML_cmnd = postprocess_dict['ML_cmnd']
 
@@ -35502,8 +35164,6 @@ class AutoMunge:
     returns list madethecut
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #create empty dataframe for sorting purposes
     FSsupport_df = pd.DataFrame(columns=['FS_column', 'metric', 'category'])
     
@@ -35583,7 +35243,7 @@ class AutoMunge:
                     processdict, featurethreshold, featureselection, \
                     ML_cmnd, process_dict, valpercent, printstatus, \
                     NArw_marker, assignparam, \
-                    entropy_seeds, random_generator, sampling_dict):
+                    entropy_seeds, random_generator, sampling_dict, logger):
     """
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -35593,8 +35253,6 @@ class AutoMunge:
     automunge() can then remove extraneous branches.
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #now we'll use automunge() to prepare the subset for feature evaluation
     #note the passed arguments, these are all intentional (no MLinfill applied,
     #primary goal here is to produce a processed dataframe for df_subset
@@ -35602,9 +35260,9 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Begin Feature Importance evaluation")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Begin Feature Importance evaluation")
+    self.__autoprint('info', "")
 
     FSML_cmnd = self.__autocopy(ML_cmnd)
 
@@ -35644,7 +35302,7 @@ class AutoMunge:
                   assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[], \
                                   'adjinfill':[], 'meaninfill':[], 'medianinfill':[]}, \
                   assignparam = FS_assignparam, entropy_seeds = entropy_seeds, random_generator = random_generator, sampling_dict = sampling_dict, \
-                  transformdict = transformdict, processdict = processdict, printstatus=printstatus, logger_dict=logger_dict)
+                  transformdict = transformdict, processdict = processdict, printstatus=printstatus, logger=logger)
 
     #record validation results from automunge call internal to featureselect
     #logger_dict validation results stored in logger_dict['featureselection_validations']
@@ -35708,12 +35366,14 @@ class AutoMunge:
 
       returned_label_set_for_featureselect_valresult = True
       logger_dict['validations'].update({'returned_label_set_for_featureselect_valresult' : returned_label_set_for_featureselect_valresult})
+
+      logger = self.__logger_append(logger)
       
       #printout display progress
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "_______________")
-      self.__autoprint(printstatus, 'warning', "No labels returned from automunge(.), Feature Importance halted")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "_______________")
+      self.__autoprint('warning', "No labels returned from automunge(.), Feature Importance halted")
+      self.__autoprint('warning', "")
 
     #if am_labels is not an empty set
     if am_labels.empty is False:
@@ -35808,12 +35468,13 @@ class AutoMunge:
 
         labelctgy_not_found_in_familytree_valresult = True
         logger_dict['validations'].update({'labelctgy_not_found_in_familytree_valresult' : labelctgy_not_found_in_familytree_valresult})
+        logger = self.__logger_append(logger)
 
         # if printstatus != 'silent':
         #this is a remote edge case, printout added for troubleshooting support
-        self.__autoprint(printstatus, 'warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
-        self.__autoprint(printstatus, 'warning', "Feature Selection model training will not run without valid labelgctgy processdict entry")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
+        self.__autoprint('warning', "Feature Selection model training will not run without valid labelgctgy processdict entry")
+        self.__autoprint('warning', '')
 
       elif len(am_categorylist) == 1:
         am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
@@ -35831,9 +35492,9 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Training feature importance evaluation model")
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Training feature importance evaluation model")
+      self.__autoprint('debug', "")
 
       #first validate that data is all valid numeric
       FS_numeric_data_result, FS_all_valid_entries_result = \
@@ -35841,6 +35502,7 @@ class AutoMunge:
 
       logger_dict['validations'].update({'FS_numeric_data_result': FS_numeric_data_result})
       logger_dict['validations'].update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
+      logger = self.__logger_append(logger)
 
       #apply function trainFSmodel
 
@@ -35850,7 +35512,7 @@ class AutoMunge:
       FSmodel, FSpostprocess_dict = \
       self.__trainFSmodel(am_train, am_labels, randomseed, \
                         FSprocess_dict, FSpostprocess_dict, labelctgy, FSML_cmnd, \
-                        printstatus)
+                        printstatus, logger)
 
       #now carry the 'customML_inference_support' from FSpostprocess_dict to FSpostprocess_dict['ML_cmnd']
       #this means that can't currently do ML infill on automunge call to prepare feature selction data as would overwrite
@@ -35868,12 +35530,13 @@ class AutoMunge:
         
         #printout display progress
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "_______________")
-        self.__autoprint(printstatus, 'warning', "No model returned from training, Feature Importance halted")
-        self.__autoprint(printstatus, 'warning', "")
+        self.__autoprint('warning', "_______________")
+        self.__autoprint('warning', "No model returned from training, Feature Importance halted")
+        self.__autoprint('warning', "")
         
         featureselect_trained_model_valresult = True
         logger_dict['validations'].update({'featureselect_trained_model_valresult' : featureselect_trained_model_valresult})
+        logger = self.__logger_append(logger)
       
       elif FSmodel is not False:
 
@@ -35883,9 +35546,9 @@ class AutoMunge:
                                             FSprocess_dict, labelctgy, FSpostprocess_dict)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Base Accuracy of feature importance model:")
-        self.__autoprint(printstatus, 'debug', baseaccuracy)
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Base Accuracy of feature importance model:")
+        self.__autoprint('debug', baseaccuracy)
+        self.__autoprint('debug', '')
 
         #get list of columns
         am_train_columns = list(am_train)
@@ -35924,9 +35587,9 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Evaluating feature importances")
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Evaluating feature importances")
+        self.__autoprint('debug', "")
 
         #perform feature evaluation on each column
         for column in am_train_columns:
@@ -36016,17 +35679,17 @@ class AutoMunge:
       FSpostprocess_dict
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Feature Importance results:")
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Feature Importance results:")
+      self.__autoprint('debug', "")
 
       #to inspect values returned in featureimportance object one could run
       # if printstatus is True:
       for keys,values in FScolumn_dict.items():
-        self.__autoprint(printstatus, 'debug', keys)
-        self.__autoprint(printstatus, 'debug', 'metric = ', values['metric'])
-        self.__autoprint(printstatus, 'debug', 'metric2 = ', values['metric2'])
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', keys)
+        self.__autoprint('debug', 'metric = ', values['metric'])
+        self.__autoprint('debug', 'metric2 = ', values['metric2'])
+        self.__autoprint('debug', "")
 
     FS_sorted = {'baseaccuracy' : baseaccuracy, \
                  'metric_key':{}, \
@@ -36082,26 +35745,26 @@ class AutoMunge:
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
     
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', '')
-    self.__autoprint(printstatus, 'info', "______________________")
-    self.__autoprint(printstatus, 'info', "sorted metric results:")
-    self.__autoprint(printstatus, 'info', '')
+    self.__autoprint('info', '')
+    self.__autoprint('info', "______________________")
+    self.__autoprint('info', "sorted metric results:")
+    self.__autoprint('info', '')
     for keys,values in FS_sorted['metric_key'].items():
       for entry in values:
-        self.__autoprint(printstatus, 'info', entry)
-        self.__autoprint(printstatus, 'info', keys)
-        self.__autoprint(printstatus, 'info', '')
-    self.__autoprint(printstatus, 'info', "______________________")
-    self.__autoprint(printstatus, 'info', "sorted metric2 results:")
-    self.__autoprint(printstatus, 'info', '')
+        self.__autoprint('info', entry)
+        self.__autoprint('info', keys)
+        self.__autoprint('info', '')
+    self.__autoprint('info', "______________________")
+    self.__autoprint('info', "sorted metric2 results:")
+    self.__autoprint('info', '')
     for key in FS_sorted['metric2_key']:
-      self.__autoprint(printstatus, 'info', "for source column: ", key)
+      self.__autoprint('info', "for source column: ", key)
       for keys,values in FS_sorted['metric2_key'][key].items():
         for entry in values:
-          self.__autoprint(printstatus, 'info', entry)
-          self.__autoprint(printstatus, 'info', keys)
-          self.__autoprint(printstatus, 'info', '')
-      self.__autoprint(printstatus, 'info', '')
+          self.__autoprint('info', entry)
+          self.__autoprint('info', keys)
+          self.__autoprint('info', '')
+      self.__autoprint('info', '')
     
     if FSmodel is False:
       
@@ -36110,9 +35773,9 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus is True:
-    self.__autoprint(printstatus, 'debug', "_______________")
-    self.__autoprint(printstatus, 'debug', "Feature Importance evaluation complete")
-    self.__autoprint(printstatus, 'debug', "")
+    self.__autoprint('debug', "_______________")
+    self.__autoprint('debug', "Feature Importance evaluation complete")
+    self.__autoprint('debug', "")
     
     return madethecut, FSmodel, FScolumn_dict, FS_sorted
 
@@ -36159,8 +35822,6 @@ class AutoMunge:
     #- insert any missing keys needed for apply_am_infill
     #- return postprocess_assigninfill_dict
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #this just makes searching a little more efficient
     infillcolumns_list = set(infillcolumns_list)
@@ -36292,8 +35953,6 @@ class AutoMunge:
     #used in apply_am_infill
     """
 
-    logger_dict = self.__check_logger_dict()
-
     sorted_columns_by_NaN_dict = {}
 
     #assemble dictionary
@@ -36320,14 +35979,12 @@ class AutoMunge:
   
   def __apply_am_infill(self, df_train, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, infilliterate, printstatus, infillcolumns_list, \
-                      masterNArows_train, masterNArows_test, randomseed, ML_cmnd):
+                      masterNArows_train, masterNArows_test, randomseed, ML_cmnd, logger):
     """
     #Modularizes the application of infill to train and test sets
     #note that this works in both sequential and parallel conventions of for loops
     #although may return slightly different values between the two cases
     """
-
-    logger_dict = self.__check_logger_dict()
 
     sorted_columns_by_NaN_list = \
     self.__assemble_sorted_columns_by_NaN_dict(masterNArows_train, list(df_train), postprocess_dict)
@@ -36360,9 +36017,9 @@ class AutoMunge:
       
       # if printstatus is True:
       if print_infilliterate is True:
-        self.__autoprint(printstatus, 'debug', "______")
-        self.__autoprint(printstatus, 'debug', "ML infill infilliterate iteration: ", iteration + 1)
-        self.__autoprint(printstatus, 'debug', " ")
+        self.__autoprint('debug', "______")
+        self.__autoprint('debug', "ML infill infilliterate iteration: ", iteration + 1)
+        self.__autoprint('debug', " ")
 
       #initalize halt_dict entry, iteration is the current integer >=0 associated with infilliterate
       halt_dict_entry = \
@@ -36408,9 +36065,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: zeroinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: zeroinfill")
+                self.__autoprint('debug', "")
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
@@ -36427,9 +36084,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: negzeroinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: negzeroinfill")
+                self.__autoprint('debug', "")
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
@@ -36446,9 +36103,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: oneinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: oneinfill")
+                self.__autoprint('debug', "")
 
                 categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
@@ -36465,9 +36122,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: adjinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: adjinfill")
+                self.__autoprint('debug', "")
 
                 df_train = \
                 self.__adjinfillfunction(df_train, column, postprocess_dict, \
@@ -36482,9 +36139,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: medianinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: medianinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36515,9 +36172,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: meaninfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: meaninfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36549,9 +36206,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: modeinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: modeinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36578,9 +36235,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: lcinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: lcinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36608,18 +36265,18 @@ class AutoMunge:
 
               #printout display progress
               # if printstatus is True:
-              self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-              self.__autoprint(printstatus, 'debug', "     infill type: MLinfill")
-              self.__autoprint(printstatus, 'debug', "")
+              self.__autoprint('debug', "infill to column: ", column)
+              self.__autoprint('debug', "     infill type: MLinfill")
+              self.__autoprint('debug', "")
 
               infill_validations = \
-              self.__check_ML_infill(printstatus, df_train, column, postprocess_dict, infill_validations)
+              self.__check_ML_infill(printstatus, df_train, column, postprocess_dict, logger, infill_validations)
                 
               #added a returned df_traininfill, convention is df_traininfill will be False when infillcomplete is True to ensure only one entry per categorylist
               df_train, df_test, postprocess_dict, df_traininfill = \
               self.__MLinfillfunction(df_train, df_test, column, postprocess_dict, \
                                     masterNArows_train, masterNArows_test, randomseed, ML_cmnd, \
-                                    printstatus)
+                                    printstatus, logger)
               
               MLinfilltype = postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype']
               
@@ -36652,10 +36309,10 @@ class AutoMunge:
         
         # if printstatus is True:
         if print_infilliterate is True:
-          self.__autoprint(printstatus, 'debug', '')
-          self.__autoprint(printstatus, 'debug', "ML infill infilliterate halted at iteration: ", iteration + 1)
-          self.__autoprint(printstatus, 'debug', "______")
-          self.__autoprint(printstatus, 'debug', " ")
+          self.__autoprint('debug', '')
+          self.__autoprint('debug', "ML infill infilliterate halted at iteration: ", iteration + 1)
+          self.__autoprint('debug', "______")
+          self.__autoprint('debug', " ")
 
         #stop_count will be the infilliterate threshold applied in postmunge, defaults to infilliterate value when stopping not reached
         stop_count = iteration + 1
@@ -36674,9 +36331,9 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-        self.__autoprint(printstatus, 'debug', "     infill type: naninfill")
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "infill to column: ", column)
+        self.__autoprint('debug', "     infill type: naninfill")
+        self.__autoprint('debug', "")
 
         categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
 
@@ -36692,12 +36349,10 @@ class AutoMunge:
   
   def __apply_pm_infill(self, df_test, postprocess_assigninfill_dict, \
                       postprocess_dict, printstatus, infillcolumns_list, \
-                      masterNArows_test):
+                      masterNArows_test, logger):
     """
     #Modularizes the application of infill to test sets
     """
-
-    logger_dict = self.__check_logger_dict()
 
     sorted_columns_by_NaN_list = postprocess_dict['sorted_columns_by_NaN_list']
     
@@ -36730,9 +36385,9 @@ class AutoMunge:
       
       # if printstatus is True:
       if print_infilliterate is True:
-        self.__autoprint(printstatus, 'debug', "______")
-        self.__autoprint(printstatus, 'debug', "ML infill infilliterate iteration: ", iteration + 1)
-        self.__autoprint(printstatus, 'debug', " ")
+        self.__autoprint('debug', "______")
+        self.__autoprint('debug', "ML infill infilliterate iteration: ", iteration + 1)
+        self.__autoprint('debug', " ")
     
       #columns sorted by nan count in train data from automunge
       for column in sorted_columns_by_NaN_list:
@@ -36754,9 +36409,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: zeroinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: zeroinfill")
+                self.__autoprint('debug', "")
 
                 df_test = \
                 self.__zeroinfillfunction(df_test, column, postprocess_dict, \
@@ -36767,9 +36422,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: negzeroinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: negzeroinfill")
+                self.__autoprint('debug', "")
 
                 df_test = \
                 self.__negzeroinfillfunction(df_test, column, postprocess_dict, \
@@ -36780,9 +36435,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: oneinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: oneinfill")
+                self.__autoprint('debug', "")
 
                 df_test = \
                 self.__oneinfillfunction(df_test, column, postprocess_dict, \
@@ -36793,9 +36448,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: adjinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: adjinfill")
+                self.__autoprint('debug', "")
 
                 df_test = \
                 self.__adjinfillfunction(df_test, column, postprocess_dict, \
@@ -36806,9 +36461,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: medianinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: medianinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36836,9 +36491,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: meaninfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: meaninfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36866,9 +36521,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: modeinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: modeinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36890,9 +36545,9 @@ class AutoMunge:
 
                 #printout display progress
                 # if printstatus is True:
-                self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-                self.__autoprint(printstatus, 'debug', "     infill type: lcinfill")
-                self.__autoprint(printstatus, 'debug', "")
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: lcinfill")
+                self.__autoprint('debug', "")
 
                 #check if column is incompatible_MLinfilltype
                 incompatible_MLinfilltype = False
@@ -36918,13 +36573,13 @@ class AutoMunge:
 
               #printout display progress
               # if printstatus is True:
-              self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-              self.__autoprint(printstatus, 'debug', "     infill type: MLinfill")
-              self.__autoprint(printstatus, 'debug', "")
+              self.__autoprint('debug', "infill to column: ", column)
+              self.__autoprint('debug', "     infill type: MLinfill")
+              self.__autoprint('debug', "")
 
               df_test, postprocess_dict = \
               self.__postMLinfillfunction (df_test, column, postprocess_dict, \
-                                        masterNArows_test, printstatus)
+                                        masterNArows_test, printstatus, logger)
 
       for columnname in df_test.columns:
         postprocess_dict['column_dict'][columnname]['infillcomplete'] = False
@@ -36942,9 +36597,9 @@ class AutoMunge:
 
           #printout display progress
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "infill to column: ", column)
-          self.__autoprint(printstatus, 'debug', "     infill type: naninfill")
-          self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "infill to column: ", column)
+          self.__autoprint('debug', "     infill type: naninfill")
+          self.__autoprint('debug', "")
 
           df_test = \
           self.__naninfillfunction(df_test, column, postprocess_dict, \
@@ -36955,8 +36610,6 @@ class AutoMunge:
   def __zeroinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
 
-    logger_dict = self.__check_logger_dict()
-    
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
@@ -36988,8 +36641,6 @@ class AutoMunge:
   def __oneinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
 
-    logger_dict = self.__check_logger_dict()
-    
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
@@ -37022,8 +36673,6 @@ class AutoMunge:
   def __negzeroinfillfunction(self, df, column, postprocess_dict, \
                              masterNArows):
     
-    logger_dict = self.__check_logger_dict()
-
     # #copy the datatype to ensure returned set is consistent
     # df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
@@ -37066,8 +36715,6 @@ class AutoMunge:
   def __naninfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
 
-    logger_dict = self.__check_logger_dict()
-
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
@@ -37103,8 +36750,6 @@ class AutoMunge:
 
   def __adjinfillfunction(self, df, column, postprocess_dict, \
                         masterNArows):
-
-    logger_dict = self.__check_logger_dict()
 
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
@@ -37149,8 +36794,6 @@ class AutoMunge:
 
   def __train_medianinfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows):
-
-    logger_dict = self.__check_logger_dict()
 
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
@@ -37197,8 +36840,6 @@ class AutoMunge:
   def __test_medianinfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows, median):
 
-    logger_dict = self.__check_logger_dict()
-
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
     
@@ -37232,8 +36873,6 @@ class AutoMunge:
 
   def __train_meaninfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows):
-
-    logger_dict = self.__check_logger_dict()
 
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
@@ -37280,8 +36919,6 @@ class AutoMunge:
   def __test_meaninfillfunction(self, df, column, postprocess_dict, \
                                  masterNArows, mean):
 
-    logger_dict = self.__check_logger_dict()
-
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
@@ -37315,8 +36952,6 @@ class AutoMunge:
 
   def __train_modeinfillfunction(self, df, column, postprocess_dict, \
                                masterNArows):
-
-    logger_dict = self.__check_logger_dict()
 
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
@@ -37445,8 +37080,6 @@ class AutoMunge:
   def __test_modeinfillfunction(self, df, column, postprocess_dict, \
                               masterNArows, mode):
 
-    logger_dict = self.__check_logger_dict()
-
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
 
@@ -37483,8 +37116,6 @@ class AutoMunge:
     """
     #comparable to modeinfill function but uses least common value instead of most common value
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #copy the datatype to ensure returned set is consistent
     df_temp_dtype = pd.DataFrame(df[column][:1]).copy()
@@ -37679,8 +37310,6 @@ class AutoMunge:
     when applied the heuristic returns a new n_components as n_components = int(round(col_row_ratio * number_rows))
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #first we'll initialize a PCActgy to be applied when ML_cmnd['PCA_type'] == 'default'
     #although this initialized PCActgy will subsequently be overwritten if user specifies ML_cmnd['PCA_type']
     if any(df_train < 0.0):
@@ -37747,8 +37376,6 @@ class AutoMunge:
     SparsePCA, and KernelPCA. (currently just applying the randomseed)
     '''
 
-    logger_dict = self.__check_logger_dict()
-
     PCAdefaults = {'PCA':{}, 'SparsePCA':{}, 'KernelPCA':{}}
 
     PCAdefaults['PCA'].update({'random_state':randomseed})
@@ -37765,8 +37392,6 @@ class AutoMunge:
     and then initializes a SparsePCA model
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     PCA_cmnd = self.__autocopy(ML_cmnd['PCA_cmnd'])
     
     #first strike any automunge specific parameters
@@ -37822,8 +37447,6 @@ class AutoMunge:
     Note that integer mlinfilltype is not excluded from PCA
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     bool_PCAexcl = []
     if 'bool_PCA_excl' in ML_cmnd['PCA_cmnd']:
         
@@ -37868,8 +37491,6 @@ class AutoMunge:
     PCAexcl_posttransform.
     '''
 
-    logger_dict = self.__check_logger_dict()
-
     #initiate list PCAexcl_postransform
     PCAexcl_posttransform = []
 
@@ -37900,8 +37521,6 @@ class AutoMunge:
     and trasnformed sets.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #initialize ML_cmnd
     #ML_cmnd = postprocess_dict['ML_cmnd']
     ML_cmnd = ML_cmnd
@@ -37970,7 +37589,7 @@ class AutoMunge:
                              NArw_marker, featurethreshold, featureselection, inplace, \
                              Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                              trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                             noise_augment, ppd_append, orig_headers, cat_type, logger_dict):
+                             noise_augment, ppd_append, orig_headers, cat_type, logger):
     """
     #Performs validation to confirm valid entries of passed automunge(.) parameters
     #Note that this function is intended specifically for non-dictionary parameters
@@ -37987,9 +37606,9 @@ class AutoMunge:
       if valpercent < 0 or valpercent >= 1:
         valpercent_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for valpercent")
-        self.__autoprint(printstatus, 'warning', "Acceptable values are numbers in range 0 <= valpercent < 1.")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "Error: invalid entry passed for valpercent")
+        self.__autoprint('warning', "Acceptable values are numbers in range 0 <= valpercent < 1.")
+        self.__autoprint('warning', '')
     elif isinstance(valpercent, tuple):
       if len(valpercent) != 2 \
       or len(valpercent)==2 and not isinstance(valpercent[0], (int, float)) \
@@ -38001,15 +37620,15 @@ class AutoMunge:
       or len(valpercent)==2 and isinstance(valpercent[0], (int, float)) and isinstance(valpercent[1], (int, float)) and valpercent[0] > valpercent[1]:
         valpercent_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for valpercent")
-        self.__autoprint(printstatus, 'warning', "acceptable tuple format is two entries of floats in range 0-1")
-        self.__autoprint(printstatus, 'warning', "with first entry < second entry")
+        self.__autoprint('warning', "Error: invalid entry passed for valpercent")
+        self.__autoprint('warning', "acceptable tuple format is two entries of floats in range 0-1")
+        self.__autoprint('warning', "with first entry < second entry")
     else:
       valpercent_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for valpercent")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are numbers in range 0 <= valpercent < 1 or tuple of two numbers in that range.")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for valpercent")
+      self.__autoprint('warning', "Acceptable values are numbers in range 0 <= valpercent < 1 or tuple of two numbers in that range.")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'valpercent_valresult' : valpercent_valresult})
     
@@ -38018,9 +37637,9 @@ class AutoMunge:
     if floatprecision not in {16, 32, 64}:
       floatprecision_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for floatprecision parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {16, 32, 64}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for floatprecision parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {16, 32, 64}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'floatprecision_valresult' : floatprecision_valresult})
     
@@ -38029,16 +37648,16 @@ class AutoMunge:
     if shuffletrain not in {True, False, 'traintest'}:
       shuffletrain_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for shuffletrain parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for shuffletrain parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'traintest'}")
+      self.__autoprint('warning', '')
     elif shuffletrain not in {'traintest'} \
     and not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for shuffletrain parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for shuffletrain parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'traintest'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'shuffletrain_valresult' : shuffletrain_valresult})
     
@@ -38047,15 +37666,15 @@ class AutoMunge:
     if TrainLabelFreqLevel not in {True, False, 'test', 'traintest'}:
       TrainLabelFreqLevel_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
+      self.__autoprint('warning', '')
     elif TrainLabelFreqLevel not in {'test', 'traintest'} and not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
 
@@ -38064,15 +37683,15 @@ class AutoMunge:
     if dupl_rows not in {True, False, 'test', 'traintest'}:
       dupl_rows_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for dupl_rows parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for dupl_rows parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
+      self.__autoprint('warning', '')
     elif dupl_rows not in {'test', 'traintest'} and not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for dupl_rows parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for dupl_rows parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test', 'traintest'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'dupl_rows_valresult' : dupl_rows_valresult})
     
@@ -38081,16 +37700,16 @@ class AutoMunge:
     if powertransform not in {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}:
       powertransform_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for powertransform parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for powertransform parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
+      self.__autoprint('warning', '')
     elif powertransform not in {'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'} \
     and not isinstance(powertransform, bool):
       powertransform_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for powertransform parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for powertransform parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'excl', 'exc2', 'infill', 'infill2', 'DP1', 'DP2', 'DT1', 'DT2', 'DB1', 'DB2'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'powertransform_valresult' : powertransform_valresult})
     
@@ -38099,9 +37718,9 @@ class AutoMunge:
     if binstransform not in {True, False} or not isinstance(binstransform, bool):
       binstransform_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for binstransform parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for binstransform parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'binstransform_valresult' : binstransform_valresult})
     
@@ -38110,9 +37729,9 @@ class AutoMunge:
     if MLinfill not in {True, False} or not isinstance(MLinfill, bool):
       MLinfill_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for MLinfill parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for MLinfill parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'MLinfill_valresult' : MLinfill_valresult})
     
@@ -38122,15 +37741,15 @@ class AutoMunge:
     or isinstance(infilliterate, bool):
       infilliterate_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for infilliterate parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers >= 0")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for infilliterate parameter.")
+      self.__autoprint('warning', "Acceptable values are integers >= 0")
+      self.__autoprint('warning', '')
     elif infilliterate < 0:
       infilliterate_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for infilliterate parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers >= 0")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for infilliterate parameter.")
+      self.__autoprint('warning', "Acceptable values are integers >= 0")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'infilliterate_valresult' : infilliterate_valresult})
     
@@ -38139,15 +37758,15 @@ class AutoMunge:
     if not isinstance(randomseed, (int)) or randomseed is True:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**32-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**32-1 or False")
+      self.__autoprint('warning', '')
     elif randomseed < 0 or randomseed > 2147483647:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**31-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**31-1 or False")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'randomseed_valresult' : randomseed_valresult})
     
@@ -38157,15 +37776,15 @@ class AutoMunge:
     or isinstance(eval_ratio, (float))):
       eval_ratio_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for eval_ratio parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are floats 0-1 or integers >1")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for eval_ratio parameter.")
+      self.__autoprint('warning', "Acceptable values are floats 0-1 or integers >1")
+      self.__autoprint('warning', '')
     elif eval_ratio < 0:
       eval_ratio_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for eval_ratio parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are floats 0-1 or integers >1")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for eval_ratio parameter.")
+      self.__autoprint('warning', "Acceptable values are floats 0-1 or integers >1")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'eval_ratio_valresult' : eval_ratio_valresult})
     
@@ -38174,23 +37793,23 @@ class AutoMunge:
     if not isinstance(numbercategoryheuristic, (int,bool)):
       numbercategoryheuristic_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers >= 1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
+      self.__autoprint('warning', "Acceptable values are integers >= 1 or False")
+      self.__autoprint('warning', '')
     elif isinstance(numbercategoryheuristic, bool) and numbercategoryheuristic is not False:
       numbercategoryheuristic_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers >= 1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
+      self.__autoprint('warning', "Acceptable values are integers >= 1 or False")
+      self.__autoprint('warning', '')
     elif isinstance(numbercategoryheuristic, (int)) \
     and numbercategoryheuristic is not False \
     and numbercategoryheuristic < 1:
       numbercategoryheuristic_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers >= 1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for numbercategoryheuristic parameter.")
+      self.__autoprint('warning', "Acceptable values are integers >= 1 or False")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'numbercategoryheuristic_valresult' : numbercategoryheuristic_valresult})
       
@@ -38200,9 +37819,9 @@ class AutoMunge:
     or pandasoutput not in {True, False, 'dataframe'}:
       pandasoutput_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for pandasoutput parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'dataframe'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for pandasoutput parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'dataframe'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'pandasoutput_valresult' : pandasoutput_valresult})
     
@@ -38211,9 +37830,9 @@ class AutoMunge:
     if NArw_marker not in {True, False} or not isinstance(NArw_marker, bool):
       NArw_marker_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for NArw_marker parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for NArw_marker parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'NArw_marker_valresult' : NArw_marker_valresult})
 
@@ -38223,9 +37842,9 @@ class AutoMunge:
     or featureselection in {True, False} and not isinstance(featureselection, bool):
       featureselection_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for featureselection parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, True, 'pct', 'metric', 'report'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for featureselection parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, True, 'pct', 'metric', 'report'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'featureselection_valresult' : featureselection_valresult})
     
@@ -38234,15 +37853,15 @@ class AutoMunge:
     if not isinstance(featurethreshold, float) and featurethreshold != 0:
       featurethreshold_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for featurethreshold parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for featurethreshold parameter.")
+      self.__autoprint('warning', "Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
+      self.__autoprint('warning', '')
     elif (featurethreshold < 0.0 or featurethreshold > 1.0):
       featurethreshold_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for featurethreshold parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for featurethreshold parameter.")
+      self.__autoprint('warning', "Acceptable values are floats within range 0.0 <= featurethreshold <= 1.0")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'featurethreshold_valresult' : featurethreshold_valresult})
 
@@ -38251,9 +37870,9 @@ class AutoMunge:
     if inplace not in {True, False} or not isinstance(inplace, bool):
       inplace_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for inplace parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, True}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for inplace parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, True}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'inplace_valresult' : inplace_valresult})
   
@@ -38262,16 +37881,16 @@ class AutoMunge:
     if not isinstance(Binary, list) and Binary not in {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       Binary_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for Binary parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for Binary parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
+      self.__autoprint('warning', '')
     elif not isinstance(Binary, list) \
     and not isinstance(Binary, bool) \
     and Binary not in {'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain'}:
       Binary_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for Binary parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
+      self.__autoprint('warning', "Error: invalid entry passed for Binary parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'retain', 'ordinal', 'ordinalretain', 'onehot', 'onehotretain', [list]}")
       
     logger_dict['validations'].update({'Binary_valresult' : Binary_valresult})
     
@@ -38288,31 +37907,31 @@ class AutoMunge:
           if PCAn_components < 1:
             PCAn_components_valresult = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for PCAn_components")
-            self.__autoprint(printstatus, 'warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "Error: invalid entry passed for PCAn_components")
+            self.__autoprint('warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
+            self.__autoprint('warning', '')
           
         if isinstance(PCAn_components, float):
           if (PCAn_components > 1.0 or PCAn_components < 0.0):
             PCAn_components_valresult = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for PCAn_components")
-            self.__autoprint(printstatus, 'warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "Error: invalid entry passed for PCAn_components")
+            self.__autoprint('warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
+            self.__autoprint('warning', '')
 
         if PCAn_components is True:
           PCAn_components_valresult = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for PCAn_components")
-          self.__autoprint(printstatus, 'warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Error: invalid entry passed for PCAn_components")
+          self.__autoprint('warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
+          self.__autoprint('warning', '')
 
     else:
       PCAn_components_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for PCAn_components")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for PCAn_components")
+      self.__autoprint('warning', "Acceptable values are integers > 1, floats between 0-1, False, or None.")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'PCAn_components_valresult' : PCAn_components_valresult})
     
@@ -38321,9 +37940,9 @@ class AutoMunge:
     if not isinstance(PCAexcl, list):
       PCAexcl_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for PCAexcl parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are a list of columns to exclude from PCA (defaults to empty list)")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for PCAexcl parameter.")
+      self.__autoprint('warning', "Acceptable values are a list of columns to exclude from PCA (defaults to empty list)")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'PCAexcl_valresult' : PCAexcl_valresult})
     
@@ -38333,9 +37952,9 @@ class AutoMunge:
     (printstatus in {True, False} and not isinstance(printstatus, bool)):
       printstatus_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for printstatus parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for printstatus parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'printstatus_valresult' : printstatus_valresult})
     
@@ -38344,9 +37963,9 @@ class AutoMunge:
     if excl_suffix not in {True, False} or not isinstance(excl_suffix, bool):
       excl_suffix_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for excl_suffix parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for excl_suffix parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'excl_suffix_valresult' : excl_suffix_valresult})
 
@@ -38358,8 +37977,8 @@ class AutoMunge:
     and not isinstance(trainID_column, list):
       trainID_column_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for trainID_column parameter.")
-      self.__autoprint(printstatus, 'warning', "trainID_column allowable values are False, int, str, or list.")
+      self.__autoprint('warning', "Error: invalid entry passed for trainID_column parameter.")
+      self.__autoprint('warning', "trainID_column allowable values are False, int, str, or list.")
 
     logger_dict['validations'].update({'trainID_column_valresult' : trainID_column_valresult})
 
@@ -38371,8 +37990,8 @@ class AutoMunge:
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for testID_column parameter.")
-      self.__autoprint(printstatus, 'warning', "testID_column allowable values are False, int, str, or list.")
+      self.__autoprint('warning', "Error: invalid entry passed for testID_column parameter.")
+      self.__autoprint('warning', "testID_column allowable values are False, int, str, or list.")
 
     logger_dict['validations'].update({'testID_column_valresult' : testID_column_valresult})
 
@@ -38382,8 +38001,8 @@ class AutoMunge:
     and callable(evalcat):
       evalcat_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for evalcat parameter.")
-      self.__autoprint(printstatus, 'warning', "evalcat allowable values are False or as a callable function per READ ME.")
+      self.__autoprint('warning', "Error: invalid entry passed for evalcat parameter.")
+      self.__autoprint('warning', "evalcat allowable values are False or as a callable function per READ ME.")
       
     logger_dict['validations'].update({'evalcat_valresult' : evalcat_valresult})
 
@@ -38392,16 +38011,16 @@ class AutoMunge:
     if privacy_encode not in {True, False, 'private'}:
       privacy_encode_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for privacy_encode parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'private'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for privacy_encode parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'private'}")
+      self.__autoprint('warning', '')
     elif privacy_encode not in {'private'} \
     and not isinstance(privacy_encode, bool):
       privacy_encode_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for privacy_encode parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'private'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for privacy_encode parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'private'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'privacy_encode_valresult' : privacy_encode_valresult})
 
@@ -38412,10 +38031,10 @@ class AutoMunge:
     or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
       encrypt_key_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for encrypt_key parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
-      self.__autoprint(printstatus, 'warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for encrypt_key parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
+      self.__autoprint('warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'encrypt_key_valresult' : encrypt_key_valresult})
 
@@ -38425,9 +38044,9 @@ class AutoMunge:
     or isinstance(noise_augment, (int, float)) and noise_augment < 0:
       noise_augment_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for noise_augment parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are non-negative integers (or float integers)")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for noise_augment parameter.")
+      self.__autoprint('warning', "Acceptable values are non-negative integers (or float integers)")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'noise_augment_valresult' : noise_augment_valresult})
 
@@ -38437,9 +38056,9 @@ class AutoMunge:
     or isinstance(ppd_append, (bool)) and ppd_append is not False:
       ppd_append_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for ppd_append parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are False or dictionary")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for ppd_append parameter.")
+      self.__autoprint('warning', "Acceptable values are False or dictionary")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'ppd_append_valresult' : ppd_append_valresult})
 
@@ -38448,9 +38067,9 @@ class AutoMunge:
     if orig_headers not in {True, False} or not isinstance(orig_headers, bool):
       orig_headers_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for orig_headers parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for orig_headers parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'orig_headers_valresult' : orig_headers_valresult})
 
@@ -38459,29 +38078,31 @@ class AutoMunge:
     if cat_type not in {True, False} or not isinstance(cat_type, bool):
       cat_type_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for cat_type parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for cat_type parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'cat_type_valresult' : cat_type_valresult})
 
     #check logger_dict
-    logger_dict_valresult = False
-    if not isinstance(logger_dict, dict):
-      logger_dict_valresult = True
+    logger_valresult = False
+    if not isinstance(logger, dict):
+      logger_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for logger_dict parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are dict type")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for logger parameter.")
+      self.__autoprint('warning', "Acceptable values are dict type")
+      self.__autoprint('warning', '')
       
-    logger_dict['validations'].update({'logger_dict_valresult' : logger_dict_valresult})
+    logger_dict['validations'].update({'logger_valresult' : logger_valresult})
+
+    logger = self.__logger_append(logger)
 
     return
     
   def __check_pm_miscparameters(self, pandasoutput, printstatus, TrainLabelFreqLevel, \
                                 dupl_rows, featureeval, driftreport, inplace, \
                                 returnedsets, shuffletrain, inversion, traindata, \
-                                testID_column, randomseed, encrypt_key, noise_augment, logger_dict):
+                                testID_column, randomseed, encrypt_key, noise_augment, logger):
     """
     #Performs validation to confirm valid entries of passed postmunge(.) parameters
     #note one parameter not directly passed is df_test, just pass a list of the columns
@@ -38495,9 +38116,9 @@ class AutoMunge:
     or pandasoutput not in {True, False, 'dataframe'}:
       pandasoutput_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for pandasoutput parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'dataframe'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for pandasoutput parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'dataframe'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'pandasoutput_valresult' : pandasoutput_valresult})
     
@@ -38507,9 +38128,9 @@ class AutoMunge:
     printstatus in {True, False} and not isinstance(printstatus, bool):
       printstatus_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for printstatus parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for printstatus parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'printstatus_valresult' : printstatus_valresult})
     
@@ -38518,16 +38139,16 @@ class AutoMunge:
     if not isinstance(inversion, list) and not isinstance(inversion, set) and inversion not in {False, 'test', 'labels', 'denselabels'}:
       inversion_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for inversion parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for inversion parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
+      self.__autoprint('warning', '')
     elif not isinstance(inversion, list) and not isinstance(inversion, set) and inversion not in {'test', 'labels', 'denselabels'} \
     and not isinstance(inversion, bool):
       inversion_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for inversion parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for inversion parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, 'test', 'labels', 'denselabels', a list of columns, or a set of a single returned column}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'inversion_valresult' : inversion_valresult})
     
@@ -38536,9 +38157,9 @@ class AutoMunge:
     if TrainLabelFreqLevel not in {True, False} or not isinstance(TrainLabelFreqLevel, bool):
       TrainLabelFreqLevel_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for TrainLabelFreqLevel parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'TrainLabelFreqLevel_valresult' : TrainLabelFreqLevel_valresult})
 
@@ -38547,9 +38168,9 @@ class AutoMunge:
     if dupl_rows not in {True, False} or not isinstance(dupl_rows, bool):
       dupl_rows_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for dupl_rows parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for dupl_rows parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'dupl_rows_valresult' : dupl_rows_valresult})
     
@@ -38558,9 +38179,9 @@ class AutoMunge:
     if featureeval not in {True, False} or not isinstance(featureeval, bool):
       featureeval_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for featureeval parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for featureeval parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'featureeval_valresult' : featureeval_valresult})
     
@@ -38569,16 +38190,16 @@ class AutoMunge:
     if driftreport not in {True, False, 'efficient', 'report_effic', 'report_full'}:
       driftreport_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for driftreport parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for driftreport parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+      self.__autoprint('warning', '')
     elif driftreport not in {'efficient', 'report_effic', 'report_full'} \
     and not isinstance(driftreport, bool):
       driftreport_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for driftreport parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for driftreport parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'efficient', 'report_effic', 'report_full'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'driftreport_valresult' : driftreport_valresult})
 
@@ -38587,9 +38208,9 @@ class AutoMunge:
     if inplace not in {True, False} or not isinstance(inplace, bool):
       inplace_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for inplace parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, True}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for inplace parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, True}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'inplace_valresult' : inplace_valresult})
     
@@ -38598,16 +38219,16 @@ class AutoMunge:
     if returnedsets not in {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}:
       returnedsets_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for returnedsets parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for returnedsets parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+      self.__autoprint('warning', '')
     elif returnedsets not in {'test_ID', 'test_labels', 'test_ID_labels'} \
     and not isinstance(returnedsets, bool):
       returnedsets_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for returnedsets parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for returnedsets parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'test_ID', 'test_labels', 'test_ID_labels'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'returnedsets_valresult' : returnedsets_valresult})
     
@@ -38616,9 +38237,9 @@ class AutoMunge:
     if shuffletrain not in {True, False} or not isinstance(shuffletrain, bool):
       shuffletrain_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for shuffletrain parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for shuffletrain parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'shuffletrain_valresult' : shuffletrain_valresult})
 
@@ -38628,9 +38249,9 @@ class AutoMunge:
     or traindata in {True, False} and not isinstance(traindata, bool):
       traindata_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for traindata parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'train_no_noise', 'test_no_noise'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for traindata parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'train_no_noise', 'test_no_noise'}")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'traindata_valresult' : traindata_valresult})
 
@@ -38642,8 +38263,8 @@ class AutoMunge:
     and not isinstance(testID_column, list):
       testID_column_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for testID_column parameter.")
-      self.__autoprint(printstatus, 'warning', "testID_column allowable values are boolean False, int, string, or list.")
+      self.__autoprint('warning', "Error: invalid entry passed for testID_column parameter.")
+      self.__autoprint('warning', "testID_column allowable values are boolean False, int, string, or list.")
 
     logger_dict['validations'].update({'testID_column_valresult' : testID_column_valresult})
 
@@ -38652,15 +38273,15 @@ class AutoMunge:
     if not isinstance(randomseed, (int)) or randomseed is True:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**32-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**32-1 or False")
+      self.__autoprint('warning', '')
     elif randomseed < 0 or randomseed > 2147483647:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**31-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**31-1 or False")
+      self.__autoprint('warning', '')
       
     logger_dict['validations'].update({'randomseed_valresult' : randomseed_valresult})
 
@@ -38670,10 +38291,10 @@ class AutoMunge:
     or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
       encrypt_key_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for encrypt_key parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, or a bytes object}")
-      self.__autoprint(printstatus, 'warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for encrypt_key parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, or a bytes object}")
+      self.__autoprint('warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'encrypt_key_valresult' : encrypt_key_valresult})
 
@@ -38683,22 +38304,24 @@ class AutoMunge:
     or isinstance(noise_augment, (int, float)) and noise_augment < 0:
       noise_augment_pm_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for noise_augment parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are non-negative integers (or float integers)")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for noise_augment parameter.")
+      self.__autoprint('warning', "Acceptable values are non-negative integers (or float integers)")
+      self.__autoprint('warning', '')
 
     logger_dict['validations'].update({'noise_augment_pm_valresult' : noise_augment_pm_valresult})
 
-    #check logger_dict
-    logger_dict_pm_valresult = False
-    if not isinstance(logger_dict, dict):
-      logger_dict_pm_valresult = True
+    #check logger
+    logger_pm_valresult = False
+    if not isinstance(logger, dict):
+      logger_pm_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for logger_dict parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are dict type")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for logger parameter.")
+      self.__autoprint('warning', "Acceptable values are dict type")
+      self.__autoprint('warning', '')
       
-    logger_dict['validations'].update({'logger_dict_pm_valresult' : logger_dict_pm_valresult})
+    logger_dict['validations'].update({'logger_pm_valresult' : logger_pm_valresult})
+
+    logger = self.__logger_append(logger)
     
     return
 
@@ -38707,8 +38330,6 @@ class AutoMunge:
     If feature importance applied confirms that a model was successfully trained
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_FSmodel_result = False
     
     if featureselection is not False:
@@ -38716,8 +38337,8 @@ class AutoMunge:
         check_FSmodel_result = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: Feature importance model was not successfully trained")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: Feature importance model was not successfully trained")
+        self.__autoprint('warning', '')
         
     return check_FSmodel_result
 
@@ -38728,8 +38349,6 @@ class AutoMunge:
     False is good
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_df_train_type_result = False
     check_df_test_type_result = False
     
@@ -38755,8 +38374,6 @@ class AutoMunge:
     Validates any passed numpy arrays are tabular (1D or 2D)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_np_shape_train_result = False
     check_np_shape_test_result = False
     
@@ -38766,19 +38383,19 @@ class AutoMunge:
       if len(df_train.shape) > 2:
         check_np_shape_train_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: numpy array passed to df_train is not tabular (>2D dimensions)")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: numpy array passed to df_train is not tabular (>2D dimensions)")
+        self.__autoprint('warning', '')
         
     if isinstance(checknp, type(df_test)):
       if len(df_test.shape) > 2:
         check_np_shape_test_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: numpy array passed to df_test is not tabular (>2D dimensions)")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: numpy array passed to df_test is not tabular (>2D dimensions)")
+        self.__autoprint('warning', '')
         
     return check_np_shape_train_result, check_np_shape_test_result
 
-  def __check_ML_infill(self, printstatus, df_train, column, postprocess_dict, infill_validations = {}):
+  def __check_ML_infill(self, printstatus, df_train, column, postprocess_dict, logger, infill_validations = {}):
     """
     #Perform validations that train set is suitable for MLinfill
     #For example ML infill requires >1 source columns in df_train
@@ -38786,8 +38403,6 @@ class AutoMunge:
     #further validations of all valid numeric are performed after partitioning nonnumeric sets in createMLinfillsets
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     columnslist = postprocess_dict['column_dict'][column]['columnslist']
     
     if 'MLinfill_validations' not in infill_validations:
@@ -38797,8 +38412,8 @@ class AutoMunge:
       if len(columnslist) == len(list(df_train)):
         
         # if postprocess_dict['printstatus'] != 'silent':
-        self.__autoprint(postprocess_dict['printstatus'], 'warning', "ML infill requires > 1 source features in df_train, proceeding without ML infill")
-        self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+        self.__autoprint('warning', "ML infill requires > 1 source features in df_train, proceeding without ML infill")
+        self.__autoprint('warning', '')
         
         infill_validations.update({'MLinfill_validations': True})
         logger_dict['validations'].update({'MLinfill_validations': True})
@@ -38807,12 +38422,14 @@ class AutoMunge:
         
         infill_validations.update({'MLinfill_validations': False})
         logger_dict['validations'].update({'MLinfill_validations': False})
+
+      logger = self.__logger_append(logger)
       
     return infill_validations
 
   def __check_ML_infill_2(self, df_train_filltrain, df_train_filllabel, 
                          df_train_fillfeatures, df_test_fillfeatures, printstatus,
-                         column, postprocess_dict, ampm = 'am'):
+                         column, postprocess_dict, logger, ampm = 'am'):
     """
     #runs validations and records results for each of sets returned from _createMLinfillsets
     #using _validate_allvalidnumeric
@@ -38820,8 +38437,6 @@ class AutoMunge:
     #this function applied in _MLinfillfunction
     #reportlocation and ampm used to distinguish between use for automunge vs postmunge MLinfill function
     """
-
-    logger_dict = self.__check_logger_dict()
 
     if ampm == 'am' and 'df_train_filltrain_numeric_data_result' not in logger_dict['validations']:
       logger_dict['validations'].update ({'df_train_filltrain_numeric_data_result' : {},
@@ -38862,6 +38477,8 @@ class AutoMunge:
     logger_dict['validations']['df_test_fillfeatures_numeric_data_result'].update({column : numeric_data_result})
     logger_dict['validations']['df_test_fillfeatures_all_valid_entries_result'].update({column : all_valid_entries_result})
     
+    logger = self.__logger_append(logger)
+
     return postprocess_dict
 
   def __validate_allvalidnumeric(self, df, printstatus):
@@ -38875,8 +38492,6 @@ class AutoMunge:
     #False is good
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     numeric_data_result = False
     all_valid_entries_result = False
     
@@ -38886,12 +38501,12 @@ class AutoMunge:
       numeric_data_result = True
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
-      self.__autoprint(printstatus, 'warning', "Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
-      self.__autoprint(printstatus, 'warning', "Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
-      self.__autoprint(printstatus, 'warning', "Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
-      self.__autoprint(printstatus, 'warning', "This printout will still return in that case.")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error: data was passed to ML infill, PCA, or feature importance with non-numeric data.")
+      self.__autoprint('warning', "Some transforms in library may not convert data to numeric, such as the passthrough transform excl.")
+      self.__autoprint('warning', "Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+      self.__autoprint('warning', "Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
+      self.__autoprint('warning', "This printout will still return in that case.")
+      self.__autoprint('warning', '')
     
     #then check for all valid entries
     if df.isna().values.sum() > 0:
@@ -38899,12 +38514,12 @@ class AutoMunge:
       all_valid_entries_result = True
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
-      self.__autoprint(printstatus, 'warning', "Some transforms in library may not conduct infill, such as the passthrough transform excl.")
-      self.__autoprint(printstatus, 'warning', "Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
-      self.__autoprint(printstatus, 'warning', "Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
-      self.__autoprint(printstatus, 'warning', "This printout will still return in that case.")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error: data was passed to ML infill, PCA, or feature importance with missing entries (NaN values).")
+      self.__autoprint('warning', "Some transforms in library may not conduct infill, such as the passthrough transform excl.")
+      self.__autoprint('warning', "Alternatives to excl for pass-through with force to numeric and infill are available as exc2 - exc8.")
+      self.__autoprint('warning', "Note that ML_cmnd designated exclusions may be used to circumvent this error, such as ML_cmnd['full_exclude']")
+      self.__autoprint('warning', "This printout will still return in that case.")
+      self.__autoprint('warning', '')
     
     return numeric_data_result, all_valid_entries_result
 
@@ -38913,8 +38528,6 @@ class AutoMunge:
     #Here we'll do a quick check for any redundant column assignments in the
     #assigncat, if any found return an error message
     """
-
-    logger_dict = self.__check_logger_dict()
 
     aggregated_set = set()
     aggregated_list = []
@@ -38955,9 +38568,9 @@ class AutoMunge:
 
           check_assigncat_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Warning of expected error due to redundant column assignment in assigncat")
-          self.__autoprint(printstatus, 'warning', "for assignments to: ", key)
-          self.__autoprint(printstatus, 'warning', "for column headers: ", aggregated_list_copy)
+          self.__autoprint('warning', "Warning of expected error due to redundant column assignment in assigncat")
+          self.__autoprint('warning', "for assignments to: ", key)
+          self.__autoprint('warning', "for column headers: ", aggregated_list_copy)
 
     return check_assigncat_result
   
@@ -38972,8 +38585,6 @@ class AutoMunge:
     #and the family tree primitive entries are used to access the transform functions and etc.
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #False is good
     result = False
     
@@ -38987,11 +38598,11 @@ class AutoMunge:
         result = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Error, the following entry to user passed assigncat was not found")
-        self.__autoprint(printstatus, 'warning', "to have a corresponding entry in transform_dict.")
-        self.__autoprint(printstatus, 'warning', "")
-        self.__autoprint(printstatus, 'warning', "assigncat key missing transform_dict entry: ", assigncat_key)
-        self.__autoprint(printstatus, 'warning', "")
+        self.__autoprint('warning', "Error, the following entry to user passed assigncat was not found")
+        self.__autoprint('warning', "to have a corresponding entry in transform_dict.")
+        self.__autoprint('warning', "")
+        self.__autoprint('warning', "assigncat key missing transform_dict entry: ", assigncat_key)
+        self.__autoprint('warning', "")
 
     return result
   
@@ -39003,8 +38614,6 @@ class AutoMunge:
     #have a corresponding entry in the process_dict
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #False is good
     result = False
     
@@ -39025,12 +38634,12 @@ class AutoMunge:
             if familytree_entry not in process_dict:
 
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "Error, the following category was found as an entry")
-              self.__autoprint(printstatus, 'warning', "in a family tree without a corresponding entry ")
-              self.__autoprint(printstatus, 'warning', "in the process_dict.")
-              self.__autoprint(printstatus, 'warning', "")
-              self.__autoprint(printstatus, 'warning', "family tree entry missing process_dict entry: ", familytree_entry)
-              self.__autoprint(printstatus, 'warning', "this entry was passed in the family tree of root category: ", assigncat_key)
+              self.__autoprint('warning', "Error, the following category was found as an entry")
+              self.__autoprint('warning', "in a family tree without a corresponding entry ")
+              self.__autoprint('warning', "in the process_dict.")
+              self.__autoprint('warning', "")
+              self.__autoprint('warning', "family tree entry missing process_dict entry: ", familytree_entry)
+              self.__autoprint('warning', "this entry was passed in the family tree of root category: ", assigncat_key)
 
               result = True
         
@@ -39045,8 +38654,6 @@ class AutoMunge:
     #{'column1':'category', 'column2':'category'}
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     inverse_assigncat = {}
 
     for entry1 in assigncat:
@@ -39068,8 +38675,6 @@ class AutoMunge:
     #Here we'll do a quick check for any redundant column assignments in the
     #assigninfill, if any found return an error message
     """
-
-    logger_dict = self.__check_logger_dict()
 
     assigninfill_redundant_dict = {}
     result = False
@@ -39099,13 +38704,13 @@ class AutoMunge:
     if len(assigninfill_redundant_dict) > 0:
       result = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error, the following columns assigned to multiple root categories in assigninfill:")
+      self.__autoprint('warning', "Error, the following columns assigned to multiple root categories in assigninfill:")
       for assigninfill_key3 in sorted(assigninfill_redundant_dict):
-        self.__autoprint(printstatus, 'warning', "")
-        self.__autoprint(printstatus, 'warning', "Column: ", assigninfill_key3)
-        self.__autoprint(printstatus, 'warning', "Found in following assigninfill entries:")
-        self.__autoprint(printstatus, 'warning', assigninfill_redundant_dict[assigninfill_key3])
-        self.__autoprint(printstatus, 'warning', "")
+        self.__autoprint('warning', "")
+        self.__autoprint('warning', "Column: ", assigninfill_key3)
+        self.__autoprint('warning', "Found in following assigninfill entries:")
+        self.__autoprint('warning', assigninfill_redundant_dict[assigninfill_key3])
+        self.__autoprint('warning', "")
     
     return result
 
@@ -39117,8 +38722,6 @@ class AutoMunge:
     #also ensures primitives are valid / spelled properly
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result1 = False
     result2 = False
     
@@ -39132,8 +38735,8 @@ class AutoMunge:
         result1 = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Error: transformdict entry for root category ", root)
-        self.__autoprint(printstatus, 'warning', "was passed without value of a dictionary for primitives.")
+        self.__autoprint('warning', "Error: transformdict entry for root category ", root)
+        self.__autoprint('warning', "was passed without value of a dictionary for primitives.")
         
       else:
         
@@ -39143,8 +38746,8 @@ class AutoMunge:
           result2 = True
           
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Error: transformdict entry for root category ", root)
-          self.__autoprint(printstatus, 'warning', "was passed with invalid primitives.")
+          self.__autoprint('warning', "Error: transformdict entry for root category ", root)
+          self.__autoprint('warning', "was passed with invalid primitives.")
           
     return result1, result2
 
@@ -39155,8 +38758,6 @@ class AutoMunge:
     #or if entry is a string embeds in a list
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result = False
     
     for root in transformdict:
@@ -39176,10 +38777,10 @@ class AutoMunge:
               result = True
               
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "Error: user passed transformdict for root category ", root)
-              self.__autoprint(printstatus, 'warning', "Contained an entry to primitive ", primitive)
-              self.__autoprint(printstatus, 'warning', "that was not a valid data type.")
-              self.__autoprint(printstatus, 'warning', "Data type should be a string (representing a transformation category).")
+              self.__autoprint('warning', "Error: user passed transformdict for root category ", root)
+              self.__autoprint('warning', "Contained an entry to primitive ", primitive)
+              self.__autoprint('warning', "that was not a valid data type.")
+              self.__autoprint('warning', "Data type should be a string (representing a transformation category).")
               
     return result, transformdict
 
@@ -39190,8 +38791,6 @@ class AutoMunge:
     #This will make user specfications much easier / less typing
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result = False
     
     primitives_set = {'parents', 'siblings', 'auntsuncles', 'cousins', 
@@ -39213,8 +38812,8 @@ class AutoMunge:
         result = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Error, transformdict entry for root category ", root)
-        self.__autoprint(printstatus, 'warning', "was passed without any primitives populated.")
+        self.__autoprint('warning', "Error, transformdict entry for root category ", root)
+        self.__autoprint('warning', "was passed without any primitives populated.")
       
     return result, transformdict
 
@@ -39225,8 +38824,6 @@ class AutoMunge:
     #and if not found apply an auntsuncles excl transform
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result1 = False
     result2 = False
     
@@ -39240,9 +38837,9 @@ class AutoMunge:
 
         #(This isn't an error just how we accomodate scenario to support populating data structures.)
         # # if printstatus != 'silent':
-        # self.__autoprint(printstatus, 'warning', "family tree defined without replacement primitive in upstream primitives")
-        # self.__autoprint(printstatus, 'warning', "for category ", transformkey)
-        # self.__autoprint(printstatus, 'warning', "adding an 'excl' trasnform to auntsuncles which is direct passthrough.")
+        # self.__autoprint('warning', "family tree defined without replacement primitive in upstream primitives")
+        # self.__autoprint('warning', "for category ", transformkey)
+        # self.__autoprint('warning', "adding an 'excl' trasnform to auntsuncles which is direct passthrough.")
 
         result1 = True
           
@@ -39259,8 +38856,6 @@ class AutoMunge:
     #no redundant specifications in adjacent primitives
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result1 = False
     result2 = False
     
@@ -39280,9 +38875,9 @@ class AutoMunge:
               result1 = True
               
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "error warning: ")
-              self.__autoprint(printstatus, 'warning', "redundant entries found in the upstream primitives ")
-              self.__autoprint(printstatus, 'warning', "for user-passed transformdict key: ", transformkey)
+              self.__autoprint('warning', "error warning: ")
+              self.__autoprint('warning', "redundant entries found in the upstream primitives ")
+              self.__autoprint('warning', "for user-passed transformdict key: ", transformkey)
               
             else:
           
@@ -39297,9 +38892,9 @@ class AutoMunge:
               result2 = True
               
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "error warning: ")
-              self.__autoprint(printstatus, 'warning', "redundant entries found in the downstream primitives ")
-              self.__autoprint(printstatus, 'warning', "for user-passed transformdict key: ", transformkey)
+              self.__autoprint('warning', "error warning: ")
+              self.__autoprint('warning', "redundant entries found in the downstream primitives ")
+              self.__autoprint('warning', "for user-passed transformdict key: ", transformkey)
               
             else:
           
@@ -39316,8 +38911,6 @@ class AutoMunge:
     #have corresponding entries in process_dict after consolidation
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_transform_dict_roots_result = False
     
     for entry in transform_dict:
@@ -39327,10 +38920,10 @@ class AutoMunge:
         check_transform_dict_roots_result = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: a root category was found in transformdict")
-        self.__autoprint(printstatus, 'warning', "without a corresponding entry in processdict")
-        self.__autoprint(printstatus, 'warning', "for transformdict root category: ", entry)
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: a root category was found in transformdict")
+        self.__autoprint('warning', "without a corresponding entry in processdict")
+        self.__autoprint('warning', "for transformdict root category: ", entry)
+        self.__autoprint('warning', '')
         
     return check_transform_dict_roots_result
   
@@ -39346,8 +38939,6 @@ class AutoMunge:
     #doesn't have a root category definition in trasnform_dict
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     haltingproblem_result = False
     familytree_for_offspring_result = False
     
@@ -39365,10 +38956,10 @@ class AutoMunge:
         if parent not in transform_dict:
           familytree_for_offspring_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Error, no root category family tree defined for category ", parent)
-          self.__autoprint(printstatus, 'warning', "which is needed since it is entered as an entry to a primitive with offpsinrg")
-          self.__autoprint(printstatus, 'warning', "in family tree for root category ", root_category)
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Error, no root category family tree defined for category ", parent)
+          self.__autoprint('warning', "which is needed since it is entered as an entry to a primitive with offpsinrg")
+          self.__autoprint('warning', "in family tree for root category ", root_category)
+          self.__autoprint('warning', '')
         
         upstream_list = []
         upstream_list = [parent]
@@ -39387,8 +38978,8 @@ class AutoMunge:
               haltingproblem_result = True
 
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "Error, infinite loop detected in transformdict for root category ", root_category)
-              self.__autoprint(printstatus, 'warning', '')
+              self.__autoprint('warning', "Error, infinite loop detected in transformdict for root category ", root_category)
+              self.__autoprint('warning', '')
 
               break
 
@@ -39416,9 +39007,9 @@ class AutoMunge:
               haltingproblem_result = True
 
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "Number of offspring generations for root category ", root_category)
-              self.__autoprint(printstatus, 'warning', "exceeded 1111, infinite loop check halted.")
-              self.__autoprint(printstatus, 'warning', '')
+              self.__autoprint('warning', "Number of offspring generations for root category ", root_category)
+              self.__autoprint('warning', "exceeded 1111, infinite loop check halted.")
+              self.__autoprint('warning', '')
               
               break
     
@@ -39430,18 +39021,16 @@ class AutoMunge:
     #support function for check_haltingproblem
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     offspring_result = False
     offspring_familytree_for_offspring_result = False
 
     if root_category not in transform_dict:
       offspring_familytree_for_offspring_result = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error, no root category family tree defined for category ", root_category)
-      self.__autoprint(printstatus, 'warning', "which is needed since it is entered as an entry to a primitive with offpsinrg")
-      self.__autoprint(printstatus, 'warning', "in family tree for root category ", orig_root_category)
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error, no root category family tree defined for category ", root_category)
+      self.__autoprint('warning', "which is needed since it is entered as an entry to a primitive with offpsinrg")
+      self.__autoprint('warning', "in family tree for root category ", orig_root_category)
+      self.__autoprint('warning', '')
 
     offspring_list = \
     transform_dict[root_category]['children'] + transform_dict[root_category]['niecesnephews']
@@ -39457,8 +39046,8 @@ class AutoMunge:
           offspring_result = True
 
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Error, infinite loop detected in transformdict for root category ", orig_root_category)
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Error, infinite loop detected in transformdict for root category ", orig_root_category)
+          self.__autoprint('warning', '')
 
           break
 
@@ -39488,9 +39077,9 @@ class AutoMunge:
             offspring_result = True
 
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "Number of offspring generations for root category ", root_category)
-            self.__autoprint(printstatus, 'warning', "exceeded 1111, infinite loop check halted.")
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "Number of offspring generations for root category ", root_category)
+            self.__autoprint('warning', "exceeded 1111, infinite loop check halted.")
+            self.__autoprint('warning', '')
             
             break
     
@@ -39513,8 +39102,6 @@ class AutoMunge:
     #and that entries within injections are valid column headers from df_train
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_assignnan_toplevelentries_result = False
     check_assignnan_categories_result = False
     check_assignnan_columns_result = False
@@ -39525,8 +39112,8 @@ class AutoMunge:
         
         check_assignnan_toplevelentries_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: assignnan parameter valid entries for first tier are 'categories', 'columns', 'global', and 'injections'")
+        self.__autoprint('warning', '')
         
     if 'categories' in assignnan:
       
@@ -39536,8 +39123,8 @@ class AutoMunge:
           
           check_assignnan_categories_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: assignnan parameter valid entries under 'categories' must be root categories defined in transform_dict")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "error: assignnan parameter valid entries under 'categories' must be root categories defined in transform_dict")
+          self.__autoprint('warning', '')
           
     if 'columns' in assignnan:
       
@@ -39547,8 +39134,8 @@ class AutoMunge:
           
           check_assignnan_columns_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "error: assignnan parameter valid entries under 'columns' must be source columns from passed df_train")
+          self.__autoprint('warning', '')
 
     if 'injections' in assignnan:
       
@@ -39558,8 +39145,8 @@ class AutoMunge:
           
           check_assignnan_columns_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: assignnan parameter valid entries under 'injections' must be source columns from passed df_train")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "error: assignnan parameter valid entries under 'injections' must be source columns from passed df_train")
+          self.__autoprint('warning', '')
 
     return check_assignnan_toplevelentries_result, check_assignnan_categories_result, check_assignnan_columns_result
 
@@ -39568,8 +39155,6 @@ class AutoMunge:
     checks for valid assignnan actions under injections
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     assignnan_actions_valresult = False
     
     if isinstance(assignnan, dict):
@@ -39584,10 +39169,10 @@ class AutoMunge:
                 assignnan_actions_valresult = True
 
                 # if printstatus != 'silent':
-                self.__autoprint(printstatus, 'warning', "assignnan['injections'] has an invalid action entry")
-                self.__autoprint(printstatus, 'warning', "for column: ", columnkey)
-                self.__autoprint(printstatus, 'warning', "and action: ", actionkey)
-                self.__autoprint(printstatus, 'warning', "accepted form of injection specifications are documented in read me")
+                self.__autoprint('warning', "assignnan['injections'] has an invalid action entry")
+                self.__autoprint('warning', "for column: ", columnkey)
+                self.__autoprint('warning', "and action: ", actionkey)
+                self.__autoprint('warning', "accepted form of injection specifications are documented in read me")
                 
     return assignnan_actions_valresult
 
@@ -39606,8 +39191,6 @@ class AutoMunge:
     #'PCA_type', 'PCA_cmnd'
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_ML_cmnd_result = False
     
     def _populate_ML_cmnd_default(ML_cmnd, parameter, printstatus, check_ML_cmnd_result, default = False, valid_entries=False, valid_type = False):
@@ -39617,17 +39200,17 @@ class AutoMunge:
           if ML_cmnd[parameter] not in valid_entries:
             check_ML_cmnd_result = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "invalid entry passed to ML_cmnd key ", parameter)
-            self.__autoprint(printstatus, 'warning', "acceptable values are one of", valid_entries)
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "invalid entry passed to ML_cmnd key ", parameter)
+            self.__autoprint('warning', "acceptable values are one of", valid_entries)
+            self.__autoprint('warning', '')
               
         if valid_type is not False:
           if not isinstance(ML_cmnd[parameter], valid_type):
             check_ML_cmnd_result = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "invalid entry type passed to ML_cmnd key ", parameter)
-            self.__autoprint(printstatus, 'warning', "acceptable value type is", valid_type)
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "invalid entry type passed to ML_cmnd key ", parameter)
+            self.__autoprint('warning', "acceptable value type is", valid_type)
+            self.__autoprint('warning', '')
         
       elif default != 'no_default_populated':
         ML_cmnd.update({parameter : default})
@@ -39999,8 +39582,6 @@ class AutoMunge:
     #extra_seed_generator, sampling_generator}
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if not isinstance(sampling_dict, dict):
       sampling_dict = {}
     
@@ -40012,17 +39593,17 @@ class AutoMunge:
           if sampling_dict[parameter] not in valid_entries:
             check_sampling_dict_result = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "invalid entry passed to sampling_dict key ", parameter)
-            self.__autoprint(printstatus, 'warning', "acceptable values are one of", valid_entries)
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "invalid entry passed to sampling_dict key ", parameter)
+            self.__autoprint('warning', "acceptable values are one of", valid_entries)
+            self.__autoprint('warning', '')
               
         if valid_type is not False:
           if not isinstance(sampling_dict[parameter], valid_type):
             check_sampling_dict_result = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "invalid entry type passed to sampling_dict key ", parameter)
-            self.__autoprint(printstatus, 'warning', "acceptable value type is", valid_type)
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "invalid entry type passed to sampling_dict key ", parameter)
+            self.__autoprint('warning', "acceptable value type is", valid_type)
+            self.__autoprint('warning', '')
         
       elif default != 'no_default_populated':
         sampling_dict.update({parameter : default})
@@ -40127,8 +39708,6 @@ class AutoMunge:
     quick alignment to common form of np.array for entropy_seeds
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     entropy_seeds_result = False
     
     if entropy_seeds is False:
@@ -40147,8 +39726,8 @@ class AutoMunge:
       entropy_seeds_result = True
       
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "invalid entry received for entropy_seeds parameter")
-      self.__autoprint(printstatus, 'debug', "accepted types are bool False, int, list, np.array")
+      self.__autoprint('debug', "invalid entry received for entropy_seeds parameter")
+      self.__autoprint('debug', "accepted types are bool False, int, list, np.array")
         
     entropy_seeds = entropy_seeds.astype(int)
 
@@ -40161,8 +39740,6 @@ class AutoMunge:
     e.g. random_generator vs random_generator
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #check random_generator
     random_generator_valresult = False
     random_generator_accepts_seeds = True
@@ -40178,9 +39755,9 @@ class AutoMunge:
         except TypeError:
           random_generator_valresult = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for random_generator parameter.")
-          self.__autoprint(printstatus, 'warning', "Acceptable values are False or np.random formatted generator")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Error: invalid entry passed for random_generator parameter.")
+          self.__autoprint('warning', "Acceptable values are False or np.random formatted generator")
+          self.__autoprint('warning', '')
             
     return random_generator_valresult, random_generator_accepts_seeds
   
@@ -40196,8 +39773,6 @@ class AutoMunge:
     #we won't validate column entries since they may be dervied columns which we don't know yet
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result = False
     
     for key in assignparam:
@@ -40207,8 +39782,8 @@ class AutoMunge:
         
         result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error, assignparam category key ", key)
-        self.__autoprint(printstatus, 'warning', "was not found in process_dict")
+        self.__autoprint('warning', "error, assignparam category key ", key)
+        self.__autoprint('warning', "was not found in process_dict")
         
       elif key == 'default_assignparam':
         
@@ -40218,8 +39793,8 @@ class AutoMunge:
             
             result = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "error, assignparam['default_assignparam'] category key ", key2)
-            self.__autoprint(printstatus, 'warning', "was not found in process_dict")
+            self.__autoprint('warning', "error, assignparam['default_assignparam'] category key ", key2)
+            self.__autoprint('warning', "was not found in process_dict")
     
     return result
   
@@ -40228,8 +39803,6 @@ class AutoMunge:
     #Performs a validation that all of the column headers are unique
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     result = False
     
     if len(columnheaders_list) > len(set(columnheaders_list)):
@@ -40237,8 +39810,8 @@ class AutoMunge:
       result = True
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Warning of potential error from duplicate column headers.")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "Warning of potential error from duplicate column headers.")
+      self.__autoprint('warning', "")
       
     return result
 
@@ -40252,8 +39825,6 @@ class AutoMunge:
     #checks that dualprocess postprocess and singleprocess have entries
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_processdict_result = False
     check_processdict_result2 = False
 
@@ -40264,46 +39835,46 @@ class AutoMunge:
       if reserved_str in processdict:
         check_processdict_result2 = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: processdict has entry for ", reserved_str)
-        self.__autoprint(printstatus, 'warning', "which is a reserved category string for use in assignparam")
+        self.__autoprint('warning', "error: processdict has entry for ", reserved_str)
+        self.__autoprint('warning', "which is a reserved category string for use in assignparam")
     
     for entry in processdict:
       
       if 'NArowtype' not in processdict[entry]:
         check_processdict_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: processdict missing 'NArowtype' entry for category: ", entry)
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: processdict missing 'NArowtype' entry for category: ", entry)
+        self.__autoprint('warning', '')
       else:
         if processdict[entry]['NArowtype'] not in \
         {'numeric', 'integer', 'justNaN', 'binary', 'exclude', 'totalexclude', 'positivenumeric', 'nonnegativenumeric', \
         'nonzeronumeric', 'parsenumeric', 'datetime'}:
           check_processdict_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: invalid 'NArowtype' processdict entry for category: ", entry)
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "error: invalid 'NArowtype' processdict entry for category: ", entry)
+          self.__autoprint('warning', '')
         
       if 'MLinfilltype' not in processdict[entry]:
         check_processdict_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: processdict missing 'MLinfilltype' entry for category: ", entry)
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: processdict missing 'MLinfilltype' entry for category: ", entry)
+        self.__autoprint('warning', '')
       else:
         if processdict[entry]['MLinfilltype'] not in \
         {'numeric', 'singlct', 'integer', 'binary', 'multirt', 'concurrent_act', 'concurrent_ordl', 'concurrent_nmbr', '1010', \
         'exclude', 'boolexclude', 'ordlexclude', 'totalexclude'}:
           check_processdict_result = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: invalid 'MLinfilltype' processdict entry for category: ", entry)
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "error: invalid 'MLinfilltype' processdict entry for category: ", entry)
+          self.__autoprint('warning', '')
         
       #labelctgy is an optional entry to processdict, if not populated or accessed from functionpointer
       #it is given an arbitrary assignment in _check_processdict3 when entry is a root labels category
       # if 'labelctgy' not in processdict[entry]:
       #   check_processdict_result = True
       #   # if printstatus != 'silent':
-      #   self.__autoprint(printstatus, 'warning', "error: processdict missing 'labelctgy' entry for category: ", entry)
-      #   self.__autoprint(printstatus, 'warning', '')
+      #   self.__autoprint('warning', "error: processdict missing 'labelctgy' entry for category: ", entry)
+      #   self.__autoprint('warning', '')
       
       #we'll have convention that at least one entry for processing funtions required
       #even thought there is scenario where no corresponding function populated
@@ -40312,10 +39883,10 @@ class AutoMunge:
       and 'custom_train' not in processdict[entry]:
         check_processdict_result = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: processdict entry missing processing function entrys for categery: ", entry)
-        self.__autoprint(printstatus, 'warning', "requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess') or 'custom_train'")
-        self.__autoprint(printstatus, 'warning', "(alternately a valid 'functionpointer' entry can be included)")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: processdict entry missing processing function entrys for categery: ", entry)
+        self.__autoprint('warning', "requires entries for (both 'dualprocess' and 'postprocess') or (entry for 'singleprocess') or 'custom_train'")
+        self.__autoprint('warning', "(alternately a valid 'functionpointer' entry can be included)")
+        self.__autoprint('warning', '')
       else:
         pass
         #for now won't validate the transformation function entries
@@ -40338,8 +39909,6 @@ class AutoMunge:
     Which is passed to this function as 'entry'
     """
 
-    logger_dict = self.__check_logger_dict()
-
     check_processdict3_valresult = False
     check_processdict3_validlabelctgy_valresult = False
 
@@ -40357,8 +39926,8 @@ class AutoMunge:
         if entry in transform_dict:
 
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "labelctgy processdict entry wasn't provided for ", entry)
-          self.__autoprint(printstatus, 'warning', "selecting arbitrary entry based on family tree")
+          self.__autoprint('warning', "labelctgy processdict entry wasn't provided for ", entry)
+          self.__autoprint('warning', "selecting arbitrary entry based on family tree")
 
           familytree = transform_dict[entry]
 
@@ -40368,8 +39937,8 @@ class AutoMunge:
             mirror_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
 
             # if printstatus is True:
-            self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+            self.__autoprint('debug', '')
 
           elif len(familytree['cousins']) > 0:
             new_labelctgy = familytree['cousins'][0]
@@ -40377,8 +39946,8 @@ class AutoMunge:
             mirror_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
 
             # if printstatus is True:
-            self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+            self.__autoprint('debug', '')
 
           elif len(familytree['parents']) > 0:
             offspringparent = familytree['parents'][0]
@@ -40390,8 +39959,8 @@ class AutoMunge:
             mirror_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
 
             # if printstatus is True:
-            self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+            self.__autoprint('debug', '')
 
           elif len(familytree['siblings']) > 0:
             offspringparent = familytree['siblings'][0]
@@ -40403,8 +39972,8 @@ class AutoMunge:
             mirror_dict['process_dict'][entry]['labelctgy'] = new_labelctgy
 
             # if printstatus is True:
-            self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+            self.__autoprint('debug', '')
 
       elif 'labelctgy' in postprocess_dict['process_dict'][entry]:
 
@@ -40414,9 +39983,9 @@ class AutoMunge:
 
           # if printstatus != 'silent':
           printsupport = postprocess_dict['process_dict'][entry]['labelctgy']
-          self.__autoprint(printstatus, 'warning', "labelctgy processdict entry wasn't valid for entry ", entry)
-          self.__autoprint(printstatus, 'warning', "Was entered as ", printsupport)
-          self.__autoprint(printstatus, 'warning', "labelctgy needs to be a valid transformation category with entries in process_dict and transform_dict")
+          self.__autoprint('warning', "labelctgy processdict entry wasn't valid for entry ", entry)
+          self.__autoprint('warning', "Was entered as ", printsupport)
+          self.__autoprint('warning', "labelctgy needs to be a valid transformation category with entries in process_dict and transform_dict")
 
     return postprocess_dict, mirror_dict, check_processdict3_valresult, check_processdict3_validlabelctgy_valresult
 
@@ -40427,23 +39996,21 @@ class AutoMunge:
     When a labelctgy wasn't identified in upstream primitives
     """
 
-    logger_dict = self.__check_logger_dict()
-
     familytree = transform_dict[offspringparent]
 
     if len(familytree['coworkers']) > 0:
       new_labelctgy = familytree['coworkers'][0]
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+      self.__autoprint('debug', '')
 
     elif len(familytree['friends']) > 0:
       new_labelctgy = familytree['friends'][0]
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+      self.__autoprint('debug', '')
 
     elif len(familytree['children']) > 0:
       offspringparent = familytree['children'][0]
@@ -40452,8 +40019,8 @@ class AutoMunge:
       self.__check_processdict3_support(transform_dict, offspringparent, printstatus)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+      self.__autoprint('debug', '')
 
     elif len(familytree['niecesnephews']) > 0:
       offspringparent = familytree['niecesnephews'][0]
@@ -40462,8 +40029,8 @@ class AutoMunge:
       self.__check_processdict3_support(transform_dict, offspringparent, printstatus)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "labelctgy selected as ", new_labelctgy)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "labelctgy selected as ", new_labelctgy)
+      self.__autoprint('debug', '')
 
     return new_labelctgy
 
@@ -40473,8 +40040,6 @@ class AutoMunge:
     #are either a callable function or passed as None
     #note this takes place after functionpointer entries are accessed
     """
-
-    logger_dict = self.__check_logger_dict()
 
     check_processdict4_valresult = False
     check_processdict4_valresult2 = False
@@ -40494,10 +40059,10 @@ class AutoMunge:
             check_processdict4_valresult = True
 
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "warning of potential error")
-            self.__autoprint(printstatus, 'warning', "for processdict entry associated with category ", category)
-            self.__autoprint(printstatus, 'warning', "a processing function was entered in slot for ", checked_slot)
-            self.__autoprint(printstatus, 'warning', "which was not callable or passed as None")
+            self.__autoprint('warning', "warning of potential error")
+            self.__autoprint('warning', "for processdict entry associated with category ", category)
+            self.__autoprint('warning', "a processing function was entered in slot for ", checked_slot)
+            self.__autoprint('warning', "which was not callable or passed as None")
 
       #also validate that if a custom_train was not populated and a callable dualprocess was, a callable postprocess is available
       if not ('custom_train' in processdict[category] and callable(processdict[category]['custom_train'])):
@@ -40521,7 +40086,7 @@ class AutoMunge:
   def __initialize_sampling_report_dict(self, df_train, assigncat, 
                                         assignparam, transformdict, processdict, 
                                         sampling_dict, printstatus, numbercategoryheuristic,
-                                        powertransform, evalcat):
+                                        powertransform, evalcat, logger):
     """
     when a sampling_dict['sampling_type'] specification was received in automunge(.)
     there won't be a sampling_resource_dict in postprocess_dict yet
@@ -40543,8 +40108,6 @@ class AutoMunge:
     and in order to access params need to navigate family trees
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #in order to speed this operation up, if number of rows >5000, we'll do so with a 5000 row sample
     train_rowcount_orig = df_train.shape[0]
     if train_rowcount_orig > 5000:
@@ -40564,9 +40127,9 @@ class AutoMunge:
       and not isinstance(sampling_dict['sampling_report_dict'], dict):
         
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Received sampling_dict['sampling_type'] specification other than default")
-        self.__autoprint(printstatus, 'debug', "populating a sampling_resource_dict with an initial internal automunge(.) call")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Received sampling_dict['sampling_type'] specification other than default")
+        self.__autoprint('debug', "populating a sampling_resource_dict with an initial internal automunge(.) call")
+        self.__autoprint('debug', '')
 
         #following automunge call will return validation results in original bucket
         #which we'll store in samplingprep_validations
@@ -40589,7 +40152,7 @@ class AutoMunge:
                       transformdict = transformdict,
                       processdict = processdict,
                       evalcat=evalcat,
-                      logger_dict=logger_dict,
+                      logger=logger,
                       )
 
         #logger_dict validation results stored in logger_dict['featureselection_validations']
@@ -40649,8 +40212,6 @@ class AutoMunge:
     may slightly differ to the sampling_dict['sampling_report_dict']
     this stochastic sampling basis is the reason for applying the sampling_dict['stochastic_count_safety_factor']
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #note that sampling_dict will already have been initialized with any missing defaults in __check_sampling_dict
     stochastic_contingency = sampling_dict['stochastic_count_safety_factor']
@@ -40858,8 +40419,6 @@ class AutoMunge:
     and the generator used to apply those seeds for sampling in application based on sampling_dict['sampling_generator']
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #note that sampling_dict will already have been initialized with any missing defaults in __check_sampling_dict
     sampling_type = sampling_dict['sampling_type']
     sampling_generator = sampling_dict['sampling_generator']    
@@ -41085,8 +40644,6 @@ class AutoMunge:
     which increases generator calls
     when accessed in postmunge df_train should be received as False
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #access entropy seed parameters from postprocess_dict
     #note that these entries will be specific to an automunge or postmunge call
@@ -41767,8 +41324,6 @@ class AutoMunge:
     entropy_seeds may either recieve parameter entropy_seeds or postprocess_dict['entropy_seeds']
     """
 
-    logger_dict = self.__check_logger_dict()
-
     populate_randomseed_expended_seed_count = 0
 
     #2**31 - 1
@@ -41838,8 +41393,6 @@ class AutoMunge:
 
   def __sample_from_parameter_list(self, parameter_list, sampling_resource_dict, nprandom_dict, traintest):
     
-    logger_dict = self.__check_logger_dict()
-    
     #traintest accepts {'train', 'test'}
     #this function specific to sampling_id = 'parameterlist'
     sampling_id = 'parameterlist_' + traintest
@@ -41878,8 +41431,6 @@ class AutoMunge:
 
   def __sample_from_scipy_stats(self, stats_distribution, sampling_resource_dict, nprandom_dict, traintest):
     
-    logger_dict = self.__check_logger_dict()
-    
     #traintest accepts {'train', 'test'}
     #this function specific to sampling_id = 'statsdistribution'
     sampling_id = 'statsdistribution_' + traintest
@@ -41915,8 +41466,6 @@ class AutoMunge:
 
   def __get_nprandom(self, sampling_id, sampling_resource_dict, nprandom_dict):
     
-    logger_dict = self.__check_logger_dict()
-    
     #initializes nprandom for sampling based on sampling_id, sampling_resource_dict, and nprandom_dict
     #sampling_id is one of {'binomial_train', 'binomial_test', 'distribution_train', 'distribution_test', 'choice_train_seeds', 'choice_test_seeds'}
     #distinguishes between supplemental_seeds and primary_seeds seeding_type
@@ -41944,8 +41493,6 @@ class AutoMunge:
     return nprandom
 
   def __erase_seeds(self, sampling_resource_dict):
-    
-    logger_dict = self.__check_logger_dict()
     
     #sampling_resource_dict has seeds erase before return to preserve privacy of entropy
     #not applied in postprocess functions since postmunge(.) doesn't return a postprocess_dict
@@ -41983,8 +41530,6 @@ class AutoMunge:
     #so setting a distinct name as processdict_ to avoid overlap in mutable container naming space
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #update_targets are the targets for functionpointer, 
     #includes all processdict options except for defaultparams and labelctgy
     #(defaultparams handled seperately, labelcty is specific to a family tree)
@@ -41997,9 +41542,9 @@ class AutoMunge:
     if i > 1111:
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: functionpointer cycled through 1111 entries without finding a stopping point")
-      self.__autoprint(printstatus, 'warning', "for processdict category entry: ", targetcategory)
-      self.__autoprint(printstatus, 'warning', "likely infinite loop")
+      self.__autoprint('warning', "error: functionpointer cycled through 1111 entries without finding a stopping point")
+      self.__autoprint('warning', "for processdict category entry: ", targetcategory)
+      self.__autoprint('warning', "likely infinite loop")
       
       check_functionpointer_result = True
       
@@ -42082,9 +41627,9 @@ class AutoMunge:
               check_functionpointer_result = True
 
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "error: user passed processdict entry for category ", pointercategory)
-              self.__autoprint(printstatus, 'warning', "contained a self-referential functionpointer that did not point to a category found in process_dict")
-              self.__autoprint(printstatus, 'warning', '')            
+              self.__autoprint('warning', "error: user passed processdict entry for category ", pointercategory)
+              self.__autoprint('warning', "contained a self-referential functionpointer that did not point to a category found in process_dict")
+              self.__autoprint('warning', '')            
             
         #_2_
         #else grab and halt the chain since no functionpoitner populated for pointercategory
@@ -42137,10 +41682,10 @@ class AutoMunge:
         check_functionpointer_result = True
         
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: user passed processdict entry for category ", targetcategory)
-        self.__autoprint(printstatus, 'warning', "contained a functionpointer that did not point to a category found in processdict or process_dict")
-        self.__autoprint(printstatus, 'warning', "note that self-referential functionpointers only supported when overwriting entry in process_dict")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: user passed processdict entry for category ", targetcategory)
+        self.__autoprint('warning', "contained a functionpointer that did not point to a category found in processdict or process_dict")
+        self.__autoprint('warning', "note that self-referential functionpointers only supported when overwriting entry in process_dict")
+        self.__autoprint('warning', '')
 
     return processdict_, i, check_functionpointer_result
   
@@ -42168,8 +41713,6 @@ class AutoMunge:
     #so setting a distinct name as processdict_ to avoid overlap in mutable container naming space
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     check_functionpointer_result = False
     
     for entry in processdict_:
@@ -42197,8 +41740,6 @@ class AutoMunge:
     #and set specifications are retained
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     assigncat_str_convert_valresult = False
     
     for assigncatkey in assigncat:
@@ -42215,11 +41756,11 @@ class AutoMunge:
         if len([x for x in current_list if not isinstance(x, (str, int, float))]) > 0:
           assigncat_str_convert_valresult = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "warning of potential error channel")
-          self.__autoprint(printstatus, 'warning', "assigncat accepts specification as a dictiaonry with str keys")
-          self.__autoprint(printstatus, 'warning', "and values of str/int/float/set types representing column headers")
-          self.__autoprint(printstatus, 'warning', "or a list/set with entries of those types")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "warning of potential error channel")
+          self.__autoprint('warning', "assigncat accepts specification as a dictiaonry with str keys")
+          self.__autoprint('warning', "and values of str/int/float/set types representing column headers")
+          self.__autoprint('warning', "or a list/set with entries of those types")
+          self.__autoprint('warning', '')
             
         else:
           
@@ -42238,11 +41779,11 @@ class AutoMunge:
 
           assigncat_str_convert_valresult = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "warning of potential error channel")
-          self.__autoprint(printstatus, 'warning', "assigncat accepts specification as a dictiaonry with str keys")
-          self.__autoprint(printstatus, 'warning', "and values of str/int/float/set types representing column headers")
-          self.__autoprint(printstatus, 'warning', "or a list/set with entries of those types")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "warning of potential error channel")
+          self.__autoprint('warning', "assigncat accepts specification as a dictiaonry with str keys")
+          self.__autoprint('warning', "and values of str/int/float/set types representing column headers")
+          self.__autoprint('warning', "or a list/set with entries of those types")
+          self.__autoprint('warning', '')
 
         current_list_sets = [x for x in current_list if isinstance(x, set)]
         current_list_others = [str(x) for x in current_list if not isinstance(x, set)]
@@ -42258,11 +41799,11 @@ class AutoMunge:
 
               assigncat_str_convert_valresult = True
               # if printstatus != 'silent':
-              self.__autoprint(printstatus, 'warning', "warning of potential error channel")
-              self.__autoprint(printstatus, 'warning', "assigncat accepts specification as a dictiaonry with str keys")
-              self.__autoprint(printstatus, 'warning', "and values of str/int/float/set types representing column headers")
-              self.__autoprint(printstatus, 'warning', "or a list/set with entries of those types")
-              self.__autoprint(printstatus, 'warning', '')
+              self.__autoprint('warning', "warning of potential error channel")
+              self.__autoprint('warning', "assigncat accepts specification as a dictiaonry with str keys")
+              self.__autoprint('warning', "and values of str/int/float/set types representing column headers")
+              self.__autoprint('warning', "or a list/set with entries of those types")
+              self.__autoprint('warning', '')
 
           current_list_sets[current_list_sets.index(x)] = current_set
           
@@ -42280,8 +41821,6 @@ class AutoMunge:
     #into a single entry list
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #ignore edge case where user passes empty dictionary
     if assigninfill != {}:
 
@@ -42311,8 +41850,6 @@ class AutoMunge:
 
     #note that float(int) are converted to str(float(int)) instead of str(int) to avoid edge case
     """
-
-    logger_dict = self.__check_logger_dict()
 
     if isinstance(parameter, int) and str(parameter) != 'False' and str(parameter) != 'True':
       parameter_copy = str(parameter)
@@ -42353,8 +41890,6 @@ class AutoMunge:
     #               'spl2' : {'column2' : {'minsplit' : 3}}}
     """
 
-    logger_dict = self.__check_logger_dict()
-
     categorykeys = list(assignparam).copy()
     
     for categorykey in categorykeys:
@@ -42375,8 +41910,6 @@ class AutoMunge:
     #and they are converted to strings
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'columns' in assignnan:
       
       columns_copy = self.__autocopy(assignnan['columns'])
@@ -42396,8 +41929,6 @@ class AutoMunge:
     #converts any passed infill values to lists in case passed as single value
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'categories' in assignnan:
       
       #convert any entries to lists
@@ -42434,8 +41965,6 @@ class AutoMunge:
     currently only applied for first layer keys in a dicitonary
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if isinstance(data_, list):
       data_ = [np.nan if x != x else x for x in data_]
       
@@ -42477,8 +42006,6 @@ class AutoMunge:
     #such as for MLinfill
     """
 
-    logger_dict = self.__check_logger_dict()
-    
 #     unique_set = set(pd.unique(df[label_categorylist].to_numpy().ravel('K')))
     
 #     if (unique_set == {0,1} \
@@ -42637,8 +42164,6 @@ class AutoMunge:
     #such as for MLinfill
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #grab passed parameters from LSfitparams_dict
     LSfit = LSfitparams_dict[targetcolumn]['LSfit']
     epsilon = LSfitparams_dict[targetcolumn]['epsilon']
@@ -42762,13 +42287,11 @@ class AutoMunge:
 
   #__FunctionBlock: Binary categoric consolidations support
 
-  def __BinaryConsolidate(self, df_train, df_test, Binary, postprocess_dict, root):
+  def __BinaryConsolidate(self, df_train, df_test, Binary, postprocess_dict, root, logger):
     """
     Binary categoric consolidation master function applied in automunge
     also used seperately for label consolidations
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #Binary dimensionality reduction goes here
     #test data activation sets not found in train data will return with all zeros
@@ -42787,12 +42310,12 @@ class AutoMunge:
       
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin Binary categoric consolidations")
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "Before Binary train set column count = ")
-      self.__autoprint(printstatus, 'debug', df_train.shape[1])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin Binary categoric consolidations")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "Before Binary train set column count = ")
+      self.__autoprint('debug', df_train.shape[1])
+      self.__autoprint('debug', "")
 
       #_(1)_
       #this is to convert to common form as Binary passed as list of lists
@@ -42850,16 +42373,26 @@ class AutoMunge:
         #record valresult if Binary specification included columns not found in data
         if 'Binary_columnspresent_valresult' not in logger_dict['validations']:
           logger_dict['validations'].update({'Binary_columnspresent_valresult' : False})
+          logger = self.__logger_append(logger)
 
         if len(set(Binary_sublist) - (set(df_train) | set(postprocess_dict['origcolumn']))) > 0:
           logger_dict['validations']['Binary_columnspresent_valresult' ] = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "Binary specification included at least one column header not found in the data.")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Binary specification included at least one column header not found in the data.")
+          self.__autoprint('warning', '')
 
         #for Binary need returned columns
         Binary_sublist = \
         self.__column_convert_support(Binary_sublist, postprocess_dict, convert_to='returned')
+
+        #validate all valid column assignments
+        valid_Binary_specified_columns_val = False
+        if len(Binary_sublist)== 0:
+          valid_Binary_specified_columns_val = True
+          self.__autoprint('warning', "Binary specification included no column headers found in the data.")
+          self.__autoprint('warning', '')
+          logger_dict['validations'].update({'valid_Binary_specified_columns_val' : valid_Binary_specified_columns_val})
+          logger = self.__logger_append(logger)
 
         #_(2)_
         #categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
@@ -42888,12 +42421,12 @@ class AutoMunge:
         categoric_column_tuple = (bool_column_list, ordinal_column_list, categoric_column_list)
         
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Consolidating categoric columns:")
-        self.__autoprint(printstatus, 'debug', categoric_column_list)
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "categoric column count = ")
-        self.__autoprint(printstatus, 'debug', len(categoric_column_list))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "Consolidating categoric columns:")
+        self.__autoprint('debug', categoric_column_list)
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "categoric column count = ")
+        self.__autoprint('debug', len(categoric_column_list))
+        self.__autoprint('debug', "")
 
         if len(categoric_column_list) > 0:
           df_train, df_test, Binary_sublist_dict, set_Binary_column_valresult = \
@@ -42914,6 +42447,7 @@ class AutoMunge:
                                  'Binary_specification' : False}
           if 'Binary_suffixoverlap_results' not in logger_dict['validations']:
             logger_dict['validations'].update({'Binary_suffixoverlap_results' : {}})
+            logger = self.__logger_append(logger)
           returned_Binary_columns = []
           
         final_returned_Binary_columns += returned_Binary_columns
@@ -42934,29 +42468,31 @@ class AutoMunge:
           logger_dict['validations']['Binary_suffixoverlap_results'].update(Binary_suffixoverlap_results)
         else:
           logger_dict['validations'].update({'Binary_suffixoverlap_results' : Binary_suffixoverlap_results})
+          logger = self.__logger_append(logger)
 
         if 'set_Binary_column_valresult' not in logger_dict['validations'] \
         or 'set_Binary_column_valresult' in logger_dict['validations'] \
         and logger_dict['validations']['set_Binary_column_valresult'] is not True:
           logger_dict['validations'].update({'set_Binary_column_valresult' : set_Binary_column_valresult})
+          logger = self.__logger_append(logger)
 
         #_(2)_
         if Binary_sublist_dict['returned_Binary_columns'] != []:
           Binary_dict.update({Binary_sublist_number : Binary_sublist_dict})
         
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Returned Binary columns:")
-        self.__autoprint(printstatus, 'debug', returned_Binary_columns)
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "Returned Binary column count = ")
-        self.__autoprint(printstatus, 'debug', len(returned_Binary_columns))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "Returned Binary columns:")
+        self.__autoprint('debug', returned_Binary_columns)
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "Returned Binary column count = ")
+        self.__autoprint('debug', len(returned_Binary_columns))
+        self.__autoprint('debug', "")
           
       #_(1)_
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "After Binary train set column count = ")
-      self.__autoprint(printstatus, 'debug', df_train.shape[1])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "After Binary train set column count = ")
+      self.__autoprint('debug', df_train.shape[1])
+      self.__autoprint('debug', "")
 
     else:
       
@@ -42969,6 +42505,7 @@ class AutoMunge:
 
       if 'Binary_suffixoverlap_results' not in logger_dict['validations']:
         logger_dict['validations'].update({'Binary_suffixoverlap_results' : {}})
+        logger = self.__logger_append(logger)
       returned_Binary_columns = []
       final_returned_Binary_columns = []
       final_returned_Binary_sets = {'type' : {},
@@ -42984,8 +42521,6 @@ class AutoMunge:
     also used seperately for label consolidations
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #note if Binary was originally passed to automunge as anything other than False
     #postprocess_dict will record Binary as a list of lists
     #with the Binary type either omitted or recorded as a first entry embedded in set brackets
@@ -42994,12 +42529,12 @@ class AutoMunge:
       
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin Binary dimensionality reduction")
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "Before transform test set column count = ")
-      self.__autoprint(printstatus, 'debug', df_test.shape[1])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin Binary dimensionality reduction")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "Before transform test set column count = ")
+      self.__autoprint('debug', df_test.shape[1])
+      self.__autoprint('debug', "")
 
       #_(1)_
       for key in meta_Binary_dict:
@@ -43008,28 +42543,28 @@ class AutoMunge:
         Binary = meta_Binary_dict[key]['Binary_specification']
       
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Consolidating categoric columns:")
-        self.__autoprint(printstatus, 'debug', Binary_dict['categoric_column_tuple'][2])
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "Boolean column count = ")
-        self.__autoprint(printstatus, 'debug', len(Binary_dict['categoric_column_tuple'][2]))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "Consolidating categoric columns:")
+        self.__autoprint('debug', Binary_dict['categoric_column_tuple'][2])
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "Boolean column count = ")
+        self.__autoprint('debug', len(Binary_dict['categoric_column_tuple'][2]))
+        self.__autoprint('debug', "")
 
         df_test = self.__postBinary_convert(df_test, Binary_dict, Binary)
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Returned Binary columns:")
-        self.__autoprint(printstatus, 'debug', Binary_dict['returned_Binary_columns'])
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "Returned Binary column count = ")
-        self.__autoprint(printstatus, 'debug', len(Binary_dict['returned_Binary_columns']))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "Returned Binary columns:")
+        self.__autoprint('debug', Binary_dict['returned_Binary_columns'])
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "Returned Binary column count = ")
+        self.__autoprint('debug', len(Binary_dict['returned_Binary_columns']))
+        self.__autoprint('debug', "")
           
         #_(1)_
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "After transform test set column count = ")
-        self.__autoprint(printstatus, 'debug', df_test.shape[1])
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "After transform test set column count = ")
+        self.__autoprint('debug', df_test.shape[1])
+        self.__autoprint('debug', "")
           
     return df_test
 
@@ -43055,8 +42590,6 @@ class AutoMunge:
     #where categoric_column_list encompasses the other two in order of dr_train columns
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #suffixrange is for evaluating overalaps with different numebr of returned columns
     #we'll run an initial check
     #and if suffixrange turns out to be insufficient after having access to number of unique encodings
@@ -43249,8 +42782,6 @@ class AutoMunge:
     #on train set (but yes on test set)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     Binary_root = Binary_dict['Binary_root']
 
     if Binary in {True, 'retain'}:
@@ -43305,7 +42836,7 @@ class AutoMunge:
     
     return df_test
 
-  def __masterBinaryinvert(self, df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus):
+  def __masterBinaryinvert(self, df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus, logger):
     """
     accepts inversion as a list
     can be applied to df_test including test data or labels data, (inversion receives either as df_test)
@@ -43313,8 +42844,6 @@ class AutoMunge:
     returns an adjusted inversion list which removes Binary columns and replaces with their associated inputs
     if Binary was a retain consolidation simply removes the redundant consolidations
     """
-
-    logger_dict = self.__check_logger_dict()
 
     Binary_partialinversion_valresult = False
 
@@ -43360,8 +42889,8 @@ class AutoMunge:
           Binary_partialinversion_valresult = True
 
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error: partial inversion lists only supported for columns returned from Binary")
-          self.__autoprint(printstatus, 'warning', "when entire set of Binary columns are included in the inversion list")
+          self.__autoprint('warning', "error: partial inversion lists only supported for columns returned from Binary")
+          self.__autoprint('warning', "when entire set of Binary columns are included in the inversion list")
 
         if Binary_inversion_marker is True:
 
@@ -43370,10 +42899,11 @@ class AutoMunge:
           inversion += Binary_dict['categoric_column_tuple'][2]
 
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "Recovered Binary columns:")
-          self.__autoprint(printstatus, 'debug', Binary_dict['categoric_column_tuple'][2])
-          self.__autoprint(printstatus, 'debug', '')
+          self.__autoprint('debug', "Recovered Binary columns:")
+          self.__autoprint('debug', Binary_dict['categoric_column_tuple'][2])
+          self.__autoprint('debug', '')
     logger_dict['validations'].update({'Binary_partialinversion_valresult' : Binary_partialinversion_valresult})
+    logger = self.__logger_append(logger)
 
     return df_test, inversion
 
@@ -43383,8 +42913,6 @@ class AutoMunge:
     #cleans up columns
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     Binary_returned_columns = Binary_dict['returned_Binary_columns']
     Binary = Binary_dict['Binary_specification']
     
@@ -43431,8 +42959,6 @@ class AutoMunge:
   
   def __inverseprocess_Binary(self, df, Binary_columns, Binary_dict, Binary):
 
-    logger_dict = self.__check_logger_dict()
-
     Binary_root = Binary_dict['Binary_root']
     
     if Binary in {True, 'retain'}:
@@ -43469,8 +42995,6 @@ class AutoMunge:
     #float convert to this precision
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if isinstance(columnkeylist, str):
       columnkeylist = [columnkeylist]
     
@@ -43503,8 +43027,6 @@ class AutoMunge:
     #this has something to do with the pandas '|S9' dtype
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #don't apply to totalexclude MLinfilltype
     if postprocess_dict['process_dict'][category]['NArowtype'] not in {'totalexclude'}:
       
@@ -43546,8 +43068,6 @@ class AutoMunge:
     #including stochastic and range injections
     #which is called at the conclusion of this one
     """
-
-    logger_dict = self.__check_logger_dict()
 
     # if category in postprocess_dict['process_dict']:
       
@@ -43641,8 +43161,6 @@ class AutoMunge:
     #this is deemed acceptable since this functionality not intended for mainstream use
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if 'injections' in assignnan:
       
       #for injections functinoality we'll reset index to range integer
@@ -43786,8 +43304,6 @@ class AutoMunge:
     #returns two dataframes df and df2, where df is training data and df2 is validaiton set
     """
 
-    logger_dict = self.__check_logger_dict()
-
     if ratio > 0 and ratio < 1:
     
       if shuffle_param is False:
@@ -43843,8 +43359,6 @@ class AutoMunge:
     #returns two dataframes df1 and df2
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if ratio_tuple[0] >= 0 and ratio_tuple[0] < 1 \
     and ratio_tuple[1] > ratio_tuple[0] and ratio_tuple[1] <= 1:
     
@@ -43877,8 +43391,6 @@ class AutoMunge:
     #pass axis = 1 to shuffle order of columns
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     df = df.sample(frac=1, random_state=randomseed, axis=axis)
     
     return df  
@@ -43888,8 +43400,6 @@ class AutoMunge:
     #Shuffles single column in a dataframe
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     df_temp = df[column].copy()
     df_temp = self.__df_shuffle(df_temp, randomseed)
     df[column] = df_temp.to_numpy()
@@ -43904,8 +43414,6 @@ class AutoMunge:
     #in other words if duplicate rows present only returns one of duplicates
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     mask = pd.DataFrame(df.duplicated())
     mask = pd.Series(mask[list(mask)[0]].astype(int) - 1).abs().astype(bool)
 
@@ -43927,8 +43435,6 @@ class AutoMunge:
     #such as to distingiush between continous, categoric, categoric sets, etc
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     columntype_report = {'continuous' : [], \
                          'integer'    : [], \
                          'boolean' : [], \
@@ -44127,8 +43633,6 @@ class AutoMunge:
     #those are available in postprocess_dict as returned_Binary_columns and returned_PCA_columns
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     column_map = {}
     
     allfinalcolumns = postprocess_dict['finalcolumns_train'] + postprocess_dict['finalcolumns_labels']
@@ -44189,8 +43693,6 @@ class AutoMunge:
     self.__list_replace(targetlist, postprocess_dict['excl_suffix_conversion_dict'])
     """
 
-    logger_dict = self.__check_logger_dict()
-
     for target_for_substitution in conversion_dict:
       if target_for_substitution in targetlist:
         targetlist[targetlist.index(target_for_substitution)] = conversion_dict[target_for_substitution]
@@ -44211,8 +43713,6 @@ class AutoMunge:
     which is acceptable in context of our use for categoric encodings
     an alternate placeholder entry may be specified with reserved parameter if desired
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #below assumes mixed_set is a set, this adds support for mixed_set received as a list
     if isinstance(mixed_set, list):
@@ -44285,8 +43785,6 @@ class AutoMunge:
     or may be a series/dataframe with same number of rows as df
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #if df is empty dataframe, populate as column of zeros per shape of condition
     if type(df) == type(pd.DataFrame()) and df.empty:
       df = pd.DataFrame({column : [0] * condition.shape[0]}, index=pd.DataFrame(condition).index)
@@ -44333,8 +43831,6 @@ class AutoMunge:
     (expected largest dictionaries it targets is the postprocess_dict, which has most of memory overhead for trained models)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if isinstance(original, dict):
       orig_dict_copy = {}
       for entry in original:
@@ -44358,7 +43854,7 @@ class AutoMunge:
     else:
       return original
 
-  def __autoprint(self, printstatus, tier, printstring='', variable=''):
+  def __autoprint(self, tier, printstring='', variable=''):
     """
     this function is a kind of compromise between
     python's logger_dict and print statement
@@ -44382,8 +43878,6 @@ class AutoMunge:
     logger_dict['printstatus'] will have been initialized with the printstatus parameter
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #print targets are all converted to str for use in reports
     if not isinstance(printstring, str):
       printstring = str(printstring)
@@ -44394,7 +43888,7 @@ class AutoMunge:
       logger_dict['debug_report'] = \
       logger_dict['debug_report'] + '\n' + printstring + variable
       
-      if printstatus in {True}:
+      if logger_dict['printstatus'] in {True}:
         print(printstring + variable)
       
     elif tier == 'info':
@@ -44405,7 +43899,7 @@ class AutoMunge:
       logger_dict['info_report'] = \
       logger_dict['info_report'] + '\n' + printstring + variable
       
-      if printstatus in {True, 'summary'}:
+      if logger_dict['printstatus'] in {True, 'summary'}:
         print(printstring + variable)
       
     elif tier == 'warning':
@@ -44419,53 +43913,20 @@ class AutoMunge:
       logger_dict['warning_report'] = \
       logger_dict['warning_report'] + '\n' + printstring + variable
       
-      if printstatus in {True, 'summary', 'warning'}:
+      if logger_dict['printstatus'] in {True, 'summary', 'warning'}:
         print(printstring + str(variable))
         
     return
 
-  def __check_logger_dict(self):
+  def __logger_append(self, logger):
     """
-    check if logger_dict was initialized externally and available in the global stack
-    else we'll use this as indication to import the __init__ version with the function call
-    """
-
-    try:
-      logger_dict == 0
-    except (ValueError, NameError):
-      logger_dict = {
-        'debug_report' : '',
-        'info_report' : '',
-        'warning_report' : '',
-        'validations' : {'suffixoverlap_results':{}}
-        }
-    return logger_dict
-
-  def __init_logger_dict(self, logger_dict, printstatus):
-    """
-    logger_dict records printouts and validations
-    this function initializes utilized keys
+    update logger with logging_dict
+    which will carry through to logger when it was intialized externally
     """
 
-    # logger_dict = {
-    #   'debug_report' : '',
-    #   'info_report' : '',
-    #   'warning_report' : '',
-    #   'validations' : {'suffixoverlap_results':{}},
-    # }
-    
-    #initializations
-    if 'debug_report' not in logger_dict:
-      for root in ['debug_report', 'info_report', 'warning_report']:
-        logger_dict.update({root : ''})
+    logger.update(logger_dict)
 
-    if 'validations' not in logger_dict:
-      logger_dict['validations'] = {'suffixoverlap_results':{}}
-    
-    if 'suffixoverlap_results' not in logger_dict['validations']:
-      logger_dict['validations']['suffixoverlap_results'] = {}
-      
-    return logger_dict
+    return logger
 
   def __column_convert_support(self, mixedcolumns_list, postprocess_dict, convert_to='returned'):
     """
@@ -44480,8 +43941,6 @@ class AutoMunge:
     convert_to accepts one of {'returned', 'input'}, which is for specifying the returned form
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #user can pass a single header as string if they are lazy
     if not isinstance(mixedcolumns_list, list):
       mixedcolumns_list = [mixedcolumns_list]
@@ -44527,8 +43986,6 @@ class AutoMunge:
     intended for use with integrating noise into existing data pipelines
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     orig_headers = postprocess_dict['orig_headers']
     privacy_encode = postprocess_dict['privacy_encode']
     excl_suffix = postprocess_dict['excl_suffix']
@@ -44578,9 +44035,7 @@ class AutoMunge:
     Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library 
     which requires installation in order to run (we found there were installations available via conda install). 
     """
-
-    logger_dict = self.__check_logger_dict()
-        
+    
     #we'll populate public_dict to replace postprocess_dict
     public_dict = {'encryption' : True}
     
@@ -44661,19 +44116,19 @@ class AutoMunge:
       block_size = len(encrypt_key)
       
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________________________________________________")
-      self.__autoprint(printstatus, 'debug', "_______________________________________________________")
-      self.__autoprint(printstatus, 'debug', "*******************************************************")
-      self.__autoprint(printstatus, 'debug', "*******************************************************")
-      self.__autoprint(printstatus, 'debug', '')
-      self.__autoprint(printstatus, 'debug', "User passed a custom encrypt_key to automunge(.)")
-      self.__autoprint(printstatus, 'debug', "Please remember to save your key for use with the postmunge(.) encrypt_key parameter")
-      self.__autoprint(printstatus, 'debug', "You will need this key to prepare additional data in postmunge(.)")
-      self.__autoprint(printstatus, 'debug', '')
-      self.__autoprint(printstatus, 'debug', "*******************************************************")
-      self.__autoprint(printstatus, 'debug', "*******************************************************")
-      self.__autoprint(printstatus, 'debug', "_______________________________________________________")
-      self.__autoprint(printstatus, 'debug', "_______________________________________________________")
+      self.__autoprint('debug', "_______________________________________________________")
+      self.__autoprint('debug', "_______________________________________________________")
+      self.__autoprint('debug', "*******************************************************")
+      self.__autoprint('debug', "*******************************************************")
+      self.__autoprint('debug', '')
+      self.__autoprint('debug', "User passed a custom encrypt_key to automunge(.)")
+      self.__autoprint('debug', "Please remember to save your key for use with the postmunge(.) encrypt_key parameter")
+      self.__autoprint('debug', "You will need this key to prepare additional data in postmunge(.)")
+      self.__autoprint('debug', '')
+      self.__autoprint('debug', "*******************************************************")
+      self.__autoprint('debug', "*******************************************************")
+      self.__autoprint('debug', "_______________________________________________________")
+      self.__autoprint('debug', "_______________________________________________________")
       
     #now create the cypher object
     cipher = AES.new(encrypt_key)
@@ -44717,8 +44172,6 @@ class AutoMunge:
     which requires installation in order to run (we found there were installations available via conda install). 
     """
 
-    logger_dict = self.__check_logger_dict()
-
     decode_valresult = False
     
     if not (isinstance(encrypt_key, bytes) and len(encrypt_key) in {16, 24, 32}):
@@ -44726,18 +44179,18 @@ class AutoMunge:
       decode_valresult = True
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: encryption was performed in automunge(.) without specifying the key in postmunge encrypt_key parameter")
-      self.__autoprint(printstatus, 'warning', "encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
-      self.__autoprint(printstatus, 'warning', "encrypt_key was either returned in printouts of corresponding automunge(.) call")
-      self.__autoprint(printstatus, 'warning', "or was designated by user through the automugne(.) encrypt_key parameter")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error: encryption was performed in automunge(.) without specifying the key in postmunge encrypt_key parameter")
+      self.__autoprint('warning', "encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+      self.__autoprint('warning', "encrypt_key was either returned in printouts of corresponding automunge(.) call")
+      self.__autoprint('warning', "or was designated by user through the automugne(.) encrypt_key parameter")
+      self.__autoprint('warning', '')
       
     if 'encrypted' not in postprocess_dict:
       
       decode_valresult = True
       
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
+      self.__autoprint('warning', "error: encrypt_key accepts as a bytes object with length of one of {16, 24, 32}")
       
     # #user can conduct this import externally to speed up this function
     # module = 'Crypto.Cipher.AES'
@@ -44805,8 +44258,6 @@ class AutoMunge:
     note this approach supports multiple rounds of adding new features
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #if prior postprocess_dict was recieved encrypted first we decrypt
     if 'encryption' in ppd_append and ppd_append['encryption'] is True:
       
@@ -44858,10 +44309,12 @@ class AutoMunge:
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
                 entropy_seeds = False, random_generator = False, sampling_dict = False,
-                privacy_encode = False, encrypt_key = False, printstatus = 'summary', logger_dict = {}):
+                privacy_encode = False, encrypt_key = False, printstatus = 'summary', logger = {}):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
+
+    #Note that automunge(.) has one global variable: logger_dict
     """
 
     """
@@ -44941,7 +44394,14 @@ class AutoMunge:
       entropy_seeds = self.__autocopy(entropy_seeds)
 
     #initialize logger_dict
-    logger_dict = self.__init_logger_dict(logger_dict, printstatus)
+    global logger_dict
+    logger_dict = {
+      'debug_report' : '',
+      'info_report' : '',
+      'warning_report' : '',
+      'printstatus' : printstatus, 
+      'validations' : {'suffixoverlap_results':{}},
+    }
 
     #quick conversion of any assigncat and assigninfill entries to str (such as for cases if user passed integers)
     assigncat, assigncat_str_convert_valresult = self.__assigncat_str_convert(assigncat, printstatus)
@@ -44972,7 +44432,7 @@ class AutoMunge:
                                  NArw_marker, featurethreshold, featureselection, inplace, \
                                  Binary, PCAn_components, PCAexcl, printstatus, excl_suffix, \
                                  trainID_column, testID_column, evalcat, privacy_encode, encrypt_key, \
-                                 noise_augment, ppd_append, orig_headers, cat_type, logger_dict)
+                                 noise_augment, ppd_append, orig_headers, cat_type, logger)
 
     #quick check to ensure each column only assigned once in assigncat and assigninfill
     check_assigncat_result = self.__check_assigncat(assigncat, printstatus)
@@ -44986,6 +44446,7 @@ class AutoMunge:
                                    'check_assigninfill_result' : check_assigninfill_result, \
                                    'check_ML_cmnd_result' : check_ML_cmnd_result,
                                    'assigncat_str_convert_valresult' : assigncat_str_convert_valresult})
+    logger = self.__logger_append(logger)
     
     #initialize transform_dict which is the internal library of family trees
     transform_dict = self.__assembletransformdict(binstransform, NArw_marker)
@@ -44999,24 +44460,28 @@ class AutoMunge:
 
       logger_dict['validations'].update({'check_transformdict000_result1' : check_transformdict000_result1, \
                                      'check_transformdict000_result2' : check_transformdict000_result2})
+      logger = self.__logger_append(logger)
 
       #This validates data types of primitive entries, converts string entry to embed in list brackets
       check_transformdict00_result, transformdict = \
       self.__check_transformdict00(transformdict, printstatus)
 
       logger_dict['validations'].update({'check_transformdict00_result' : check_transformdict00_result})
+      logger = self.__logger_append(logger)
 
       #If only partial family tree populated this populates other primitives
       check_transformdict0_result, transformdict = \
       self.__check_transformdict0(transformdict, printstatus)
 
       logger_dict['validations'].update({'check_transformdict0_result' : check_transformdict0_result})
+      logger = self.__logger_append(logger)
       
       #handling for family trees without replacement primitive entries (add an excl transform)
       check_transformdict_result1, transformdict = \
       self.__check_transformdict(transformdict, printstatus)
 
       logger_dict['validations'].update({'check_transformdict_result1' : check_transformdict_result1})
+      logger = self.__logger_append(logger)
       
       #ensure no redundant specifications in adjacent primitives
       check_transformdict2_result1, check_transformdict2_result2 = \
@@ -45024,6 +44489,7 @@ class AutoMunge:
       
       logger_dict['validations'].update({'check_transformdict2_result1' : check_transformdict2_result1, \
                                      'check_transformdict2_result2' : check_transformdict2_result2})
+      logger = self.__logger_append(logger)
 
       #now consolidate the transform_dict and transformdict into single dictionary
       transform_dict.update(transformdict)
@@ -45038,6 +44504,7 @@ class AutoMunge:
     
     logger_dict['validations'].update({'check_haltingproblem_result' : check_haltingproblem_result,
                                    'familytree_for_offspring_result' : familytree_for_offspring_result})
+    logger = self.__logger_append(logger)
 
     #initialize process_dict which is the internal library of transformation category properties
     process_dict = self.__assembleprocessdict()
@@ -45049,6 +44516,7 @@ class AutoMunge:
     self.__grab_functionpointer_entries(process_dict, process_dict, printstatus)
 
     logger_dict['validations'].update({'check_process_dict_functionpointer_result' : check_process_dict_functionpointer_result})
+    logger = self.__logger_append(logger)
 
     #processdict is user passed data strucure to add entries to process_dict
     if bool(processdict) is not False:
@@ -45060,18 +44528,21 @@ class AutoMunge:
       processdict, check_functionpointer_result = \
       self.__grab_functionpointer_entries(processdict, process_dict, printstatus)
       logger_dict['validations'].update({'check_functionpointer_result' : check_functionpointer_result})
+      logger = self.__logger_append(logger)
       
       #this funcion applies some misc validations on processdict
       check_processdict_result, check_processdict_result2 = \
       self.__check_processdict(processdict, printstatus)
       logger_dict['validations'].update({'check_processdict_result' : check_processdict_result,
                                      'check_processdict_result2': check_processdict_result2})
+      logger = self.__logger_append(logger)
 
       #this function ensures any populated processing functions are either callable or None
       check_processdict4_valresult, check_processdict4_valresult2 = \
       self.__check_processdict4(processdict, printstatus)
       logger_dict['validations'].update({'check_processdict4_valresult' : check_processdict4_valresult,
                                      'check_processdict4_valresult2' : check_processdict4_valresult2})
+      logger = self.__logger_append(logger)
 
       #now consolidate user passed entries from processdict and internal library in process_dict
       process_dict.update(processdict)
@@ -45080,11 +44551,13 @@ class AutoMunge:
       logger_dict['validations'].update({'check_functionpointer_result' : False})
       logger_dict['validations'].update({'check_processdict_result' : False,
                                      'check_processdict_result2': False})
+      logger = self.__logger_append(logger)
 
     #now that both transform_dict and process_dict are consolidated, validate transformdict roots have processdict entries
     check_transform_dict_roots_result = \
     self.__check_transform_dict_roots(transform_dict, process_dict, printstatus)
     logger_dict['validations'].update({'check_transform_dict_roots_result' : check_transform_dict_roots_result})
+    logger = self.__logger_append(logger)
       
     #here we confirm that all of the keys of assigncat have corresponding entries in process_dict
     check_assigncat_result2 = self.__check_assigncat2(assigncat, transform_dict, printstatus)
@@ -45095,9 +44568,11 @@ class AutoMunge:
     
     logger_dict['validations'].update({'check_assigncat_result2' : check_assigncat_result2, \
                                    'check_assigncat_result3' : check_assigncat_result3})
+    logger = self.__logger_append(logger)
 
     check_assignparam_result = self.__check_assignparam(assignparam, process_dict, printstatus)
     logger_dict['validations'].update({'check_assignparam_result' : check_assignparam_result})
+    logger = self.__logger_append(logger)
 
     #initialize autoMLer which is data structure to support ML infill training and inference
     #custom training loops are supported as documented in read me section Custom ML Infill Functions
@@ -45106,16 +44581,19 @@ class AutoMunge:
     random_generator_valresult, random_generator_accepts_seeds = \
     self.__check_random_generator(random_generator, printstatus)
     logger_dict['validations'].update({'random_generator_valresult' : random_generator_valresult})
+    logger = self.__logger_append(logger)
 
     #validate sampling_dict and populate with defaults
     check_sampling_dict_result, sampling_dict = \
     self.__check_sampling_dict(sampling_dict, printstatus, random_generator_accepts_seeds)
     logger_dict['validations'].update({'check_sampling_dict_result' : check_sampling_dict_result})
+    logger = self.__logger_append(logger)
 
     #validate entropy_seeds and align to common type
     entropy_seeds, entropy_seeds_result = \
     self.__check_entropy_seeds(entropy_seeds, printstatus)
     logger_dict['validations'].update({'entropy_seeds_result' : entropy_seeds_result})
+    logger = self.__logger_append(logger)
 
     #initialize randomseed for default configuration of random random seed
     #when a sampling performed randomrandomseed returned as True
@@ -45134,11 +44612,12 @@ class AutoMunge:
 
       if labels_column is False:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "featureselection not available without labels_column in training set")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "featureselection not available without labels_column in training set")
+        self.__autoprint('warning', '')
 
         labels_column_for_featureselect_valresult = True
         logger_dict['validations'].update({'labels_column_for_featureselect_valresult' : labels_column_for_featureselect_valresult})
+        logger = self.__logger_append(logger)
         
         madethecut = []
         FSmodel = False
@@ -45147,14 +44626,16 @@ class AutoMunge:
         featureimportance = {}
         logger_dict['validations'].update({'FS_numeric_data_result': False})
         logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
 
       elif len(list(df_train)) < 2:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "featureselection not available without at least two features in training set")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "featureselection not available without at least two features in training set")
+        self.__autoprint('warning', '')
 
         twofeatures_for_featureselect_valresult = True
         logger_dict['validations'].update({'twofeatures_for_featureselect_valresult' : twofeatures_for_featureselect_valresult})
+        logger = self.__logger_append(logger)
 
         madethecut = []
         FSmodel = False
@@ -45163,6 +44644,7 @@ class AutoMunge:
         featureimportance = {}
         logger_dict['validations'].update({'FS_numeric_data_result': False})
         logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
 
       else:
 
@@ -45172,7 +44654,7 @@ class AutoMunge:
                           numbercategoryheuristic, assigncat, transformdict, \
                           processdict, featurethreshold, featureselection, \
                           ML_cmnd, process_dict, valpercent, printstatus, NArw_marker, \
-                          assignparam, entropy_seeds, random_generator, sampling_dict)
+                          assignparam, entropy_seeds, random_generator, sampling_dict, logger)
 
       #the final returned featureimportance report consolidates the sorted results with raw data
       featureimportance = {'FS_sorted'     : FS_sorted, \
@@ -45183,12 +44665,12 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus in {True, 'summary'}:
-        self.__autoprint(printstatus, 'info', "_______________")
-        self.__autoprint(printstatus, 'info', "Feature Importance results returned")
-        self.__autoprint(printstatus, 'info', "")
-        self.__autoprint(printstatus, 'info', "_______________")
-        self.__autoprint(printstatus, 'info', "Automunge Complete")
-        self.__autoprint(printstatus, 'info', "")
+        self.__autoprint('info', "_______________")
+        self.__autoprint('info', "Feature Importance results returned")
+        self.__autoprint('info', "")
+        self.__autoprint('info', "_______________")
+        self.__autoprint('info', "Automunge Complete")
+        self.__autoprint('info', "")
 
         return [], [], [], \
         [], [], [], \
@@ -45204,10 +44686,12 @@ class AutoMunge:
       featureimportance = {}
       logger_dict['validations'].update({'FS_numeric_data_result': False})
       logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+      logger = self.__logger_append(logger)
 
     #validate that a model was trained
     check_FSmodel_result = self.__check_FSmodel(featureselection, FSmodel, printstatus)
     logger_dict['validations'].update({'check_FSmodel_result' : check_FSmodel_result})
+    logger = self.__logger_append(logger)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge Misc dataframe preps and validations
@@ -45218,14 +44702,15 @@ class AutoMunge:
 
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Begin Automunge")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Begin Automunge")
+    self.__autoprint('info', "")
 
     check_df_train_type_result, check_df_test_type_result = \
     self.__check_df_type(df_train, df_test, printstatus)
     logger_dict['validations'].update({'check_df_train_type_result' : check_df_train_type_result, \
                                    'check_df_test_type_result' : check_df_test_type_result})
+    logger = self.__logger_append(logger)
 
     #copy input dataframes to internal state so as not to edit exterior objects
     #this helps with recursion in feature importance
@@ -45249,6 +44734,7 @@ class AutoMunge:
       check_np_shape_train_result, check_np_shape_test_result = False, False
     logger_dict['validations'].update({'check_np_shape_train_result' : check_np_shape_train_result, \
                                    'check_np_shape_test_result' : check_np_shape_test_result})
+    logger = self.__logger_append(logger)
 
     #received numpy tabular data is converted to pandas, which will result in index integer column headers
     if isinstance(checknp, type(df_train)):
@@ -45269,6 +44755,7 @@ class AutoMunge:
 
     logger_dict['validations'].update({'checkseries_train_result' : checkseries_train_result, \
                                    'checkseries_test_result' : checkseries_test_result})
+    logger = self.__logger_append(logger)
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     unique_string_headers_valresult = False
@@ -45276,9 +44763,10 @@ class AutoMunge:
     if len(set(trainlabels)) != len(set(df_train)):
       unique_string_headers_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: column header string conversion resulted in redundant headers (may be case where e.g. 1 and '1' are both headers)")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error: column header string conversion resulted in redundant headers (may be case where e.g. 1 and '1' are both headers)")
+      self.__autoprint('warning', '')
     logger_dict['validations'].update({'unique_string_headers_valresult' : unique_string_headers_valresult})
+    logger = self.__logger_append(logger)
     
     df_train.columns = trainlabels
 
@@ -45291,8 +44779,8 @@ class AutoMunge:
       if labels_column not in df_train.columns:
         labels_column_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: labels_column not found as a column header in df_train")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "error: labels_column not found as a column header in df_train")
+        self.__autoprint('warning', '')
     if isinstance(labels_column, list):
       for labels_column_entry in labels_column:
         if not isinstance(labels_column_entry, set): 
@@ -45300,9 +44788,10 @@ class AutoMunge:
           if labels_column_entry not in df_train.columns:
             labels_column_valresult = True
             # if printstatus != 'silent':
-            self.__autoprint(printstatus, 'warning', "error: labels_column not found as a column header in df_train")
-            self.__autoprint(printstatus, 'warning', '')
+            self.__autoprint('warning', "error: labels_column not found as a column header in df_train")
+            self.__autoprint('warning', '')
     logger_dict['validations'].update({'labels_column_valresult' : labels_column_valresult})
+    logger = self.__logger_append(logger)
 
     #convention is that if df_test provided as False then we'll create
     #a dummy set derived from df_train's first row
@@ -45331,6 +44820,7 @@ class AutoMunge:
     self.__check_columnheaders(list(df_train), printstatus)
 
     logger_dict['validations'].update({'check_columnheaders_result' : check_columnheaders_result})
+    logger = self.__logger_append(logger)
 
     origcolumns_all = list(df_train)
 
@@ -45346,6 +44836,7 @@ class AutoMunge:
                                    'check_assignnan_categories_result'      : check_assignnan_categories_result, \
                                    'check_assignnan_columns_result'         : check_assignnan_columns_result, \
                                    'assignnan_actions_valresult'            : assignnan_actions_valresult})
+    logger = self.__logger_append(logger)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge noise_augment duplicate extraction
@@ -45430,6 +44921,7 @@ class AutoMunge:
     #this is not logged with other suffix overlaps because not an error channel, just results in different index column header
     logger_dict['validations'].update({'indexcolumn_valresult' : indexcolumn_valresult,
                                    'origindexcolumn_valresult' : origindexcolumn_valresult})
+    logger = self.__logger_append(logger)
 
     #this just casts trainID_column as list
     if trainID_column is False:
@@ -45468,27 +44960,28 @@ class AutoMunge:
     if len(set(testID_struckfeatures) & set(trainID_retainedfeatures)) > 0:
       testID_struck_includes_trainID_retained = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', 'error: testID_column specification resulted in struck ID columns')
-      self.__autoprint(printstatus, 'warning', 'that were retained ID columns in the automunge train set')
-      self.__autoprint(printstatus, 'warning', 'for ID columns:')
-      self.__autoprint(printstatus, 'warning', set(testID_struckfeatures) & set(trainID_retainedfeatures))
-      self.__autoprint(printstatus, 'warning', 'to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', 'error: testID_column specification resulted in struck ID columns')
+      self.__autoprint('warning', 'that were retained ID columns in the automunge train set')
+      self.__autoprint('warning', 'for ID columns:')
+      self.__autoprint('warning', set(testID_struckfeatures) & set(trainID_retainedfeatures))
+      self.__autoprint('warning', 'to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
+      self.__autoprint('warning', '')
 
     #now run a quick validation that each entry in trainID_column list present in df_train
     trainID_column_subset_of_df_train_valresult = False
     if not set(trainID_column).issubset(set(df_train)):
       trainID_column_subset_of_df_train_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: entries to trainID_column were not found in df_train")
-      self.__autoprint(printstatus, 'warning', "note that trainID_column can either be passed as string for single entry")
-      self.__autoprint(printstatus, 'warning', "or trainID_column can be passed as a list for multiple entries")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "error: entries to trainID_column were not found in df_train")
+      self.__autoprint('warning', "note that trainID_column can either be passed as string for single entry")
+      self.__autoprint('warning', "or trainID_column can be passed as a list for multiple entries")
+      self.__autoprint('warning', "")
     
     logger_dict['validations'].update({'trainID_column_subset_of_df_train_valresult' : trainID_column_subset_of_df_train_valresult,
                                    'trainID_columns_in_df_test' : trainID_columns_in_df_test,
                                    'testID_struck_includes_trainID_retained' : testID_struck_includes_trainID_retained,
                                    })
+    logger = self.__logger_append(logger)
     
     #this is trainID_column before adding index columns
     trainID_column_features = trainID_column.copy()
@@ -45520,14 +45013,15 @@ class AutoMunge:
     if not set(testID_column).issubset(set(df_test)):
       testID_column_subset_of_df_test_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: entries to testID_column were not found in df_test")
-      self.__autoprint(printstatus, 'warning', "note that testID_column can either be passed as string for single entry")
-      self.__autoprint(printstatus, 'warning', "or testID_column can be passed as a list for multiple entries")
-      self.__autoprint(printstatus, 'warning', "Note that testID_column is primarily intended for use when ID columns in df_test")
-      self.__autoprint(printstatus, 'warning', "are different than those ID columns from trainID_column.")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "error: entries to testID_column were not found in df_test")
+      self.__autoprint('warning', "note that testID_column can either be passed as string for single entry")
+      self.__autoprint('warning', "or testID_column can be passed as a list for multiple entries")
+      self.__autoprint('warning', "Note that testID_column is primarily intended for use when ID columns in df_test")
+      self.__autoprint('warning', "are different than those ID columns from trainID_column.")
+      self.__autoprint('warning', "")
     
     logger_dict['validations'].update({'testID_column_subset_of_df_test_valresult' : testID_column_subset_of_df_test_valresult})
+    logger = self.__logger_append(logger)
 
     #for unnamed non-range index we'll rename as 'Orig_index_###' and include that in ID sets
     if type(df_test.index) != pd.RangeIndex or nonrange_extract_marker is True:
@@ -45716,13 +45210,15 @@ class AutoMunge:
     if df_train.shape[1] != df_test.shape[1]:
       validate_traintest_columnnumbercompare = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error, different number of columns in train and test sets")
-      self.__autoprint(printstatus, 'warning', "(This assessment excludes labels and ID columns.)")
-      self.__autoprint(printstatus, 'warning', "Note that if label column present in df_train and not df_test")
-      self.__autoprint(printstatus, 'warning', "it should be designated with labels_column parameter.")
+      self.__autoprint('warning', "error, different number of columns in train and test sets")
+      self.__autoprint('warning', "(This assessment excludes labels and ID columns.)")
+      self.__autoprint('warning', "Note that if label column present in df_train and not df_test")
+      self.__autoprint('warning', "it should be designated with labels_column parameter.")
       logger_dict['validations'].update({'validate_traintest_columnnumbercompare' : validate_traintest_columnnumbercompare})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_traintest_columnnumbercompare' : validate_traintest_columnnumbercompare})
+    logger = self.__logger_append(logger)
 
     #check column headers are consistent (this works independent of order)
     columns_train = set(list(df_train))
@@ -45731,11 +45227,13 @@ class AutoMunge:
     if columns_train != columns_test:
       validate_traintest_columnlabelscompare = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error, different column labels in the train and test set")
-      self.__autoprint(printstatus, 'warning', "(This assessment excludes labels and ID columns.)")
+      self.__autoprint('warning', "error, different column labels in the train and test set")
+      self.__autoprint('warning', "(This assessment excludes labels and ID columns.)")
       logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+    logger = self.__logger_append(logger)
 
     column_labels_count = len(list(df_train))
     unique_column_labels_count = len(set(list(df_train)))
@@ -45743,10 +45241,12 @@ class AutoMunge:
     if unique_column_labels_count < column_labels_count:
       validate_redundantcolumnlabels = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error, redundant column labels found, each column requires unique label")
+      self.__autoprint('warning', "error, redundant column labels found, each column requires unique label")
       logger_dict['validations'].update({'validate_redundantcolumnlabels' : validate_redundantcolumnlabels})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_redundantcolumnlabels' : validate_redundantcolumnlabels})
+    logger = self.__logger_append(logger)
 
     columns_train = list(df_train)
     columns_test = list(df_test)
@@ -45754,11 +45254,13 @@ class AutoMunge:
     if columns_train != columns_test:
       validate_traintest_columnorder = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
-      self.__autoprint(printstatus, 'warning', "(This assessment excludes labels and ID columns.)")
+      self.__autoprint('warning', "error, different order of column labels in the train and test set")
+      self.__autoprint('warning', "(This assessment excludes labels and ID columns.)")
       logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+    logger = self.__logger_append(logger)
 
     #extract column lists again but this time as a list
     columns_train = list(df_train)
@@ -45781,7 +45283,7 @@ class AutoMunge:
     self.__initialize_sampling_report_dict(df_train, assigncat, 
                                              assignparam, transformdict, processdict, 
                                              sampling_dict, printstatus, numbercategoryheuristic,
-                                             powertransform, evalcat)
+                                             powertransform, evalcat, logger)
 
     #initialize postprocess_dict
     #the dictionary / list values are populated through processing
@@ -45836,6 +45338,7 @@ class AutoMunge:
     self.__messy_data_prep(protected_features, assigncat, assign_param, postprocess_dict, printstatus)
 
     logger_dict['validations'].update({'messy_set_overlap_valresult' : messy_set_overlap_valresult})
+    logger = self.__logger_append(logger)
 
     #since some of __messy_data_prep appends set entries to protected_features
     #we'll have convention of sorting protected_features to ensure consistent order between automunge calls
@@ -45846,9 +45349,10 @@ class AutoMunge:
     if len(set(protected_features) - set(columns_train)) > 0:
       protected_features_in_headers_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error channel: a protected feature appears to have been specified in assignparam that was not found in df_train headers")
-      self.__autoprint(printstatus, 'warning', "this may also be a result of set bracket specification to assigncat having entries not found in df_train")
+      self.__autoprint('warning', "error channel: a protected feature appears to have been specified in assignparam that was not found in df_train headers")
+      self.__autoprint('warning', "this may also be a result of set bracket specification to assigncat having entries not found in df_train")
     logger_dict['validations'].update({'protected_features_in_headers_valresult' : protected_features_in_headers_valresult})
+    logger = self.__logger_append(logger)
     
     #mirror assigncat which will populate the returned categories from eval function
     final_assigncat = self.__autocopy(assigncat)
@@ -45914,6 +45418,7 @@ class AutoMunge:
                                 assign_param,
                                 printstatus,
                                 inplace,
+                                logger,
                                 labels = False,
                               )
 
@@ -45958,13 +45463,14 @@ class AutoMunge:
                                 assign_param,
                                 printstatus,
                                 inplace,
+                                logger,
                                 labels = True,
                               )
 
     #prepare labelsencoding_dict for public label inversion with encryption in privacy_encode = True case
     #this also updates mirror_dict to include labelctgy
     labelsencoding_dict, mirror_dict, postprocess_dict  = \
-    self.__prepare_labelsencoding_dict(postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus)
+    self.__prepare_labelsencoding_dict(postprocess_dict, processdict, transform_dict, mirror_dict, labels_column_listofcolumns, printstatus, logger)
 
     #_________________________________________________________
     #__WorkflowBlock: automunge protected feature processing
@@ -46004,6 +45510,7 @@ class AutoMunge:
                                   assign_param,
                                   printstatus,
                                   inplace,
+                                  logger,
                                   labels = False,
                                 )
 
@@ -46023,8 +45530,8 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus is True:
-    self.__autoprint(printstatus, 'debug', "______")
-    self.__autoprint(printstatus, 'debug', "")
+    self.__autoprint('debug', "______")
+    self.__autoprint('debug', "")
 
     #This assembles the assignments of posttransform column headers for each infill type
     #(user is able to assign column headers in assigninfill without or without suffix appenders)
@@ -46050,9 +45557,10 @@ class AutoMunge:
     df_train, df_test, postprocess_dict, infill_validations, sorted_columns_by_NaN_list, stop_count = \
     self.__apply_am_infill(df_train, df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, infilliterate, printstatus, list(df_train), \
-                        masterNArows_train, masterNArows_test, randomseed, ML_cmnd)
+                        masterNArows_train, masterNArows_test, randomseed, ML_cmnd, logger)
 
     logger_dict['validations'].update(infill_validations)
+    logger = self.__logger_append(logger)
 
     #now a cleanup to the postprocess_dict['autoMLer'] data structure to only record entries that were inspected for infill
     postprocess_dict, ML_cmnd = \
@@ -46091,15 +45599,15 @@ class AutoMunge:
       if len(trimcolumns) > 0:
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Begin feature importance dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "   method: ", featureselection)
-        self.__autoprint(printstatus, 'debug', "threshold: ", featurethreshold)
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "trimmed columns: ")
-        self.__autoprint(printstatus, 'debug', trimcolumns)
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Begin feature importance dimensionality reduction")
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "   method: ", featureselection)
+        self.__autoprint('debug', "threshold: ", featurethreshold)
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "trimmed columns: ")
+        self.__autoprint('debug', trimcolumns)
+        self.__autoprint('debug', "")
 
       #trim columns
       for trimmee in trimcolumns:
@@ -46109,9 +45617,9 @@ class AutoMunge:
         
       if len(trimcolumns) > 0:
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "returned columns: ")
-        self.__autoprint(printstatus, 'debug', list(df_train))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "returned columns: ")
+        self.__autoprint('debug', list(df_train))
+        self.__autoprint('debug', "")
 
     #_________________________________________________________
     #__WorkflowBlock: automunge PCA dimensionality reduction
@@ -46147,6 +45655,7 @@ class AutoMunge:
 
       logger_dict['validations'].update({'PCA_train_first_numeric_data_result': PCA_train_first_numeric_data_result})
       logger_dict['validations'].update({'PCA_train_first_all_valid_entries_result': PCA_train_first_all_valid_entries_result})
+      logger = self.__logger_append(logger)
         
       #also note for cases of heuristic inspection based on PCAn_components as None
       #if conditions of heuristic are met _evalPCA will derive a new n_components as integer
@@ -46189,12 +45698,12 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Applying PCA dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "Before PCA train set column count:")
-        self.__autoprint(printstatus, 'debug', len(df_train.columns))
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Applying PCA dimensionality reduction")
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "Before PCA train set column count:")
+        self.__autoprint('debug', len(df_train.columns))
+        self.__autoprint('debug', '')
         
         #PCA applied marker set to true
         PCA_applied = True
@@ -46207,9 +45716,9 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Columns served to PCA:")
-        self.__autoprint(printstatus, 'debug', PCA_transformed_columns)
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Columns served to PCA:")
+        self.__autoprint('debug', PCA_transformed_columns)
+        self.__autoprint('debug', '')
 
         #run validation to ensure the PCA sets contain all valid numeric entries
         PCA_train_numeric_data_result, PCA_train_all_valid_entries_result = \
@@ -46217,12 +45726,14 @@ class AutoMunge:
   
         logger_dict['validations'].update({'PCA_train_numeric_data_result': PCA_train_numeric_data_result})
         logger_dict['validations'].update({'PCA_train_all_valid_entries_result': PCA_train_all_valid_entries_result})
+        logger = self.__logger_append(logger)
       
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
         self.__validate_allvalidnumeric(PCAset_test, printstatus)
   
         logger_dict['validations'].update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         logger_dict['validations'].update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
+        logger = self.__logger_append(logger)
 
         #this is to train the PCA model and perform transforms on train and test set
         PCAset_train, PCAset_test, postprocess_dict, PCA_columns_valresult = \
@@ -46230,17 +45741,19 @@ class AutoMunge:
                          randomseed, ML_cmnd)
 
         logger_dict['validations'].update({'PCA_columns_valresult': PCA_columns_valresult})
+        logger = self.__logger_append(logger)
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "PCA model applied: ")
-        self.__autoprint(printstatus, 'debug', PCActgy)
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "PCA model applied: ")
+        self.__autoprint('debug', PCActgy)
+        self.__autoprint('debug', "")
 
         PCA_suffixoverlap_results = \
         self.__df_check_suffixoverlap(df_train, list(PCAset_train), suffixoverlap_results = {}, printstatus = postprocess_dict['printstatus'])
 
         logger_dict['validations'].update({'PCA_suffixoverlap_results':PCA_suffixoverlap_results})
+        logger = self.__logger_append(logger)
 
         #PCA_retain can be activated to retain columns serving as PCA basis
         PCA_retain = False
@@ -46270,12 +45783,12 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "returned PCA columns: ")
-        self.__autoprint(printstatus, 'debug', returned_PCA_columns)
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "After PCA train set column count:")
-        self.__autoprint(printstatus, 'debug', len(df_train.columns))
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "returned PCA columns: ")
+        self.__autoprint('debug', returned_PCA_columns)
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "After PCA train set column count:")
+        self.__autoprint('debug', len(df_train.columns))
+        self.__autoprint('debug', '')
 
       else:
         #else we'll just populate the PCAmodel slot in postprocess_dict with a placeholder
@@ -46288,8 +45801,8 @@ class AutoMunge:
         logger_dict['validations'].update({'PCA_train_all_valid_entries_result': False})
         logger_dict['validations'].update({'PCA_test_numeric_data_result': False})
         logger_dict['validations'].update({'PCA_test_all_valid_entries_result': False})
-
         logger_dict['validations'].update({'PCA_suffixoverlap_results':{}})
+        logger = self.__logger_append(logger)
 
         if 'dimensionality_reduction_driftstats' not in postprocess_dict:
           postprocess_dict.update({'dimensionality_reduction_driftstats' : {}})
@@ -46305,8 +45818,8 @@ class AutoMunge:
       logger_dict['validations'].update({'PCA_train_all_valid_entries_result': False})
       logger_dict['validations'].update({'PCA_test_numeric_data_result': False})
       logger_dict['validations'].update({'PCA_test_all_valid_entries_result': False})
-
       logger_dict['validations'].update({'PCA_suffixoverlap_results':{}})
+      logger = self.__logger_append(logger)
 
       if 'dimensionality_reduction_driftstats' not in postprocess_dict:
         postprocess_dict.update({'dimensionality_reduction_driftstats' : {}})
@@ -46321,7 +45834,7 @@ class AutoMunge:
 
     #Binary dimensionality reduction to train and test data goes here
     df_train, df_test, Binary_dict, postprocess_dict, final_returned_Binary_columns, final_returned_Binary_sets, Binary_orig, Binary = \
-    self.__BinaryConsolidate(df_train, df_test, Binary, postprocess_dict, 'Binary')
+    self.__BinaryConsolidate(df_train, df_test, Binary, postprocess_dict, 'Binary', logger)
 
     #record Binary drift stats for potential inspection with postmunge driftreport
     if Binary is not False:
@@ -46333,7 +45846,7 @@ class AutoMunge:
     #Binary dimensionality reduction to df_labels and df_testlabels data goes here
     if isinstance(labels_column, list) and len(labels_column) > 1 and isinstance(labels_column[0], set):
       df_labels, df_testlabels, labels_Binary_dict, postprocess_dict, final_returned_labelBinary_columns, final_returned_labelBinary_sets, labelBinary_orig, labelBinary = \
-      self.__BinaryConsolidate(df_labels, df_testlabels, labels_column, postprocess_dict, 'LabelBinary')
+      self.__BinaryConsolidate(df_labels, df_testlabels, labels_column, postprocess_dict, 'LabelBinary', logger)
     else:
       labels_Binary_dict = {}
       labelBinary_orig = False
@@ -46353,6 +45866,7 @@ class AutoMunge:
 
     if 'Binary_suffixoverlap_results' not in logger_dict['validations']:
       logger_dict['validations'].update({'Binary_suffixoverlap_results' : {}})
+      logger = self.__logger_append(logger)
 
     #_____
 
@@ -46386,12 +45900,12 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin label rebalancing")
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "Before rebalancing train set row count = ")
-      self.__autoprint(printstatus, 'debug', df_labels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin label rebalancing")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "Before rebalancing train set row count = ")
+      self.__autoprint('debug', df_labels.shape[0])
+      self.__autoprint('debug', "")
 
       if trainID_column is not False:
         df_train = pd.concat([df_train, df_trainID], axis=1)                        
@@ -46414,22 +45928,22 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "After rebalancing train set row count = ")
-      self.__autoprint(printstatus, 'debug', df_labels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "After rebalancing train set row count = ")
+      self.__autoprint('debug', df_labels.shape[0])
+      self.__autoprint('debug', "")
 
     if TrainLabelFreqLevel in {'test', 'traintest'} \
     and labelspresenttest is True:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin test set label rebalancing")
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "Before rebalancing test set row count = ")
-      self.__autoprint(printstatus, 'debug', df_testlabels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin test set label rebalancing")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "Before rebalancing test set row count = ")
+      self.__autoprint('debug', df_testlabels.shape[0])
+      self.__autoprint('debug', "")
 
       if testID_column is not False:
         df_test = pd.concat([df_test, df_testID], axis=1)                        
@@ -46452,10 +45966,10 @@ class AutoMunge:
           
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "After rebalancing test set row count = ")
-      self.__autoprint(printstatus, 'debug', df_testlabels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "After rebalancing test set row count = ")
+      self.__autoprint('debug', df_testlabels.shape[0])
+      self.__autoprint('debug', "")
 
     #_________________________________________________________
     #__WorkflowBlock: automunge row shuffling
@@ -46619,8 +46133,10 @@ class AutoMunge:
       excl_suffixoverlap_results = \
       self.__df_check_suffixoverlap(df_train, postprocess_dict['excl_columns_without_suffix'], suffixoverlap_results = {}, printstatus = postprocess_dict['printstatus'])
       logger_dict['validations'].update({'excl_suffixoverlap_results' : excl_suffixoverlap_results})
+      logger = self.__logger_append(logger)
     else:
       logger_dict['validations'].update({'excl_suffixoverlap_results' : {}})
+      logger = self.__logger_append(logger)
 
     #if excl_suffix is False we'll convert returned column headers to remove the '_excl' suffix
     if excl_suffix is False:
@@ -46981,9 +46497,9 @@ class AutoMunge:
         
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Preparing noise_augment duplicate number ", i+1)
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Preparing noise_augment duplicate number ", i+1)
+        self.__autoprint('debug', "")
       
         #if noise_augment was passed as integer dtype 
         #then first duplicate is prepared without noise
@@ -47014,7 +46530,7 @@ class AutoMunge:
                       sampling_dict = sampling_dict,
                       pandasoutput = 'dataframe',
                       randomseed = augrandomseed,
-                      logger_dict = logger_dict)
+                      logger = logger)
 
         #logger_dict validation results stored in logger_dict['noise_augment_validations']
         logger_dict['noise_augment_validations'] = self.__autocopy(logger_dict['validations'])
@@ -47062,9 +46578,9 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin validation set processing with Postmunge")
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin validation set processing with Postmunge")
+      self.__autoprint('debug', "")
 
       #(postmunge shuffletrain not needed since validation data was already shuffled in __df_split if shuffletrain was activated)
 
@@ -47091,7 +46607,7 @@ class AutoMunge:
                      random_generator = random_generator,
                      sampling_dict = sampling_dict,
                      randomseed = valrandomseed,
-                     logger_dict=logger_dict)
+                     logger=logger)
 
       #logger_dict validation results stored in logger_dict['val_validations']
       logger_dict['val_validations'] = self.__autocopy(logger_dict['validations'])
@@ -47140,25 +46656,25 @@ class AutoMunge:
     #printout display progress
     # if printstatus in {True, 'summary'}:
 
-    self.__autoprint(printstatus, 'info', "______")
-    self.__autoprint(printstatus, 'info', "")
-    self.__autoprint(printstatus, 'info', "versioning serial stamp:")
-    self.__autoprint(printstatus, 'info', version_combined)
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "______")
+    self.__autoprint('info', "")
+    self.__autoprint('info', "versioning serial stamp:")
+    self.__autoprint('info', version_combined)
+    self.__autoprint('info', "")
 
-    self.__autoprint(printstatus, 'info', "Automunge returned train column set: ")
-    self.__autoprint(printstatus, 'info', list(df_train))
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "Automunge returned train column set: ")
+    self.__autoprint('info', list(df_train))
+    self.__autoprint('info', "")
 
     if df_trainID.empty is False:
-      self.__autoprint(printstatus, 'info', "Automunge returned ID column set: ")
-      self.__autoprint(printstatus, 'info', list(df_trainID))
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "Automunge returned ID column set: ")
+      self.__autoprint('info', list(df_trainID))
+      self.__autoprint('info', "")
 
     if df_labels.empty is False:
-      self.__autoprint(printstatus, 'info', "Automunge returned label column set: ")
-      self.__autoprint(printstatus, 'info', list(df_labels))
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "Automunge returned label column set: ")
+      self.__autoprint('info', list(df_labels))
+      self.__autoprint('info', "")
           
     #else set output to numpy arrays
     if pandasoutput is False:
@@ -47192,7 +46708,7 @@ class AutoMunge:
 
     #then at completion of automunge(.), aggregate the suffixoverlap results
     #and do an additional printout if any column overlap error to be sure user sees message
-    postprocess_dict = self.__suffix_overlap_final_aggregation_and_printouts(postprocess_dict, logger_dict)
+    postprocess_dict = self.__suffix_overlap_final_aggregation_and_printouts(postprocess_dict, logger_dict, logger)
 
     #reset any entropy seeding entries which are specific to an automunge(.) or postmunge(.) call
     for entry in {'entropy_seeds', 'random_generator', 'sampling_dict'}:
@@ -47223,11 +46739,14 @@ class AutoMunge:
       postprocess_dict = \
       self.__encrypt_postprocess_dict(postprocess_dict, encrypt_key, privacy_encode, printstatus)
 
+    #final consolidation of logger_dict with any externally initialized logger diciotnary
+    logger.update(logger_dict)
+
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Automunge Complete")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Automunge Complete")
+    self.__autoprint('info', "")
 
     return df_train, df_trainID, df_labels, \
     df_validation1, df_validationID1, df_validationlabels1, \
@@ -47241,7 +46760,7 @@ class AutoMunge:
   #__FunctionBlock: postmunge process family functions
 
   def __postprocessfamily(self, df_test, column, origcategory, \
-                        transform_dict, postprocess_dict, assign_param):
+                        transform_dict, postprocess_dict, assign_param, logger):
     '''
     #as postmunge runs a for loop through each column, this is the  
     #first tier processing function applied which runs through the family primitives
@@ -47252,8 +46771,6 @@ class AutoMunge:
     #we will run in order of
     #siblings, cousins, parents, auntsuncles
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     inplaceperformed = False
     
@@ -47276,7 +46793,7 @@ class AutoMunge:
         #note we use the processparent function here
         df_test = \
         self.__postprocessparent(df_test, column, sibling, origcategory, final_upstream, \
-                              transform_dict, postprocess_dict, assign_param)
+                              transform_dict, postprocess_dict, assign_param, logger)
   
     #process the cousins (no downstream, supplemental)
     for cousin in transform_dict[origcategory]['cousins']:
@@ -47287,7 +46804,7 @@ class AutoMunge:
         #note we use the processsibling function here
         df_test = \
         self.__postprocesscousin(df_test, column, cousin, origcategory, final_upstream, \
-                                transform_dict, postprocess_dict, assign_param)
+                                transform_dict, postprocess_dict, assign_param, logger)
   
     #process the parents (with downstream, with replacement)
     for parent in transform_dict[origcategory]['parents']:
@@ -47297,7 +46814,7 @@ class AutoMunge:
       if parent != None:
         df_test = \
         self.__postprocessparent(df_test, column, parent, origcategory, final_upstream, \
-                              transform_dict, postprocess_dict, assign_param)
+                              transform_dict, postprocess_dict, assign_param, logger)
         
     #process the auntsuncles (no downstream, with replacement)
     for auntuncle in transform_dict[origcategory]['auntsuncles']:
@@ -47307,7 +46824,7 @@ class AutoMunge:
       if auntuncle != None:
         df_test = \
         self.__postprocesscousin(df_test, column, auntuncle, origcategory, final_upstream, \
-                                transform_dict, postprocess_dict, assign_param)
+                                transform_dict, postprocess_dict, assign_param, logger)
 
     return df_test
 
@@ -47316,8 +46833,6 @@ class AutoMunge:
     '''
     This functino deletes source columns for family primitives that included replacement.
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #if we had replacement transformations performed on first generation \
     #then delete the original column
@@ -47340,7 +46855,7 @@ class AutoMunge:
     return df_test
 
   def __postprocesscousin(self, df_test, column, cousin, origcategory, final_upstream, \
-                       transform_dict, postprocess_dict, assign_param):
+                       transform_dict, postprocess_dict, assign_param, logger):
     """
     #postprocesscousin is comparable to processcousin but applied in postmunge instead of automunge
     #a little simpler in that doesn't have to populate data structures, just applies transform functions
@@ -47350,8 +46865,6 @@ class AutoMunge:
     #takes precedence over a postprocess function
     #which takes precedence over a singleprocess function
     """
-
-    logger_dict = self.__check_logger_dict()
 
     process_dict = postprocess_dict['process_dict']
 
@@ -47421,7 +46934,7 @@ class AutoMunge:
     return df_test
 
   def __postprocessparent(self, df_test, column, parent, origcategory, final_upstream, \
-                      transform_dict, postprocess_dict, assign_param):
+                      transform_dict, postprocess_dict, assign_param, logger):
     """
     #postprocessparent is comparable to processparent but applied in postmunge instead of automunge
     #a little simpler in that doesn't have to populate data structures, just applies transform functions
@@ -47434,8 +46947,6 @@ class AutoMunge:
     #takes precedence over a postprocess function
     #which takes precedence over a singleprocess function
     """
-
-    logger_dict = self.__check_logger_dict()
 
     process_dict = postprocess_dict['process_dict']
     
@@ -47538,7 +47049,7 @@ class AutoMunge:
           #note the function applied is postprocessparent (using recursion)
           df_test = \
           self.__postprocessparent(df_test, parentcolumn, niecenephew, origcategory, final_downstream, \
-                                  transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param, logger)
 
       #process any friends
       for friend in transform_dict[parent]['friends']:
@@ -47549,7 +47060,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self.__postprocesscousin(df_test, parentcolumn, friend, origcategory, final_downstream, \
-                                  transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param, logger)
 
       #process any children
       for child in transform_dict[parent]['children']:
@@ -47561,7 +47072,7 @@ class AutoMunge:
           #parent column
           df_test = \
           self.__postprocessparent(df_test, parentcolumn, child, origcategory, final_downstream, \
-                                  transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param, logger)
 
       #process any coworkers
       for coworker in transform_dict[parent]['coworkers']:
@@ -47572,7 +47083,7 @@ class AutoMunge:
           #note the function applied is processcousin
           df_test = \
           self.__postprocesscousin(df_test, parentcolumn, coworker, origcategory, final_downstream, \
-                                  transform_dict, postprocess_dict, assign_param)
+                                  transform_dict, postprocess_dict, assign_param, logger)
 
     return df_test
 
@@ -47609,8 +47120,6 @@ class AutoMunge:
     And likewise a wrapper for custom inversions that may be performed in postmunge (_custom_inverseprocess_wrapper)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization_dict
     normkey = False
     if len(columnkey) > 0:      
@@ -47800,6 +47309,7 @@ class AutoMunge:
                                 assign_param,
                                 printstatus,
                                 inplace,
+                                logger,
                                 labels = False,
                                 masterNArows_test = pd.DataFrame(),
                                 postdrift_dict = {},
@@ -47810,22 +47320,20 @@ class AutoMunge:
     the labels case is to distinguish between applying function to features or labels
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     for column in columns_train:
       
       category = postprocess_dict['origcolumn'][column]['category']
       
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "______")
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "______")
+      self.__autoprint('debug', "")
       if labels is False:
-        self.__autoprint(printstatus, 'debug', "processing column: ", column)
+        self.__autoprint('debug', "processing column: ", column)
       else:
-        self.__autoprint(printstatus, 'debug', "processing labels column: ", column)
-      self.__autoprint(printstatus, 'debug', "    root category: ", category)
-      self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "processing labels column: ", column)
+      self.__autoprint('debug', "    root category: ", category)
+      self.__autoprint('debug', "")
       
       #assignnan application
       df_test = self.__assignnan_convert(df_test, column, category, postprocess_dict['assignnan'], postprocess_dict)
@@ -47843,12 +47351,12 @@ class AutoMunge:
           self.__getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "original source column drift stats:")
-          self.__autoprint(printstatus, 'debug', postprocess_dict['drift_dict'][column])
-          self.__autoprint(printstatus, 'debug', "")
-          self.__autoprint(printstatus, 'debug', "new source column drift stats:")
-          self.__autoprint(printstatus, 'debug', postdrift_dict[column])
-          self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "original source column drift stats:")
+          self.__autoprint('debug', postprocess_dict['drift_dict'][column])
+          self.__autoprint('debug', "")
+          self.__autoprint('debug', "new source column drift stats:")
+          self.__autoprint('debug', postdrift_dict[column])
+          self.__autoprint('debug', "")
 
           #now append that NArows onto a master NA rows df
           if column not in postprocess_dict['excluded_from_postmunge_getNArows']:
@@ -47865,7 +47373,7 @@ class AutoMunge:
       #process family
       df_test = \
       self.__postprocessfamily(df_test, column, category, \
-                               transform_dict, postprocess_dict, assign_param)
+                               transform_dict, postprocess_dict, assign_param, logger)
       
       #delete columns subject to replacement
       df_test = \
@@ -47874,9 +47382,9 @@ class AutoMunge:
       
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', " returned columns:")
-      self.__autoprint(printstatus, 'debug', postprocess_dict['origcolumn'][column]['columnkeylist'])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', " returned columns:")
+      self.__autoprint('debug', postprocess_dict['origcolumn'][column]['columnkeylist'])
+      self.__autoprint('debug', "")
         
       #this defragments the dataframe
       if inplace is not True:
@@ -47903,8 +47411,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48003,8 +47509,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48088,8 +47592,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48176,8 +47678,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48255,8 +47755,6 @@ class AutoMunge:
     #based on division by max absolute values from training set.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48339,8 +47837,6 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48447,8 +47943,6 @@ class AutoMunge:
     #if only have training but not test data handy, use same training data for both dataframe inputs
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48538,8 +48032,6 @@ class AutoMunge:
     #returns error message if more than two categories remain
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -48622,8 +48114,6 @@ class AutoMunge:
     #corresponding to _custom_train_onht
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #access the train set properties from normalization_dict
     str_convert = normalization_dict['str_convert']
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
@@ -48679,8 +48169,6 @@ class AutoMunge:
     #same as 'text' transform except labels returned column with integer instead of entry appender
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -48755,8 +48243,6 @@ class AutoMunge:
     #in which case each row is parsed
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #access parameters from normalization_dict
     GPS_convention = normalization_dict['GPS_convention']
     comma_addresses = normalization_dict['comma_addresses']
@@ -48814,8 +48300,6 @@ class AutoMunge:
     #coresponds to _process_mlti
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49084,8 +48568,6 @@ class AutoMunge:
     #otherwise this is a passthrough transform
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -49158,8 +48640,6 @@ class AutoMunge:
     #fromthe train set
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49281,8 +48761,6 @@ class AutoMunge:
     #this alternative to splt may be benficial for instance if one wanted to follow with an ordl encoding
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49433,8 +48911,6 @@ class AutoMunge:
     #sp19 is comparable to sp15 but with a returned binary encoding aggregation
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49618,8 +49094,6 @@ class AutoMunge:
     #only complete entries are checked for presence as subsets in other entries
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49746,8 +49220,6 @@ class AutoMunge:
     #sbs3 is comparable to sbst but with a returned binary encoding aggregation
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -49943,8 +49415,6 @@ class AutoMunge:
     #user can manually specify a vocab_size with vocab-size parameter
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -50004,8 +49474,6 @@ class AutoMunge:
         converts a string to list of words by splitting words from space characters
         assumes any desired special characters have already been stripped
         """
-
-        logger_dict = self.__check_logger_dict()
 
         wordlist = []
         j = 0
@@ -50161,8 +49629,6 @@ class AutoMunge:
     #or user can manually specify a vocab_size instead of relying on heuristic
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -50286,8 +49752,6 @@ class AutoMunge:
     #missing values are ignored by default
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -50390,8 +49854,6 @@ class AutoMunge:
     #for more efficient application in postmunge
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -50559,8 +50021,6 @@ class AutoMunge:
     #test set not found in train set
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -50732,8 +50192,6 @@ class AutoMunge:
     #(e.g. entries at end of list are prioritized over beginning)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -50856,8 +50314,6 @@ class AutoMunge:
     #test_same_as_train as True/False
     #where True copiues overlap_dict from train for test, False parses test entries not found in train
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -51001,8 +50457,6 @@ class AutoMunge:
     #corresponding to _custom_train_ordl
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #access the train set properties from normalization_dict
     str_convert = normalization_dict['str_convert']
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
@@ -51043,8 +50497,6 @@ class AutoMunge:
     #and consolidates larger activations
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51120,8 +50572,6 @@ class AutoMunge:
     #test sets recive comparable encoding
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51193,8 +50643,6 @@ class AutoMunge:
     #corresponding to _custom_train_1010
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #access the train set properties from normalization_dict
     str_convert = normalization_dict['str_convert']
     inverse_consolidation_translate_dict = normalization_dict['inverse_consolidation_translate_dict']
@@ -51253,8 +50701,6 @@ class AutoMunge:
     #accepts parameter 'suffix' for returned column header suffix
     #accets parameter 'function' to distinguish between sin/cos
     """
-
-    logger_dict = self.__check_logger_dict()
 
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -51407,8 +50853,6 @@ class AutoMunge:
     #accepts parameter 'normalization' to distinguish between zscore/minmax/unscaled
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51482,8 +50926,6 @@ class AutoMunge:
     Corresponds to _process_qttf
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51537,8 +50979,6 @@ class AutoMunge:
     Applies box-cox method within postmunge function.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51600,8 +51040,8 @@ class AutoMunge:
       if max_test > (2 ** 31 - 1):
         mdf_test.loc[:, suffixcolumn] = 0
         # if postprocess_dict['printstatus'] != 'silent':
-        self.__autoprint(postprocess_dict['printstatus'], 'warning', "overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
-        self.__autoprint(postprocess_dict['printstatus'], 'warning', '')
+        self.__autoprint('warning', "overflow condition found in boxcox transform to test set, column set to 0: ", suffixcolumn)
+        self.__autoprint('warning', '')
       
     else:
 
@@ -51626,8 +51066,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51698,8 +51136,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51770,8 +51206,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51843,8 +51277,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51904,9 +51336,7 @@ class AutoMunge:
     #replaces non-numeric entries with set mean after subtraction
     #returns same dataframes with new column of name suffixcolumn
     '''
-
-    logger_dict = self.__check_logger_dict()
-        
+    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -51967,8 +51397,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52027,8 +51455,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52086,9 +51512,7 @@ class AutoMunge:
     #replaces non-numeric entries with set mean after raise
     #returns same dataframes with new column of name suffixcolumn
     '''
-
-    logger_dict = self.__check_logger_dict()
-        
+    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52147,8 +51571,6 @@ class AutoMunge:
     #returns same dataframes with new column of name suffixcolumn
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52210,8 +51632,6 @@ class AutoMunge:
     #accepts boolean 'negvalues' parameter, defaults False, True activates encoding for values <0
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -52379,8 +51799,6 @@ class AutoMunge:
     #negative values allows, comparable to pwr2
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52562,8 +51980,6 @@ class AutoMunge:
     #suffix appender is '_bins_#'' where # is integer for bin id
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52646,8 +52062,6 @@ class AutoMunge:
     
     #bsor is comparable to bins but returns ordinal encoded column
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #normkey used to retrieve the normalization dictionary 
     normkey = False
@@ -52737,8 +52151,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -52817,8 +52229,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -52895,8 +52305,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -52978,8 +52386,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -53063,8 +52469,6 @@ class AutoMunge:
     #such as after z-score normalization)
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -53191,8 +52595,6 @@ class AutoMunge:
     #removes buckets without activations in train set
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -53263,8 +52665,6 @@ class AutoMunge:
     #removes buckets without activations in train set
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:
@@ -53335,8 +52735,6 @@ class AutoMunge:
     #segments without activations are included
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -53416,8 +52814,6 @@ class AutoMunge:
     #segments without activations are included
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -53509,8 +52905,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -53882,8 +53276,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -54280,8 +53672,6 @@ class AutoMunge:
     #multiplier/offset based on posttransform values, muoltiplier applied betfore offset
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -54728,8 +54118,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -54945,8 +54333,6 @@ class AutoMunge:
     #in automunge df_test is treated as test data by default
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -55282,8 +54668,6 @@ class AutoMunge:
     #otherwise this is a passthrough transform
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -55756,8 +55140,6 @@ class AutoMunge:
     #flip_prob/test_flip_prob can also be passed as list of condidate values or as scipy stats distribution
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -55967,8 +55349,6 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -56020,8 +55400,6 @@ class AutoMunge:
     #we'll simply maintain the same column but with a suffix to the header
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #normkey used to retrieve the normalization dictionary 
     normkey = False
     if len(columnkey) > 0:      
@@ -56105,8 +55483,6 @@ class AutoMunge:
     #df_test_fillfeatures
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
 
     #if category in {'nmbr', 'nbr2', 'bxcx', 'bnry', 'text', 'bins', 'bint'}:
@@ -56181,8 +55557,6 @@ class AutoMunge:
     #other ML architectures such a SVM or something SGD based for instance
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #MLinfilltype distinguishes between classifier/regressor, single/multi column, ordinal/onehot/binary, etc
     #see potential values documented in assembleprocessdict function
     MLinfilltype = postprocess_dict['process_dict'][category]['MLinfilltype']
@@ -56289,7 +55663,7 @@ class AutoMunge:
     return df_testinfill
 
   def __postMLinfillfunction(self, df_test, column, postprocess_dict, \
-                            masterNArows_test, printstatus):
+                            masterNArows_test, printstatus, logger):
     '''
     #new function ML infill, generalizes the MLinfill application
     #def __MLinfill (df_train, df_test, column, postprocess_dict, \
@@ -56300,8 +55674,6 @@ class AutoMunge:
     #we prefer this convention for support of common operations independant of single or multi column sets
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     if postprocess_dict['column_dict'][column]['infillcomplete'] is False:
 
       columnslist = postprocess_dict['column_dict'][column]['columnslist']
@@ -56333,7 +55705,7 @@ class AutoMunge:
       postprocess_dict = \
       self.__check_ML_infill_2(False, False, 
                              False, df_test_fillfeatures, printstatus,
-                             column, postprocess_dict, ampm = 'pm')
+                             column, postprocess_dict, logger, ampm = 'pm')
 
       #predict infill values using defined function predictinfill(.)
       df_testinfill = \
@@ -56389,8 +55761,6 @@ class AutoMunge:
     PCAexcl_posttransform.
     '''
 
-    logger_dict = self.__check_logger_dict()
-
     PCAexcl = postprocess_dict['PCAexcl']
 
     PCAexcl_posttransform = self.__column_convert_support(PCAexcl, postprocess_dict, convert_to='returned')
@@ -56417,8 +55787,6 @@ class AutoMunge:
     dimensionality reduction. Returns a trained PCA model saved in postprocess_dict
     and trasnformed sets.
     '''
-
-    logger_dict = self.__check_logger_dict()
 
     #a future extension could only import one of these model types
     #issue is the PCA_type = 'default' scenario could be multiple types
@@ -56450,7 +55818,7 @@ class AutoMunge:
   #__FunctionBlock: postmunge feature selection
 
   def __postfeatureselect(self, df_test, testID_column, \
-                        postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict):
+                        postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict, logger):
     '''
     featureselect is a function called within automunge() that applies methods
     to evaluate predictive power of derived features towards a downstream model
@@ -56460,8 +55828,6 @@ class AutoMunge:
     automunge() can then remove extraneous branches.
     '''
 
-    logger_dict = self.__check_logger_dict()
-    
     #now we'll use automunge() to prepare the subset for feature evaluation
     #note the passed arguments, these are all intentional (no MLinfill applied,
     #primary goal here is to produce a processed dataframe for df_subset
@@ -56469,9 +55835,9 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Begin Feature Importance evaluation")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Begin Feature Importance evaluation")
+    self.__autoprint('info', "")
 
     #this converts any numeric columns labels, such as from a passed numpy array, to strings
     testlabels=[]
@@ -56489,6 +55855,7 @@ class AutoMunge:
       
       labelscolumn_for_postfeatureselect_valresult = True
       logger_dict['validations'].update({'labelscolumn_for_postfeatureselect_valresult' : labelscolumn_for_postfeatureselect_valresult})
+      logger = self.__logger_append(logger)
       
       FSmodel = False
 
@@ -56500,9 +55867,9 @@ class AutoMunge:
       
       #printout display progress
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "_______________")
-      self.__autoprint(printstatus, 'warning', "No labels_column passed, Feature Importance halted")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "_______________")
+      self.__autoprint('warning', "No labels_column passed, Feature Importance halted")
+      self.__autoprint('warning', "")
     
     if labels_present is True:
     
@@ -56569,7 +55936,7 @@ class AutoMunge:
                      TrainLabelFreqLevel = TrainLabelFreqLevel, featureeval = featureeval, \
                      shuffletrain = True, \
                      entropy_seeds = entropy_seeds, random_generator = random_generator, sampling_dict=sampling_dict, \
-                     logger_dict = logger_dict)
+                     logger = logger)
 
       #logger_dict validation results stored in logger_dict['postfeatureselection_validations']
       logger_dict['postfeatureselection_validations'] = self.__autocopy(logger_dict['validations'])
@@ -56628,15 +55995,17 @@ class AutoMunge:
 
         logger_dict['validations'].update({'FS_numeric_data_result': False})
         logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
         
         #printout display progress
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "_______________")
-        self.__autoprint(printstatus, 'warning', "No labels returned from Postmunge, Feature Importance halted")
-        self.__autoprint(printstatus, 'warning', "")
+        self.__autoprint('warning', "_______________")
+        self.__autoprint('warning', "No labels returned from Postmunge, Feature Importance halted")
+        self.__autoprint('warning', "")
 
         returned_label_set_for_postfeatureselect_valresult = True
         logger_dict['validations'].update({'returned_label_set_for_postfeatureselect_valresult' : returned_label_set_for_postfeatureselect_valresult})
+        logger = self.__logger_append(logger)
     
       #if am_labels is not an empty set
       if am_labels.empty is False:
@@ -56732,12 +56101,13 @@ class AutoMunge:
         if len(am_categorylist) == 0:
           # if printstatus != 'silent':
           #this is a remote edge case, printout added for troubleshooting support
-          self.__autoprint(printstatus, 'warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
-          self.__autoprint(printstatus, 'warning', "Feature Selection model training will not run without valid labelgctgy processdict entry")
-          self.__autoprint(printstatus, 'warning', '')
+          self.__autoprint('warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
+          self.__autoprint('warning', "Feature Selection model training will not run without valid labelgctgy processdict entry")
+          self.__autoprint('warning', '')
 
           labelctgy_not_found_in_familytree_pm_valresult = True
           logger_dict['validations'].update({'labelctgy_not_found_in_familytree_pm_valresult' : labelctgy_not_found_in_familytree_pm_valresult})
+          logger = self.__logger_append(logger)
 
         elif len(am_categorylist) == 1:
           am_labels = pd.DataFrame(am_labels[am_categorylist[0]])
@@ -56755,9 +56125,9 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Training feature importance evaluation model")
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Training feature importance evaluation model")
+        self.__autoprint('debug', "")
 
         #first validate that data is all valid numeric
         FS_numeric_data_result, FS_all_valid_entries_result = \
@@ -56765,6 +56135,7 @@ class AutoMunge:
   
         logger_dict['validations'].update({'FS_numeric_data_result': FS_numeric_data_result})
         logger_dict['validations'].update({'FS_all_valid_entries_result': FS_all_valid_entries_result})
+        logger = self.__logger_append(logger)
 
         #this is assocaited with adding support for XGBoost and customML
         #since they use this to log information for label conversion to fully represented range integer
@@ -56775,7 +56146,7 @@ class AutoMunge:
         FSmodel, FSpostprocess_dict = \
         self.__trainFSmodel(am_train, am_labels, randomseed, \
                           FSprocess_dict, FSpostprocess_dict, labelctgy, ML_cmnd, \
-                          printstatus)
+                          printstatus, logger)
 
         #the inference functions inspect customML_inference_support in ML_cmnd
         FSpostprocess_dict['ML_cmnd']['customML_inference_support'] = FSpostprocess_dict['customML_inference_support']
@@ -56791,15 +56162,17 @@ class AutoMunge:
 
           logger_dict['validations'].update({'FS_numeric_data_result': False})
           logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+          logger = self.__logger_append(logger)
           
           #printout display progress
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "_______________")
-          self.__autoprint(printstatus, 'warning', "No model returned from training, Feature Importance halted")
-          self.__autoprint(printstatus, 'warning', "")
+          self.__autoprint('warning', "_______________")
+          self.__autoprint('warning', "No model returned from training, Feature Importance halted")
+          self.__autoprint('warning', "")
 
           postfeatureselect_trained_model_valresult = True
           logger_dict['validations'].update({'postfeatureselect_trained_model_valresult' : postfeatureselect_trained_model_valresult})
+          logger = self.__logger_append(logger)
           
         elif FSmodel is not False:
 
@@ -56809,9 +56182,9 @@ class AutoMunge:
                                               FSprocess_dict, labelctgy, FSpostprocess_dict)
 
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "Base Accuracy of feature importance model:")
-          self.__autoprint(printstatus, 'debug', baseaccuracy)
-          self.__autoprint(printstatus, 'debug', '')
+          self.__autoprint('debug', "Base Accuracy of feature importance model:")
+          self.__autoprint('debug', baseaccuracy)
+          self.__autoprint('debug', '')
 
           #get list of columns
           am_train_columns = list(am_train)
@@ -56847,9 +56220,9 @@ class AutoMunge:
 
           #printout display progress
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "_______________")
-          self.__autoprint(printstatus, 'debug', "Evaluating feature importances")
-          self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "_______________")
+          self.__autoprint('debug', "Evaluating feature importances")
+          self.__autoprint('debug', "")
 
           #perform feature evaluation on each column
           for column in am_train_columns:
@@ -56944,17 +56317,17 @@ class AutoMunge:
           del am_train, _1, am_labels, FSpostreports_dict, am_validation1, am_validationlabels1
 
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "_______________")
-          self.__autoprint(printstatus, 'debug', "Feature Importance results:")
-          self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "_______________")
+          self.__autoprint('debug', "Feature Importance results:")
+          self.__autoprint('debug', "")
 
           #to inspect values returned in featureimportance object one could run
           # if printstatus is True:
           for keys,values in FScolumn_dict.items():
-            self.__autoprint(printstatus, 'debug', keys)
-            self.__autoprint(printstatus, 'debug', 'metric = ', values['metric'])
-            self.__autoprint(printstatus, 'debug', 'metric2 = ', values['metric2'])
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', keys)
+            self.__autoprint('debug', 'metric = ', values['metric'])
+            self.__autoprint('debug', 'metric2 = ', values['metric2'])
+            self.__autoprint('debug', '')
               
     FS_sorted = {'baseaccuracy':baseaccuracy, \
                  'metric_key':{}, \
@@ -57010,26 +56383,26 @@ class AutoMunge:
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
     # if printstatus is True:
-    self.__autoprint(printstatus, 'debug', '')
-    self.__autoprint(printstatus, 'debug', "______________________")
-    self.__autoprint(printstatus, 'debug', "sorted metric results:")
-    self.__autoprint(printstatus, 'debug', '')
+    self.__autoprint('debug', '')
+    self.__autoprint('debug', "______________________")
+    self.__autoprint('debug', "sorted metric results:")
+    self.__autoprint('debug', '')
     for keys,values in FS_sorted['metric_key'].items():
       for entry in values:
-        self.__autoprint(printstatus, 'debug', entry)
-        self.__autoprint(printstatus, 'debug', keys)
-        self.__autoprint(printstatus, 'debug', '')
-    self.__autoprint(printstatus, 'debug', "______________________")
-    self.__autoprint(printstatus, 'debug', "sorted metric2 results:")
-    self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', entry)
+        self.__autoprint('debug', keys)
+        self.__autoprint('debug', '')
+    self.__autoprint('debug', "______________________")
+    self.__autoprint('debug', "sorted metric2 results:")
+    self.__autoprint('debug', '')
     for key in FS_sorted['metric2_key']:
-      self.__autoprint(printstatus, 'debug', "for source column: ", key)
+      self.__autoprint('debug', "for source column: ", key)
       for keys,values in FS_sorted['metric2_key'][key].items():
         for entry in values:
-          self.__autoprint(printstatus, 'debug', entry)
-          self.__autoprint(printstatus, 'debug', keys)
-          self.__autoprint(printstatus, 'debug', '')
-      self.__autoprint(printstatus, 'debug', '')
+          self.__autoprint('debug', entry)
+          self.__autoprint('debug', keys)
+          self.__autoprint('debug', '')
+      self.__autoprint('debug', '')
         
     if FSmodel is False:
       
@@ -57037,10 +56410,10 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus is True:
-    self.__autoprint(printstatus, 'debug', "")
-    self.__autoprint(printstatus, 'debug', "_______________")
-    self.__autoprint(printstatus, 'debug', "Feature Importance evaluation complete")
-    self.__autoprint(printstatus, 'debug', "")
+    self.__autoprint('debug', "")
+    self.__autoprint('debug', "_______________")
+    self.__autoprint('debug', "Feature Importance evaluation complete")
+    self.__autoprint('debug', "")
 
     return FSmodel, FScolumn_dict, FS_sorted
 
@@ -57056,8 +56429,6 @@ class AutoMunge:
 
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     drift_dict = {}
     
     for returned_PCA_column in returned_PCA_columns:
@@ -57089,56 +56460,56 @@ class AutoMunge:
     note that Binary_dict records normalization_dict entries from transform as well as Binary specific entries
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     drift_dict = {}
     
     for i in Binary_dict:
-      
-      drift_dict.update({i : {}})
-      
-      if Binary_dict[i]['Btype'] == '1010':
-        
-        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
-        unique_ratio = Binary_dict[i]['_1010_activations_dict']
-        nunique = len(list(Binary_dict[i]['_1010_activations_dict']))
-        conversion_dict = Binary_dict[i]['binary_encoding_dict']
-        
-        unique_ratio_clean = {}
-        for key in unique_ratio:
-          unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
 
-      elif Binary_dict[i]['Btype'] == 'ord3':
+      if 'Btype' in Binary_dict[i]:
         
-        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
-        unique_ratio = Binary_dict[i]['ordl_activations_dict']
-        nunique = len(list(Binary_dict[i]['ordl_activations_dict']))
-        conversion_dict = Binary_dict[i]['ordinal_dict']
+        drift_dict.update({i : {}})
         
-        unique_ratio_clean = {}
-        for key in unique_ratio:
-          unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
-            
-      elif Binary_dict[i]['Btype'] == 'onht':
-        
-        returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
-        unique_ratio = Binary_dict[i]['onht_activations_dict']
-        nunique = len(returned_Binary_columns)
-        conversion_dict = Binary_dict[i]['labels_dict']
-        
-        unique_ratio_clean = unique_ratio
-        
-      drift_dict[i].update(
-        {
-          'returned_Binary_columns' : returned_Binary_columns,
-          'unique_ratio' : unique_ratio_clean,
-          'nunique' : nunique,
-        }
-      )
+        if Binary_dict[i]['Btype'] == '1010':
+          
+          returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+          unique_ratio = Binary_dict[i]['_1010_activations_dict']
+          nunique = len(list(Binary_dict[i]['_1010_activations_dict']))
+          conversion_dict = Binary_dict[i]['binary_encoding_dict']
+          
+          unique_ratio_clean = {}
+          for key in unique_ratio:
+            unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
+
+        elif Binary_dict[i]['Btype'] == 'ord3':
+          
+          returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+          unique_ratio = Binary_dict[i]['ordl_activations_dict']
+          nunique = len(list(Binary_dict[i]['ordl_activations_dict']))
+          conversion_dict = Binary_dict[i]['ordinal_dict']
+          
+          unique_ratio_clean = {}
+          for key in unique_ratio:
+            unique_ratio_clean.update({conversion_dict[key] : unique_ratio[key]})
+              
+        elif Binary_dict[i]['Btype'] == 'onht':
+          
+          returned_Binary_columns = Binary_dict[i]['returned_Binary_columns']
+          unique_ratio = Binary_dict[i]['onht_activations_dict']
+          nunique = len(returned_Binary_columns)
+          conversion_dict = Binary_dict[i]['labels_dict']
+          
+          unique_ratio_clean = unique_ratio
+          
+        drift_dict[i].update(
+          {
+            'returned_Binary_columns' : returned_Binary_columns,
+            'unique_ratio' : unique_ratio_clean,
+            'nunique' : nunique,
+          }
+        )
       
     return drift_dict
 
-  def __prepare_driftreport(self, df_test, postprocess_dict, printstatus):
+  def __prepare_driftreport(self, df_test, postprocess_dict, printstatus, logger):
     """
     #driftreport uses the processfamily functions as originally implemented
     #in automunge to recalculate normalization parameters based on the test
@@ -57150,12 +56521,10 @@ class AutoMunge:
     #to be consistent with feature selection, drift report will return printouts in printstatus='summary' case
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Preparing Drift Report:")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Preparing Drift Report:")
+    self.__autoprint('info', "")
       
     #initialize empty dictionary to store results
     drift_report = {}
@@ -57177,12 +56546,12 @@ class AutoMunge:
         returnedcolumns = postprocess_dict['origcolumn'][drift_column]['columnkeylist']
       
       # if printstatus in {True, 'summary'}:
-      self.__autoprint(printstatus, 'info', "______")
-      self.__autoprint(printstatus, 'info', "Preparing drift report for columns derived from: ", drift_column)
-      self.__autoprint(printstatus, 'info', "")
-      self.__autoprint(printstatus, 'info', "original returned columns:")
-      self.__autoprint(printstatus, 'info', returnedcolumns)
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "______")
+      self.__autoprint('info', "Preparing drift report for columns derived from: ", drift_column)
+      self.__autoprint('info', "")
+      self.__autoprint('info', "original returned columns:")
+      self.__autoprint('info', returnedcolumns)
+      self.__autoprint('info', "")
         
       if len(returnedcolumns) > 0:
 
@@ -57233,7 +56602,7 @@ class AutoMunge:
       df_test2_temp, df_test3_temp, drift_ppd = \
       self.__processfamily(df_test2_temp, df_test3_temp, drift_column, \
                          drift_category, drift_transform_dict, \
-                         drift_ppd, drift_assign_param)
+                         drift_ppd, drift_assign_param, logger)
 
       #here's a second tempset to support newreturnedcolumns derivation
       tempset2 = set(drift_ppd['column_dict'])
@@ -57250,15 +56619,15 @@ class AutoMunge:
       if len(newreturnedcolumns) == 0:
         
         # if printstatus in {True, 'summary'}:
-        self.__autoprint(printstatus, 'info', "no new returned columns:")
-        self.__autoprint(printstatus, 'info', "")
+        self.__autoprint('info', "no new returned columns:")
+        self.__autoprint('info', "")
         
       else:
 
         # if printstatus in {True, 'summary'}:
-        self.__autoprint(printstatus, 'info', "new returned columns:")
-        self.__autoprint(printstatus, 'info', newreturnedcolumns)
-        self.__autoprint(printstatus, 'info', "")
+        self.__autoprint('info', "new returned columns:")
+        self.__autoprint('info', newreturnedcolumns)
+        self.__autoprint('info', "")
           
         #add to driftreport
         drift_report[drift_column]['newreturnedcolumns_list'] = newreturnedcolumns
@@ -57267,12 +56636,12 @@ class AutoMunge:
         if origreturnedcolumn not in newreturnedcolumns:
           if origreturnedcolumn == postprocess_dict['column_dict'][origreturnedcolumn]['categorylist'][0]:
             # if printstatus in {True, 'summary'}:
-            self.__autoprint(printstatus, 'info', "___")
-            self.__autoprint(printstatus, 'info', "original derived column not in new returned column: ", origreturnedcolumn)
-            self.__autoprint(printstatus, 'info', "")
-            self.__autoprint(printstatus, 'info', "original automunge normalization parameters:")
-            self.__autoprint(printstatus, 'info', postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
-            self.__autoprint(printstatus, 'info', "")
+            self.__autoprint('info', "___")
+            self.__autoprint('info', "original derived column not in new returned column: ", origreturnedcolumn)
+            self.__autoprint('info', "")
+            self.__autoprint('info', "original automunge normalization parameters:")
+            self.__autoprint('info', postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn])
+            self.__autoprint('info', "")
             
             drift_report[drift_column]['orignotinnew'].update({origreturnedcolumn:{'orignormparam':\
             postprocess_dict['column_dict'][origreturnedcolumn]['normalization_dict'][origreturnedcolumn]}})
@@ -57285,18 +56654,18 @@ class AutoMunge:
           {newreturnedcolumn:{'orignormparam':{}, 'newnormparam':{}}})
           
           # if printstatus in {True, 'summary'}:
-          self.__autoprint(printstatus, 'info', "___")
-          self.__autoprint(printstatus, 'info', "derived columns: ", postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'])
-          self.__autoprint(printstatus, 'info', "")
+          self.__autoprint('info', "___")
+          self.__autoprint('info', "derived columns: ", postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'])
+          self.__autoprint('info', "")
 
           if newreturnedcolumn in returnedcolumns \
           and postprocess_dict['column_dict'][newreturnedcolumn]['categorylist'][0] == \
           drift_ppd['column_dict'][newreturnedcolumn]['categorylist'][0]:
             # if printstatus in {True, 'summary'}:
-            self.__autoprint(printstatus, 'info', "original automunge normalization parameters:")
+            self.__autoprint('info', "original automunge normalization parameters:")
             
-            self.__autoprint(printstatus, 'info', postprocess_dict['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
-            self.__autoprint(printstatus, 'info', "")
+            self.__autoprint('info', postprocess_dict['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
+            self.__autoprint('info', "")
               
             #add to driftreport
             drift_report[drift_column]['newreturnedcolumn'][newreturnedcolumn]['orignormparam'] \
@@ -57306,22 +56675,22 @@ class AutoMunge:
             
             if newreturnedcolumn in returnedcolumns:
               # if printstatus in {True, 'summary'}:
-              self.__autoprint(printstatus, 'info', "new derived column has first categorylist entry not matching first categorylist entry from original derivation")
-              self.__autoprint(printstatus, 'info', "For derived column: ", newreturnedcolumn)
-              self.__autoprint(printstatus, 'info', "This is treated comparably to new derived column not in original returned columns")
-              self.__autoprint(printstatus, 'info', "")
+              self.__autoprint('info', "new derived column has first categorylist entry not matching first categorylist entry from original derivation")
+              self.__autoprint('info', "For derived column: ", newreturnedcolumn)
+              self.__autoprint('info', "This is treated comparably to new derived column not in original returned columns")
+              self.__autoprint('info', "")
             else:
               # if printstatus in {True, 'summary'}:
-              self.__autoprint(printstatus, 'info', "new derived column not in original returned columns: ", newreturnedcolumn)
-              self.__autoprint(printstatus, 'info', "")
+              self.__autoprint('info', "new derived column not in original returned columns: ", newreturnedcolumn)
+              self.__autoprint('info', "")
               
             drift_report[drift_column]['newnotinorig'].update({newreturnedcolumn:{'newnormparam':\
             drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn]}})
             
           # if printstatus in {True, 'summary'}:
-          self.__autoprint(printstatus, 'info', "new postmunge normalization parameters:")
-          self.__autoprint(printstatus, 'info', drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
-          self.__autoprint(printstatus, 'info', "")
+          self.__autoprint('info', "new postmunge normalization parameters:")
+          self.__autoprint('info', drift_ppd['column_dict'][newreturnedcolumn]['normalization_dict'][newreturnedcolumn])
+          self.__autoprint('info', "")
             
           #add to driftreport
           drift_report[drift_column]['newreturnedcolumn'][newreturnedcolumn]['newnormparam'] \
@@ -57331,10 +56700,10 @@ class AutoMunge:
       del df_test2_temp, df_test3_temp, returnedcolumns
       
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "")
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Drift Report Complete")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Drift Report Complete")
+    self.__autoprint('info', "")
       
     return drift_ppd, drift_report
 
@@ -57348,10 +56717,12 @@ class AutoMunge:
                 driftreport = False, inversion = False,
                 returnedsets = True, shuffletrain = False,
                 entropy_seeds = False, random_generator = False, sampling_dict = False,
-                randomseed = False, encrypt_key = False, logger_dict = {}):
+                randomseed = False, encrypt_key = False, logger = {}):
     """
     #This function documented in READ ME, available online at:
     # https://github.com/Automunge/AutoMunge/blob/master/README.md
+
+    #Note that postmunge(.) has one global variable: logger_dict
     """
 
     """
@@ -57405,8 +56776,15 @@ class AutoMunge:
     #then inversion will proceed without decription
     #otherwise decryption is based on the encrypt_key parameter
 
-    #initialize logger_dict
-    logger_dict = self.__init_logger_dict(logger_dict, printstatus)
+    #initialize logger_dict (used in printing)
+    global logger_dict
+    logger_dict = {
+      'debug_report' : '',
+      'info_report' : '',
+      'warning_report' : '',
+      'printstatus' : printstatus, 
+      'validations' : {'suffixoverlap_results':{}},
+    }
 
     #if postprocess_dict contained encrypted entries then we decode them here
     #if encryption was performed in automunge the encryption key was either user specified or returned in automunge(.) printouts
@@ -57524,24 +56902,23 @@ class AutoMunge:
     self.__check_pm_miscparameters(pandasoutput, printstatus, TrainLabelFreqLevel, \
                                   dupl_rows, featureeval, driftreport, inplace, \
                                   returnedsets, shuffletrain, inversion, traindata, \
-                                  testID_column, randomseed, encrypt_key, noise_augment, logger_dict)
+                                  testID_column, randomseed, encrypt_key, noise_augment, logger)
 
     check_df_test_type_result, _1 = \
     self.__check_df_type(df_test, False, printstatus)
 
     logger_dict['validations'].update({'check_df_test_type_result' : check_df_test_type_result})
-
     logger_dict['validations'].update({'decode_valresult' : decode_valresult})
-
     logger_dict['validations'].update({'check_sampling_dict_pm_result' : check_sampling_dict_pm_result})
     logger_dict['validations'].update({'entropy_seeds_pm_result' : entropy_seeds_pm_result})
     logger_dict['validations'].update({'random_generator_pm_valresult' : random_generator_pm_valresult})
-    
+    logger = self.__logger_append(logger)
+
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Begin Postmunge")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Begin Postmunge")
+    self.__autoprint('info', "")
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge feature importance
@@ -57554,8 +56931,8 @@ class AutoMunge:
 
       if inversion is not False:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "featureselection not available when performing inversion")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "featureselection not available when performing inversion")
+        self.__autoprint('warning', '')
 
         postfeatureselect_with_inversion_valresult = True
         logger_dict['validations'].update({'postfeatureselect_with_inversion_valresult' : postfeatureselect_with_inversion_valresult})
@@ -57566,11 +56943,12 @@ class AutoMunge:
         FS_sorted = {}
         logger_dict['validations'].update({'FS_numeric_data_result': False})
         logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
       
       elif postprocess_dict['labels_column'] is False:
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "featureselection not available without labels_column in training set")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "featureselection not available without labels_column in training set")
+        self.__autoprint('warning', '')
         
         labels_column_for_postfeatureselect_valresult = True
         logger_dict['validations'].update({'labels_column_for_postfeatureselect_valresult' : labels_column_for_postfeatureselect_valresult})
@@ -57581,12 +56959,13 @@ class AutoMunge:
         FS_sorted = {}
         logger_dict['validations'].update({'FS_numeric_data_result': False})
         logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
 
       else:
 
         FSmodel, FScolumn_dict, FS_sorted = \
         self.__postfeatureselect(df_test, testID_column, \
-                               postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict)
+                               postprocess_dict, printstatus, entropy_seeds, random_generator, sampling_dict, logger)
 
         madethecut = postprocess_dict['madethecut']
 
@@ -57598,9 +56977,11 @@ class AutoMunge:
       FS_sorted = {}
       logger_dict['validations'].update({'FS_numeric_data_result': False})
       logger_dict['validations'].update({'FS_all_valid_entries_result': False})
+      logger = self.__logger_append(logger)
 
     check_FSmodel_result = self.__check_FSmodel(featureeval, FSmodel, printstatus)
     logger_dict['validations'].update({'FSmodel_valresult' : check_FSmodel_result})
+    logger = self.__logger_append(logger)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge misc initializations and conversions
@@ -57733,7 +57114,7 @@ class AutoMunge:
           #then invert
           df_new_feature_df, recovered_list, inversion_info_dict = \
           self.__inversion_parent(inversion, df_new_feature_df, postprocess_dict['new_feature_ppd'][i], printstatus, \
-                                  pandasoutput)
+                                  pandasoutput, logger)
           
           aggregate_recovered_df = pd.concat([aggregate_recovered_df, df_new_feature_df], axis=1)
           aggregate_recovered_list += recovered_list
@@ -57750,7 +57131,7 @@ class AutoMunge:
       #then the master inversion function
       df_test, recovered_list, inversion_info_dict = \
       self.__inversion_parent(inversion, df_test, postprocess_dict, printstatus, \
-                            pandasoutput)
+                            pandasoutput, logger)
       
       #then if this was a new_feature_ppd_case concat the other results
       if new_feature_ppd_case is True:
@@ -57784,9 +57165,10 @@ class AutoMunge:
       if dupl_rows is not False:
         dupl_rows_ppd_append_postmunge_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "Warning of possible error channel, postmunge dupl_rows not recomended when ppd_append was applied in automunge.")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "Warning of possible error channel, postmunge dupl_rows not recomended when ppd_append was applied in automunge.")
+        self.__autoprint('warning', '')
       logger_dict['validations'].update({'dupl_rows_ppd_append_postmunge_valresult' : dupl_rows_ppd_append_postmunge_valresult})
+      logger = self.__logger_append(logger)
       
       new_feature_ppd_extract_headers_dict = {}
       new_feature_ppd_extract_df_dict = {}
@@ -57881,29 +57263,30 @@ class AutoMunge:
     if len(set(testID_struckfeatures) & set(trainID_retainedfeatures)) > 0:
       pm_testID_struck_includes_trainID_retained = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', 'error: testID_column specification resulted in struck ID columns')
-      self.__autoprint(printstatus, 'warning', 'that were retained ID columns in the automunge train set')
-      self.__autoprint(printstatus, 'warning', 'for ID columns:')
-      self.__autoprint(printstatus, 'warning', set(testID_struckfeatures) & set(trainID_retainedfeatures))
-      self.__autoprint(printstatus, 'warning', 'to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', 'error: testID_column specification resulted in struck ID columns')
+      self.__autoprint('warning', 'that were retained ID columns in the automunge train set')
+      self.__autoprint('warning', 'for ID columns:')
+      self.__autoprint('warning', set(testID_struckfeatures) & set(trainID_retainedfeatures))
+      self.__autoprint('warning', 'to specify retained ID columns can use the [list1, list2] form documented for testID_column parameter in read me.')
+      self.__autoprint('warning', '')
 
     #now run a quick validation that each entry in testID_column list present in df_test
     pm_testID_column_subset_of_df_test_valresult = False
     if not set(testID_column).issubset(set(df_test)):
       pm_testID_column_subset_of_df_test_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: entries to testID_column were not found in df_test")
-      self.__autoprint(printstatus, 'warning', "note that testID_column can either be passed as string for single entry")
-      self.__autoprint(printstatus, 'warning', "or testID_column can be passed as a list for multiple entries")
-      self.__autoprint(printstatus, 'warning', "Note that testID_column is primarily intended for use when ID columns in df_test")
-      self.__autoprint(printstatus, 'warning', "are different than those ID columns from trainID_column.")
-      self.__autoprint(printstatus, 'warning', "")
+      self.__autoprint('warning', "error: entries to testID_column were not found in df_test")
+      self.__autoprint('warning', "note that testID_column can either be passed as string for single entry")
+      self.__autoprint('warning', "or testID_column can be passed as a list for multiple entries")
+      self.__autoprint('warning', "Note that testID_column is primarily intended for use when ID columns in df_test")
+      self.__autoprint('warning', "are different than those ID columns from trainID_column.")
+      self.__autoprint('warning', "")
     
     logger_dict['validations'].update({'pm_testID_column_subset_of_df_test_valresult' : pm_testID_column_subset_of_df_test_valresult,
                                                           'trainID_columns_in_df_test_pm' : trainID_columns_in_df_test_pm,
                                                           'pm_testID_struck_includes_trainID_retained' : pm_testID_struck_includes_trainID_retained,
                                                           })
+    logger = self.__logger_append(logger)
 
     #if df_test has a non-range index we'll include that in ID sets as 'Orig_index_###'
     if type(df_test.index) != pd.RangeIndex or \
@@ -58025,41 +57408,43 @@ class AutoMunge:
     or len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
       validate_traintest_columnlabelscompare = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error, inconsistent columns between train set passed to automunge(.)")
-      self.__autoprint(printstatus, 'warning', "and test set passed to postmunge(.)")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', "__________")
-      self.__autoprint(printstatus, 'warning', "original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', postprocess_dict['origtraincolumns'])
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', "__________")
-      self.__autoprint(printstatus, 'warning', "current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', list(df_test))
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error, inconsistent columns between train set passed to automunge(.)")
+      self.__autoprint('warning', "and test set passed to postmunge(.)")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', "__________")
+      self.__autoprint('warning', "original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', postprocess_dict['origtraincolumns'])
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', "__________")
+      self.__autoprint('warning', "current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', list(df_test))
+      self.__autoprint('warning', '')
       if len(set(postprocess_dict['origtraincolumns']) - set(df_test)) > 0:
-        self.__autoprint(printstatus, 'warning', "__________")
-        self.__autoprint(printstatus, 'warning', "missing following columns in df_test passed to postmunge(.):")
-        self.__autoprint(printstatus, 'warning', '')
-        self.__autoprint(printstatus, 'warning', list(set(postprocess_dict['origtraincolumns']) - set(df_test)))
-        self.__autoprint(printstatus, 'warning', '')
-        self.__autoprint(printstatus, 'warning', "If this is a label column requires designation in automunge(.)")
-        self.__autoprint(printstatus, 'warning', "via the labels_column parameter.")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "__________")
+        self.__autoprint('warning', "missing following columns in df_test passed to postmunge(.):")
+        self.__autoprint('warning', '')
+        self.__autoprint('warning', list(set(postprocess_dict['origtraincolumns']) - set(df_test)))
+        self.__autoprint('warning', '')
+        self.__autoprint('warning', "If this is a label column requires designation in automunge(.)")
+        self.__autoprint('warning', "via the labels_column parameter.")
+        self.__autoprint('warning', '')
       if len(set(df_test) - set(postprocess_dict['origtraincolumns'])) > 0:
-        self.__autoprint(printstatus, 'warning', "__________")
-        self.__autoprint(printstatus, 'warning', "extra columns passed in df_test to postmunge(.) are:")
-        self.__autoprint(printstatus, 'warning', '')
-        self.__autoprint(printstatus, 'warning', list(set(df_test) - set(postprocess_dict['origtraincolumns'])))
-        self.__autoprint(printstatus, 'warning', '')
-        self.__autoprint(printstatus, 'warning', "Note that extra columns can be carved out in postmunge(.)")
-        self.__autoprint(printstatus, 'warning', "with testID_column parameter.")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "__________")
+        self.__autoprint('warning', "extra columns passed in df_test to postmunge(.) are:")
+        self.__autoprint('warning', '')
+        self.__autoprint('warning', list(set(df_test) - set(postprocess_dict['origtraincolumns'])))
+        self.__autoprint('warning', '')
+        self.__autoprint('warning', "Note that extra columns can be carved out in postmunge(.)")
+        self.__autoprint('warning', "with testID_column parameter.")
+        self.__autoprint('warning', '')
         
       logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+    logger = self.__logger_append(logger)
 
     #check order of column headers are consistent
     columns_train = postprocess_dict['origtraincolumns']
@@ -58068,21 +57453,23 @@ class AutoMunge:
     if columns_train != columns_test:
       validate_traintest_columnorder = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', "__________")
-      self.__autoprint(printstatus, 'warning', "original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', postprocess_dict['origtraincolumns'])
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', "__________")
-      self.__autoprint(printstatus, 'warning', "current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
-      self.__autoprint(printstatus, 'warning', '')
-      self.__autoprint(printstatus, 'warning', list(df_test))
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error, different order of column labels in the train and test set")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', "__________")
+      self.__autoprint('warning', "original columns passed to automunge(.) (exluding any labels_column and/or trainID_column):")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', postprocess_dict['origtraincolumns'])
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', "__________")
+      self.__autoprint('warning', "current columns passed to postmunge(.) (exluding any labelscolumn and/or testID_column):")
+      self.__autoprint('warning', '')
+      self.__autoprint('warning', list(df_test))
+      self.__autoprint('warning', '')
       logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+      logger = self.__logger_append(logger)
       return
     logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+    logger = self.__logger_append(logger)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge drift report evaluated
@@ -58103,21 +57490,21 @@ class AutoMunge:
       postdrift_dict = {}
 
       # if printstatus in {True, 'summary'}:
-      self.__autoprint(printstatus, 'info', "_______________")
-      self.__autoprint(printstatus, 'info', "Preparing Source Column Drift Report:")
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "_______________")
+      self.__autoprint('info', "Preparing Source Column Drift Report:")
+      self.__autoprint('info', "")
       
       for column in df_test:
 
         if column in postprocess_dict['drift_dict']:
 
           # if printstatus in {True, 'summary'}:
-          self.__autoprint(printstatus, 'info', "______")
-          self.__autoprint(printstatus, 'info', "Preparing source column drift report for column: ", column)
-          self.__autoprint(printstatus, 'info', "")
-          self.__autoprint(printstatus, 'info', "original drift stats:")
-          self.__autoprint(printstatus, 'info', postprocess_dict['drift_dict'][column])
-          self.__autoprint(printstatus, 'info', "")
+          self.__autoprint('info', "______")
+          self.__autoprint('info', "Preparing source column drift report for column: ", column)
+          self.__autoprint('info', "")
+          self.__autoprint('info', "original drift stats:")
+          self.__autoprint('info', postprocess_dict['drift_dict'][column])
+          self.__autoprint('info', "")
 
           category = postprocess_dict['origcolumn'][column]['category']
 
@@ -58125,9 +57512,9 @@ class AutoMunge:
           self.__getNArows(df_test, column, category, postprocess_dict, postdrift_dict, True)
 
           # if printstatus in {True, 'summary'}:
-          self.__autoprint(printstatus, 'info', "new drift stats:")
-          self.__autoprint(printstatus, 'info', postdrift_dict[column])
-          self.__autoprint(printstatus, 'info', "")
+          self.__autoprint('info', "new drift stats:")
+          self.__autoprint('info', postdrift_dict[column])
+          self.__autoprint('info', "")
           
       postreports_dict.update({'sourcecolumn_drift' : {'orig_driftstats' : postprocess_dict['drift_dict'], \
                                                        'new_driftstats' : postdrift_dict}})
@@ -58139,9 +57526,9 @@ class AutoMunge:
       postreports_dict.update({'dimensionality_reduction_driftstats' : {}})
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Source Column Drift Report Complete")
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Source Column Drift Report Complete")
+      self.__autoprint('debug', "")
 
     if driftreport in {True, 'report_full'}:
 
@@ -58149,7 +57536,7 @@ class AutoMunge:
       #column_dict entries populated with newly calculated normalization parameters
       #for now we'll just print the results in the function, a future expansion may
       #return these to the user somehow, need to put some thought into that
-      drift_ppd, drift_report = self.__prepare_driftreport(df_test, postprocess_dict, printstatus)
+      drift_ppd, drift_report = self.__prepare_driftreport(df_test, postprocess_dict, printstatus, logger)
 
       postreports_dict['driftreport'] = drift_report
 
@@ -58193,6 +57580,7 @@ class AutoMunge:
                                     assign_param,
                                     printstatus,
                                     inplace,
+                                    logger,
                                     labels = False,
                                     masterNArows_test = pd.DataFrame(),
                                     postdrift_dict = {},
@@ -58220,6 +57608,7 @@ class AutoMunge:
                                     assign_param,
                                     printstatus,
                                     inplace,
+                                    logger,
                                     labels = True,
                                     masterNArows_test = masterNArows_test,
                                     postdrift_dict = {},
@@ -58245,6 +57634,7 @@ class AutoMunge:
                                       assign_param,
                                       printstatus,
                                       inplace,
+                                      logger,
                                       labels = False,
                                       masterNArows_test = masterNArows_test,
                                       postdrift_dict = {},
@@ -58259,8 +57649,8 @@ class AutoMunge:
     
     #printout display progress
     # if printstatus is True:
-    self.__autoprint(printstatus, 'debug', "______")
-    self.__autoprint(printstatus, 'debug', "")
+    self.__autoprint('debug', "______")
+    self.__autoprint('debug', "")
 
     #access infill assignments derived in automunge(.) call
     postprocess_assigninfill_dict = \
@@ -58269,9 +57659,10 @@ class AutoMunge:
     df_test, infill_validations = \
     self.__apply_pm_infill(df_test, postprocess_assigninfill_dict, \
                         postprocess_dict, printstatus, list(df_test), \
-                        masterNArows_test)
+                        masterNArows_test, logger)
 
     logger_dict['validations'].update(infill_validations)
+    logger = self.__logger_append(logger)
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge feature importance dimensionality reduction
@@ -58290,18 +57681,18 @@ class AutoMunge:
       if len(trimcolumns) > 0:
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Begin feature importance dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "   method: ", postprocess_dict['featureselection'])
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Begin feature importance dimensionality reduction")
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "   method: ", postprocess_dict['featureselection'])
         if postprocess_dict['featureselection'] == 'pct':
-          self.__autoprint(printstatus, 'debug', "threshold: ", postprocess_dict['featurethreshold'])
+          self.__autoprint('debug', "threshold: ", postprocess_dict['featurethreshold'])
         if postprocess_dict['featureselection'] == 'metric':
-          self.__autoprint(printstatus, 'debug', "threshold: ", postprocess_dict['featurethreshold'])
-        self.__autoprint(printstatus, 'debug', "")
-        self.__autoprint(printstatus, 'debug', "trimmed columns: ")
-        self.__autoprint(printstatus, 'debug', trimcolumns)
-        self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "threshold: ", postprocess_dict['featurethreshold'])
+        self.__autoprint('debug', "")
+        self.__autoprint('debug', "trimmed columns: ")
+        self.__autoprint('debug', trimcolumns)
+        self.__autoprint('debug', "")
 
         #trim columns manually
         for trimmee in trimcolumns:
@@ -58309,9 +57700,9 @@ class AutoMunge:
         
       if len(trimcolumns) > 0:
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "returned columns: ")
-        self.__autoprint(printstatus, 'debug', list(df_test))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "returned columns: ")
+        self.__autoprint('debug', list(df_test))
+        self.__autoprint('debug', "")
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge PCA dimensionality reduction
@@ -58334,13 +57725,13 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Applying PCA dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Applying PCA dimensionality reduction")
+        self.__autoprint('debug', "")
         if len(postprocess_dict['PCAexcl']) > 0:
-          self.__autoprint(printstatus, 'debug', "columns excluded from PCA: ")
-          self.__autoprint(printstatus, 'debug', postprocess_dict['PCAexcl'])
-          self.__autoprint(printstatus, 'debug', "")
+          self.__autoprint('debug', "columns excluded from PCA: ")
+          self.__autoprint('debug', postprocess_dict['PCAexcl'])
+          self.__autoprint('debug', "")
             
         #quick validation that PCA set has all valid numeric entries
         PCA_test_numeric_data_result, PCA_test_all_valid_entries_result = \
@@ -58348,6 +57739,7 @@ class AutoMunge:
   
         logger_dict['validations'].update({'PCA_test_numeric_data_result': PCA_test_numeric_data_result})
         logger_dict['validations'].update({'PCA_test_all_valid_entries_result': PCA_test_all_valid_entries_result})
+        logger = self.__logger_append(logger)
 
         PCAset_test, postprocess_dict = \
         self.__postPCAfunction(PCAset_test, postprocess_dict)
@@ -58366,17 +57758,17 @@ class AutoMunge:
 
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "returned PCA columns: ")
-        self.__autoprint(printstatus, 'debug', list(PCAset_test))
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "returned PCA columns: ")
+        self.__autoprint('debug', list(PCAset_test))
+        self.__autoprint('debug', "")
 
         del PCAset_test
 
         if driftreport is True:
 
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "_______________")
-          self.__autoprint(printstatus, 'debug', 'Preparing PCA Column Drift Report:')
+          self.__autoprint('debug', "_______________")
+          self.__autoprint('debug', 'Preparing PCA Column Drift Report:')
           
           #record orig PCA drift stats
           if 'dimensionality_reduction_driftstats' in postprocess_dict:
@@ -58401,20 +57793,21 @@ class AutoMunge:
 
           # if printstatus is True:
           for returned_PCA_column in postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats']:
-            self.__autoprint(printstatus, 'debug', '')
-            self.__autoprint(printstatus, 'debug', "drift stats for PCA column ", returned_PCA_column)
-            self.__autoprint(printstatus, 'debug', '')
-            self.__autoprint(printstatus, 'debug', "original drift stats:")
-            self.__autoprint(printstatus, 'debug', postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats'][returned_PCA_column])
-            self.__autoprint(printstatus, 'debug', '')
-            self.__autoprint(printstatus, 'debug', "new drift stats:")
-            self.__autoprint(printstatus, 'debug', postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['new_stats'][returned_PCA_column])
-            self.__autoprint(printstatus, 'debug', '')
+            self.__autoprint('debug', '')
+            self.__autoprint('debug', "drift stats for PCA column ", returned_PCA_column)
+            self.__autoprint('debug', '')
+            self.__autoprint('debug', "original drift stats:")
+            self.__autoprint('debug', postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['orig_stats'][returned_PCA_column])
+            self.__autoprint('debug', '')
+            self.__autoprint('debug', "new drift stats:")
+            self.__autoprint('debug', postreports_dict['dimensionality_reduction_driftstats']['PCA_drift']['new_stats'][returned_PCA_column])
+            self.__autoprint('debug', '')
 
       else:
         
         logger_dict['validations'].update({'PCA_test_numeric_data_result': False})
         logger_dict['validations'].update({'PCA_test_all_valid_entries_result': False})
+        logger = self.__logger_append(logger)
 
     #_____
 
@@ -58440,8 +57833,8 @@ class AutoMunge:
     and 'Binary_drift' in postprocess_dict['dimensionality_reduction_driftstats']:
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', 'Preparing Binary Column Drift Report:')
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', 'Preparing Binary Column Drift Report:')
 
       #record orig Binary drift stats
       if 'dimensionality_reduction_driftstats' in postprocess_dict:
@@ -58466,15 +57859,15 @@ class AutoMunge:
 
       # if printstatus is True:
       for Binary_number in postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats']:
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "drift stats for Binary consolidation ", Binary_number)
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "original drift stats:")
-        self.__autoprint(printstatus, 'debug', postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats'][Binary_number])
-        self.__autoprint(printstatus, 'debug', '')
-        self.__autoprint(printstatus, 'debug', "new drift stats:")
-        self.__autoprint(printstatus, 'debug', postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['new_stats'][Binary_number])
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "drift stats for Binary consolidation ", Binary_number)
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "original drift stats:")
+        self.__autoprint('debug', postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['orig_stats'][Binary_number])
+        self.__autoprint('debug', '')
+        self.__autoprint('debug', "new drift stats:")
+        self.__autoprint('debug', postreports_dict['dimensionality_reduction_driftstats']['Binary_drift']['new_stats'][Binary_number])
+        self.__autoprint('debug', '')
     
     #_________
     
@@ -58515,12 +57908,12 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "_______________")
-      self.__autoprint(printstatus, 'debug', "Begin label rebalancing")
-      self.__autoprint(printstatus, 'debug', "")
-      self.__autoprint(printstatus, 'debug', "Before rebalancing row count = ")
-      self.__autoprint(printstatus, 'debug', df_testlabels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "_______________")
+      self.__autoprint('debug', "Begin label rebalancing")
+      self.__autoprint('debug', "")
+      self.__autoprint('debug', "Before rebalancing row count = ")
+      self.__autoprint('debug', df_testlabels.shape[0])
+      self.__autoprint('debug', "")
 
       if testID_column is not False:
 
@@ -58546,9 +57939,9 @@ class AutoMunge:
 
       #printout display progress
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "After rebalancing row count = ")
-      self.__autoprint(printstatus, 'debug', df_testlabels.shape[0])
-      self.__autoprint(printstatus, 'debug', "")
+      self.__autoprint('debug', "After rebalancing row count = ")
+      self.__autoprint('debug', df_testlabels.shape[0])
+      self.__autoprint('debug', "")
 
     #_________________________________________________________
     #__WorkflowBlock: postmunge row shuffling
@@ -58697,9 +58090,9 @@ class AutoMunge:
         
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Preparing additional features from ppd_append ", i)
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Preparing additional features from ppd_append ", i)
+        self.__autoprint('debug', "")
 
         #following postmunge call will return validation results in original bucket
         #which we'll store in ppd_append_validations
@@ -58716,7 +58109,7 @@ class AutoMunge:
                       random_generator = random_generator,
                       sampling_dict = sampling_dict,
                       randomseed = randomseed,
-                      logger_dict = logger_dict)
+                      logger = logger)
 
         #logger_dict validation results stored in logger_dict['ppd_append_validations']
         logger_dict['ppd_append_validations'] = self.__autocopy(logger_dict['validations'])
@@ -58741,9 +58134,9 @@ class AutoMunge:
         
         #printout display progress
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "_______________")
-        self.__autoprint(printstatus, 'debug', "Preparing noise_augment duplicate number ", i+1)
-        self.__autoprint(printstatus, 'debug', "")
+        self.__autoprint('debug', "_______________")
+        self.__autoprint('debug', "Preparing noise_augment duplicate number ", i+1)
+        self.__autoprint('debug', "")
       
         #if noise_augment was passed as integer dtype 
         #then first duplicate is prepared without noise
@@ -58800,7 +58193,7 @@ class AutoMunge:
                       sampling_dict = sampling_dict,
                       pandasoutput = 'dataframe',
                       randomseed = augrandomseed,
-                      logger_dict = logger_dict)
+                      logger = logger)
 
         #logger_dict validation results stored in logger_dict['post_noise_augment_validations']
         logger_dict['post_noise_augment_validations'] = self.__autocopy(logger_dict['validations'])
@@ -58869,11 +58262,11 @@ class AutoMunge:
     if labelscolumn is False:
       if 'final_model' in postprocess_dict:
         # if printstatus in {True, 'summary'}:
-        self.__autoprint(printstatus, 'info', "_______________")
-        self.__autoprint(printstatus, 'info', "Running inference with model saved from automodel(.)")
-        self.__autoprint(printstatus, 'info', "This functionality is still experimental.")
-        self.__autoprint(printstatus, 'info', "Results of inference will be returned as the test_labels set.")
-        self.__autoprint(printstatus, 'info', '')
+        self.__autoprint('info', "_______________")
+        self.__autoprint('info', "Running inference with model saved from automodel(.)")
+        self.__autoprint('info', "This functionality is still experimental.")
+        self.__autoprint('info', "Results of inference will be returned as the test_labels set.")
+        self.__autoprint('info', '')
 
         labelscolumn = postprocess_dict['labels_column']
 
@@ -58883,20 +58276,20 @@ class AutoMunge:
 
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "Postmunge returned test column set: ")
-    self.__autoprint(printstatus, 'info', list(df_test))
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "Postmunge returned test column set: ")
+    self.__autoprint('info', list(df_test))
+    self.__autoprint('info', "")
 
-    self.__autoprint(printstatus, 'info', "_______________")
+    self.__autoprint('info', "_______________")
     if df_testID.empty is False:
-      self.__autoprint(printstatus, 'info', "Postmunge returned ID column set: ")
-      self.__autoprint(printstatus, 'info', list(df_testID))
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "Postmunge returned ID column set: ")
+      self.__autoprint('info', list(df_testID))
+      self.__autoprint('info', "")
 
     if labelscolumn is not False:
-      self.__autoprint(printstatus, 'info', "Postmunge returned label column set: ")
-      self.__autoprint(printstatus, 'info', list(df_testlabels))
-      self.__autoprint(printstatus, 'info', "")
+      self.__autoprint('info', "Postmunge returned label column set: ")
+      self.__autoprint('info', list(df_testlabels))
+      self.__autoprint('info', "")
 
     if testID_column is not False:
       if returnedsets in {'test_ID', 'test_ID_labels'}:
@@ -58963,9 +58356,12 @@ class AutoMunge:
 
     #printout display progress
     # if printstatus in {True, 'summary'}:
-    self.__autoprint(printstatus, 'info', "_______________")
-    self.__autoprint(printstatus, 'info', "Postmunge Complete")
-    self.__autoprint(printstatus, 'info', "")
+    self.__autoprint('info', "_______________")
+    self.__autoprint('info', "Postmunge Complete")
+    self.__autoprint('info', "")
+
+    #final consolidation of logger_dict with any externally initialized logger dictionary
+    logger.update(logger_dict)
     
     if returnedsets is True:
     
@@ -59012,8 +58408,6 @@ class AutoMunge:
     #I think this will work let's give it a try
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #these are the columns passed to automunge(.) including labels
     source_columns = list(postprocess_dict['origcolumn'])
     
@@ -59052,8 +58446,6 @@ class AutoMunge:
     #see also notes for populate_categorytree function
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     for entry in parents:
       
       if entry != None:
@@ -59166,8 +58558,6 @@ class AutoMunge:
     #by searching entries to postprocess_dict['column_dict']
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     categorylist = []
     
     for entry in postprocess_dict['column_dict']:
@@ -59214,8 +58604,6 @@ class AutoMunge:
     labelscase=True is used to populated an additional version specific to labels in labelsencoding_dict
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #all returned columns including labels
     returned_columns = \
     postprocess_dict['pre_dimred_finalcolumns_train'] + postprocess_dict['pre_dimred_finalcolumns_labels']
@@ -59327,9 +58715,7 @@ class AutoMunge:
     
     #see also notes for populate_inverse_categorytree function
     """
-
-    logger_dict = self.__check_logger_dict()
-      
+  
     category     = postprocess_dict['column_dict'][column]['category']
     inputcolumn  = postprocess_dict['column_dict'][column]['inputcolumn']
     origcolumn   = postprocess_dict['column_dict'][column]['origcolumn']
@@ -59430,8 +58816,6 @@ class AutoMunge:
     #or for downstream generations entries to children/niecesnephews/coworkers/friends
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     inputcolumn_dict = {}
     
     for column in postprocess_dict['column_dict']:
@@ -59460,8 +58844,6 @@ class AutoMunge:
     #which will be excluded from columnkeylist
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     labelscategory = postprocess_dict['origcolumn'][labels_column_entry]['category']
     
     #if inputcolumn has a column_dict entry we'll add the normalization_dict
@@ -59494,8 +58876,6 @@ class AutoMunge:
     #the family tree of that root category is inspected and upstream primitives are inspected with i=0
     #downstream tiers will receive category entries to primitive with offspring and i>0
     """
-
-    logger_dict = self.__check_logger_dict()
 
     if 'transform_dict' not in mirror_dict_:
       mirror_dict_.update({'transform_dict' : {}})
@@ -59559,8 +58939,6 @@ class AutoMunge:
     for use to allow label inversion without the need for an encryption key
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     labelsencoding_dict['column_dict'] = {}
     labelsencoding_dict['inverse_categorytree'] = {}
     labelsencoding_dict['origcolumn'] = {}
@@ -59607,8 +58985,6 @@ class AutoMunge:
     #for a particular categorylist
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if LabelSmoothing > 0 and LabelSmoothing < 1:
       
       for categorylist_entry in categorylist:
@@ -59629,8 +59005,6 @@ class AutoMunge:
     #and return order of columns
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     if postprocess_dict['privacy_encode'] is False:
       
       if inversion == 'labels':
@@ -59704,8 +59078,6 @@ class AutoMunge:
     And likewise a similar wrapper for postprocess functions applied in postmunge (_custom_postprocess_wrapper)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #ok so to call our inversion function we need df, returnedcolumn_list, inputcolumn, normalization_dict)
     #we have df
     #returnedcolumn_list is same as categorylist
@@ -59733,8 +59105,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     mean = \
@@ -59759,8 +59129,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     if 'timemean' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey] \
@@ -59784,8 +59152,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     mean = \
@@ -59810,8 +59176,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     mean = \
@@ -59839,8 +59203,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     mean = \
@@ -59863,8 +59225,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     minimum = \
@@ -59887,8 +59247,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     minimum = \
@@ -59911,8 +59269,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     maxabs = \
@@ -59931,8 +59287,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     minimum = \
@@ -59969,8 +59323,6 @@ class AutoMunge:
     #applies zzzinfill infill
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     periods = \
@@ -59991,8 +59343,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     qttf = \
@@ -60019,8 +59369,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -60036,8 +59384,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -60068,8 +59414,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     add = \
@@ -60088,8 +59432,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     subtract = \
@@ -60108,8 +59450,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     multiply = \
@@ -60128,8 +59468,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     divide = \
@@ -60148,8 +59486,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     raiser = \
@@ -60172,8 +59508,6 @@ class AutoMunge:
     #in case a full info_retention path is not available
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     
@@ -60190,8 +59524,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -60210,8 +59542,6 @@ class AutoMunge:
     #when upstreaminteger is False this does not invert
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     upstreaminteger = \
@@ -60242,8 +59572,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -60258,8 +59586,6 @@ class AutoMunge:
     #is simply a pass-through function, original character cases not retained
     #does not perform infill, assumes clean data
     """
-
-    logger_dict = self.__check_logger_dict()
 
     normkey = categorylist[0]
     
@@ -60294,8 +59620,6 @@ class AutoMunge:
     #(same functionality, but would better match convention of library for use of column headers)
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     suffix = \
@@ -60336,8 +59660,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
@@ -60389,8 +59711,6 @@ class AutoMunge:
     #incomplete information recovery
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     binsmean = \
@@ -60447,8 +59767,6 @@ class AutoMunge:
     #incomplete information recovery
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     #this has keys of pwr2 equivalent column headers and values of ordinal values found in column
@@ -60497,8 +59815,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     bins_cuts = \
@@ -60543,8 +59859,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     bins_cuts = \
@@ -60577,8 +59891,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textcolumns = \
@@ -60629,8 +59941,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     bins_id = \
@@ -60679,8 +59989,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textcolumns = \
@@ -60742,8 +60050,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textcolumns = \
@@ -60800,8 +60106,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     buckets_bkt2 = \
@@ -60846,8 +60150,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     buckets = \
@@ -60901,8 +60203,6 @@ class AutoMunge:
     #this only achieves partial information recovery as bins sets aggregated to single value per bin
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     buckets = \
@@ -60944,8 +60244,6 @@ class AutoMunge:
     #corresponding to _custom_train_onht
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #First let's access the values we'll need from the normalization_dict
     labels_dict = normalization_dict['labels_dict']
     missing_marker = normalization_dict['missing_marker']
@@ -60969,8 +60267,6 @@ class AutoMunge:
     #note that this will return numeric entries as str
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textlabelsdict = \
@@ -61014,8 +60310,6 @@ class AutoMunge:
     #this will invert to format of DDMM.... or DDDMM.... when recovered degree magnitude neccesitates
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #First let's access the values we'll need from the normalization_dict
     GPS_convention = normalization_dict['GPS_convention']
     comma_addresses = normalization_dict['comma_addresses']
@@ -61136,8 +60430,6 @@ class AutoMunge:
     #note that this will return numeric entries as str
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textlabelsdict = \
@@ -61205,8 +60497,6 @@ class AutoMunge:
     #translations are for column renaming purposes
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
 
     longest_len = \
@@ -61237,8 +60527,6 @@ class AutoMunge:
     #corresponding to _custom_train_ordl
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #First let's access the values we'll need from the normalization_dict
     ordinal_dict = normalization_dict['ordinal_dict']
     null_activation = normalization_dict['null_activation']
@@ -61265,8 +60553,6 @@ class AutoMunge:
     #note that this will return numeric entries as str
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61283,8 +60569,6 @@ class AutoMunge:
     #does not perform infill, assumes clean data
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     onevalue = \
@@ -61308,8 +60592,6 @@ class AutoMunge:
     #corresponding to _custom_train_1010
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     #First let's access the values we'll need from the normalization_dict
     binary_encoding_dict = normalization_dict['binary_encoding_dict']
     null_activation = normalization_dict['null_activation']
@@ -61350,8 +60632,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61411,8 +60691,6 @@ class AutoMunge:
     #so returning as nan
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61441,8 +60719,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61534,8 +60810,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61590,8 +60864,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61683,8 +60955,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61725,8 +60995,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61768,8 +61036,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61811,8 +61077,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61856,8 +61120,6 @@ class AutoMunge:
     #since it doesn't know which of the full entries to return
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
@@ -61888,8 +61150,6 @@ class AutoMunge:
     #translations are for column renaming purposes
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     textcolumns = \
@@ -61919,8 +61179,6 @@ class AutoMunge:
     #infill will be 0
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     normkey = categorylist[0]
     
     sign_columns = \
@@ -61988,8 +61246,6 @@ class AutoMunge:
     built on top of numpy inverse trigometric operations np.sin, np.cos, np.tan, np.arcsin, np.arccos, np.arctan
     """
 
-    logger_dict = self.__check_logger_dict()
-
     #First let's access the values we'll need from the normalization_dict
     operation = normalization_dict['operation']
 
@@ -62029,8 +61285,6 @@ class AutoMunge:
     #where custom_inversion take precendence over inverseprocess
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     origcolumn = postprocess_dict['column_dict'][categorylist_entry]['origcolumn']
     category = postprocess_dict['column_dict'][categorylist_entry]['category']
     categorylist = postprocess_dict['column_dict'][categorylist_entry]['categorylist']
@@ -62079,8 +61333,6 @@ class AutoMunge:
     #note that this function may be applied consistently to test or label sets
     """
 
-    logger_dict = self.__check_logger_dict()
-    
     inverse_categorytree = postprocess_dict['inverse_categorytree']
     
     #we'll store the inversion paths info in this dictionary
@@ -62092,7 +61344,7 @@ class AutoMunge:
     for source_column in source_columns:
       
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Evaluating inversion paths for columns derived from: ", source_column)
+      self.__autoprint('debug', "Evaluating inversion paths for columns derived from: ", source_column)
       
       returned_columns = postprocess_dict['origcolumn'][source_column]['columnkeylist'].copy()
 
@@ -62155,8 +61407,8 @@ class AutoMunge:
           best_path = False
           info_retention_marker = False
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "No transformation path available from ", path)
-          self.__autoprint(printstatus, 'debug', '')
+          self.__autoprint('debug', "No transformation path available from ", path)
+          self.__autoprint('debug', '')
     
       else:
   
@@ -62195,10 +61447,10 @@ class AutoMunge:
         if not set(postprocess_dict['column_dict'][best_path]['categorylist']).issubset(set(df_test_list)):
           fullcategorylistforinversion = False
           # if printstatus is True:
-          self.__autoprint(printstatus, 'debug', "Inversion path selected based on returned column ", best_path)
-          self.__autoprint(printstatus, 'debug', "Inversion not available due to incomplete set of categorylist entries.")
-          self.__autoprint(printstatus, 'debug', "Please note that if entries are missing due to a Binary dimensionality reduction,")
-          self.__autoprint(printstatus, 'debug', "The column may still be recovered by applying a full test set inversion (inversion='test').")
+          self.__autoprint('debug', "Inversion path selected based on returned column ", best_path)
+          self.__autoprint('debug', "Inversion not available due to incomplete set of categorylist entries.")
+          self.__autoprint('debug', "Please note that if entries are missing due to a Binary dimensionality reduction,")
+          self.__autoprint('debug', "The column may still be recovered by applying a full test set inversion (inversion='test').")
 
           best_path = False
           
@@ -62208,18 +61460,18 @@ class AutoMunge:
         
         if info_retention_marker is True:
         
-          self.__autoprint(printstatus, 'debug', "Inversion path selected based on returned column ", best_path)
-          self.__autoprint(printstatus, 'debug', "With full recovery.")
+          self.__autoprint('debug', "Inversion path selected based on returned column ", best_path)
+          self.__autoprint('debug', "With full recovery.")
           
         else:
           
-          self.__autoprint(printstatus, 'debug', "Inversion path selected based on returned column ", best_path)
-          self.__autoprint(printstatus, 'debug', "With partial recovery.")
+          self.__autoprint('debug', "Inversion path selected based on returned column ", best_path)
+          self.__autoprint('debug', "With partial recovery.")
         
       else:
         
-        self.__autoprint(printstatus, 'debug', "No inversion path available for source column: ", source_column)
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "No inversion path available for source column: ", source_column)
+        self.__autoprint('debug', '')
           
       #great we've selected our path for this source column's inversion
       inversion_info_dict.update({source_column : {'best_path' : best_path, \
@@ -62275,8 +61527,8 @@ class AutoMunge:
       # if printstatus is True:        
       if best_path is not False:
         
-        self.__autoprint(printstatus, 'debug', "Recovered source column: ", source_column)
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Recovered source column: ", source_column)
+        self.__autoprint('debug', '')
         
     #special case for excl suffix
     for column in source_columns:
@@ -62291,9 +61543,7 @@ class AutoMunge:
     return df_test, recovered_list, inversion_info_dict
 
   def __inversion_parent(self, inversion, df_test, postprocess_dict, printstatus, \
-                       pandasoutput):
-
-    logger_dict = self.__check_logger_dict()
+                       pandasoutput, logger):
 
     if isinstance(inversion, str):
       inversion_orig = inversion
@@ -62304,23 +61554,26 @@ class AutoMunge:
     if inversion == 'test' and postprocess_dict['PCAmodel'] is not None and postprocess_dict['PCA_retain'] is not True:
       inversion_PCA_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "error: full test set inversion not currently supported with PCA.")
-      self.__autoprint(printstatus, 'warning', "user can pass partial list of columns to inversion parameter instead")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "error: full test set inversion not currently supported with PCA.")
+      self.__autoprint('warning', "user can pass partial list of columns to inversion parameter instead")
+      self.__autoprint('warning', '')
       inversion = False
     logger_dict['validations'].update({'inversion_PCA_valresult' : inversion_PCA_valresult})
+    logger = self.__logger_append(logger)
 
     inversion_setlist_privacyencode_valresult = False
     if postprocess_dict['privacy_encode'] is True and isinstance(inversion, (list, set)):
       inversion_setlist_privacyencode_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "inversion list or set specification not supported in conjunction with privacy_encode")
-      self.__autoprint(printstatus, 'warning', "inversion halted.")
+      self.__autoprint('warning', "inversion list or set specification not supported in conjunction with privacy_encode")
+      self.__autoprint('warning', "inversion halted.")
 
       logger_dict['validations'].update({'inversion_setlist_privacyencode_valresult' : inversion_setlist_privacyencode_valresult})
+      logger = self.__logger_append(logger)
 
       return
     logger_dict['validations'].update({'inversion_setlist_privacyencode_valresult' : inversion_setlist_privacyencode_valresult})
+    logger = self.__logger_append(logger)
 
     #accomodate excl suffix convention by adding suffix back on
     if postprocess_dict['excl_suffix'] is False:
@@ -62387,9 +61640,10 @@ class AutoMunge:
       if len(finalcolumns_labels)!= df_test.shape[1]:
         validate_traintest_columnlabelscompare = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error, different number of returned columns in train and test sets")
+        self.__autoprint('warning', "error, different number of returned columns in train and test sets")
 
         logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+        logger = self.__logger_append(logger)
 
         return
 
@@ -62399,9 +61653,10 @@ class AutoMunge:
         if finalcolumns_labels != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
 
@@ -62410,22 +61665,24 @@ class AutoMunge:
         if postprocess_dict['finalcolumns_train'] != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
 
       logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
                                         'validate_traintest_columnorder' : validate_traintest_columnorder})
+      logger = self.__logger_append(logger)
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
         df_test.columns = finalcolumns_labels
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Performing inversion recovery of original columns for test set.")
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "Performing inversion recovery of original columns for test set.")
+      self.__autoprint('debug', '')
 
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, postprocess_dict['origtraincolumns'], postprocess_dict, printstatus)
@@ -62442,15 +61699,18 @@ class AutoMunge:
       df_test = df_test.reindex(columns=final_recovered_list)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Inversion succeeded in recovering original form for columns:")
-      self.__autoprint(printstatus, 'debug', final_recovered_list)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('info', "Inversion succeeded in recovering original form for columns:")
+      self.__autoprint('info', final_recovered_list)
+      self.__autoprint('info', '')
 
       inversion_info_dict['pm_miscparameters_results'].update(logger_dict['validations'])
 
       if pandasoutput is False:
 
         df_test = df_test.to_numpy()
+
+      #final consolidation of logger_dict with any externally initialized logger diciotnary
+      logger.update(logger_dict)
 
       return df_test, final_recovered_list, inversion_info_dict
 
@@ -62471,9 +61731,10 @@ class AutoMunge:
       if len(finalcolumns_labels)!= df_test.shape[1]:
         validate_traintest_columnlabelscompare = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error, different number of returned label columns in train and test sets")
+        self.__autoprint('warning', "error, different number of returned label columns in train and test sets")
 
         logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+        logger = self.__logger_append(logger)
 
         return
 
@@ -62483,9 +61744,10 @@ class AutoMunge:
         if finalcolumns_labels != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
@@ -62493,14 +61755,16 @@ class AutoMunge:
         if postprocess_dict['finalcolumns_labels'] != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
 
       logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
                                         'validate_traintest_columnorder' : validate_traintest_columnorder})
+      logger = self.__logger_append(logger)
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
@@ -62510,8 +61774,8 @@ class AutoMunge:
       if replace_Binary_present is True:
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Recovering columns from Binary dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Recovering columns from Binary dimensionality reduction")
+        self.__autoprint('debug', '')
           
       #for all cases where a Binary was performed, inversion = 'test' is translated to a list of columns
       inversion = finalcolumns_labels
@@ -62519,11 +61783,11 @@ class AutoMunge:
       if retain_Binary_present is True or replace_Binary_present is True:
 
         df_test, inversion = \
-        self.__masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus)
+        self.__masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus, logger)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Performing inversion recovery of original columns for label set.")
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "Performing inversion recovery of original columns for label set.")
+      self.__autoprint('debug', '')
         
       #_df_inversion_meta takes source columns as input
       inversion = \
@@ -62544,15 +61808,18 @@ class AutoMunge:
       df_test = df_test.reindex(columns=final_recovered_list)
       
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Inversion succeeded in recovering original form for columns:")
-      self.__autoprint(printstatus, 'debug', final_recovered_list)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('info', "Inversion succeeded in recovering original form for columns:")
+      self.__autoprint('info', final_recovered_list)
+      self.__autoprint('info', '')
 
       inversion_info_dict['pm_miscparameters_results'].update(logger_dict['validations'])
 
       if pandasoutput is False:
 
         df_test = df_test.to_numpy()
+
+      #final consolidation of logger_dict with any externally initialized logger diciotnary
+      logger.update(logger_dict)
 
       return df_test, final_recovered_list, inversion_info_dict
 
@@ -62567,12 +61834,14 @@ class AutoMunge:
       if isinstance(postprocess_dict['labels_column'], list) and len(postprocess_dict['labels_column']) > 1:
         validate_denselabels_singlelabel = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error, inversion 'denselabels' option only supported for single label case, does not support consolidations.")
+        self.__autoprint('warning', "error, inversion 'denselabels' option only supported for single label case, does not support consolidations.")
 
         logger_dict['validations'].update({'validate_denselabels_singlelabel' : validate_denselabels_singlelabel})
+        logger = self.__logger_append(logger)
 
         return
       logger_dict['validations'].update({'validate_denselabels_singlelabel' : validate_denselabels_singlelabel})
+      logger = self.__logger_append(logger)
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
@@ -62589,9 +61858,10 @@ class AutoMunge:
       if len(finalcolumns_labels)!= df_test.shape[1]:
         validate_traintest_columnlabelscompare = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error, different number of returned label columns in train and test sets")
+        self.__autoprint('warning', "error, different number of returned label columns in train and test sets")
 
         logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare})
+        logger = self.__logger_append(logger)
 
         return
 
@@ -62601,9 +61871,10 @@ class AutoMunge:
         if finalcolumns_labels != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
       #this is for excl edge case again in case we had any updates to finalcolumns_labels above
@@ -62611,22 +61882,24 @@ class AutoMunge:
         if postprocess_dict['finalcolumns_labels'] != columns_test:
           validate_traintest_columnorder = True
           # if printstatus != 'silent':
-          self.__autoprint(printstatus, 'warning', "error, different order of column labels in the train and test set")
+          self.__autoprint('warning', "error, different order of column labels in the train and test set")
 
           logger_dict['validations'].update({'validate_traintest_columnorder' : validate_traintest_columnorder})
+          logger = self.__logger_append(logger)
 
           return
 
       logger_dict['validations'].update({'validate_traintest_columnlabelscompare' : validate_traintest_columnlabelscompare,
                                         'validate_traintest_columnorder' : validate_traintest_columnorder})
+      logger = self.__logger_append(logger)
 
       #assign labels to column headers if they weren't passed
       if finalcolumns_labels != columns_test:
         df_test.columns = finalcolumns_labels
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Performing inversion recovery of original columns for label set.")
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('debug', "Performing inversion recovery of original columns for label set.")
+      self.__autoprint('debug', '')
       
       dense_recovered_list = []
       recovered_categorylist = []
@@ -62673,15 +61946,18 @@ class AutoMunge:
             j+=1
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Inversion succeeded in recovering original form for columns:")
-      self.__autoprint(printstatus, 'debug', dense_recovered_list)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('info', "Inversion succeeded in recovering original form for columns:")
+      self.__autoprint('info', dense_recovered_list)
+      self.__autoprint('info', '')
 
       inversion_info_dict['pm_miscparameters_results'].update(logger_dict['validations'])
 
       if pandasoutput is False:
 
         df_test_denseinvert_final = df_test_denseinvert_final.to_numpy()
+
+      #final consolidation of logger_dict with any externally initialized logger diciotnary
+      logger.update(logger_dict)
 
       return df_test_denseinvert_final, dense_recovered_list, inversion_info_dict
 
@@ -62690,11 +61966,11 @@ class AutoMunge:
       if replace_Binary_present is True:
 
         # if printstatus is True:
-        self.__autoprint(printstatus, 'debug', "Recovering columns from Binary dimensionality reduction")
-        self.__autoprint(printstatus, 'debug', '')
+        self.__autoprint('debug', "Recovering columns from Binary dimensionality reduction")
+        self.__autoprint('debug', '')
       
       df_test, inversion = \
-      self.__masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus)
+      self.__masterBinaryinvert(df_test, inversion, inversion_orig, meta_Binary_dict, postprocess_dict, printstatus, logger)
 
       #this is to handle edge case of excl transforms
       #which after processing have their suffix removed from header
@@ -62725,10 +62001,11 @@ class AutoMunge:
           inversion_listentrycompare_valresult = True
           # if printstatus != 'silent':
           #(note this will trigger a printout if inversion passed as list targeting entry to label set, can be ignored)
-          self.__autoprint(printstatus, 'warning', "error: entry passed to inversion parameter list not matching a source or derived column")
-          self.__autoprint(printstatus, 'warning', "for entry: ", entry)
+          self.__autoprint('warning', "error: entry passed to inversion parameter list not matching a source or derived column")
+          self.__autoprint('warning', "for entry: ", entry)
 
       logger_dict['validations'].update({'inversion_listentrycompare_valresult' : inversion_listentrycompare_valresult})
+      logger = self.__logger_append(logger)
 
       df_test, recovered_list, inversion_info_dict = \
       self.__df_inversion_meta(df_test, inversion, postprocess_dict, printstatus)
@@ -62745,15 +62022,18 @@ class AutoMunge:
       df_test = df_test.reindex(columns=final_recovered_list)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Inversion succeeded in recovering original form for columns:")
-      self.__autoprint(printstatus, 'debug', final_recovered_list)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('info', "Inversion succeeded in recovering original form for columns:")
+      self.__autoprint('info', final_recovered_list)
+      self.__autoprint('info', '')
 
       inversion_info_dict['pm_miscparameters_results'].update(logger_dict['validations'])
 
       if pandasoutput is False:
 
         df_test = df_test.to_numpy()
+
+      #final consolidation of logger_dict with any externally initialized logger diciotnary
+      logger.update(logger_dict)
 
       return df_test, final_recovered_list, inversion_info_dict
 
@@ -62767,11 +62047,12 @@ class AutoMunge:
       if len(inversion) != 1:
         inversion_setsingleentry_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: inversion was passed as a set with more than one entry")
-        self.__autoprint(printstatus, 'warning', "the inversion set case is for specifying a single target inversion path")
-        self.__autoprint(printstatus, 'warning', "and thus accepts a set of one string entry representing a returned column header")
+        self.__autoprint('warning', "error: inversion was passed as a set with more than one entry")
+        self.__autoprint('warning', "the inversion set case is for specifying a single target inversion path")
+        self.__autoprint('warning', "and thus accepts a set of one string entry representing a returned column header")
           
       logger_dict['validations'].update({'inversion_setsingleentry_valresult' : inversion_setsingleentry_valresult})
+      logger = self.__logger_append(logger)
 
       #temporarily recast as a list
       inversion = list(inversion)
@@ -62793,11 +62074,12 @@ class AutoMunge:
       if inversion not in finalcolumns_train:
         inversion_listentrycompare_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "error: inversion was passed as a set with entry not matching one of the returned columns")
-        self.__autoprint(printstatus, 'warning', "the inversion set case is for specifying a single target inversion path")
-        self.__autoprint(printstatus, 'warning', "and thus accepts a set of one string entry representing a returned column header")
+        self.__autoprint('warning', "error: inversion was passed as a set with entry not matching one of the returned columns")
+        self.__autoprint('warning', "the inversion set case is for specifying a single target inversion path")
+        self.__autoprint('warning', "and thus accepts a set of one string entry representing a returned column header")
           
       logger_dict['validations'].update({'inversion_listentrycompare_valresult' : inversion_listentrycompare_valresult})
+      logger = self.__logger_append(logger)
 
       origcolumn = postprocess_dict['column_dict'][inversion]['origcolumn']
       
@@ -62816,15 +62098,18 @@ class AutoMunge:
       df_test = df_test.reindex(columns=final_recovered_list)
 
       # if printstatus is True:
-      self.__autoprint(printstatus, 'debug', "Inversion succeeded in recovering original form for columns:")
-      self.__autoprint(printstatus, 'debug', final_recovered_list)
-      self.__autoprint(printstatus, 'debug', '')
+      self.__autoprint('info', "Inversion succeeded in recovering original form for columns:")
+      self.__autoprint('info', final_recovered_list)
+      self.__autoprint('info', '')
 
       inversion_info_dict['pm_miscparameters_results'].update(logger_dict['validations'])
 
       if pandasoutput is False:
 
         df_test = df_test.to_numpy()
+
+      #final consolidation of logger_dict with any externally initialized logger diciotnary
+      logger.update(logger_dict)
 
       return df_test, final_recovered_list, inversion_info_dict
 
@@ -62852,9 +62137,9 @@ class AutoMunge:
     if not isinstance(train, type(pd.DataFrame())):
       train_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for train parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are of type pandas dataframe")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for train parameter.")
+      self.__autoprint('warning', "Acceptable values are of type pandas dataframe")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'train_valresult' : train_valresult})
     
@@ -62863,9 +62148,9 @@ class AutoMunge:
     if not isinstance(labels, type(pd.DataFrame())):
       labels_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for labels parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are of type pandas dataframe")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for labels parameter.")
+      self.__autoprint('warning', "Acceptable values are of type pandas dataframe")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'labels_valresult' : labels_valresult})
     
@@ -62874,9 +62159,9 @@ class AutoMunge:
     if not isinstance(postprocess_dict, dict):
       postprocess_dict_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for postprocess_dict parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are of type dict")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for postprocess_dict parameter.")
+      self.__autoprint('warning', "Acceptable values are of type dict")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'postprocess_dict_valresult' : postprocess_dict_valresult})
     
@@ -62885,9 +62170,9 @@ class AutoMunge:
     if not isinstance(ML_cmnd, dict) and ML_cmnd is not False:
       ML_cmnd_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for ML_cmnd parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are of type dict or boolean False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for ML_cmnd parameter.")
+      self.__autoprint('warning', "Acceptable values are of type dict or boolean False")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'ML_cmnd_valresult' : ML_cmnd_valresult})
     
@@ -62898,10 +62183,10 @@ class AutoMunge:
     or isinstance(encrypt_key, bytes) and len(encrypt_key) not in {16, 24, 32}:
       encrypt_key_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for encrypt_key parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
-      self.__autoprint(printstatus, 'warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for encrypt_key parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {False, 16, 24, 32, or a bytes object}")
+      self.__autoprint('warning', "When passed as a bytes object the length can be one of {16, 24, 32}")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'encrypt_key_valresult' : encrypt_key_valresult})
     
@@ -62911,9 +62196,9 @@ class AutoMunge:
     (printstatus in {True, False} and not isinstance(printstatus, bool)):
       printstatus_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for printstatus parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for printstatus parameter.")
+      self.__autoprint('warning', "Acceptable values are one of {True, False, 'summary', 'silent'}")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'printstatus_valresult' : printstatus_valresult})
     
@@ -62922,15 +62207,15 @@ class AutoMunge:
     if not isinstance(randomseed, (int)) or randomseed is True:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**32-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**32-1 or False")
+      self.__autoprint('warning', '')
     elif randomseed < 0 or randomseed > 2147483647:
       randomseed_valresult = True
       # if printstatus != 'silent':
-      self.__autoprint(printstatus, 'warning', "Error: invalid entry passed for randomseed parameter.")
-      self.__autoprint(printstatus, 'warning', "Acceptable values are integers within 0:2**31-1 or False")
-      self.__autoprint(printstatus, 'warning', '')
+      self.__autoprint('warning', "Error: invalid entry passed for randomseed parameter.")
+      self.__autoprint('warning', "Acceptable values are integers within 0:2**31-1 or False")
+      self.__autoprint('warning', '')
       
     model_validation_results.update({'randomseed_valresult' : randomseed_valresult})
     
@@ -62974,12 +62259,14 @@ class AutoMunge:
 
     Don't currently have logger_dict support for automodel
     """
+
+    logger = {}
     
     # #printout display progress
     # # if printstatus in {True, 'summary'}:
-    # self.__autoprint(printstatus, 'info', "_______________")
-    # self.__autoprint(printstatus, 'info', "Begin AutoModel training")
-    # self.__autoprint(printstatus, 'info', "")
+    # self.__autoprint('info', "_______________")
+    # self.__autoprint('info', "Begin AutoModel training")
+    # self.__autoprint('info', "")
       
     #copy external dictionaries or lists to internal state
     for parameter in \
@@ -63027,14 +62314,14 @@ class AutoMunge:
       if ML_cmnd['autoML_type'] == 'customML':
         autoML_type_customML_valresult = True
         # if printstatus != 'silent':
-        self.__autoprint(printstatus, 'warning', "warning of missing entry in postprocess_dict['ML_cmnd']['autoML_type']")
-        self.__autoprint(printstatus, 'warning', "when customML autoML_type is applied in automunge(.)")
-        self.__autoprint(printstatus, 'warning', "the training function is not retained") 
-        self.__autoprint(printstatus, 'warning', "so that it doesn't have to be reinitialized in a seperate notebook")
-        self.__autoprint(printstatus, 'warning', "to apply customML in this funciton please pass a training and inference function")
-        self.__autoprint(printstatus, 'warning', "through the ML_cmnd parameter")
-        self.__autoprint(printstatus, 'warning', "which accepts similar specifications to its use in automunge(.)")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "warning of missing entry in postprocess_dict['ML_cmnd']['autoML_type']")
+        self.__autoprint('warning', "when customML autoML_type is applied in automunge(.)")
+        self.__autoprint('warning', "the training function is not retained") 
+        self.__autoprint('warning', "so that it doesn't have to be reinitialized in a seperate notebook")
+        self.__autoprint('warning', "to apply customML in this funciton please pass a training and inference function")
+        self.__autoprint('warning', "through the ML_cmnd parameter")
+        self.__autoprint('warning', "which accepts similar specifications to its use in automunge(.)")
+        self.__autoprint('warning', '')
 
         autoMLer = self.__assemble_autoMLer()
         ML_cmnd['autoML_type'] = 'randomforest'
@@ -63175,9 +62462,9 @@ class AutoMunge:
       if len(categorylist) == 0:
         # if printstatus != 'silent':
         #this is a remote edge case, printout added for troubleshooting support
-        self.__autoprint(printstatus, 'warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
-        self.__autoprint(printstatus, 'warning', "Model training will not run without valid labelgctgy processdict entry")
-        self.__autoprint(printstatus, 'warning', '')
+        self.__autoprint('warning', "Label root category processdict entry contained a labelctgy entry not found in family tree")
+        self.__autoprint('warning', "Model training will not run without valid labelgctgy processdict entry")
+        self.__autoprint('warning', '')
 
         labelctgy_not_found_in_familytree_pm_valresult = True
         model_validation_results.update({'labelctgy_not_found_in_familytree_pm_valresult' : labelctgy_not_found_in_familytree_pm_valresult})
@@ -63199,7 +62486,7 @@ class AutoMunge:
       model, postprocess_dict = \
       self.__trainFSmodel(train, labels, randomseed, \
                           process_dict, postprocess_dict, labelctgy, ML_cmnd, \
-                          printstatus, FSautoMLer=autoMLer)
+                          printstatus, logger, FSautoMLer=autoMLer)
       
       #we'll store the model and a few entrires to support inference
       #in postprocess_dict['final_model']
