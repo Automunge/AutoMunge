@@ -1920,7 +1920,7 @@ numeric features e.g. via DPqt or DPbx. Further detail on privacy encoding provi
 status of processing during operation. Defaults to 'summary' to return a summary of returned sets and any feature importance or drift reports. True returns all printouts. When False only error
 message printouts generated. When 'summary' only reports and summary are printed. When 'silent' no printouts are generated. Note that all of these scenarios are also available by the logger parameter regardless of printstatus setting.
 
-* logger: user can initialize a dictionary externally, e.g. logger={}, and pass it to this parameter, e.g. logger=logger. automunge(.) will log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
+* logger: user can initialize a dictionary externally, e.g. logger={}, and pass it to this parameter, e.g. logger=logger. automunge(.) will then log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
 ```
 logger = {}
 
@@ -2346,7 +2346,7 @@ This value is used as the postmunge(.) seed of randomness for operations that do
 
 * encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
 
-* logger: user can initialize a dictionary externally (e.g. logger={}) and then pass it to this parameter (e.g. logger=logger). automunge(.) will log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
+* logger: user can initialize a dictionary externally (e.g. logger={}) and then pass it to this parameter (e.g. logger=logger). postmunge(.) will then log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
 ```
 logger = {}
 
