@@ -5585,3 +5585,35 @@ assigncat = {'DPmp' : [{'column1', 'column2'}, 'column3']}
 - max_zero was partly inspired by reading through "Quantum Computing with Python and IBM Quantum Experience" by Robert Loredo
 - also a cleanup to data structures returned from running automodel with customML 
 - now when running automodel with customML user doesn't have to reinitialize the training functions for postmunge or autoinference
+
+8.16
+- new automunge(.) and postmunge(.) parameter logger_dict
+- records different tiers of printouts associated with debug/info/warning
+- this is similar to the python logging module, but better suited for our architecture and development environment
+- also records validation results associated with different halt scenarios
+- logger_dict may be initialized as a dictionary externally to an automunge(.) or postmunge(.) function call, and if the api halts for any reason, the recorded log and validations will still be retained in the external dictionary for inspection or troubleshooting support
+
+```
+logger_dict = {}
+
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train, 
+             logger_dict=logger_dict, 
+             printstatus='silent')
+
+#and then, e.g.
+print(logger_dict['debug_report'])
+print(logger_dict['info_report'])
+print(logger_dict['warning_report'])
+
+#or validation results available in logger_dict['validations']
+```
+
+- logger_dict is not returned in postprocess_dict for privacy preservation
+- a small tradeoff of the implementation is that validation results are not otherwise comprehensively logged in postprocess_dict['miscparameters_results'] when an exernal logger_dict is not initialized, in other words, if you want to view comprehensive validation results for troubleshooting need to externally initialize a logger_dict
+- removed the application timestamp from returned postprocess_dict for privacy preservation purposes
+- retained the application number which is 12 digit random number associated with each application
+- also removed a redundant __init__ function definition internal to the class definition, which I think was a relic from some very early implementations
