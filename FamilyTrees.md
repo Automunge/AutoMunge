@@ -114,8 +114,6 @@ For simplicity just going to copy the code directly from code base where these d
     #in one of the root category's upstream primitives with offspring
     """
 
-    logger_dict = self.__check_logger_dict()
-
     transform_dict = {}
 
     #initialize bins based on what was passed through application of automunge(.)
@@ -4543,8 +4541,6 @@ For simplicity just going to copy the code directly from code base where these d
     #MLinfilltype is associated with transformation outputs
     #for a category's use as a tree category
     '''
-
-    logger_dict = self.__check_logger_dict()
     
     process_dict = {}
     
