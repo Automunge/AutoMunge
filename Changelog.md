@@ -5621,3 +5621,39 @@ print(logger['warning_report'])
 - the implementation includes our first global variable (for both automunge and postmunge) as logger_dict which greatly simplified the implementation
 - in the process also did an overhaul of printouts to align with logging
 - also muted the pandas defragmented dataframe peformance warning. This is not a bug, it is a performance indication which we have operations in place to mitigate, so we are muting until pandas can roll out a fix
+
+8.17
+- new automunge(.) and postmunge(.) parameter logger
+- records validation results and  different tiers of printouts associated with debug/info/warning
+- this is similar to the python logging module, but better suited for our architecture and development environment
+- the  validation results are associated with different halt scenarios
+- logger may be initialized as a dictionary externally to an automunge(.) or postmunge(.) function call, and if the API halts for any reason, the recorded log and validations will still be retained in the external dictionary for inspection or troubleshooting support
+- we expect this update will greatly benefit troubleshooting since now the validation results are available for inspection even in cases of halt
+
+```
+logger = {}
+
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train, 
+             logger=logger, 
+             printstatus='silent')
+
+#and then, e.g.
+print(logger['debug_report'])
+print(logger['info_report'])
+print(logger['warning_report'])
+
+#or validation results available in logger['validations']
+#postmunge logger applied in same manner
+```
+
+- full logger contents are not returned in postprocess_dict for privacy preservation
+- also removed the application timestamp from returned postprocess_dict for privacy preservation purposes
+- retained the application number which is 12 digit random number associated with each application
+- also removed a redundant __init__ function definition internal to the class definition, which I think was a relic from some very early implementations
+- the implementation includes our first global variable (for both automunge and postmunge) as logger_dict which greatly simplified the implementation
+- in the process also did an overhaul of printouts to align with logging
+- also muted the pandas defragmented dataframe peformance warning. This is not a bug, it is a performance indication which we have operations in place to mitigate, so we are muting until pandas can roll out a fix
