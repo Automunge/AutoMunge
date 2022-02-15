@@ -35,7 +35,7 @@
 
 In addition to data preparations under automation, Automunge may also serve as a platform for engineering data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principal component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features. Random sampling may be channeled into features as stochastic perturbations.
 
-Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials). A high level overview of Automunge was provided in the paper [Automunge: The preprint](https://medium.com/automunge/automunge-6f33161353b4). See also the video presentations [Automunge Explained (in depth)](https://medium.com/automunge/automunge-explained-in-depth-77ff777f12d7) or [Automunge Explained (in brief)](https://medium.com/automunge/automunge-explained-in-brief-354c9b92aa1c).
+Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials). If you are looking for something to cite, our paper [Tabular Engineering with Automunge](https://datacentricai.org/papers/15_CameraReady_TabularEngineering_102621_Final.pdf) was accepted to the 2021 NeurIPS Data-Centric AI workshop.
 
 ## Install, Initialize, and Basics
 
@@ -114,7 +114,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary', logger_dict = {})
 ```
 
 Please remember to save the automunge(.) returned object postprocess_dict 
@@ -138,6 +138,7 @@ with open('filename.pickle', 'rb') as handle:
 #like for custom_train transformation functions or customML inference functions
 #they will need to be reinitialized prior to uploading the postprocess_dict with pickle.
 ```
+
 We can then apply the postprocess_dict saved from a prior application of automunge
 for consistent processing of additional data.
 ```
@@ -154,7 +155,7 @@ am.postmunge(postprocess_dict, df_test,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             randomseed = False, encrypt_key = False)
+             randomseed = False, encrypt_key = False, logger_dict = {})
 ```
 
 The functions accept pandas dataframe or numpy array input and return encoded dataframes
@@ -264,7 +265,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary', logger_dict = {})
 ```
 
 Or for the postmunge function:
@@ -304,7 +305,7 @@ am.postmunge(postprocess_dict, df_test,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             randomseed = False, encrypt_key = False
+             randomseed = False, encrypt_key = False, logger_dict = {})
 ```
 
 Note that the only required argument to the automunge function is the
@@ -429,7 +430,7 @@ am.automunge(df_train, df_test = False,
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             privacy_encode = False, encrypt_key = False, printstatus = 'summary')
+             privacy_encode = False, encrypt_key = False, printstatus = 'summary', logger_dict = {})
 ```
 
 * df_train: a pandas dataframe or numpy array containing a structured 
@@ -1917,7 +1918,27 @@ numeric features e.g. via DPqt or DPbx. Further detail on privacy encoding provi
 
 * printstatus: user can pass _True/False/'summary'/'silent'_ indicating whether the function will print 
 status of processing during operation. Defaults to 'summary' to return a summary of returned sets and any feature importance or drift reports. True returns all printouts. When False only error
-message printouts generated. When 'summary' only reports and summary are printed. When 'silent' no printouts are generated.
+message printouts generated. When 'summary' only reports and summary are printed. When 'silent' no printouts are generated. Note that all of these scenarios are also available by the logger_dict parameter regardless of printstatus setting.
+
+* logger_dict: user can initialize a dictionary externally (e.g. logger_dict={}) and then pass it to this parameter (e.g. logger_dict=logger_dict). automunge(.) will log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
+```
+logger_dict = {}
+
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train, 
+             logger_dict=logger_dict, 
+             printstatus='silent')
+
+#and then, e.g.
+print(logger_dict['debug_report'])
+print(logger_dict['info_report'])
+print(logger_dict['warning_report'])
+
+#or validation results available in logger_dict['validations']
+```
 
 Ok well we'll demonstrate further below how to build custom transformation functions,
 for now you should have sufficient tools to build sets of transformation categories 
@@ -1958,7 +1979,7 @@ am.postmunge(postprocess_dict, df_test,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             randomseed = False, encrypt_key = False
+             randomseed = False, encrypt_key = False, logger_dict = {})
 ```
 
 Or to run postmunge(.) with default parameters we simply need the postprocess_dict
@@ -2092,7 +2113,7 @@ am.postmunge(postprocess_dict, df_test,
              driftreport = False, inversion = False,
              returnedsets = True, shuffletrain = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
-             randomseed = False, encrypt_key = False
+             randomseed = False, encrypt_key = False, logger_dict = {})
 ```
 
 * postprocess_dict: this is the dictionary returned from the initial
@@ -2324,6 +2345,24 @@ the returned sets will be (consistently) shuffled. This value defaults to False.
 This value is used as the postmunge(.) seed of randomness for operations that don't require matched random seeding to automunge(.).
 
 * encrypt_key: when the postprocess_dict was encrypted by way of the corresponding automunge(.) encrypt_key parameter, a key is either derived and returned in the closing automunge(.) printouts, or a key is based on user specification. To prepare additional data in postmunge(.) with the encrypted postprocess_dict requires passing that key to the postmunge(.) encrypt_key parameter. Defaults to False for when encryption was not performed, other accepts a bytes type object with expected length of 16, 24, or 32. Please note that the AES encryption is applied with the [pycrypto](https://github.com/pycrypto/pycrypto) python library which requires installation in order to run (we found there were installations available via conda install).
+
+* logger_dict: user can initialize a dictionary externally (e.g. logger_dict={}) and then pass it to this parameter (e.g. logger_dict=logger_dict). automunge(.) will log every printout scenario and validation result as they are being accessed in this external dictionary, which can then either be inspected for troubleshooting in cases of a halt scenario or archived. The report scenarios are loosely aligned with python logging module and also related to the tiers of printstatus.
+```
+logger_dict = {}
+
+test, test_ID, test_labels, \
+postreports_dict = \
+am.postmunge(postprocess_dict, df_test,
+             logger_dict=logger_dict, 
+             printstatus='silent')
+
+#and then, e.g.
+print(logger_dict['debug_report'])
+print(logger_dict['info_report'])
+print(logger_dict['warning_report'])
+
+#or validation results available in logger_dict['validations']
+```
 
 ## Default Transformations
 
@@ -5521,6 +5560,10 @@ postmunge(.) - name of a function defined in the AutoMunge class in the Automung
 
 ...
 
+Please note that the pickle library has a security vulnerability when loading an object of unknown origin. We do not use pickle in our codebase but suggested use above for downloading a returned postprocess_dict because of its ability to serialize and download arbitrary python objects. If you intend to distribute a pickled postprocess_dict publicly, the [python docs](https://docs.python.org/3/library/pickle.html) suggest signing the data with [hmac](https://docs.python.org/3/library/hmac.html#module-hmac) to ensure that it has not been tampered with.
+
+...
+
 Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
 which are released under a 3-Clause BSD license. We include options that make use of the
 Catboost or XGBoost libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
@@ -5538,6 +5581,8 @@ the Diaries of John Henry](https://turingsquared.com).
 
 The Automunge website is helpfully located at 
 [automunge.com](https://automunge.com).
+
+If you are looking for something to cite, our paper [Tabular Engineering with Automunge](https://datacentricai.org/papers/15_CameraReady_TabularEngineering_102621_Final.pdf) was accepted to the 2021 NeurIPS Data-Centric AI workshop.
 
 ...
 
