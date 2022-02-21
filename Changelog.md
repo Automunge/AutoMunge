@@ -5657,3 +5657,8 @@ print(logger['warning_report'])
 - the implementation includes our first global variable (for both automunge and postmunge) as logger_dict which greatly simplified the implementation
 - in the process also did an overhaul of printouts to align with logging
 - also muted the pandas defragmented dataframe peformance warning. This is not a bug, it is a performance indication which we have operations in place to mitigate, so we are muting until pandas can roll out a fix
+
+8.18
+- new invert parameter for bnry, which flips the activations between 0 and 1
+- lbbn (labels for binary classification) now defaults to invert=True
+- (used for lbbn to eliminate remote edge case for xgboost for cases of binary classification with only one label class present)
