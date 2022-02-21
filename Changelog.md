@@ -5662,3 +5662,7 @@ print(logger['warning_report'])
 - new invert parameter for bnry, which flips the activations between 0 and 1
 - lbbn (labels for binary classification) now defaults to invert=True
 - (used for lbbn to eliminate remote edge case for xgboost for cases of binary classification with only one label class present)
+
+8.19
+- found and fixed a small bug for protected_feature option in DPnb transform
+- associated with inspecting test data instead of intended train data
