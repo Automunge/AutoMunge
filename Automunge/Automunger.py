@@ -25626,10 +25626,10 @@ class AutoMunge:
             if attribute == attribute:
               #this applies the noise scaling
               #note that mdf_test[DPnm_column] will have entries of 0 or distribution samples
-              mdf_train.loc[mdf_test[protected_feature] == attribute, DPnm_column] *= \
+              mdf_train.loc[mdf_train[protected_feature] == attribute, DPnm_column] *= \
               attribute_stdev_dict[attribute] / feature_stdev
             elif attribute != attribute:
-              mdf_train.loc[mdf_test[protected_feature].isna(), DPnm_column] *= \
+              mdf_train.loc[mdf_train[protected_feature].isna(), DPnm_column] *= \
               attribute_stdev_dict[attribute] / feature_stdev
 
       #___
@@ -46186,7 +46186,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.18'
+    automungeversion = '8.19'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
