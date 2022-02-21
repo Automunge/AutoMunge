@@ -3246,6 +3246,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', or when passed as True e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'invert': reverses the 0/1 convention (results in most common value having 0 activation which is default for lbbn label processing to resolve a remote edge case for labels)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
   - inversion available: yes with full recovery
@@ -3258,6 +3259,7 @@ to set with >2 entries applies infill to those entries beyond two most common.
     - 'str_convert': boolean defaults as False for distinct encodings between numbers and string equivalents
       e.g. 2 != '2', or when passed as True e.g. 2 == '2'. Also can be passed as 'conditional_on_bytes' which resets to True when bytes entries are present in train set otherwise resets to False.
     - 'suffix': to change suffix appender (leading underscore added internally)
+    - 'invert': reverses the 0/1 convention (results in most common value having 0 activation which is default for lbbn label processing to resolve a remote edge case for labels)
   - driftreport postmunge metrics: missing / 1 / 0 / extravalues / oneratio / zeroratio
   - returned datatype: int8
   - inversion available: yes with full recovery
