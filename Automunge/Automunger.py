@@ -9731,6 +9731,7 @@ class AutoMunge:
                                   'info_retention' : True,
                                   'inplace_option' : False,
                                   'defaultinfill' : 'naninfill',
+                                  'defaultparams' : {'invert' : True},
                                   'NArowtype' : 'binary',
                                   'MLinfilltype' : 'binary',
                                   'labelctgy' : 'lbbn'}})
@@ -13524,6 +13525,11 @@ class AutoMunge:
       infillconvention = params['infillconvention']
     else:
       infillconvention = 'onevalue'
+
+    if 'invert' in params:
+      invert = params['invert']
+    else:
+      invert = False
       
     suffixcolumn = column + '_' + suffix
     
@@ -13702,8 +13708,12 @@ class AutoMunge:
           mdf_test = self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == unique, binary_missing_plug, specified='replacement')
 
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_train = self.__autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == onevalue, 1, 0)
-      mdf_test = self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
+      if invert is False:
+        mdf_train = self.__autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == onevalue, 1, 0)
+        mdf_test = self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
+      elif invert is True:
+        mdf_train = self.__autowhere(mdf_train, suffixcolumn, mdf_train[suffixcolumn] == onevalue, 0, 1)
+        mdf_test = self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 0, 1)
 
       #create list of columns
       bnrycolumns = [suffixcolumn]
@@ -13747,6 +13757,7 @@ class AutoMunge:
                                               'str_convert' : str_convert, \
                                               'suffix' : suffix, \
                                               'defaultinfill_dict' : defaultinfill_dict,
+                                              'invert' : invert,
                                               'inplace' : inplace}}
 
     #store some values in the column_dict{} for use later in ML infill methods
@@ -46175,7 +46186,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.17'
+    automungeversion = '8.18'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -48055,6 +48066,13 @@ class AutoMunge:
       defaultinfill_dict = \
       postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['defaultinfill_dict']
 
+      if 'invert' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+        invert = \
+        postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['invert']
+      else:
+        #backward compatibility preceding 8.18
+        invert = False
+
       suffixcolumn = column + '_' + suffix
 
       if inplace is not True:
@@ -48087,8 +48105,12 @@ class AutoMunge:
           self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == unique, binary_missing_plug, specified='replacement')
       
       #convert column to binary 0/1 classification (replaces scikit LabelBinarizer)
-      mdf_test = \
-      self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
+      if invert is False:
+        mdf_test = \
+        self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 1, 0)
+      elif invert is True:
+        mdf_test = \
+        self.__autowhere(mdf_test, suffixcolumn, mdf_test[suffixcolumn] == onevalue, 0, 1)
 
       #create list of columns
       bnrycolumns = [suffixcolumn]
@@ -60575,14 +60597,26 @@ class AutoMunge:
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][1]
     zerovalue = \
     postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey][0]
+
+    if 'invert' in postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]:
+      invert = \
+      postprocess_dict['column_dict'][normkey]['normalization_dict'][normkey]['invert']
+    else:
+      #backward compatibility preceding 8.18
+      invert = False
     
     inputcolumn = postprocess_dict['column_dict'][normkey]['inputcolumn']
     
-    df = \
-    self.__autowhere(df, inputcolumn, df[normkey] == 1, onevalue, 0)
-    
-    df = \
-    self.__autowhere(df, inputcolumn, df[normkey] == 0, zerovalue, specified='replacement')
+    if invert is False:
+      df = \
+      self.__autowhere(df, inputcolumn, df[normkey] == 1, onevalue, 0)
+      df = \
+      self.__autowhere(df, inputcolumn, df[normkey] == 0, zerovalue, specified='replacement')
+    elif invert is True:
+      df = \
+      self.__autowhere(df, inputcolumn, df[normkey] == 1, zerovalue, 0)
+      df = \
+      self.__autowhere(df, inputcolumn, df[normkey] == 0, onevalue, specified='replacement')
       
     return df, inputcolumn
 
