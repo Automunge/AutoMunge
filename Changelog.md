@@ -5666,3 +5666,12 @@ print(logger['warning_report'])
 8.19
 - found and fixed a small bug for protected_feature option in DPnb transform
 - associated with inspecting test data instead of intended train data
+
+8.20
+- new default for xgboost tuning with tuner optuna_XG1
+- (which make use of the XGBoost and Optuna libraries, respectively)
+- now defaults to applying cross validation with k=5 folds
+- and fasttune meaning that only one fold is inspected in each tuning trial
+- such that inspected folds are cycled through on each trial
+- note that number of folds can be specified by ML_cmnd['optuna_kfolds'] and fast tuning can be deactivated by ML_cmnd['optuna_fasttune'] if desired
+- this is similar to the "Fast Cross-Validation" benchmarked for bayesian tuning in "Multi-Task Bayesian Optimization" by Kevin Swersky, Jasper Snoek, and Ryan Adams (NIPS 2013)
