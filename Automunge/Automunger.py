@@ -43947,7 +43947,7 @@ class AutoMunge:
       logger_dict['warning_report'] = \
       logger_dict['warning_report'] + '\n' + printstring + variable
       
-      if logger_dict['printstatus'] in {True, 'summary', 'warning'}:
+      if logger_dict['printstatus'] in {True, 'summary', False}:
         print(printstring + str(variable))
         
     return
@@ -46209,7 +46209,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.20'
+    automungeversion = '8.21'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -56427,27 +56427,27 @@ class AutoMunge:
           entry_index = FS_sorted['metric2_key'][key1][key2].index(entry)
           FS_sorted['metric2_column_key'][key1].update({FS_sorted['metric2_key'][key1][key2][entry_index] : key2})
         
-    # if printstatus is True:
-    self.__autoprint('debug', '')
-    self.__autoprint('debug', "______________________")
-    self.__autoprint('debug', "sorted metric results:")
-    self.__autoprint('debug', '')
+    # if printstatus in {True, 'summary'}:
+    self.__autoprint('info', '')
+    self.__autoprint('info', "______________________")
+    self.__autoprint('info', "sorted metric results:")
+    self.__autoprint('info', '')
     for keys,values in FS_sorted['metric_key'].items():
       for entry in values:
-        self.__autoprint('debug', entry)
-        self.__autoprint('debug', keys)
-        self.__autoprint('debug', '')
-    self.__autoprint('debug', "______________________")
-    self.__autoprint('debug', "sorted metric2 results:")
-    self.__autoprint('debug', '')
+        self.__autoprint('info', entry)
+        self.__autoprint('info', keys)
+        self.__autoprint('info', '')
+    self.__autoprint('info', "______________________")
+    self.__autoprint('info', "sorted metric2 results:")
+    self.__autoprint('info', '')
     for key in FS_sorted['metric2_key']:
-      self.__autoprint('debug', "for source column: ", key)
+      self.__autoprint('info', "for source column: ", key)
       for keys,values in FS_sorted['metric2_key'][key].items():
         for entry in values:
-          self.__autoprint('debug', entry)
-          self.__autoprint('debug', keys)
-          self.__autoprint('debug', '')
-      self.__autoprint('debug', '')
+          self.__autoprint('info', entry)
+          self.__autoprint('info', keys)
+          self.__autoprint('info', '')
+      self.__autoprint('info', '')
         
     if FSmodel is False:
       
