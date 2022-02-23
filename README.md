@@ -890,7 +890,7 @@ as a dictionary with first tier valid keys of:
 {'autoML_type', 'MLinfill_cmnd', 'customML', 'PCA_type', 'PCA_cmnd', 'PCA_retain', 'leakage_tolerance',
 'leakage_sets', 'leakage_dict', 'full_exclude', 'hyperparam_tuner', 'randomCV_n_iter',
 'stochastic_training_seed', 'stochastic_impute_numeric', 'stochastic_impute_numeric_mu',
-'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol', 'automungeversion', 'optuna_n_iter', 'optuna_timeout', 'optuna_kfolds', 'optuna_early_stop', 'optuna_max_depth_tuning_stepsize', 'xgboost_gpu_id'}
+'stochastic_impute_numeric_sigma', 'stochastic_impute_numeric_flip_prob', 'stochastic_impute_numeric_noisedistribution', 'stochastic_impute_categoric', 'stochastic_impute_categoric_flip_prob', 'stochastic_impute_categoric_weighted', 'halt_iterate', 'categoric_tol', 'numeric_tol', 'automungeversion', 'optuna_n_iter', 'optuna_timeout', 'optuna_kfolds', 'optuna_fasttune', 'optuna_early_stop', 'optuna_max_depth_tuning_stepsize', 'xgboost_gpu_id'}
 
 When a user passed ML_cmnd as an empty dictionary, any default values are populated internally.
 
@@ -989,7 +989,7 @@ Tree Boosting System [arXiv:1603.02754](https://arxiv.org/abs/1603.02754).
 ML_cmnd = {'autoML_type':'xgboost'}
 ```
 
-The XGBoost implementation has Bayesian hyperparameter tuning available by way of the Optuna library by activating ML_cmnd['hyperparam_tuner'] = 'optuna_XGB1'. Optuna tuning accepts parameters for designating the max number of tuning iterations ('optuna_n_iter'), max tuning time in seconds ('optuna_timeout'), selecting a count for k-fold cross validation for tuning ('optuna_kfolds'), selecting an early stopping criteria for max number of tuning cycles without improved performance ('optuna_early_stop'), and selecting a step size for max_depth tuning (with longer tuning times it may be beneficial to change from 2 to 1) ('optuna_max_depth_tuning_stepsize'). The early stopping criteria optuna_n_iter/optuna_timeout/optuna_early_stop are the values applied per target feature (tuning for a feature is halted when one of these conditions are met). Can pass specific parameters (such as selecting whether to run inference with GPU or CPU with 'predictor'), activate GPU training, tune other hyperparameters with optuna, and set tuning options from the shown defaults as:
+The XGBoost implementation has Bayesian hyperparameter tuning available by way of the Optuna library by activating ML_cmnd['hyperparam_tuner'] = 'optuna_XGB1'. Optuna tuning accepts parameters for designating the max number of tuning iterations ('optuna_n_iter'), max tuning time in seconds ('optuna_timeout'), selecting a count for k-fold cross validation for tuning ('optuna_kfolds'), activating only evaluating one k-fold per trial ('optuna_fasttune'), selecting an early stopping criteria for max number of tuning cycles without improved performance ('optuna_early_stop'), and selecting a step size for max_depth tuning (with longer tuning times it may be beneficial to change from 2 to 1) ('optuna_max_depth_tuning_stepsize'). The early stopping criteria optuna_n_iter/optuna_timeout/optuna_early_stop are the values applied per target feature (tuning for a feature is halted when one of these conditions are met). Can pass specific parameters (such as selecting whether to run inference with GPU or CPU with 'predictor'), activate GPU training, tune other hyperparameters with optuna, and set tuning options from the shown defaults as:
 ```
 ML_cmnd = {'autoML_type'      : 'xgboost', 
            'MLinfill_cmnd'    : {'xgboost_classifier_fit'   : {'predictor' : 'cpu_predictor' },
@@ -998,7 +998,8 @@ ML_cmnd = {'autoML_type'      : 'xgboost',
            'hyperparam_tuner' : 'optuna_XG1',
            'optuna_n_iter'    : 100,
            'optuna_timeout'   : 600,
-           'optuna_kfolds'    : 1,
+           'optuna_kfolds'    : 5,
+           'optuna_fasttune'  : True,
            'optuna_early_stop': 50,
            'optuna_max_depth_tuning_stepsize' : 2,
            }
