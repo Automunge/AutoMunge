@@ -31629,6 +31629,7 @@ class AutoMunge:
     global_var_dict = {
                        'metrics_without_improvement_count' : 0,
                        'best_metric':False,
+                       'trial_count':0,
                       }
 
     def objective(trial, global_var_dict):
@@ -31681,48 +31682,52 @@ class AutoMunge:
         kfolds_metric_log = []
         
         for i in range(kfolds):
-          #val_tuple specifies the boundaries of current fold's validation split
-          val_tuple = (i/kfolds, (i+1)/kfolds)
-          #we'll have a unique random seed for shuffling each fold
-          trial_randomseed = random.randint(0,2147483647)
           
-          #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
-          #we'll apply a unique random seed with each trial
-          if kfolds == 1:
-            train_x, valid_x = self.__df_split(train, valratio, True, trial_randomseed)
-            train_y, valid_y = self.__df_split(labels, valratio, True, trial_randomseed)
+          if global_var_dict['trial_count'] % kfolds == i \
+          or ML_cmnd['optuna_fasttune'] is False:
 
-          #else for kfolds > 1 we'll extract the folds in sequential chunks
-          elif kfolds > 1:
-            train_x, valid_x = self.__df_split_specified(train, val_tuple, False, 42)
-            train_y, valid_y = self.__df_split_specified(labels, val_tuple, False, 42)
-            
-          #there is an edge case where this validation split results in not fully represented range integer classificaiotn labels
-          #which is an xgboost quirk
-          #since this is just for tuning we'll convert labels, noting that this means we won't be able to use saved model as final
-          if classify_regress in {'classify', 'boolean'}:
-            #train_y is a pandas series of integers
-            unique_set = set(train_y.unique())
-            intended_unique_set = set(range(train_y.astype(int).max()))
-            if len(intended_unique_set - unique_set) > 0:
-              range_conversion_dict = dict(zip(list(unique_set), list(range(len(unique_set)))))
-              train_y = train_y.replace(range_conversion_dict).astype(int)
-              valid_y = valid_y.replace(range_conversion_dict).astype(int)
+            #val_tuple specifies the boundaries of current fold's validation split
+            val_tuple = (i/kfolds, (i+1)/kfolds)
+            #we'll have a unique random seed for shuffling each fold
+            trial_randomseed = random.randint(0,2147483647)
 
-          #it's generally good practice to shuffle before training for non-sequential learning
-          train_x = self.__df_shuffle(train_x, trial_randomseed, axis=0)
-          train_y = self.__df_shuffle(train_y, trial_randomseed, axis=0)
-        
-          model = XGBClassifier(**param)
+            #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
+            #we'll apply a unique random seed with each trial
+            if kfolds == 1:
+              train_x, valid_x = self.__df_split(train, valratio, True, trial_randomseed)
+              train_y, valid_y = self.__df_split(labels, valratio, True, trial_randomseed)
 
-          bst = model.fit(train_x, train_y)
-          preds = bst.predict(valid_x)
+            #else for kfolds > 1 we'll extract the folds in sequential chunks
+            elif kfolds > 1:
+              train_x, valid_x = self.__df_split_specified(train, val_tuple, False, 42)
+              train_y, valid_y = self.__df_split_specified(labels, val_tuple, False, 42)
 
-          #use of f1 as default is per recommendation from Deep Learning with Pytorch by Stevens and Antiga
-          metric = f1_score(valid_y, preds, zero_division=0, average='weighted')
-          
-          kfolds_metric_log.append(metric)
-          
+            #there is an edge case where this validation split results in not fully represented range integer classificaiotn labels
+            #which is an xgboost quirk
+            #since this is just for tuning we'll convert labels, noting that this means we won't be able to use saved model as final
+            if classify_regress in {'classify', 'boolean'}:
+              #train_y is a pandas series of integers
+              unique_set = set(train_y.unique())
+              intended_unique_set = set(range(train_y.astype(int).max()))
+              if len(intended_unique_set - unique_set) > 0:
+                range_conversion_dict = dict(zip(list(unique_set), list(range(len(unique_set)))))
+                train_y = train_y.replace(range_conversion_dict).astype(int)
+                valid_y = valid_y.replace(range_conversion_dict).astype(int)
+
+            #it's generally good practice to shuffle before training for non-sequential learning
+            train_x = self.__df_shuffle(train_x, trial_randomseed, axis=0)
+            train_y = self.__df_shuffle(train_y, trial_randomseed, axis=0)
+
+            model = XGBClassifier(**param)
+
+            bst = model.fit(train_x, train_y)
+            preds = bst.predict(valid_x)
+
+            #use of f1 as default is per recommendation from Deep Learning with Pytorch by Stevens and Antiga
+            metric = f1_score(valid_y, preds, zero_division=0, average='weighted')
+
+            kfolds_metric_log.append(metric)
+
         #now average metric accross folds
         metric = pd.DataFrame({'kfolds_metric_log':kfolds_metric_log})['kfolds_metric_log'].mean()
 
@@ -31735,44 +31740,49 @@ class AutoMunge:
             global_var_dict['metrics_without_improvement_count'] = 0
           else:
             global_var_dict['metrics_without_improvement_count'] += 1
+        global_var_dict['trial_count'] += 1
 
       if classify_regress == 'regress':
     
         kfolds_metric_log = []
         
         for i in range(kfolds):
-          #val_tuple specifies the boundaries of current fold's validation split
-          val_tuple = (i/kfolds, (i+1)/kfolds)
-          #we'll have a unique random seed for shuffling each fold
-          trial_randomseed = random.randint(0,2147483647)
           
-          #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
-          #we'll apply a unique random seed with each trial
-          if kfolds == 1:
-            train_x, valid_x = self.__df_split(train, valratio, True, trial_randomseed)
-            train_y, valid_y = self.__df_split(labels, valratio, True, trial_randomseed)
+          if global_var_dict['trial_count'] % kfolds == i \
+          or ML_cmnd['optuna_fasttune'] is False:
+          
+            #val_tuple specifies the boundaries of current fold's validation split
+            val_tuple = (i/kfolds, (i+1)/kfolds)
+            #we'll have a unique random seed for shuffling each fold
+            trial_randomseed = random.randint(0,2147483647)
 
-          #else for kfolds > 1 we'll extract the folds in sequential chunks
-          elif kfolds > 1:
-            train_x, valid_x = self.__df_split_specified(train, val_tuple, False, 42)
-            train_y, valid_y = self.__df_split_specified(labels, val_tuple, False, 42)
+            #if only one fold (the default) will randomly sample based on valratio (currently set as 0.25)
+            #we'll apply a unique random seed with each trial
+            if kfolds == 1:
+              train_x, valid_x = self.__df_split(train, valratio, True, trial_randomseed)
+              train_y, valid_y = self.__df_split(labels, valratio, True, trial_randomseed)
 
-          #it's generally good practice to shuffle before training for non-sequential learning
-          train_x = self.__df_shuffle(train_x, trial_randomseed, axis=0)
-          train_y = self.__df_shuffle(train_y, trial_randomseed, axis=0)
-    
-          model = XGBRegressor(**param)
+            #else for kfolds > 1 we'll extract the folds in sequential chunks
+            elif kfolds > 1:
+              train_x, valid_x = self.__df_split_specified(train, val_tuple, False, 42)
+              train_y, valid_y = self.__df_split_specified(labels, val_tuple, False, 42)
 
-          bst = model.fit(train_x, train_y)
-          preds = bst.predict(valid_x)
+            #it's generally good practice to shuffle before training for non-sequential learning
+            train_x = self.__df_shuffle(train_x, trial_randomseed, axis=0)
+            train_y = self.__df_shuffle(train_y, trial_randomseed, axis=0)
 
-          #this handles edge case for an overflow in derived metric
-          try:
-            metric = mean_squared_error(valid_y, preds)
-          except ValueError:
-            metric = 3.4E38
-            
-          kfolds_metric_log.append(metric)
+            model = XGBRegressor(**param)
+
+            bst = model.fit(train_x, train_y)
+            preds = bst.predict(valid_x)
+
+            #this handles edge case for an overflow in derived metric
+            try:
+              metric = mean_squared_error(valid_y, preds)
+            except ValueError:
+              metric = 3.4E38
+
+            kfolds_metric_log.append(metric)
           
         #now average metric accross folds
         metric = pd.DataFrame({'kfolds_metric_log':kfolds_metric_log})['kfolds_metric_log'].mean()
@@ -31786,6 +31796,7 @@ class AutoMunge:
             global_var_dict['metrics_without_improvement_count'] = 0
           else:
             global_var_dict['metrics_without_improvement_count'] += 1
+        global_var_dict['trial_count'] += 1
 
       #check for early stopping (note that ML_cmnd['optuna_early_stop'] defaults to np.inf)
       if global_var_dict['metrics_without_improvement_count'] > ML_cmnd['optuna_early_stop']:
@@ -39408,6 +39419,16 @@ class AutoMunge:
                               default=100, 
                               valid_entries=False,
                               valid_type=int)
+    
+    #when optuna_XG1 hyperparam_tuner applied, optuna_fasttune_ratio activates only inspecing one cross fold per trial
+    ML_cmnd, check_ML_cmnd_result = \
+    _populate_ML_cmnd_default(ML_cmnd, 
+                              'optuna_fasttune', 
+                              printstatus,  
+                              check_ML_cmnd_result,
+                              default=True, 
+                              valid_entries=False,
+                              valid_type=bool)
 
     #when optuna_XG1 hyperparam_tuner applied, optuna_timeout designates the max tuning duration per feature
     ML_cmnd, check_ML_cmnd_result = \
@@ -39425,7 +39446,7 @@ class AutoMunge:
                               'optuna_kfolds', 
                               printstatus,  
                               check_ML_cmnd_result,
-                              default=1, 
+                              default=5, 
                               valid_entries=False,
                               valid_type=int)
 
@@ -43868,14 +43889,13 @@ class AutoMunge:
   def __autoprint(self, tier, printstring='', variable=''):
     """
     this function is a kind of compromise between
-    python's logger_dict and print statement
+    python's logger and print statement
     the tier is associated with threshold of printstatus
     and is similar to python's logging tiers
     and it accepts entries of {'debug', 'info', 'warning', 'silent'}
     printstring is the same was would have been passed to print()
     
-    this function relies on availability in memory of logger_dict when initialized externally
-    or otherwise it is initialized at start of function
+    this function relies on availability in memory of global logger_dict
     which records printstrings in tiers corresponding to debug/info/warning
     e.g.
     logger_dict = {'debug_report' : all_strings, #printstatus=True printouts
@@ -43887,6 +43907,9 @@ class AutoMunge:
     to print the printsting based on whcih tier is applied
     
     logger_dict['printstatus'] will have been initialized with the printstatus parameter
+
+    logger_dict is periodically synchronized with the dictionary "logger"
+    which may have been initailized as dicitonary externally
     """
 
     #print targets are all converted to str for use in reports
@@ -46186,7 +46209,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.19'
+    automungeversion = '8.20'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
