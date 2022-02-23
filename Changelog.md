@@ -5675,3 +5675,7 @@ print(logger['warning_report'])
 - such that inspected folds are cycled through on each trial
 - note that number of folds can be specified by ML_cmnd['optuna_kfolds'] and fast tuning can be deactivated by ML_cmnd['optuna_fasttune'] if desired
 - this is similar to the "Fast Cross-Validation" benchmarked for bayesian tuning in "Multi-Task Bayesian Optimization" by Kevin Swersky, Jasper Snoek, and Ryan Adams (NIPS 2013)
+
+8.21
+- Fixed a printout setting associated with printing error messages in the printstatus=False case (small variable naming snafu originating from 8.17)
+- Fixed postmunge feature importance printouts to align with automunge with respect to printing reported sorted results when printstatus='summary'
