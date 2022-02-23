@@ -149,7 +149,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = 'dataframe', printstatus = True,
+             pandasoutput = 'dataframe', printstatus = 'summary',
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -299,7 +299,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = 'dataframe', printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = 'summary', inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -1974,7 +1974,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = 'dataframe', printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = 'summary', inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -2108,7 +2108,7 @@ test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test,
              testID_column = False,
-             pandasoutput = 'dataframe', printstatus = True, inplace = False,
+             pandasoutput = 'dataframe', printstatus = 'summary', inplace = False,
              dupl_rows = False, TrainLabelFreqLevel = False,
              featureeval = False, traindata = False, noise_augment = 0,
              driftreport = False, inversion = False,
@@ -2263,7 +2263,7 @@ Here is an example of a postmunge call with inversion.
 ```
 df_invert, recovered_list, inversion_info_dict = \
 am.postmunge(postprocess_dict, test_labels, inversion='labels',
-             pandasoutput=True, printstatus=True, encrypt_key = False)
+             pandasoutput=True, printstatus='summary', encrypt_key = False)
 ```
 
 Here is an example of a process_dict entry with the optional inversion entries included, such 
