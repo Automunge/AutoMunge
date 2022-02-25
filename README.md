@@ -20,6 +20,7 @@
 * [Library of Transformations](https://github.com/Automunge/AutoMunge#library-of-transformations)
 * [Custom Transformation Functions](https://github.com/Automunge/AutoMunge#custom-transformation-functions)
 * [Custom ML Infill Functions](https://github.com/Automunge/AutoMunge#custom-ml-infill-functions)
+* [Final Model Training](https://github.com/Automunge/AutoMunge#final-model-training)
  ___ 
 * [Conclusion](https://github.com/Automunge/AutoMunge#conclusion)
  ___ 
@@ -5471,8 +5472,9 @@ ML_cmnd = {'autoML_type' : 'customML',
 ```
 
 And thus ML infill can run with any tabular learning library or algorithm. BYOML.
-
  ___
+
+## Final Model Training
 
 * Please note that Automunge with 8.13 introduced what is currently an experimental implementation for final model training and inference. For example, they are well suited for training a final model in conjunction with our optuna_XG1 hyperparameter tuner using the same ML_cmnd API to select tuning options. Note that this option can apply a different model architecture or tuning options than those used for ML infill.
 
@@ -5480,7 +5482,48 @@ And thus ML infill can run with any tabular learning library or algorithm. BYOML
 - autoinference(.) accepts a test set prepared in automunge(.) or postmunge(.) and a postprocess_dict which has been populated by automodel and returns the results of inference.
 - Note that when a model from automodel(.) is populated in a postprocess_dict, then when additional test data is prepared with that postprocess_dict in postmunge(.), if the test set does not include label features, then autoinference will automatically be called within postmunge(.) with the results of inference returned in the returned labels set we call test_labels.
 
-We don't consider these new functions fully audited or polished just yet, but have validated that they are functional in limited testing.
+Here is an example of an automodel pipeline using gradient boosting with optuna tuning to train the final model and then running inference in postmunge:
+```
+#prepare data for ML
+train, train_ID, labels, \
+val, val_ID, val_labels, \
+test, test_ID, test_labels, \
+postprocess_dict = \
+am.automunge(df_train,
+             labels_column = labels_column)
+
+#Set final model XGBoost tuning parameters for Optuna Bayesian tuning
+ML_cmnd = {'autoML_type'      : 'xgboost', 
+#            'xgboost_gpu_id'   : 0,
+           'hyperparam_tuner' : 'optuna_XG1',
+           'optuna_n_iter'    : 1000,
+           'optuna_timeout'   : 3600,
+           'optuna_kfolds'    : 5,
+           'optuna_fasttune'  : True,
+           'optuna_early_stop': 150,
+           'optuna_max_depth_tuning_stepsize' : 1,
+           }
+
+#train final model with automodel which will be saved in postprocess_dict
+postprocess_dict = \
+am.automodel(train, labels, postprocess_dict, 
+                ML_cmnd = ML_cmnd, encrypt_key = False, 
+                printstatus = True, randomseed = False)
+
+#optional: download postprocess_dict with pickle
+
+#run inference on test data through postmunge
+#note preditions will be returned as test_labels
+test, test_ID, test_labels, \
+postreports_dict = \
+am.postmunge(postprocess_dict, df_test)
+
+#invert the encoded predictions back to original form of labels
+df_invert, recovered_list, inversion_info_dict = \
+am.postmunge(postprocess_dict, test_labels, inversion='labels')
+```
+
+We consider the final model functions automodel(.) and autoinference(.) in Beta.
 
  ___ 
 
