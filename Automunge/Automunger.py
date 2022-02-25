@@ -46209,7 +46209,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.21'
+    automungeversion = '8.22'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -62391,6 +62391,11 @@ class AutoMunge:
       ML_cmnd_valresult_2, ML_cmnd = \
       self.__check_ML_cmnd(ML_cmnd, printstatus)
       model_validation_results.update({'ML_cmnd_valresult_2' : ML_cmnd_valresult_2})
+
+      #if new ML_cmnd has different autoML_type than that applied for ML infill
+      #then will need to initialize a seperate autoMLer to access train and inference functions
+      if ML_cmnd['autoML_type'] != postprocess_dict['ML_cmnd']['autoML_type']:
+        autoMLer = self.__assemble_autoMLer()
       
 #       #this will be reset to ML_cmnd_orig before return
 #       postprocess_dict['ML_cmnd'] = ML_cmnd
@@ -62551,7 +62556,7 @@ class AutoMunge:
       postprocess_dict['final_model'] = {}
       postprocess_dict['final_model']['final_trained_model'] = model
       postprocess_dict['final_model']['final_model_ML_cmnd'] = self.__autocopy(ML_cmnd)
-      postprocess_dict['final_model']['final_model_autoMLer'] = self.__autocopy(postprocess_dict['autoMLer'])
+      postprocess_dict['final_model']['final_model_autoMLer'] = self.__autocopy(autoMLer)
       postprocess_dict['final_model']['final_model_categorylist'] = categorylist
       postprocess_dict['final_model']['final_model_labelctgy'] = labelctgy
 
@@ -62675,6 +62680,8 @@ class AutoMunge:
 
         #convert infill values to dataframe
         df_predictions = pd.DataFrame(np_predictions, columns = label_categorylist)
+
+        df_predictions.index = test.index
         
       else:
         
