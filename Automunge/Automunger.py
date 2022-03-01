@@ -46209,7 +46209,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.22'
+    automungeversion = '8.23'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -62681,7 +62681,9 @@ class AutoMunge:
         #convert infill values to dataframe
         df_predictions = pd.DataFrame(np_predictions, columns = label_categorylist)
 
-        df_predictions.index = test.index
+        if df_predictions.shape[0] == test.shape[0]:
+          df_predictions.index = test.index
+        #(else this inference was attempted without a trained model)
         
       else:
         
