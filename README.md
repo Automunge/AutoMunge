@@ -36,7 +36,7 @@
 
 In addition to data preparations under automation, Automunge may also serve as a platform for engineering data pipelines. An extensive internal library of univariate transformations includes options like numeric translations, bin aggregations, date-time encodings, noise injections, categoric encodings, and even “parsed categoric encodings” in which categoric strings are vectorized based on shared grammatical structure between entries. Feature transformations may be mixed and matched in sets that include generations and branches of derivations by use of our “family tree primitives”. Feature transformations fit to properties of a training set may be custom defined from a very simple template for incorporation into a pipeline. Dimensionality reductions may be applied, such as by principal component analysis, feature importance rankings, or categoric consolidations. Missing data receives “ML infill”, in which models are trained for a feature to impute missing entries based on properties of the surrounding features. Random sampling may be channeled into features as stochastic perturbations.
 
-Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials). If you are looking for something to cite, our paper [Tabular Engineering with Automunge](https://datacentricai.org/papers/15_CameraReady_TabularEngineering_102621_Final.pdf) was accepted to the 2021 NeurIPS Data-Centric AI workshop.
+Be sure to check out our [Tutorial Notebooks](https://github.com/Automunge/AutoMunge/tree/master/Tutorials). If you are looking for something to cite, our paper [Tabular Engineering with Automunge](https://datacentricai.org/papers/15_CameraReady_TabularEngineering_102621_Final.pdf) was accepted to the Data-Centric AI workshop at NeurIPS 2021.
 
 ## Install, Initialize, and Basics
 
@@ -5512,13 +5512,23 @@ am.automodel(train, labels, postprocess_dict,
 
 #optional: download postprocess_dict with pickle
 
-#run inference on test data through postmunge
-#note preditions will be returned as test_labels
+#can either run inference to raw data in postmunge 
+#or directly to encoded data with autoinference
+#here we demonstrate running inference on validation data with autoinference
+#followed by running inference on raw test data with postmunge
+
+#run inference on encoded data with autoinference, here shown on validation data
+val_predictions = \
+am.autoinference(val, postprocess_dict, encrypt_key = False, 
+                 printstatus = True, randomseed = False)
+
+#run inference on raw test data with postmunge
+#note predictions will be returned as test_labels
 test, test_ID, test_labels, \
 postreports_dict = \
 am.postmunge(postprocess_dict, df_test)
 
-#invert the encoded predictions back to original form of labels
+#optionally can invert the encoded predictions back to original form of labels
 df_invert, recovered_list, inversion_info_dict = \
 am.postmunge(postprocess_dict, test_labels, inversion='labels')
 ```
