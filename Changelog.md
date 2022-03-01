@@ -5684,3 +5684,6 @@ print(logger['warning_report'])
 - running some validations on automodel and autoinference and found a few alignments needed to support running autoML types different than those used for ML infill
 - new final model training pipeline demonstration based on XGBoost tuned with Optuna in read me as Final Model Training
 - upgraded the final model functions automodel and autoinference from "experimental" to "Beta"
+
+8.23
+- added a workaround for halt scenario in autoinference for cases where inference was attempted without a trained model
