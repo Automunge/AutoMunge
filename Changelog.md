@@ -5690,3 +5690,8 @@ print(logger['warning_report'])
 
 8.24
 - qttf subsample parameter was causing halt channel due to improper float type for default value, now case as int to resolve
+
+8.25
+- new infill option supported as interpinfill, available for assignment in assigninfill or through processdict defaultinfill
+- interpinfill is build on top of pandas interpolate method, and simply applies linear interpolation between entries
+- as may be preferred over adjinfill for time series data
