@@ -111,7 +111,7 @@ am.automunge(df_train, df_test = False,
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
-                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
+                             'interpinfill':[], 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
@@ -262,7 +262,7 @@ am.automunge(df_train, df_test = False,
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[],
-                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
+                             'interpinfill':[], 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
@@ -427,7 +427,7 @@ am.automunge(df_train, df_test = False,
                                      '(category)' : {'(column)'   : {'(parameter)' : 42}}},
              assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
                              'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
-                             'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
+                             'interpinfill':[], 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
              assignnan = {'categories':{}, 'columns':{}, 'global':[]},
              transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
              entropy_seeds = False, random_generator = False, sampling_dict = False,
@@ -1262,6 +1262,7 @@ are based on the rows corresponding to activations from the NArw_marker paramete
 #  - medianinfill  : inserting the median derived from the train set to numeric columns. 
 #                    (Note currently boolean columns derived from numeric are not supported 
 #                    for mean/median and for those cases default to those infill from stdrdinfill.) 
+#  - interpinfill  : performs linear interpolation to numeric sets, based on pandas interpolate
 #  - modeinfill    : inserting the most common value for a set, note that modeinfill 
 #                    supports multi-column boolean encodings, such as one-hot encoded sets or 
 #                    binary encoded sets. 
@@ -1657,7 +1658,7 @@ associated automunge(.) call.
 #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
 #               defaults to 'adjinfill' when not specified, can also pass as one of
 #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-#                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
+#                'interpinfill', 'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
 #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
 #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
 #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
@@ -5056,7 +5057,7 @@ Note that for transforms in the custom_train convention, an initial infill is au
 applied as adjacent cell infill to serve as precursor to ML infill. A user may also specify
 by a 'defaultinfill' processdict entry other conventions for this initial infill associated
 with the transformation category, as one of {'adjinfill', 'meaninfill', 'medianinfill', 
-'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill'}. naninfill may be suitable
+'modeinfill', 'interpinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}. naninfill may be suitable
 when a custom infill is applied as part of the custom transform. If naninfill retention is
 desired for the returned data, either it may be assigned in assigninfill, or the 'NArowtype' 
 processdict entry can be cast as 'exclude', noting that the latter may interfere with ML infill
