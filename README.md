@@ -2763,7 +2763,7 @@ qttf converts to a normal output distribution, qtt2 converts to a uniform output
   - assignparam parameters accepted:
     - 'output_distribution': defualts to 'normal' for qttf, or 'uniform' for qtt2
     - 'random_state': based on automunge(.) randomseed
-    - other parameters consistent with scikit documentation (n_quantiles, ignore_implicit_zeros, subsample)
+    - other parameters and their type requirements consistent with scikit documentation (n_quantiles, ignore_implicit_zeros, subsample)
     - note that copy parameter not supported, fit parameters not supported
   - driftreport postmunge metrics: input_max / input_min / input_stdev / input_mean
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
