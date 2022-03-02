@@ -4489,7 +4489,7 @@ For simplicity just going to copy the code directly from code base where these d
     #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
     #               defaults to 'adjinfill' when not specified, can also pass as one of
     #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-    #                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
+    #                'interpinfill', 'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
     #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
     #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
     #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
