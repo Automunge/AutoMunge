@@ -320,6 +320,7 @@ class AutoMunge:
   __negzeroinfillfunction
   __naninfillfunction
   __adjinfillfunction
+  __interpinfillfunction
   __train_medianinfillfunction
   __test_medianinfillfunction
   __train_meaninfillfunction
@@ -5118,7 +5119,7 @@ class AutoMunge:
     #               (defaultinfill is a precursor to ML infill or other infills applied based on assigninfill)
     #               defaults to 'adjinfill' when not specified, can also pass as one of
     #               {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 
-    #                'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
+    #                'interpinfill', 'zeroinfill', 'oneinfill', 'naninfill', 'negzeroinfill'}
     #               Note that 'meaninfill' and 'medianinfill' only work with numeric data (based on NArowtype).
     #               Note that for 'datetime' NArowtype, defaultinfill only supports 'adjinfill' or 'naninfill'
     #               Note that 'naninfill' is intended for cases where user wishes to apply their own default infill 
@@ -11287,6 +11288,21 @@ class AutoMunge:
         #we'll follow with a bfill just in case first row had a nan
         df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
         
+      elif defaultinfill in {'interpinfill'}:
+        
+        df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce').interpolate(method='linear', 
+                                                                                        axis=0, 
+                                                                                        limit=None, 
+                                                                                        inplace=False,
+                                                                                        limit_direction='forward',
+                                                                                        limit_area=None,
+                                                                                        downcast=None,
+                                                                                       )
+        
+        #we'll follow with a adj just in case first or last row had a nan
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
+
       elif defaultinfill in {'meaninfill'}:
 
         infill_mean = defaultinfill_dict['infill_mean']
@@ -11375,13 +11391,13 @@ class AutoMunge:
       if 'defaultinfill' in postprocess_dict['process_dict'][treecategory]:
         if isinstance(postprocess_dict['process_dict'][treecategory]['defaultinfill'], str) \
         and postprocess_dict['process_dict'][treecategory]['defaultinfill'] \
-        in {'adjinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'negzeroinfill', 'naninfill'}:
+        in {'adjinfill', 'interpinfill', 'meaninfill', 'medianinfill', 'modeinfill', 'lcinfill', 'zeroinfill', 'oneinfill', 'negzeroinfill', 'naninfill'}:
           defaultinfill = postprocess_dict['process_dict'][treecategory]['defaultinfill']
 
       #a few special cases to accomodate NArowtype / defaultinfill compatibilities
 
       #'meaninfill' and 'medianinfill' intended for numeric data, if not a numeric NArowtype adjinfill applied
-      if defaultinfill in {'meaninfill', 'medianinfill'}:
+      if defaultinfill in {'meaninfill', 'medianinfill', 'interpinfill'}:
         if NArowtype not in {'numeric', 'integer', 'positivenumeric', 'nonnegativenumeric', 'nonzeronumeric'}:
           defaultinfill = 'adjinfill'
 
@@ -11403,6 +11419,21 @@ class AutoMunge:
         df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
 
         #we'll follow with a bfill just in case first row had a nan
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
+        
+      elif defaultinfill in {'interpinfill'}:
+        
+        df[suffixcolumn] = pd.to_numeric(df[suffixcolumn], errors='coerce').interpolate(method='linear', 
+                                                                                        axis=0, 
+                                                                                        limit=None, 
+                                                                                        inplace=False,
+                                                                                        limit_direction='forward',
+                                                                                        limit_area=None,
+                                                                                        downcast=None,
+                                                                                       )
+        
+        #we'll follow with a adj just in case first or last row had a nan
+        df[suffixcolumn] = df[suffixcolumn].fillna(method='ffill')
         df[suffixcolumn] = df[suffixcolumn].fillna(method='bfill')
 
       elif defaultinfill in {'meaninfill'}:
@@ -35951,6 +35982,9 @@ class AutoMunge:
     if 'adjinfill' not in postprocess_assigninfill_dict:
       postprocess_assigninfill_dict['adjinfill'] = []
 
+    if 'interpinfill' not in postprocess_assigninfill_dict:
+      postprocess_assigninfill_dict['interpinfill'] = []
+
     if 'medianinfill' not in postprocess_assigninfill_dict: 
       postprocess_assigninfill_dict['medianinfill'] = []
 
@@ -36156,6 +36190,32 @@ class AutoMunge:
                 self.__adjinfillfunction(df_test, column, postprocess_dict, \
                                        masterNArows_test)
 
+              #interpinfill
+              if column in postprocess_assigninfill_dict['interpinfill']:
+                
+                #printout display progress
+                # if printstatus is True:
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: interpinfill")
+                self.__autoprint('debug', "")
+                
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
+                  incompatible_MLinfilltype = True
+                
+                if incompatible_MLinfilltype is False:
+                
+                  df_train = \
+                  self.__interpinfillfunction(df_train, column, postprocess_dict, \
+                                              masterNArows_train)
+
+                  df_test = \
+                  self.__interpinfillfunction(df_test, column, postprocess_dict, \
+                                              masterNArows_test)
+
               #medianinfill
               if column in postprocess_assigninfill_dict['medianinfill']:
 
@@ -36357,8 +36417,6 @@ class AutoMunge:
         self.__autoprint('debug', "     infill type: naninfill")
         self.__autoprint('debug', "")
 
-        categorylistlength = len(postprocess_dict['column_dict'][column]['categorylist'])
-
         df_train = \
         self.__naninfillfunction(df_train, column, postprocess_dict, \
                                 masterNArows_train)
@@ -36477,6 +36535,30 @@ class AutoMunge:
                 df_test = \
                 self.__adjinfillfunction(df_test, column, postprocess_dict, \
                                       masterNArows_test)
+
+              #interpinfill
+              #first line backward compatibility preceding 8.25
+              if 'interpinfill' in postprocess_assigninfill_dict \
+              and column in postprocess_assigninfill_dict['interpinfill']:
+                
+                #printout display progress
+                # if printstatus is True:
+                self.__autoprint('debug', "infill to column: ", column)
+                self.__autoprint('debug', "     infill type: interpinfill")
+                self.__autoprint('debug', "")
+                
+                #check if column is incompatible_MLinfilltype
+                incompatible_MLinfilltype = False
+                #exclude boolean and ordinal from this infill method
+                if postprocess_dict['process_dict'][postprocess_dict['column_dict'][column]['category']]['MLinfilltype'] \
+                in {'multirt', 'singlct', 'binary', '1010', 'concurrent_ordl', 'concurrent_act'}:
+                  incompatible_MLinfilltype = True
+                
+                if incompatible_MLinfilltype is False:
+
+                  df_test = \
+                  self.__interpinfillfunction(df_test, column, postprocess_dict, \
+                                              masterNArows_test)
                 
               #medianinfill
               if column in postprocess_assigninfill_dict['medianinfill']:
@@ -36812,6 +36894,59 @@ class AutoMunge:
     df[column] = \
     df[column].astype({column:df_temp_dtype[column].dtypes})
 
+    return df
+
+  def __interpinfillfunction(self, df, column, postprocess_dict, \
+                             masterNArows):
+
+    #create infill dataframe of all zeros with number of rows corepsonding to the
+    #number of 1's found in masterNArows
+    NArw_columnname = \
+    postprocess_dict['column_dict'][column]['origcolumn'] + '_NArows'
+
+    NAcount = len(masterNArows[masterNArows[NArw_columnname] == 1])
+
+    infill = pd.DataFrame(np.ones((NAcount, 1)), columns=[column])
+    
+    infill = \
+    self.__autowhere(infill, column, infill[column] == 1, np.nan, specified='replacement')
+    
+    category = postprocess_dict['column_dict'][column]['category']
+    columnslist = postprocess_dict['column_dict'][column]['columnslist']
+    categorylist = postprocess_dict['column_dict'][column]['categorylist']
+
+    #copy the datatype to ensure returned set is consistent
+    df_temp_dtype = pd.DataFrame(df[categorylist][:0]).copy()
+
+    #insert infill
+    df = self.__insertinfill(df, column, infill, category, \
+                           pd.DataFrame(masterNArows[NArw_columnname]), \
+                           postprocess_dict, columnslist = columnslist, \
+                           categorylist = categorylist, singlecolumncase=True)
+    
+    #everything preceding here was consistent with naninfill
+    #having reverted default infill to nan, can now apply pandas method
+    #we'll default to linear, if users want other scnearios let me know
+    for categorylist_entry in categorylist:
+      
+      df[categorylist_entry] = pd.to_numeric(df[categorylist_entry], errors='coerce').interpolate(method='linear', 
+                                                                                                  axis=0, 
+                                                                                                  limit=None, 
+                                                                                                  inplace=False,
+                                                                                                  limit_direction='forward',
+                                                                                                  limit_area=None,
+                                                                                                  downcast=None,
+                                                                                                 )
+      
+      #we'll follow with a adj just in case first or last row had a nan
+      df[categorylist_entry] = df[categorylist_entry].fillna(method='ffill')
+      df[categorylist_entry] = df[categorylist_entry].fillna(method='bfill')
+
+      #reset data type to ensure returned data is consistent with what was passed
+      #(naninfill preceding interpolate may have changed data type)
+      df[categorylist_entry] = \
+      df[categorylist_entry].astype({column:df_temp_dtype[categorylist_entry].dtypes})
+    
     return df
 
   def __train_medianinfillfunction(self, df, column, postprocess_dict, \
@@ -44339,7 +44474,7 @@ class AutoMunge:
                                         '(category)' : {'(column)'   : {'(parameter)' : 42}}},
                 assigninfill = {'stdrdinfill':[], 'MLinfill':[], 'zeroinfill':[], 'oneinfill':[],
                                 'adjinfill':[], 'meaninfill':[], 'medianinfill':[], 'negzeroinfill':[],
-                                'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
+                                'interpinfill':[], 'modeinfill':[], 'lcinfill':[], 'naninfill':[]},
                 assignnan = {'categories':{}, 'columns':{}, 'global':[]},
                 transformdict = {}, processdict = {}, evalcat = False, ppd_append = False,
                 entropy_seeds = False, random_generator = False, sampling_dict = False,
@@ -46209,7 +46344,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.24'
+    automungeversion = '8.25'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
