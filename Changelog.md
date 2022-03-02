@@ -5687,3 +5687,6 @@ print(logger['warning_report'])
 
 8.23
 - added a workaround for halt scenario in autoinference for cases where inference was attempted without a trained model
+
+8.24
+- qttf subsample parameter was causing halt channel due to improper float type for default value, now case as int to resolve
