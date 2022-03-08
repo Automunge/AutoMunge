@@ -192,7 +192,7 @@ Other features of the library are detailed in the [tutorial notebooks](https://g
 and with their associated parameters below. 
 
 Other options available in the library include feature importance (via featureselection parameter),
-oversampling (via the TrainLabelFreqLevel parameter), dimensionality reductions (via PCAn_components, Binary, or featurethreshold parameters). Further detail provided with parameter writeups below.
+oversampling (via the TrainLabelFreqLevel parameter), dimensionality reductions (via PCAn_components, Binary, or featurethreshold parameters), and stochastic perturbations (by the DP family of transformations detailed in the library of transformations and tutorials). Further detail provided with parameter writeups below.
 
 Note that there is a potential source of error if the returned column header 
 title strings, which will include suffix appenders based on transformations applied, 
@@ -2380,12 +2380,13 @@ of bins indicating number of standard deviations from the mean. Note that defaul
 performed prior to ML infill is imputation with negative zero. The exception is for
 numeric data received in a column with pandas 'categoric' data type, which are instead binarized 
 consistent to categoric sets (as 1010 or bnry). Note that numerical sets with 2 unique values in train
-set default to bnry.
+set default to bnry. Note that features with majority str(int/float) entries are also treated as numeric.
 - 1010: for categorical data excluding special cases described following, columns are 
 subject to binarization encoding via '1010' (e.g. for majority str or bytes type entries). If the 
 number of unique entries in the column exceeds the parameter 'numbercategoryheuristic'
 (which defaults to 255), the encoding will instead be by hashing. Note that for default 
-infill missing data has a distinct representation in the encoding space.
+infill missing data has a distinct representation in the encoding space. Note that features with 
+majority str(int/float) entries are treated as numeric.
 - bnry: for categorical data of <=2 unique values excluding infill (e.g. NaN), the 
 column is encoded to 0/1. Note that numerical sets with 2 unique values in train
 set also default to bnry.
