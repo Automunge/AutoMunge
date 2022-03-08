@@ -5695,3 +5695,10 @@ print(logger['warning_report'])
 - new infill option supported as interpinfill, available for assignment in assigninfill or through processdict defaultinfill
 - interpinfill is build on top of pandas interpolate method, and simply applies linear interpolation between entries
 - as may be preferred over adjinfill for time series data
+
+8.26
+- found an edge case not covered by rollout validations associated with inconsistent data between train and test sets for 1010 transform
+- new convention that majority str(number) sets under automation default to numeric encoding
+- this edge case helped me recognize that needed a convention, there is an arguement to be made for treating this case as categoric as well, settled on this approach just to have one
+- also resolved the edge case by new data structure in case user prefers the alternate approach
+- also found and fixed edge case for noise scaling in DPmm/DPrt associated with zero division
