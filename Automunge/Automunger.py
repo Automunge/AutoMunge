@@ -20354,6 +20354,13 @@ class AutoMunge:
     #now delete the support column
     del df[column]
 
+    #prepare inverse_binary_encoding_dict for test set and inversion
+    if null_activation is not False:
+      inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items()}
+    elif null_activation is False:
+      inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items() if key==key}
+    normalization_dict.update({'inverse_binary_encoding_dict' : inverse_binary_encoding_dict})
+
     return df, normalization_dict
 
   def _process_bshr(self, df, column, category, treecategory, postprocess_dict, params = {}):
@@ -26200,9 +26207,12 @@ class AutoMunge:
       #(target_mu - mu) / (mu_iter1 - mu) = (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu)
       #where mu on right side of above is based on trying to derive a target_mu that produces a scaled noise mean of mu
 
-      target_mu = \
-      (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
-      * (mu_iter1 - mu) + mu
+      if (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) * (mu_iter1 - mu) + mu != 0:
+        target_mu = \
+        (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
+        * (mu_iter1 - mu) + mu
+      else:
+        target_mu = mu
       
       # #validation printouts
       # df = noisescalingevaluationsupport(df, DPmm_column, DPmm_column_temp1, target_mu)
@@ -26987,9 +26997,12 @@ class AutoMunge:
       #(target_mu - mu) / (mu_iter1 - mu) = (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu)
       #where mu on right side of above is based on trying to derive a target_mu that produces a scaled noise mean of mu
 
-      target_mu = \
-      (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
-      * (mu_iter1 - mu) + mu
+      if (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) * (mu_iter1 - mu) + mu != 0:
+        target_mu = \
+        (mu - meanofscaledfrom_mu) / (meanofscaledfrom_mu_iter1 - meanofscaledfrom_mu) \
+        * (mu_iter1 - mu) + mu
+      else:
+        target_mu = mu
       
       # #validation printouts
       # df = noisescalingevaluationsupport(df, DPrt_column, DPrt_column_temp1, DPrt_column_temp2, target_mu)
@@ -30134,7 +30147,10 @@ class AutoMunge:
       
       numericcount = df.loc[pd.to_numeric(df[column], errors='coerce') == df[column]].shape[0]
       type_tuple_list.append(('number', numericcount / rowcount))
-      
+
+      numericstringcount = (((df[column].astype(str) == df[column]) == True) & ((pd.to_numeric(df[column], errors='coerce') == pd.to_numeric(df[column], errors='coerce')) == True)).sum()
+      type_tuple_list.append(('numericstring', numericstringcount / rowcount))
+
       nancount = df[column].isna().sum()
       type_tuple_list.append(('nan', nancount / rowcount))
       
@@ -30181,7 +30197,9 @@ class AutoMunge:
 
       #now for categoric sets (where most common is string or we received column with pandas dtype of 'category')
       #we have four scenarios
-      if mostcommon_type in {'string', 'bytes'} or mostcommon_type == 'number' and nunique == 2:
+      if mostcommon_type in {'string', 'numericstring'} and numericstringcount < (stringcount / 2) \
+      or mostcommon_type in {'bytes'} \
+      or mostcommon_type == 'number' and nunique == 2:
         
         #base configuration is defaultcategorical (binarization)
         category = defaultcategorical
@@ -30202,7 +30220,8 @@ class AutoMunge:
       #now for numeric sets we default to z-score normalziation
       #note this may be overwritten below based on powertransform parameter
       elif mostcommon_type == 'number' \
-      and nunique != 2:
+      and nunique != 2 \
+      or mostcommon_type in {'string', 'numericstring'} and numericstringcount >= (stringcount / 2):
         
         category = defaultnumerical
         
@@ -46344,7 +46363,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.25'
+    automungeversion = '8.26'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -50830,6 +50849,14 @@ class AutoMunge:
     _1010_columnlist = normalization_dict['_1010_columnlist']
     null_activation = normalization_dict['null_activation']
     missing_marker = normalization_dict['missing_marker']
+    if 'inverse_binary_encoding_dict' in normalization_dict:
+      inverse_binary_encoding_dict = normalization_dict['inverse_binary_encoding_dict']
+    else:
+      #backward compatibility preceding 8.26
+      if null_activation is not False:
+        inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items()}
+      elif null_activation is False:
+        inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items() if key==key}
     
     #setting to object allows mixed data types for .replace operations and removes complexity of pandas category dtype
     df[column] = df[column].astype('object')
@@ -50844,25 +50871,39 @@ class AutoMunge:
       #apply a replace to convert consolidated items to their targeted activations
       df[column] = df[column].astype('object').replace(inverse_consolidation_translate_dict)
       
-    #if the test set has entries without encodings, we'll replace with missing data marker
-    extra_entries = set(df[column].unique()) - set(binary_encoding_dict)
-    extra_entries = list({x for x in extra_entries if x==x})
-    if len(extra_entries) > 0:
-      plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
-      df[column] = df[column].astype('object').replace(plug_dict)
+    # #if the test set has entries without encodings, we'll replace with missing data marker
+    # extra_entries = set(df[column].unique()) - set(binary_encoding_dict)
+    # extra_entries = list({x for x in extra_entries if x==x})
+    # if len(extra_entries) > 0:
+    #   plug_dict = dict(zip(extra_entries, [missing_marker] * len(extra_entries)))
+    #   df[column] = df[column].astype('object').replace(plug_dict)
     
     #now replace the entries in column with their binarization representation
     #note this representation is a string of 0's and 1's that will next be seperated into seperate columns
+    #there is a pandas dtype drift edge case bug possible here when all entries are str(number) and missing marker is nan
+    #we mitigate by assigning majority str(number) to category nmbr under automation
     df[column] = df[column].astype('object').replace(binary_encoding_dict)
+
+    #this circumvents pandas dtype drift issue
+    for entry in df[column].unique():
+      if entry not in set(inverse_binary_encoding_dict):
+        if entry == entry:
+          df.loc[df[column] == entry, column] = binary_encoding_dict[missing_marker]
+        else:
+          df.loc[df[column].isna(), column] = binary_encoding_dict[missing_marker]
 
     #now let's store the encoding
     i=0
     for _1010_column in _1010_columnlist:
       
       if len(_1010_columnlist) > 1:
+        #there is a pandas dtype drift edge case bug possible here when all entries are str(number) and missing marker is nan
+        #we mitigate by assigning majority str(number) to category nmbr under automation
         df[_1010_column] = df[column].str.slice(i,i+1).astype(np.int8)
         i+=1
       else:
+        #there is a pandas dtype drift edge case bug possible here when all entries are str(number) and missing marker is nan
+        #we mitigate by assigning majority str(number) to category nmbr under automation
         df[_1010_column] = df[column].astype(np.int8)
       
     #now delete the support column
@@ -60785,14 +60826,17 @@ class AutoMunge:
     """
 
     #First let's access the values we'll need from the normalization_dict
-    binary_encoding_dict = normalization_dict['binary_encoding_dict']
     null_activation = normalization_dict['null_activation']
-    
-    #includes True and Binary scenarios
-    if null_activation is not False:
-      inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items()}
-    elif null_activation is False:
-      inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items() if key==key}
+
+    if 'inverse_binary_encoding_dict' in normalization_dict:
+      inverse_binary_encoding_dict = normalization_dict['inverse_binary_encoding_dict']
+    else:
+      #backward compatibility preceding 8.26
+      binary_encoding_dict = normalization_dict['binary_encoding_dict']
+      if null_activation is not False:
+        inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items()}
+      elif null_activation is False:
+        inverse_binary_encoding_dict = {value:key for key,value in binary_encoding_dict.items() if key==key}
     
     #first we'll aggregate all of the returned column activations into a single column string representation
     #note that returnedcolumn_list will be in order of increasing integers as was originally populated
