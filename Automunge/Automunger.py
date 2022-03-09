@@ -11997,6 +11997,13 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+      
+    #stdev_cap can be passed as integer or float for setting cap based on number of standard deviations from mean
+    #only performed with cap=False and floor=False, default of stdev_cap=False deactivates
+    if 'stdev_cap' in params:
+      stdev_cap = params['stdev_cap']
+    else:
+      stdev_cap = False
 
     #abs_zero accepts boolean defaulting to True for conversion of negative zero to positive
     #which is in place to ensure defaultinfill of negzeroinfill returns distinct encoding
@@ -12035,6 +12042,20 @@ class AutoMunge:
     #median and median absolute deviation
     median = mdf_train[suffixcolumn].median()
     MAD = mdf_train[suffixcolumn].mad()
+    
+    #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
+    if stdev_cap is not False and cap is False and floor is False:
+      
+      pre_capfloor_mean = mdf_train[suffixcolumn].mean()
+      pre_capfloor_stdev = mdf_train[suffixcolumn].std()
+      
+      if pre_capfloor_mean != pre_capfloor_mean:
+        pre_capfloor_mean = 0
+      if pre_capfloor_stdev != pre_capfloor_stdev:
+        pre_capfloor_stdev = 1
+
+      cap = pre_capfloor_mean + stdev_cap * pre_capfloor_stdev
+      floor = pre_capfloor_mean - stdev_cap * pre_capfloor_stdev
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -12668,6 +12689,13 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+      
+    #stdev_cap can be passed as integer or float for setting cap based on number of standard deviations from mean
+    #only performed with cap=False and floor=False, default of stdev_cap=False deactivates
+    if 'stdev_cap' in params:
+      stdev_cap = params['stdev_cap']
+    else:
+      stdev_cap = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -12699,6 +12727,8 @@ class AutoMunge:
     #a few more metrics collected for driftreport
     #get standard deviation of training data
     std = mdf_train[suffixcolumn].std()
+    if std != std or std == 0:
+      std = 1
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean()   
@@ -12720,6 +12750,20 @@ class AutoMunge:
     
     #get minimum value of training column
     minimum = mdf_train[suffixcolumn].min()
+    
+    #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
+    if stdev_cap is not False and cap is False and floor is False:
+      
+      pre_capfloor_mean = mean
+      pre_capfloor_stdev = std
+      
+      if pre_capfloor_mean != pre_capfloor_mean:
+        pre_capfloor_mean = 0
+      if pre_capfloor_stdev != pre_capfloor_stdev:
+        pre_capfloor_stdev = 1
+
+      cap = pre_capfloor_mean + stdev_cap * pre_capfloor_stdev
+      floor = pre_capfloor_mean - stdev_cap * pre_capfloor_stdev
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -13142,6 +13186,13 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+      
+    #stdev_cap can be passed as integer or float for setting cap based on number of standard deviations from mean
+    #only performed with cap=False and floor=False, default of stdev_cap=False deactivates
+    if 'stdev_cap' in params:
+      stdev_cap = params['stdev_cap']
+    else:
+      stdev_cap = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -13192,6 +13243,20 @@ class AutoMunge:
       
     if mad != mad or mad == 0:
       mad = 1
+      
+    #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
+    if stdev_cap is not False and cap is False and floor is False:
+      
+      pre_capfloor_mean = mdf_train[suffixcolumn].mean()
+      pre_capfloor_stdev = std
+      
+      if pre_capfloor_mean != pre_capfloor_mean:
+        pre_capfloor_mean = 0
+      if pre_capfloor_stdev != pre_capfloor_stdev:
+        pre_capfloor_stdev = 1
+
+      cap = pre_capfloor_mean + stdev_cap * pre_capfloor_stdev
+      floor = pre_capfloor_mean - stdev_cap * pre_capfloor_stdev
       
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -13376,6 +13441,13 @@ class AutoMunge:
       floor = params['floor']
     else:
       floor = False
+      
+    #stdev_cap can be passed as integer or float for setting cap based on number of standard deviations from mean
+    #only performed with cap=False and floor=False, default of stdev_cap=False deactivates
+    if 'stdev_cap' in params:
+      stdev_cap = params['stdev_cap']
+    else:
+      stdev_cap = False
 
     if 'suffix' in params:
       suffix = params['suffix']
@@ -13409,6 +13481,20 @@ class AutoMunge:
     
     #get minimum value of training column
     minimum = mdf_train[suffixcolumn].min()
+    
+    #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
+    if stdev_cap is not False and cap is False and floor is False:
+      
+      pre_capfloor_mean = mdf_train[suffixcolumn].mean()
+      pre_capfloor_stdev = mdf_train[suffixcolumn].std()
+      
+      if pre_capfloor_mean != pre_capfloor_mean:
+        pre_capfloor_mean = 0
+      if pre_capfloor_stdev != pre_capfloor_stdev:
+        pre_capfloor_stdev = 1
+
+      cap = pre_capfloor_mean + stdev_cap * pre_capfloor_stdev
+      floor = pre_capfloor_mean - stdev_cap * pre_capfloor_stdev
     
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -26530,6 +26616,13 @@ class AutoMunge:
     else:
       floor = False
       
+    #stdev_cap can be passed as integer or float for setting cap based on number of standard deviations from mean
+    #only performed with cap=False and floor=False, default of stdev_cap=False deactivates
+    if 'stdev_cap' in params:
+      stdev_cap = params['stdev_cap']
+    else:
+      stdev_cap = False
+      
     #here are differential privacy parameters
     if 'mu' in params:
       mu = params['mu']
@@ -26824,6 +26917,20 @@ class AutoMunge:
       
     if mad != mad or mad == 0:
       mad = 1
+      
+    #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
+    if stdev_cap is not False and cap is False and floor is False:
+      
+      pre_capfloor_mean = mdf_train[DPrt_column].mean()
+      pre_capfloor_stdev = std
+      
+      if pre_capfloor_mean != pre_capfloor_mean:
+        pre_capfloor_mean = 0
+      if pre_capfloor_stdev != pre_capfloor_stdev:
+        pre_capfloor_stdev = 1
+
+      cap = pre_capfloor_mean + stdev_cap * pre_capfloor_stdev
+      floor = pre_capfloor_mean - stdev_cap * pre_capfloor_stdev
       
     #if cap < maximum, maximum = cap
     if cap is not False and cap is not True:
@@ -46363,7 +46470,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.26'
+    automungeversion = '8.27'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
