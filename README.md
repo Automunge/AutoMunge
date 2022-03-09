@@ -2611,6 +2611,8 @@ Please note that a survey of numeric transforms was provided in the paper [Numer
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
+    - 'stdev_cap', defaults to False, when cap and floor aren't specified, can pass an integer or float 
+      to serve a cap/floor based on this number of standard deviations from the mean
     - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'abs_zero', defaults to True, deactivate to turn off conversion of negative zeros to positive zeros applied prior to infill (this is included to supplement negzeroinfill)
@@ -2631,6 +2633,8 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
+    - 'stdev_cap', defaults to False, when cap and floor aren't specified, can pass an integer or float 
+      to serve a cap/floor based on this number of standard deviations from the mean
     - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'suffix': to change suffix appender (leading underscore added internally)
@@ -2648,6 +2652,8 @@ My intuition says z-score has some benefits but really up to the user which they
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
+    - 'stdev_cap', defaults to False, when cap and floor aren't specified, can pass an integer or float 
+      to serve a cap/floor based on this number of standard deviations from the mean
     - 'suffix': to change suffix appender (leading underscore added internally)
   - driftreport postmunge metrics: minimum / maximum / maxminusmin / mean / std / cap / floor / median / MAD
   - returned datatype: based on automunge(.) floatprecision parameter (defaults to float32)
@@ -2686,6 +2692,8 @@ elif max<=0 and min<=0 x=(x-max)/(max-min)
       True means floor/cap based on training set min/max, otherwise passed values serve as floor/cap to scaling, 
       noting that if cap<max then max reset to cap and if floor>min then min reset to floor
       cap and floor based on pre-transform values
+    - 'stdev_cap', defaults to False, when cap and floor aren't specified, can pass an integer or float 
+      to serve a cap/floor based on this number of standard deviations from the mean
     - 'multiplier' and 'offset' to apply multiplier and offset to post-transform values, default to 1,0,
       note that multiplier is applied prior to offset
     - 'divisor' to select between default of 'minmax' or 'mad, 'std', where minmax means scaling by divisor of max-min
@@ -3751,8 +3759,7 @@ remains in range 0-1 (by scaling neg noise when scaled and centered input <0.5 a
   - default infill: comparable to retn with mean (calculated before noise injection)
   - suffix appender: '_DPrt' in base configuration or based on the family tree category
   - assignparam parameters accepted: 
-    - parameters comparable to retn divisor / offset / multiplier / 
-    - cap / floor defaulting to 'minmax'/0/1/False/False, also
+    - parameters comparable to retn divisor / offset / multiplier / cap / floor / stdev_cap defaulting to 'minmax'/0/1/False/False/False, also
     - 'noisedistribution' as {'normal', 'laplace', 'uniform'}, defaults to normal, used to select between gaussian (normal), laplace, and uniform distributed noise, also accepts one of {'abs_normal', 'abs_laplace', 'abs_uniform', 'negabs_normal', 'negabs_laplace', 'negabs_uniform'}, where the prefix 'abs' refers to injecting only positive noise by taking absolute value of sampled noise, and the prefix negabs refers to injecting only negative noise by taking the negative absolute value of sampled noise. *Note that we recommend deactivating parameter noise_scaling_bias_offset in conjunction with abs or negabs scenarios, otherwise the sampled mean will be shifted resulting in noise with zero mean.
     - 'mu' for noise mean, defaults to 0, 
     - 'sigma' for noise scale, defaults to 0.03 - note that for uniform sampling high is (sigma-mu) and  low is (mu-sigma) 
