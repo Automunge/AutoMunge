@@ -5702,3 +5702,9 @@ print(logger['warning_report'])
 - this edge case helped me recognize that needed a convention, there is an arguement to be made for treating this case as categoric as well, settled on this approach just to have one
 - also resolved the edge case by new data structure in case user prefers the alternate approach
 - also found and fixed edge case for noise scaling in DPmm/DPrt associated with zero division
+
+8.27
+- new parameter accepted for numeric scaling options nmbr/mnmx/mean/retn/DPrt as stdev_cap
+- used to specify a cap/floor based on a specified number of standard deviations from the mean
+- defaults to False, only inspected when prior parameters cap/floor are not specified
+- hat tip for the inspiration to ACM paper "Automating Data Science" by Tijl De Bie, Luc De Raedt, José Hernández-Orallo, Holger H. Hoos, Padhraic Smyth, and Christopher K.I. Williams
