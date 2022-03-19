@@ -5708,3 +5708,6 @@ print(logger['warning_report'])
 - used to specify a cap/floor based on a specified number of standard deviations from the mean
 - defaults to False, only inspected when prior parameters cap/floor are not specified
 - hat tip for the inspiration to ACM paper "Automating Data Science" by Tijl De Bie, Luc De Raedt, José Hernández-Orallo, Holger H. Hoos, Padhraic Smyth, and Christopher K.I. Williams
+
+8.28
+- updated license from GNU GPL 3.0 to MIT
