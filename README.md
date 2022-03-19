@@ -5652,7 +5652,7 @@ If you are looking for something to cite, our paper [Tabular Engineering with Au
 
 ...
 
-This file is part of Automunge which is released under GNU General Public License v3.0.
+This file is part of Automunge which is released under the MIT license.
 See file LICENSE or go to https://github.com/Automunge/AutoMunge for full license details.
 
 contact available via [automunge.com](https://automunge.com)
