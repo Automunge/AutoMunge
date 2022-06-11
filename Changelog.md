@@ -5711,3 +5711,7 @@ print(logger['warning_report'])
 
 8.28
 - updated license from GNU GPL 3.0 to MIT
+
+8.29
+- updated setup file to align with license
+- tweaked intellectual property disclaimers
