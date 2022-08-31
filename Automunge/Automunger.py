@@ -12041,7 +12041,8 @@ class AutoMunge:
     minimum = mdf_train[suffixcolumn].min()
     #median and median absolute deviation
     median = mdf_train[suffixcolumn].median()
-    MAD = mdf_train[suffixcolumn].mad()
+    # MAD = mdf_train[suffixcolumn].mad()
+    MAD = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
     
     #if cap/floor set based on number of standard deviations, measure statistics and set variables cap and/or floor
     if stdev_cap is not False and cap is False and floor is False:
@@ -12606,7 +12607,8 @@ class AutoMunge:
       mdf_test[suffixcolumn] = mdf_test[suffixcolumn] - maximum
 
     #get mean absolute deviation of training data
-    MAD = mdf_train[suffixcolumn].mad()
+    # MAD = mdf_train[suffixcolumn].mad()
+    MAD = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
     
     #special case to avoid div by 0
     if MAD == 0:
@@ -12737,7 +12739,8 @@ class AutoMunge:
 
     #additional drift stats
     median = mdf_train[suffixcolumn].median()
-    MAD = mdf_train[suffixcolumn].mad()
+    # MAD = mdf_train[suffixcolumn].mad()
+    MAD = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
 
     #apply defaultinfill based on processdict entry
     mdf_train, defaultinfill_dict = \
@@ -13048,7 +13051,8 @@ class AutoMunge:
     #get standard deviation of training data
     std = mdf_train[suffixcolumn].std()
     median = mdf_train[suffixcolumn].median()
-    MAD = mdf_train[suffixcolumn].mad()
+    # MAD = mdf_train[suffixcolumn].mad()
+    MAD = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean()   
@@ -13225,7 +13229,8 @@ class AutoMunge:
     #stdev, median, mad
     std = mdf_train[suffixcolumn].std()
     median = mdf_train[suffixcolumn].median()
-    mad = mdf_train[suffixcolumn].mad()
+    # mad = mdf_train[suffixcolumn].mad()
+    mad = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
     
     #get maximum value of training column
     maximum = mdf_train[suffixcolumn].max()
@@ -13531,7 +13536,8 @@ class AutoMunge:
     std = mdf_train[suffixcolumn].std()
     #median and median absolute deviation
     median = mdf_train[suffixcolumn].median()
-    MAD = mdf_train[suffixcolumn].mad()
+    # MAD = mdf_train[suffixcolumn].mad()
+    MAD = (mdf_train[suffixcolumn] - mdf_train[suffixcolumn].median(axis=0)).abs().median()
 
     #get mean of training data
     mean = mdf_train[suffixcolumn].mean()
@@ -26899,7 +26905,8 @@ class AutoMunge:
     #get standard deviation of training data
     std = mdf_train[DPrt_column].std()
     
-    mad = mdf_train[DPrt_column].mad()
+    # mad = mdf_train[DPrt_column].mad()
+    mad = (mdf_train[DPrt_column] - mdf_train[DPrt_column].median(axis=0)).abs().median()
     
     #get maximum value of training column
     maximum = mdf_train[DPrt_column].max()
@@ -30574,7 +30581,8 @@ class AutoMunge:
                                      'min' : df2[column].min(), \
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
-                                     'MAD' : df2[column].mad(), \
+                                    #  'MAD' : df2[column].mad(), \
+                                     'MAD' : (df2[column] - df2[column].median(axis=0)).abs().median(), \
                                      'skew' : skew_stat, \
                                      'shapiro_W' : W, \
                                      'shapiro_p' : p, \
@@ -30619,7 +30627,8 @@ class AutoMunge:
                                      'min' : df2[column].min(), \
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
-                                     'MAD' : df2[column].mad(), \
+                                    #  'MAD' : df2[column].mad(), \
+                                     'MAD' : (df2[column] - df2[column].median(axis=0)).abs().median(), \
                                      'skew' : skew_stat, \
                                      'shapiro_W' : W, \
                                      'shapiro_p' : p, \
@@ -30663,7 +30672,8 @@ class AutoMunge:
                                      'min' : df2[column].min(), \
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
-                                     'MAD' : df2[column].mad(), \
+                                    #  'MAD' : df2[column].mad(), \
+                                     'MAD' : (df2[column] - df2[column].median(axis=0)).abs().median(), \
                                      'skew' : skew_stat, \
                                      'shapiro_W' : W, \
                                      'shapiro_p' : p, \
@@ -30708,7 +30718,8 @@ class AutoMunge:
                                      'min' : df2[column].min(), \
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
-                                     'MAD' : df2[column].mad(), \
+                                    #  'MAD' : df2[column].mad(), \
+                                     'MAD' : (df2[column] - df2[column].median(axis=0)).abs().median(), \
                                      'skew' : skew_stat, \
                                      'shapiro_W' : W, \
                                      'shapiro_p' : p, \
@@ -30753,7 +30764,8 @@ class AutoMunge:
                                      'min' : df2[column].min(), \
                                      'mean' : df2[column].mean(), \
                                      'std' : df2[column].std(), \
-                                     'MAD' : df2[column].mad(), \
+                                    #  'MAD' : df2[column].mad(), \
+                                     'MAD' : (df2[column] - df2[column].median(axis=0)).abs().median(), \
                                      'skew' : skew_stat, \
                                      'shapiro_W' : W, \
                                      'shapiro_p' : p, \
@@ -46470,7 +46482,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.29'
+    automungeversion = '8.30'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -56766,7 +56778,8 @@ class AutoMunge:
                             'mean'    : df[returned_PCA_column].mean(),
                             'std'     : df[returned_PCA_column].std(),
                             'median'  : df[returned_PCA_column].median(),
-                            'MAD'     : df[returned_PCA_column].mad(),
+                            # 'MAD'     : df[returned_PCA_column].mad(),
+                            'MAD' : (df[returned_PCA_column] - df[returned_PCA_column].median(axis=0)).abs().median(), \
                             'maximum' : df[returned_PCA_column].max(),
                             'minimum' : df[returned_PCA_column].min(),
                           }
