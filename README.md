@@ -45,7 +45,7 @@ Automunge is now available for pip install:
 ```
 pip install Automunge
 ```
-Or to upgrade (we currently roll out upgrades pretty frequently):
+Or to upgrade:
 ```
 pip install Automunge --upgrade
 ```
