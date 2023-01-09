@@ -5719,3 +5719,6 @@ print(logger['warning_report'])
 8.30
 - pandas 1.5.0 will be depreciating .mad (median absolute deviation)
 - replaced usage with manual derivation
+
+8.31
+- updated license to BSD-3-Clause
