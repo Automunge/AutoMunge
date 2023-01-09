@@ -5630,8 +5630,8 @@ Please note that the pickle library has a security vulnerability when loading an
 
 ...
 
-Please note that Automunge makes use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
-which are released under a 3-Clause BSD license. We include options that make use of the
+Please note that Automunge imports make use of the Pandas, Scikit-Learn, Numpy, and Scipy Stats libraries
+which are released under a 3-Clause BSD license. We include options that may import the
 Catboost or XGBoost libraries which are released under the Apache License 2.0, as well as options for the FLAML and Optuna libraries which are released under a MIT License.
 
 ...
@@ -5652,11 +5652,11 @@ If you are looking for something to cite, our paper [Tabular Engineering with Au
 
 ...
 
-This file is part of Automunge which is released under the MIT license.
+This file is part of Automunge which is released under the BSD-3-Clause license.
 See file LICENSE or go to https://github.com/Automunge/AutoMunge for full license details.
 
 contact available via [automunge.com](https://automunge.com)
 
-Copyright (C) 2018, 2019, 2020, 2021 - All Rights Reserved
+Copyright (C) 2018, 2019, 2020, 2021, 2022 - All Rights Reserved
 
 Patent Pending
