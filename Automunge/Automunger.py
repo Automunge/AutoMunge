@@ -1,10 +1,10 @@
 """
-This file is part of Automunge which is released under the MIT license.
+This file is part of Automunge which is released under the BSD 3-Clause license.
 See file LICENSE or go to https://github.com/Automunge/AutoMunge for full license details.
 
 contact available via automunge.com
 
-Copyright (C) 2018, 2019, 2020, 2021, 2022 Nicholas Teague - All Rights Reserved
+Copyright (C) 2018, 2019, 2020, 2021, 2022, 2023 Nicholas Teague - All Rights Reserved
 
 patent pending
 """
