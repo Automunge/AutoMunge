@@ -5722,3 +5722,7 @@ print(logger['warning_report'])
 
 8.31
 - updated license to BSD-3-Clause
+
+8.32
+- corrected version number in code base
+- tweak to copyright notice in read me
