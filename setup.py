@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Automunge/AutoMunge",
     packages=setuptools.find_packages(),
-    install_requires=['numpy', 'pandas', 'scikit-learn', 'scipy'],
+    install_requires=['numpy', 'pandas>=2.0', 'scikit-learn', 'scipy'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
