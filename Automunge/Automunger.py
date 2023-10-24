@@ -10655,8 +10655,8 @@ class AutoMunge:
     elif NArowtype in {'datetime'}:
       
       #convert values to datetime
-      mdf_train[suffixcolumn] = pd.to_datetime(mdf_train[suffixcolumn], errors = 'coerce', utc=True)
-      mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
+      mdf_train[suffixcolumn] = pd.to_datetime(mdf_train[suffixcolumn], errors = 'coerce', utc=True, format='mixed')
+      mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True, format='mixed')
       
     elif NArowtype in {'justNaN', 'binary', 'exclude', 'totalexclude', 'parsenumeric'}:
       
@@ -11488,7 +11488,7 @@ class AutoMunge:
           mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].astype(str).value_counts())
         else:
           mode_valuecounts_list = pd.DataFrame(df[suffixcolumn].value_counts())
-        mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
+        mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
         mode_valuecounts_list = list(mode_valuecounts_list.index)
 
         if len(mode_valuecounts_list) > 0:
@@ -13690,7 +13690,7 @@ class AutoMunge:
     #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
     #note this sorting has an edge case for bytes type entries when str_convert passed as False
     valuecounts = pd.DataFrame(mdf_train[suffixcolumn].value_counts())
-    valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [suffixcolumn, tempstring], ascending = [False, True])
+    valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
     valuecounts = list(valuecounts.index)
     
     if len(valuecounts) > 0:
@@ -14005,7 +14005,7 @@ class AutoMunge:
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = np.nan
+    missing_marker = None
     if null_activation == 'Binary':
       missing_marker = '0' * len(str(df[column].iat[0]))
 
@@ -14049,7 +14049,7 @@ class AutoMunge:
       else:
         labels_train_ordered = pd.DataFrame(df[column].value_counts())
       #note this sorting has an edge case for bytes type entries when str_convert passed as False
-      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -19538,6 +19538,7 @@ class AutoMunge:
       str_convert = normalization_dict['str_convert']
     else:
       str_convert = True
+      # str_convert = 'conditional_on_bytes'
       normalization_dict.update({'str_convert' : str_convert})
 
     #null_activation is to have a distinct activation for missing data
@@ -19556,7 +19557,7 @@ class AutoMunge:
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = np.nan
+    missing_marker = None
     if null_activation == 'Binary':
       missing_marker = '0' * len(str(df[column].iat[0]))
     normalization_dict.update({'missing_marker' : missing_marker})
@@ -19599,7 +19600,7 @@ class AutoMunge:
       else:
         labels_train_ordered = pd.DataFrame(df[column].value_counts())
       #note this sorting has an edge case for bytes type entries when str_convert passed as False
-      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -20186,7 +20187,8 @@ class AutoMunge:
     
     #for every derivation related to the set labels_train, we'll remove missing_marker and add once prior to assembling binaryencoding_dict
     #which helps accomodate a few peculiarities related to python sets with NaN inclusion
-    missing_marker = np.nan
+    missing_marker = None
+
     if null_activation == 'Binary':
       missing_marker = '0' * len(str(df[column].iat[0]))
 
@@ -20236,8 +20238,9 @@ class AutoMunge:
           tempstring += 'z'
           
       labels_train_ordered = pd.DataFrame(df[column].value_counts())
+
       #note this sorting has an edge case for bytes type entries when str_convert passed as False
-      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      labels_train_ordered = labels_train_ordered.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
       labels_train_ordered = list(labels_train_ordered.index)
       #by convention NaN is reserved for use with missing data
       labels_train_ordered = [x for x in labels_train_ordered if x==x]
@@ -20487,7 +20490,7 @@ class AutoMunge:
     self.__df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
 
     #convert improperly formatted values to datetime in new column
-    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce', format='mixed')
 
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -20560,7 +20563,7 @@ class AutoMunge:
     self.__df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #convert improperly formatted values to datetime in new column
-    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce', format='mixed')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -20639,7 +20642,7 @@ class AutoMunge:
     if len(holiday_list) > 0:
     
       #reformat holiday_list
-      holiday_list = pd.to_datetime(pd.DataFrame(holiday_list)[0], errors = 'coerce')
+      holiday_list = pd.to_datetime(pd.DataFrame(holiday_list)[0], errors = 'coerce', format='mixed')
 
       #reform holiday_list again
       timestamp_list = []
@@ -20656,11 +20659,11 @@ class AutoMunge:
     self.__df_check_suffixoverlap(df, suffixcolumn, suffixoverlap_results, postprocess_dict['printstatus'])
     
     #convert improperly formatted values to datetime in new column
-    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[column], errors = 'coerce', format='mixed')
     
     df[suffixcolumn] = df[suffixcolumn].dt.date
     
-    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', format='mixed')
     
     from pandas.tseries.holiday import USFederalHolidayCalendar
 
@@ -20752,7 +20755,7 @@ class AutoMunge:
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', format='mixed')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -20861,7 +20864,7 @@ class AutoMunge:
       df.rename(columns = {column : suffixcolumn}, inplace = True)
     
     #convert improperly formatted values to datetime in new column
-    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce')
+    df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', format='mixed')
     
     #This is kind of hack for whole hour increments, if we were needing
     #to evlauate hour ranges between seperate days a different metod
@@ -20989,7 +20992,7 @@ class AutoMunge:
       
     if timezone is not False:
 
-      df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', utc=True)
+      df[suffixcolumn] = pd.to_datetime(df[suffixcolumn], errors = 'coerce', utc=True, format='mixed')
       
       df[suffixcolumn] = df[suffixcolumn].dt.tz_convert(timezone)
 
@@ -21086,8 +21089,8 @@ class AutoMunge:
       mdf_test.rename(columns = {column : time_column}, inplace = True)
     
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
-    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce', format='mixed')
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce', format='mixed')
     
     #access time scale from one of year/month/day/hour/minute/second
     #monthday/dayhourminute/hourminutesecond/minutesecond
@@ -21336,8 +21339,8 @@ class AutoMunge:
       mdf_test.rename(columns = {column : time_column}, inplace = True)
     
     #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce')
-    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+    mdf_train[time_column] = pd.to_datetime(mdf_train[time_column], errors = 'coerce', format='mixed')
+    mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce', format='mixed')
     
     #access time scale from one of year/month/day/hour/minute/second
     if scale == 'year':
@@ -30275,8 +30278,8 @@ class AutoMunge:
       type_tuple_list.append(('bytes', bytescount / rowcount))
       
       datetimecount = \
-      df.loc[pd.to_datetime(df[column].astype(str), errors='coerce') == \
-             pd.to_datetime(df[column].astype(str), errors='coerce')].shape[0]
+      df.loc[pd.to_datetime(df[column].astype(str), errors='coerce', format='mixed') == \
+             pd.to_datetime(df[column].astype(str), errors='coerce', format='mixed')].shape[0]
       type_tuple_list.append(('datetime', datetimecount / rowcount))
       
       #now sort type_tuple_list by the type_ratio
@@ -30502,7 +30505,7 @@ class AutoMunge:
           tempstring += 'z'
       #valuecounts is a list of unique entries sorted by frequency (from most to least) and then alphabetic, excluding nan
       valuecounts = pd.DataFrame(df2[column].astype(str).value_counts())
-      valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      valuecounts = valuecounts.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
       valuecounts = list(valuecounts.index)
 
       if len(valuecounts) == 0:
@@ -30787,7 +30790,7 @@ class AutoMunge:
       
     if NArowtype in {'datetime'}:
       
-      df2[column] = pd.to_datetime(df2[column], errors = 'coerce', utc=True)
+      df2[column] = pd.to_datetime(df2[column], errors = 'coerce', utc=True, format='mixed')
 
       if driftassess is True:
         drift_dict.update({column : {'nanratio' : pd.isna(df2[column]).sum() / df2[column].shape[0]}})
@@ -30873,7 +30876,7 @@ class AutoMunge:
     #wherein activations are 0 if a datetime is present and 1 if not
     """
 
-    df[column] = pd.to_datetime(df[column], errors = 'coerce')
+    df[column] = pd.to_datetime(df[column], errors = 'coerce', format='mixed')
 
     NArows = pd.isna(df[column])
     NArows = pd.DataFrame(NArows)
@@ -37496,7 +37499,7 @@ class AutoMunge:
       #binary_mode = tempdf['onehot'].mode()
       #note lcinfill applied after encodings so don't need to worry about edge case for bytes entries for value_counts sorting
       mode_valuecounts_list = pd.DataFrame(tempdf[tempstring1].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring2).sort_values(by = [tempstring1, tempstring2], ascending = [False, True])
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring2).sort_values(by = ['count', tempstring2], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
 
       if len(mode_valuecounts_list) > 0:
@@ -37540,7 +37543,7 @@ class AutoMunge:
           tempstring += 'z'
       #note lcinfill applied after encodings so don't need to worry about edge case for bytes type entries
       mode_valuecounts_list = pd.DataFrame(tempdf[column].value_counts())
-      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = [column, tempstring], ascending = [False, True])
+      mode_valuecounts_list = mode_valuecounts_list.rename_axis(tempstring).sort_values(by = ['count', tempstring], ascending = [False, True])
       mode_valuecounts_list = list(mode_valuecounts_list.index)
       if len(mode_valuecounts_list) > 0:
         mode = mode_valuecounts_list[-1]
@@ -46482,7 +46485,7 @@ class AutoMunge:
     #note that we follow convention of using float equivalent strings as version numbers
     #to support backward compatibility checks
     #thus when reaching a round integer, the next version should be selected as int + 0.10 instead of 0.01
-    automungeversion = '8.32'
+    automungeversion = '8.33'
 #     application_number = random.randint(100000000000,999999999999)
 #     application_timestamp = dt.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
     version_combined = '_' + str(automungeversion) + '_' + str(application_number)
@@ -47505,7 +47508,7 @@ class AutoMunge:
       elif NArowtype in {'datetime'}:
 
         #convert values to datetime
-        mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True)
+        mdf_test[suffixcolumn] = pd.to_datetime(mdf_test[suffixcolumn], errors = 'coerce', utc=True, format='mixed')
 
       elif NArowtype in {'justNaN', 'binary', 'exclude', 'totalexclude', 'parsenumeric'}:
 
@@ -48438,7 +48441,7 @@ class AutoMunge:
     labels_dict = normalization_dict['labels_dict']
     null_activation = normalization_dict['null_activation']
     
-    missing_marker = np.nan
+    missing_marker = None
     if null_activation == 'Binary':
       missing_marker = normalization_dict['missing_marker']
     
@@ -50968,6 +50971,7 @@ class AutoMunge:
     _1010_columnlist = normalization_dict['_1010_columnlist']
     null_activation = normalization_dict['null_activation']
     missing_marker = normalization_dict['missing_marker']
+
     if 'inverse_binary_encoding_dict' in normalization_dict:
       inverse_binary_encoding_dict = normalization_dict['inverse_binary_encoding_dict']
     else:
@@ -51077,7 +51081,7 @@ class AutoMunge:
         postprocess_dict['column_dict'][time_column]['normalization_dict'][time_column]['function']
 
         #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-        mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+        mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce', format='mixed')
 
         #access time scale from one of year/month/day/hour/minute/second
         #monthday/dayhourminute/hourminutesecond/minutesecond
@@ -51225,7 +51229,7 @@ class AutoMunge:
         mdf_test.rename(columns = {column : time_column}, inplace = True)
 
       #apply pd.to_datetime to column, note that the errors = 'coerce' needed for messy data
-      mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce')
+      mdf_test[time_column] = pd.to_datetime(mdf_test[time_column], errors = 'coerce', format='mixed')
 
       #access time scale from one of year/month/day/hour/minute/second
       if scale == 'year':
