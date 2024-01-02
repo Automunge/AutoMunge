@@ -5659,4 +5659,4 @@ contact available via [automunge.com](https://automunge.com)
 
 Copyright (C) 2018, 2019, 2020, 2021, 2022, 2023 - All Rights Reserved
 
-Patent Pending
+U.S. Patent No. 11861462
