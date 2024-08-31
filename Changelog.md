@@ -5734,3 +5734,4 @@ print(logger['warning_report'])
 - updated the use of pandas to_datetime parsing to format='mixed' in order to silence warning
 - as a clarification, if native support for bytes type formatted entries is desired under automation, one possible solution (with latency tradeoff in categoric encodings) is to pass:
 assignparam = {'global_assignparam' : {'str_convert':'conditional_on_bytes'}}
+=> seperate update, updated patent disclaimer (U.S. Patent No. 11861462)
