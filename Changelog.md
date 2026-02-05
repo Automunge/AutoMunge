@@ -5756,3 +5756,4 @@ assignparam = {'global_assignparam' : {'str_convert':'conditional_on_bytes'}}
         "scipy>=1.13,<2"],
 - please note qualification of "stable release" is subject to stability of dependencies
 - please note supplemental / optional library imports are clarified in READ ME preceding the comment:
+Have fun munging!!
