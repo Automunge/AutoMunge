@@ -5735,3 +5735,24 @@ print(logger['warning_report'])
 - as a clarification, if native support for bytes type formatted entries is desired under automation, one possible solution (with latency tradeoff in categoric encodings) is to pass:
 assignparam = {'global_assignparam' : {'str_convert':'conditional_on_bytes'}}
 => seperate update, updated patent disclaimer (U.S. Patent No. 11861462)
+
+9.0
+- STABLE RELEASE
+- aligned link to Medium publication: https://medium.com/from-the-diaries-of-john-henry
+- aligned with PyPI preferences, updated the setup.py name first letter capitalization
+- (replaced name="Automunge" with name="automunge")
+- this might neccesitate updates to install and imports any any case sensitive settings (like possibly Linux)
+- this item currently omitted from documentation due to some comparable ambiguity in python docs
+- omitted the changelog upload to pypi to benefit memory bandwidth
+- changelog otherwise retained at github repository archive https://github.com/Automunge/AutoMunge
+- please note that the recent pandas 3.0 release included several incompatibilities
+- withholding pandas 3.0 support so to establish 9.0 as stable release
+- updated setup.py to clarify full range of supported default import libraries:
+    python_requires=">=3.11,<4",
+    install_requires=[
+        "numpy>=2.0,<3",
+        "pandas>=2.2.2,<3",
+        "scikit-learn>=1.8,<2",
+        "scipy>=1.13,<2"],
+- please note qualification of "stable release" is subject to stability of dependencies
+- please note supplemental / optional library imports are clarified in READ ME preceding the comment:
