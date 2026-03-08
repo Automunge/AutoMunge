@@ -1,0 +1,18 @@
+
+In Conclusion:
+
+In a system with contested constraint-setting we can't assume that we have the exclusive ability to shape the distribution of accessible stochasticity. However we can expect that, as an alternative to attempted limits on our system's exposure to a small number of sources of highly contested stochasticity, there are cheap levers to influence the system dynamics in near universally desirable fashions that rely on scale effects from the asymptotic convergence of an increasing quantity of sources of stochasticity.
+
+Consider a contested setting in which multiple agents are attempting to apply constraint-setting towards the system configuration trajectories of progressing time steps, and in which the resulting set of constraints are potentially divergent or unaligned. As we progress through time steps the set of constraints that are successfully sampled are subject to what system configurations are made accessible to the agents. Increasing the quantity and range of perturbation vectors applied towards system variable trajectories by way of incorporated stochasticity could have just such a desired effect of increasing the amount of system configurations that are accessible. Expanding accessible system configurations doesn't necessarily bias outcome of which algorithms dominate but it does increase the size of the intersection of competing agents' satisfied constraints, creating more available "win win" solutions to the collective field.
+
+In systems conventions one can expect that (subject to assumptions of enforceable constraints and verifiable sensing) increasing the number of perturbation vectors by way of stochastic perturbations towards the trajectories of system variables can thus have have a meaningfully desirable impact of expanding the joint pareto frontier.
+
+As arbitrary example, let's say that we have a set of economic agents acting on a system subject to the objectives of profit and the constraints of not breaking any laws. If we increase the space of available system configurations we could expect for more of the agents to achieve profitability.
+
+This contention was inadequately articulated / understood when I had worked on my automunge project, I had some interpretations of asymptomatics that I was trying to extrapolate, I believe this to be the relevant underlying mechanism.
+
+For avoidance of doubt, I am not nor have I ever been an advocate for the open public dissemation of quantum algorithms and technologies. My expertise and work isn't about educating quantum information theorists, it is about trying to follow a path built on improved reocgnition of the significance and implications of the existence of quantum tecnololgies and how we can adapt our practices in academia and commerce in that context. 
+
+The Automunge library isn’t a quantum computing library. It is a dataframe transformation library with expansive stochasticity conventions (“noise injections”). Nothing more. 
+
+- Nicholas Teague
