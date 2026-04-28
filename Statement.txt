@@ -1,5 +1,5 @@
 
-In Conclusion:
+Conjectures:
 
 In a system with contested constraint-setting we can't assume that we have the exclusive ability to shape the distribution of accessible stochasticity. However we can expect that, as an alternative to attempted limits on our system's exposure to a small number of sources of highly contested stochasticity, there are cheap levers to influence the system dynamics in near universally desirable fashions that rely on scale effects from the asymptotic convergence of an increasing quantity of sources of stochasticity.
 
